@@ -1,0 +1,114 @@
+[submodule "proconfig/widgets/imagen_widgets/library/ComfyUI"]
+	path = proconfig/widgets/imagen_widgets/library/ComfyUI
+	url = git@github.com:comfyanonymous/ComfyUI.git
+[submodule "proconfig/widgets/imagen_widgets/library/comfy_custom_nodes/ComfyUI_UltimateSDUpscale"]
+	path = proconfig/widgets/imagen_widgets/library/comfy_custom_nodes/ComfyUI_UltimateSDUpscale
+	url = git@github.com:ssitu/ComfyUI_UltimateSDUpscale.git
+[submodule "proconfig/widgets/imagen_widgets/library/comfy_custom_nodes/comfyui-mixlab-nodes"]
+	path = proconfig/widgets/imagen_widgets/library/comfy_custom_nodes/comfyui-mixlab-nodes
+	url = https://github.com/shadowcz007/comfyui-mixlab-nodes
+[submodule "proconfig/widgets/imagen_widgets/library/comfy_custom_nodes/comfyui_controlnet_aux"]
+	path = proconfig/widgets/imagen_widgets/library/comfy_custom_nodes/comfyui_controlnet_aux
+	url = https://github.com/Fannovel16/comfyui_controlnet_aux
+[submodule "proconfig/widgets/imagen_widgets/library/comfy_custom_nodes/was-node-suite-comfyui"]
+	path = proconfig/widgets/imagen_widgets/library/comfy_custom_nodes/was-node-suite-comfyui
+	url = https://github.com/WASasquatch/was-node-suite-comfyui
+[submodule "proconfig/widgets/imagen_widgets/library/comfy_custom_nodes/PuLID_ComfyUI"]
+	path = proconfig/widgets/imagen_widgets/library/comfy_custom_nodes/PuLID_ComfyUI
+	url = https://github.com/cubiq/PuLID_ComfyUI
+[submodule "proconfig/widgets/imagen_widgets/library/comfy_custom_nodes/ComfyUI_InstantID"]
+	path = proconfig/widgets/imagen_widgets/library/comfy_custom_nodes/ComfyUI_InstantID
+	url = https://github.com/cubiq/ComfyUI_InstantID
+[submodule "proconfig/widgets/imagen_widgets/library/comfy_custom_nodes/ComfyUI-AnimateDiff-Evolved"]
+	path = proconfig/widgets/imagen_widgets/library/comfy_custom_nodes/ComfyUI-AnimateDiff-Evolved
+	url = https://github.com/Kosinkadink/ComfyUI-AnimateDiff-Evolved
+[submodule "proconfig/widgets/imagen_widgets/library/comfy_custom_nodes/ComfyUI-VideoHelperSuite"]
+	path = proconfig/widgets/imagen_widgets/library/comfy_custom_nodes/ComfyUI-VideoHelperSuite
+	url = https://github.com/Kosinkadink/ComfyUI-VideoHelperSuite
+[submodule "proconfig/widgets/imagen_widgets/library/comfy_custom_nodes/ComfyUI_IPAdapter_plus"]
+	path = proconfig/widgets/imagen_widgets/library/comfy_custom_nodes/ComfyUI_IPAdapter_plus
+	url = https://github.com/cubiq/ComfyUI_IPAdapter_plus
+[submodule "proconfig/widgets/imagen_widgets/library/comfy_custom_nodes/ComfyUI-SUPIR"]
+	path = proconfig/widgets/imagen_widgets/library/comfy_custom_nodes/ComfyUI-SUPIR
+	url = https://github.com/kijai/ComfyUI-SUPIR
+[submodule "proconfig/widgets/imagen_widgets/library/comfy_custom_nodes/comfyui_segment_anything"]
+	path = proconfig/widgets/imagen_widgets/library/comfy_custom_nodes/comfyui_segment_anything
+	url = https://github.com/storyicon/comfyui_segment_anything
+[submodule "proconfig/widgets/imagen_widgets/library/comfy_custom_nodes/ComfyUI-BiRefNet-ZHO"]
+	path = proconfig/widgets/imagen_widgets/library/comfy_custom_nodes/ComfyUI-BiRefNet-ZHO
+	url = git@github.com:ZHO-ZHO-ZHO/ComfyUI-BiRefNet-ZHO.git
+[submodule "proconfig/widgets/imagen_widgets/library/comfy_custom_nodes/rembg-comfyui-node"]
+	path = proconfig/widgets/imagen_widgets/library/comfy_custom_nodes/rembg-comfyui-node
+	url = git@github.com:Jcd1230/rembg-comfyui-node.git
+[submodule "proconfig/widgets/imagen_widgets/library/comfy_custom_nodes/ComfyMath"]
+	path = proconfig/widgets/imagen_widgets/library/comfy_custom_nodes/ComfyMath
+	url = https://github.com/evanspearman/ComfyMath
+[submodule "proconfig/widgets/imagen_widgets/library/comfy_custom_nodes/comfyui-art-venture"]
+	path = proconfig/widgets/imagen_widgets/library/comfy_custom_nodes/comfyui-art-venture
+	url = https://github.com/sipherxyz/comfyui-art-venture
+[submodule "proconfig/widgets/imagen_widgets/library/comfy_custom_nodes/comfyui-reactor-node"]
+	path = proconfig/widgets/imagen_widgets/library/comfy_custom_nodes/comfyui-reactor-node
+	url = https://github.com/Gourieff/comfyui-reactor-node
+[submodule "proconfig/widgets/imagen_widgets/library/comfy_custom_nodes/ComfyUI-Advanced-ControlNet"]
+	path = proconfig/widgets/imagen_widgets/library/comfy_custom_nodes/ComfyUI-Advanced-ControlNet
+	url = https://github.com/Kosinkadink/ComfyUI-Advanced-ControlNet
+[submodule "proconfig/widgets/imagen_widgets/library/comfy_custom_nodes/ComfyUI-Impact-Pack"]
+	path = proconfig/widgets/imagen_widgets/library/comfy_custom_nodes/ComfyUI-Impact-Pack
+	url = https://github.com/ltdrdata/ComfyUI-Impact-Pack
+[submodule "proconfig/widgets/imagen_widgets/library/comfy_custom_nodes/ComfyUI-WD14-Tagger"]
+	path = proconfig/widgets/imagen_widgets/library/comfy_custom_nodes/ComfyUI-WD14-Tagger
+	url = https://github.com/pythongosssss/ComfyUI-WD14-Tagger
+[submodule "proconfig/widgets/imagen_widgets/library/comfy_custom_nodes/facerestore_cf"]
+	path = proconfig/widgets/imagen_widgets/library/comfy_custom_nodes/facerestore_cf
+	url = https://github.com/mav-rik/facerestore_cf
+[submodule "proconfig/widgets/imagen_widgets/library/comfy_custom_nodes/ComfyUI_FizzNodes"]
+	path = proconfig/widgets/imagen_widgets/library/comfy_custom_nodes/ComfyUI_FizzNodes
+	url = https://github.com/FizzleDorf/ComfyUI_FizzNodes.git
+[submodule "proconfig/widgets/imagen_widgets/library/comfy_custom_nodes/ComfyUI-YoloWorld-EfficientSAM"]
+	path = proconfig/widgets/imagen_widgets/library/comfy_custom_nodes/ComfyUI-YoloWorld-EfficientSAM
+	url = https://github.com/ZHO-ZHO-ZHO/ComfyUI-YoloWorld-EfficientSAM
+[submodule "proconfig/widgets/imagen_widgets/library/comfy_custom_nodes/ComfyUI-fastblend"]
+	path = proconfig/widgets/imagen_widgets/library/comfy_custom_nodes/ComfyUI-fastblend
+	url = https://github.com/AInseven/ComfyUI-fastblend
+[submodule "proconfig/widgets/imagen_widgets/library/comfy_custom_nodes/comfy_mtb"]
+	path = proconfig/widgets/imagen_widgets/library/comfy_custom_nodes/comfy_mtb
+	url = https://github.com/melMass/comfy_mtb
+[submodule "proconfig/widgets/imagen_widgets/library/comfy_custom_nodes/ComfyUI-AnimateAnyone-Evolved"]
+	path = proconfig/widgets/imagen_widgets/library/comfy_custom_nodes/ComfyUI-AnimateAnyone-Evolved
+	url = https://github.com/Cherwayway/ComfyUI-AnimateAnyone-Evolved.git
+[submodule "proconfig/widgets/imagen_widgets/library/comfy_custom_nodes/ComfyUI-LivePortraitKJ"]
+	path = proconfig/widgets/imagen_widgets/library/comfy_custom_nodes/ComfyUI-LivePortraitKJ
+	url = git@github.com:kijai/ComfyUI-LivePortraitKJ.git
+[submodule "proconfig/widgets/imagen_widgets/library/comfy_custom_nodes/ComfyUI_Comfyroll_CustomNodes"]
+	path = proconfig/widgets/imagen_widgets/library/comfy_custom_nodes/ComfyUI_Comfyroll_CustomNodes
+	url = git@github.com:Suzie1/ComfyUI_Comfyroll_CustomNodes.git
+[submodule "proconfig/widgets/imagen_widgets/library/comfy_custom_nodes/rgthree-comfy"]
+	path = proconfig/widgets/imagen_widgets/library/comfy_custom_nodes/rgthree-comfy
+	url = git@github.com:rgthree/rgthree-comfy.git
+[submodule "proconfig/widgets/imagen_widgets/library/comfy_custom_nodes/Derfuu_ComfyUI_ModdedNodes"]
+	path = proconfig/widgets/imagen_widgets/library/comfy_custom_nodes/Derfuu_ComfyUI_ModdedNodes
+	url = https://github.com/Derfuu/Derfuu_ComfyUI_ModdedNodes
+[submodule "proconfig/widgets/imagen_widgets/library/comfy_custom_nodes/ComfyUI-post-processing-nodes"]
+	path = proconfig/widgets/imagen_widgets/library/comfy_custom_nodes/ComfyUI-post-processing-nodes
+	url = https://github.com/EllangoK/ComfyUI-post-processing-nodes
+[submodule "proconfig/widgets/imagen_widgets/library/comfy_custom_nodes/cg-use-everywhere"]
+	path = proconfig/widgets/imagen_widgets/library/comfy_custom_nodes/cg-use-everywhere
+	url = https://github.com/chrisgoringe/cg-use-everywhere
+[submodule "proconfig/widgets/imagen_widgets/library/comfy_custom_nodes/ComfyUI-Custom-Scripts"]
+	path = proconfig/widgets/imagen_widgets/library/comfy_custom_nodes/ComfyUI-Custom-Scripts
+	url = https://github.com/pythongosssss/ComfyUI-Custom-Scripts
+[submodule "proconfig/widgets/imagen_widgets/library/comfy_custom_nodes/comfy-image-saver"]
+	path = proconfig/widgets/imagen_widgets/library/comfy_custom_nodes/comfy-image-saver
+	url = https://github.com/giriss/comfy-image-saver
+[submodule "proconfig/widgets/imagen_widgets/library/comfy_custom_nodes/ComfyUI_essentials"]
+	path = proconfig/widgets/imagen_widgets/library/comfy_custom_nodes/ComfyUI_essentials
+	url = https://github.com/cubiq/ComfyUI_essentials
+[submodule "proconfig/widgets/imagen_widgets/library/comfy_custom_nodes/ComfyUI-Kolors-MZ"]
+	path = proconfig/widgets/imagen_widgets/library/comfy_custom_nodes/ComfyUI-Kolors-MZ
+	url = https://github.com/MinusZoneAI/ComfyUI-Kolors-MZ
+[submodule "proconfig/widgets/imagen_widgets/library/comfy_custom_nodes/Comfyui-ergouzi-Nodes"]
+	path = proconfig/widgets/imagen_widgets/library/comfy_custom_nodes/Comfyui-ergouzi-Nodes
+	url = https://github.com/11dogzi/Comfyui-ergouzi-Nodes
+[submodule "proconfig/widgets/imagen_widgets/library/comfy_custom_nodes/ComfyUI_LayerStyle"]
+	path = proconfig/widgets/imagen_widgets/library/comfy_custom_nodes/ComfyUI_LayerStyle
+	url = https://github.com/chflame163/ComfyUI_LayerStyle

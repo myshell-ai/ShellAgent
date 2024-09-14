@@ -1,0 +1,46 @@
+{
+  "name": "@shellagent/form-engine",
+  "version": "0.0.0",
+  "author": "kun",
+  "description": "react form render engine",
+  "exports": {
+    "./styles.css": "./dist/index.css",
+    ".": "./src/index.tsx"
+  },
+  "types": "./src/types/index.tsx",
+  "scripts": {
+    "build": "tailwindcss -i ./src/styles.css -o ./dist/index.css",
+    "lint": "eslint src/ --fix",
+    "dev": "tailwindcss -i ./src/styles.css -o ./dist/index.css --watch",
+    "type-check": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@heroicons/react": "^2.1.5",
+    "@shellagent/ui": "workspace:*",
+    "clsx": "^2.1.1",
+    "dnd-core": "^16.0.1",
+    "jsonschema": "^1.4.1",
+    "lodash-es": "^4.17.21",
+    "react": "^18.3.1",
+    "react-copy-to-clipboard": "^5.1.0",
+    "react-dnd": "^16.0.1",
+    "react-dnd-html5-backend": "^16.0.1",
+    "react-error-boundary": "^4.0.13",
+    "tailwind-merge": "^2.5.2",
+    "use-immer": "^0.10.0",
+    "zod": "^3.23.8",
+    "zustand": "^4.5.5"
+  },
+  "devDependencies": {
+    "@shellagent/eslint-config": "workspace:*",
+    "@shellagent/tailwind-config": "workspace:*",
+    "@shellagent/typescript-config": "workspace:*",
+    "@types/lodash-es": "^4.17.12",
+    "@types/react": "^18.3.3",
+    "@types/react-copy-to-clipboard": "^5.0.7",
+    "autoprefixer": "^10.4.20",
+    "postcss": "^8.4.41",
+    "tailwindcss": "^3.4.10",
+    "typescript": "~5.3.3"
+  }
+}

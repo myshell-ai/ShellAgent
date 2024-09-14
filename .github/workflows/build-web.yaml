@@ -1,0 +1,44 @@
+name: Build Web App
+
+on:
+  push:
+    paths:
+      - "web/apps/web/**"
+      - "web/packages/**"
+      - ".github/**"
+  pull_request:
+    paths:
+      - "web/apps/web/**"
+      - "web/packages/**"
+      - ".github/**"
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          ref: main
+
+      - uses: pnpm/action-setup@v2
+        with:
+          version: 9
+          run_install: false
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "pnpm"
+          cache-dependency-path: "web/pnpm-lock.yaml"
+
+      - working-directory: "./web"
+        run: pnpm install
+
+      - working-directory: "./web"
+        run: pnpm turbo run build --filter=web
+
+      - uses: actions/upload-artifact@v3
+        with:
+          name: web-build
+          path: web/apps/web/dist

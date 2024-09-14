@@ -1,0 +1,21 @@
+{
+  "name": "@shellagent/pro-config",
+  "version": "0.2.0",
+  "author": "Tiancheng He",
+  "description": "Typescript definitions for MyShell Pro Config",
+  "license": "MIT",
+  "private": false,
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "prettier": "prettier --write"
+  },
+  "devDependencies": {
+    "@shellagent/eslint-config": "workspace:*",
+    "@shellagent/typescript-config": "workspace:*",
+    "typescript": "~5.3.3",
+    "typescript-json-schema": "^0.63.0",
+    "raw-loader": "^4.0.2"
+  }
+}
