@@ -1,0 +1,10 @@
+{
+  "name": "@shellagent/typescript-config",
+  "version": "0.0.0",
+  "author": "kun",
+  "private": true,
+  "license": "MIT",
+  "publishConfig": {
+    "access": "public"
+  }
+}
