@@ -63,7 +63,7 @@ export * from './ui/icons/solid/code';
 export * from './ui/icons/solid/drag';
 export * from './ui/icons/solid/phone';
 export * from './ui/icons/solid/rectangle-group';
-export * from './ui/icons/solid/myshell';
+export * from './ui/icons/solid/shell-agent.tsx';
 export * from './ui/icons/solid/myshell-logo';
 export * from './ui/icons/solid/discord';
 export * from './ui/icons/solid/report';

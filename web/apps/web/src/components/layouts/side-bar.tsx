@@ -1,6 +1,6 @@
 'use client';
 
-import { Myshell, MyshellLogo, Separator } from '@shellagent/ui';
+import { ShellAgent, Separator } from '@shellagent/ui';
 import { usePathname } from 'next/navigation';
 
 import SideContent from './side-content';
@@ -18,8 +18,7 @@ export default function SideBar() {
     <aside className="w-52 px-4 py-6 bg-surface-container-default flex flex-col gap-y-6">
       <div className="px-2 text-lg">
         <div className="pb-6">
-          <MyshellLogo className="w-10" />
-          <Myshell className="w-18 ml-3" />
+          <ShellAgent className="w-full h-full" />
         </div>
         <Separator />
       </div>
