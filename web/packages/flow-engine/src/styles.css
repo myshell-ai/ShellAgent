@@ -1,0 +1,7 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+.react-flow__edges {
+  /* z-index: 9000 !important; */
+}

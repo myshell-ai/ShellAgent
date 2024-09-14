@@ -1,0 +1,8 @@
+{
+    "proconfig-diffuser-imagen": {
+        "git": "https://github.com/wl-zhao/proconfig-diffuser-imagen.git",
+        "commit": "latest",
+        "branch": "main",
+        "description": "Simple image generation widget implemented by diffusers"
+    }
+}

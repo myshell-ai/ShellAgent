@@ -1,0 +1,5 @@
+{
+  "extends": "@shellagent/typescript-config/react-library.json",
+  "include": [".", "../../apps/web/src/components/workflow/custom-edge"],
+  "exclude": ["dist", "build", "node_modules"]
+}

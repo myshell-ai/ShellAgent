@@ -1,0 +1,15 @@
+dist
+.vscode
+**/.DS_Store
+node_modules
+docSite/
+*.md
+.next
+.vercel
+public
+.gitignore
+yarn-error.log
+
+# Ignore dependency locks
+pnpm-lock.yaml
+packages/chat-engine
