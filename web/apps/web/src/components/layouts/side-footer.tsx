@@ -94,10 +94,7 @@ export default function SideFooter() {
       title: 'Help',
       passHref: true,
       icon: <QuestionMarkCircleIcon className="w-6 h-6 text-icon-subtle" />,
-      onClick: () =>
-        onOpenTab(
-          'https://www.notion.so/myshellai/Shell-Agent-30b32e482e75483a8c7207db184a176f',
-        ),
+      onClick: () => onOpenTab('https://github.com/myshell-ai/ShellAgent'),
     },
     // {
     //   title: 'Report',
