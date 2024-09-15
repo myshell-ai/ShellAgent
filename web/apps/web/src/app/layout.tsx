@@ -13,9 +13,9 @@ export const metadata: Metadata = {
   metadataBase: process.env.VERCEL_URL
     ? new URL(`https://${process.env.VERCEL_URL}`)
     : undefined,
-  title: 'MyShell - Build, Share, and Own AI Chat.',
+  title: 'ShellAgent - Build AI App',
   description:
-    'MyShell is a decentralized and comprehensive platform for discovering, creating, and investing AI-native apps.',
+    'ShellAgent is an open-source AI agentic framework for creating AI-native apps.',
   icons: '/favicon.ico',
 };
 
