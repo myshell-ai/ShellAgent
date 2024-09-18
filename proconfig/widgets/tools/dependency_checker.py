@@ -123,10 +123,13 @@ def check_missing_widgets(config, missing_widgets):
 # non_existed_models: cannot find in local disk
 # missing_models: found in local disk, but not in model-list (failed when imported)
 # missing widgets: widgets installed locally but haven't registered in widget-list
-def check_dependency_recursive(config, non_existed_models: list, missing_models: dict, missing_widgets: dict, local_vars: dict, payload: dict, workflow_ids: dict):
+def check_dependency_recursive(config, non_existed_models: list, missing_models: dict, undefined_widgets: list, missing_widgets: dict, local_vars: dict, payload: dict, workflow_ids: dict):
     # config is a json
     if config.type == "task":
-        if config.mode in ["widget"]:
+        if config.mode == "undefined":
+            if config.widget_class_name not in undefined_widgets:
+                undefined_widgets.append(config.widget_class_name)
+        elif config.mode == "widget":
             non_existed_models, missing_models = check_missing_models(config, non_existed_models, missing_models, local_vars)
             missing_widgets = check_missing_widgets(config, missing_widgets)
             return
@@ -138,11 +141,11 @@ def check_dependency_recursive(config, non_existed_models: list, missing_models:
                 workflow_ids.append(config.workflow_id)
             payload = {k: calc_expression_no_strict(v, local_vars) for k, v in config.inputs.items()}
             workflow_config = Workflow.model_validate(workflow_config)
-            return check_dependency_recursive(workflow_config, missing_models, missing_widgets, {}, payload=payload, workflow_ids=workflow_ids)
+            return check_dependency_recursive(workflow_config, missing_models, undefined_widgets, missing_widgets, {}, payload=payload, workflow_ids=workflow_ids)
         elif config.mode == "block":
             payload = {k: calc_expression_no_strict(v, local_vars) for k, v in config.inputs.items()}
             config.block = TypeMap[config.block["type"]].model_validate(config.block)
-            return check_dependency_recursive(config.block, missing_models, missing_widgets, local_vars, payload=payload, workflow_ids=workflow_ids)
+            return check_dependency_recursive(config.block, missing_models, undefined_widgets, missing_widgets, local_vars, payload=payload, workflow_ids=workflow_ids)
     elif config.type in ["automata", "workflow", "state"]:
         if config.type == "automata":
             local_vars = {"context": config.context} # we do not know what other to do
@@ -168,10 +171,10 @@ def check_dependency_recursive(config, non_existed_models: list, missing_models:
                         
         if type(config.blocks) == dict:
             for name, block_config in config.blocks.items():
-                check_dependency_recursive(block_config, non_existed_models, missing_models, missing_widgets, local_vars, {}, workflow_ids=workflow_ids)
+                check_dependency_recursive(block_config, non_existed_models, missing_models, undefined_widgets, missing_widgets, local_vars, {}, workflow_ids=workflow_ids)
         elif type(config.blocks) == list:
             for block_config in config.blocks:
-                check_dependency_recursive(block_config, non_existed_models, missing_models, missing_widgets, local_vars, {}, workflow_ids=workflow_ids)
+                check_dependency_recursive(block_config, non_existed_models, missing_models, undefined_widgets, missing_widgets, local_vars, {}, workflow_ids=workflow_ids)
         return
         
 
@@ -186,14 +189,15 @@ def check_dependency(config):
     workflow_ids = []
     non_existed_models = []
     missing_models = {}
+    undefined_widgets = []
     missing_widgets = {}
-    check_dependency_recursive(config, non_existed_models=non_existed_models, 
-                                                                    missing_models=missing_models, 
-                                                                    missing_widgets=missing_widgets, 
-                                                                    workflow_ids=workflow_ids, local_vars={}, payload={})
+    check_dependency_recursive(config, non_existed_models=non_existed_models, missing_models=missing_models, 
+                                       undefined_widgets=undefined_widgets, missing_widgets=missing_widgets, 
+                                       workflow_ids=workflow_ids, local_vars={}, payload={})
     return {
         "non_existed_models": non_existed_models,
         "models": missing_models,
+        "undefined_widgets": undefined_widgets,
         "widgets": missing_widgets,
         "workflow_ids": workflow_ids
     }

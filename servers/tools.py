@@ -18,7 +18,8 @@ def convert_comfyui_to_proconfig_fn():
         dependency_results = check_dependency(result)
         return_dict = {
             "data": result,
-            "non_existed_models": dependency_results["non_existed_models"]
+            "non_existed_models": dependency_results["non_existed_models"],
+            "undefined_widgets": dependency_results["undefined_widgets"],
         }
         print("received blocks", len(result["blocks"]))
     except Exception as e:
