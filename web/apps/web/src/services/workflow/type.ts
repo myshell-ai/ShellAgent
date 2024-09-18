@@ -142,9 +142,14 @@ export type ComfyUIRequest = {
   data: object;
 };
 
+export type ExistedInfo =  {
+  undefined_widgets?: Array<string>;
+  non_existed_models?: Array<string>;
+}
+
 export type ComfyuiResponse = {
   success?: boolean;
   data?: Workflow;
   error_message?: string;
   error_message_detail?: string;
-};
+} & ExistedInfo;
