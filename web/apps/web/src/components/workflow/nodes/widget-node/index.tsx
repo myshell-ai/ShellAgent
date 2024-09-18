@@ -9,12 +9,18 @@ import { useKeyPress } from 'ahooks';
 import React, { useCallback, useRef, useEffect } from 'react';
 import { useShallow } from 'zustand/react/shallow';
 
+import {
+  getKeyboardKeyCodeBySystem,
+  isEventTargetInputArea,
+} from '@/utils/common-helper';
+import { useWorkflowState } from '@/stores/workflow/use-workflow-state';
 import { getDelPathInfo } from '@/stores/workflow/utils/data-transformer';
 import { useWorkflowStore } from '@/stores/workflow/workflow-provider';
 
 import { EventType, useEventEmitter } from '../../emitter';
 import NodeCard from '../../node-card';
 import NodeForm from '../../node-form';
+import { useDuplicateState } from './hook/use-duplicate-state';
 
 const WidgetNode: React.FC<NodeProps<WidgetNodeType>> = ({
   id,
@@ -23,8 +29,12 @@ const WidgetNode: React.FC<NodeProps<WidgetNodeType>> = ({
 }) => {
   const formRef = useRef<FormRef>(null);
   const nodeRef = useRef<HTMLElement | null>(null);
+  const { duplicateState } = useDuplicateState(id);
   const { onDelNode } = useReactFlowStore(state => ({
     onDelNode: state.onDelNode,
+  }));
+  const { setCurrentCopyId } = useWorkflowState(state => ({
+    setCurrentCopyId: state.setCurrentCopyId,
   }));
 
   const {
@@ -68,6 +78,38 @@ const WidgetNode: React.FC<NodeProps<WidgetNodeType>> = ({
         });
         onDelNode({ id: data.id });
         delConfigMap(id);
+      }
+    },
+    {
+      target: nodeRef,
+    },
+  );
+
+  useKeyPress(
+    `${getKeyboardKeyCodeBySystem('ctrl')}.c`,
+    e => {
+      if (isEventTargetInputArea(e.target as HTMLElement)) {
+        return;
+      }
+      if (selected) {
+        console.log('e: ', id);
+        setCurrentCopyId(id);
+      }
+    },
+    {
+      target: nodeRef,
+    },
+  );
+
+  useKeyPress(
+    `${getKeyboardKeyCodeBySystem('ctrl')}.d`,
+    e => {
+      e.preventDefault();
+      if (isEventTargetInputArea(e.target as HTMLElement)) {
+        return;
+      }
+      if (selected) {
+        duplicateState();
       }
     },
     {

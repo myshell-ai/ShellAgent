@@ -133,3 +133,19 @@ export const isEventTargetInputArea = (target: HTMLElement) => {
   if (target.contentEditable === 'true') return true;
   return false;
 };
+
+const refReg = /{{.*}}/;
+
+export const filterVariable = (data: Record<string, any>) => {
+  return reduce(data, (result, value, key) => {
+    if (isObject(value)) {
+      const filteredNested = filterVariable(value);
+      if (!isEmpty(filteredNested)) {
+        result[key] = filteredNested;
+      }
+    } else if (!refReg.test(value)) {
+      result[key] = value;
+    }
+    return result;
+  }, {} as any);
+}
