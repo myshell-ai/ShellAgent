@@ -7,13 +7,13 @@ import {
 import { useKeyPress } from 'ahooks';
 import { useCallback } from 'react';
 
+import { useWorkflowState } from '@/stores/workflow/use-workflow-state';
+import { useWorkflowStore } from '@/stores/workflow/workflow-provider';
 import {
   filterVariable,
   getKeyboardKeyCodeBySystem,
   isEventTargetInputArea,
 } from '@/utils/common-helper';
-import { useWorkflowStore } from '@/stores/workflow/workflow-provider';
-import { useWorkflowState } from '@/stores/workflow/use-workflow-state';
 
 export const usePasteState = ({
   enabeKeyboard = false,

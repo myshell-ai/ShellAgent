@@ -1,3 +1,8 @@
+import { ChevronDownIcon } from '@heroicons/react/16/solid';
+import {
+  ExclamationTriangleIcon,
+  XMarkIcon,
+} from '@heroicons/react/24/outline';
 import { Workflow } from '@shellagent/pro-config';
 import {
   Button,
@@ -19,20 +24,15 @@ import {
   Text,
 } from '@shellagent/ui';
 import { useBoolean, useRequest } from 'ahooks';
+import { isEmpty } from 'lodash-es';
 import { useState, useEffect } from 'react';
 import { toast } from 'react-toastify';
-import { ChevronDownIcon } from '@heroicons/react/16/solid';
-import {
-  ExclamationTriangleIcon,
-  XMarkIcon,
-} from '@heroicons/react/24/outline';
 
 import FileUploader from '@/components/common/uploader';
 import { APIFetch } from '@/services/base';
 import { importFormComfyUI } from '@/services/workflow';
 import { useWorkflowStore } from '@/stores/workflow/workflow-provider';
 import { cn } from '@/utils/cn';
-import { isEmpty } from 'lodash-es';
 
 const ImportModal: React.FC<{
   open: boolean;

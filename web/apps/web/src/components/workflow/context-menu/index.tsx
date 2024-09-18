@@ -1,17 +1,17 @@
+import { NodeIdEnum } from '@shellagent/flow-engine';
 import {
   ContextMenu,
   ContextMenuContent,
   ContextMenuTrigger,
   ContextMenuLabel,
 } from '@shellagent/ui';
-import { NodeIdEnum } from '@shellagent/flow-engine';
 import React, { PropsWithChildren } from 'react';
 
 import { useSchemaContext } from '@/stores/workflow/schema-provider';
 
 import ConvertInput from './convert-input';
-import ReloadSchema from './reload-memu';
 import CopyMenu from './copy-widget';
+import ReloadSchema from './reload-memu';
 
 const ContextMenuProvider: React.FC<PropsWithChildren> = ({ children }) => {
   const { id, name, inputAllTypes } = useSchemaContext(state => ({
