@@ -9,18 +9,18 @@ import { useKeyPress } from 'ahooks';
 import React, { useCallback, useRef, useEffect } from 'react';
 import { useShallow } from 'zustand/react/shallow';
 
+import { useWorkflowState } from '@/stores/workflow/use-workflow-state';
+import { getDelPathInfo } from '@/stores/workflow/utils/data-transformer';
+import { useWorkflowStore } from '@/stores/workflow/workflow-provider';
 import {
   getKeyboardKeyCodeBySystem,
   isEventTargetInputArea,
 } from '@/utils/common-helper';
-import { useWorkflowState } from '@/stores/workflow/use-workflow-state';
-import { getDelPathInfo } from '@/stores/workflow/utils/data-transformer';
-import { useWorkflowStore } from '@/stores/workflow/workflow-provider';
 
+import { useDuplicateState } from './hook/use-duplicate-state';
 import { EventType, useEventEmitter } from '../../emitter';
 import NodeCard from '../../node-card';
 import NodeForm from '../../node-form';
-import { useDuplicateState } from './hook/use-duplicate-state';
 
 const WidgetNode: React.FC<NodeProps<WidgetNodeType>> = ({
   id,

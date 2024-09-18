@@ -1,5 +1,6 @@
 import React, { memo } from 'react';
 import { MiniMap } from 'reactflow';
+
 import { CustomControlBar } from './custom-control-bar';
 // import Pannel from "./pannel";
 interface OptBarProps {

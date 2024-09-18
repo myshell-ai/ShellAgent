@@ -137,15 +137,19 @@ export const isEventTargetInputArea = (target: HTMLElement) => {
 const refReg = /{{.*}}/;
 
 export const filterVariable = (data: Record<string, any>) => {
-  return reduce(data, (result, value, key) => {
-    if (isObject(value)) {
-      const filteredNested = filterVariable(value);
-      if (!isEmpty(filteredNested)) {
-        result[key] = filteredNested;
+  return reduce(
+    data,
+    (result, value, key) => {
+      if (isObject(value)) {
+        const filteredNested = filterVariable(value);
+        if (!isEmpty(filteredNested)) {
+          result[key] = filteredNested;
+        }
+      } else if (!refReg.test(value)) {
+        result[key] = value;
       }
-    } else if (!refReg.test(value)) {
-      result[key] = value;
-    }
-    return result;
-  }, {} as any);
-}
+      return result;
+    },
+    {} as any,
+  );
+};
