@@ -198,7 +198,7 @@ export const ExportDialog = ({ id, name, children }: ExportDialogProps) => {
                         <Text size="sm" color="subtler">
                           {key.toLocaleUpperCase()}
                         </Text>
-                        <div className="mt-1 gap-2">
+                        <div className="flex flex-col mt-1 gap-2">
                           {Object.values(item).map(v => (
                             <Text size="lg" className="block break-words">
                               {v as string}
