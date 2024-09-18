@@ -112,3 +112,12 @@
 [submodule "proconfig/widgets/imagen_widgets/library/comfy_custom_nodes/ComfyUI_LayerStyle"]
 	path = proconfig/widgets/imagen_widgets/library/comfy_custom_nodes/ComfyUI_LayerStyle
 	url = https://github.com/chflame163/ComfyUI_LayerStyle
+[submodule "proconfig/widgets/imagen_widgets/library/comfy_custom_nodes/ComfyUI-IC-Light"]
+	path = proconfig/widgets/imagen_widgets/library/comfy_custom_nodes/ComfyUI-IC-Light
+	url = https://github.com/kijai/ComfyUI-IC-Light.git
+[submodule "proconfig/widgets/imagen_widgets/library/comfy_custom_nodes/ComfyUI-BrushNet"]
+	path = proconfig/widgets/imagen_widgets/library/comfy_custom_nodes/ComfyUI-BrushNet
+	url = https://github.com/nullquant/ComfyUI-BrushNet
+[submodule "proconfig/widgets/imagen_widgets/library/comfy_custom_nodes/ComfyUI-Easy-Use"]
+	path = proconfig/widgets/imagen_widgets/library/comfy_custom_nodes/ComfyUI-Easy-Use
+	url = https://github.com/yolain/ComfyUI-Easy-Use
