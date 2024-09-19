@@ -124,3 +124,90 @@
 [submodule "proconfig/widgets/imagen_widgets/library/comfy_custom_nodes/x-flux-comfyui"]
 	path = proconfig/widgets/imagen_widgets/library/comfy_custom_nodes/x-flux-comfyui
 	url = https://github.com/XLabs-AI/x-flux-comfyui.git
+[submodule "proconfig/widgets/imagen_widgets/library/comfy_custom_nodes/CharacterFaceSwap"]
+	path = proconfig/widgets/imagen_widgets/library/comfy_custom_nodes/CharacterFaceSwap
+	url = https://github.com/ArtBot2023/CharacterFaceSwap
+[submodule "proconfig/widgets/imagen_widgets/library/comfy_custom_nodes/masquerade-nodes-comfyui"]
+	path = proconfig/widgets/imagen_widgets/library/comfy_custom_nodes/masquerade-nodes-comfyui
+	url = https://github.com/BadCafeCode/masquerade-nodes-comfyui
+[submodule "proconfig/widgets/imagen_widgets/library/comfy_custom_nodes/ComfyUI-AutomaticCFG"]
+	path = proconfig/widgets/imagen_widgets/library/comfy_custom_nodes/ComfyUI-AutomaticCFG
+	url = https://github.com/Extraltodeus/ComfyUI-AutomaticCFG
+[submodule "proconfig/widgets/imagen_widgets/library/comfy_custom_nodes/ComfyUI-Frame-Interpolation"]
+	path = proconfig/widgets/imagen_widgets/library/comfy_custom_nodes/ComfyUI-Frame-Interpolation
+	url = https://github.com/Fannovel16/ComfyUI-Frame-Interpolation
+[submodule "proconfig/widgets/imagen_widgets/library/comfy_custom_nodes/ComfyUI_MiniCPM-V-2_6-int4"]
+	path = proconfig/widgets/imagen_widgets/library/comfy_custom_nodes/ComfyUI_MiniCPM-V-2_6-int4
+	url = https://github.com/IuvenisSapiens/ComfyUI_MiniCPM-V-2_6-int4
+[submodule "proconfig/widgets/imagen_widgets/library/comfy_custom_nodes/comfyui-lama-remover"]
+	path = proconfig/widgets/imagen_widgets/library/comfy_custom_nodes/comfyui-lama-remover
+	url = https://github.com/Layer-norm/comfyui-lama-remover
+[submodule "proconfig/widgets/imagen_widgets/library/comfy_custom_nodes/ComfyLiterals"]
+	path = proconfig/widgets/imagen_widgets/library/comfy_custom_nodes/ComfyLiterals
+	url = https://github.com/M1kep/ComfyLiterals
+[submodule "proconfig/widgets/imagen_widgets/library/comfy_custom_nodes/ComfyUI_tinyterraNodes"]
+	path = proconfig/widgets/imagen_widgets/library/comfy_custom_nodes/ComfyUI_tinyterraNodes
+	url = https://github.com/TinyTerra/ComfyUI_tinyterraNodes
+[submodule "proconfig/widgets/imagen_widgets/library/comfy_custom_nodes/ComfyUI-BRIA_AI-RMBG"]
+	path = proconfig/widgets/imagen_widgets/library/comfy_custom_nodes/ComfyUI-BRIA_AI-RMBG
+	url = https://github.com/ZHO-ZHO-ZHO/ComfyUI-BRIA_AI-RMBG
+[submodule "proconfig/widgets/imagen_widgets/library/comfy_custom_nodes/cg-image-picker"]
+	path = proconfig/widgets/imagen_widgets/library/comfy_custom_nodes/cg-image-picker
+	url = https://github.com/chrisgoringe/cg-image-picker
+[submodule "proconfig/widgets/imagen_widgets/library/comfy_custom_nodes/ComfyUI-GGUF"]
+	path = proconfig/widgets/imagen_widgets/library/comfy_custom_nodes/ComfyUI-GGUF
+	url = https://github.com/city96/ComfyUI-GGUF
+[submodule "proconfig/widgets/imagen_widgets/library/comfy_custom_nodes/ComfyUI"]
+	path = proconfig/widgets/imagen_widgets/library/comfy_custom_nodes/ComfyUI
+	url = https://github.com/comfyanonymous/ComfyUI
+[submodule "proconfig/widgets/imagen_widgets/library/comfy_custom_nodes/comfyui-propost"]
+	path = proconfig/widgets/imagen_widgets/library/comfy_custom_nodes/comfyui-propost
+	url = https://github.com/digitaljohn/comfyui-propost
+[submodule "proconfig/widgets/imagen_widgets/library/comfy_custom_nodes/ComfyUI_Dragos_Nodes"]
+	path = proconfig/widgets/imagen_widgets/library/comfy_custom_nodes/ComfyUI_Dragos_Nodes
+	url = https://github.com/drago87/ComfyUI_Dragos_Nodes
+[submodule "proconfig/widgets/imagen_widgets/library/comfy_custom_nodes/comfyui-portrait-master"]
+	path = proconfig/widgets/imagen_widgets/library/comfy_custom_nodes/comfyui-portrait-master
+	url = https://github.com/florestefano1975/comfyui-portrait-master
+[submodule "proconfig/widgets/imagen_widgets/library/comfy_custom_nodes/efficiency-nodes-comfyui"]
+	path = proconfig/widgets/imagen_widgets/library/comfy_custom_nodes/efficiency-nodes-comfyui
+	url = https://github.com/jags111/efficiency-nodes-comfyui
+[submodule "proconfig/widgets/imagen_widgets/library/comfy_custom_nodes/comfyui-various"]
+	path = proconfig/widgets/imagen_widgets/library/comfy_custom_nodes/comfyui-various
+	url = https://github.com/jamesWalker55/comfyui-various
+[submodule "proconfig/widgets/imagen_widgets/library/comfy_custom_nodes/ComfyUI-Inspyrenet-Rembg"]
+	path = proconfig/widgets/imagen_widgets/library/comfy_custom_nodes/ComfyUI-Inspyrenet-Rembg
+	url = https://github.com/john-mnz/ComfyUI-Inspyrenet-Rembg
+[submodule "proconfig/widgets/imagen_widgets/library/comfy_custom_nodes/ComfyUI-Florence2"]
+	path = proconfig/widgets/imagen_widgets/library/comfy_custom_nodes/ComfyUI-Florence2
+	url = https://github.com/kijai/ComfyUI-Florence2
+[submodule "proconfig/widgets/imagen_widgets/library/comfy_custom_nodes/ComfyUI-FluxTrainer"]
+	path = proconfig/widgets/imagen_widgets/library/comfy_custom_nodes/ComfyUI-FluxTrainer
+	url = https://github.com/kijai/ComfyUI-FluxTrainer
+[submodule "proconfig/widgets/imagen_widgets/library/comfy_custom_nodes/ComfyUI-KJNodes"]
+	path = proconfig/widgets/imagen_widgets/library/comfy_custom_nodes/ComfyUI-KJNodes
+	url = https://github.com/kijai/ComfyUI-KJNodes
+[submodule "proconfig/widgets/imagen_widgets/library/comfy_custom_nodes/ComfyUI-MimicMotionWrapper"]
+	path = proconfig/widgets/imagen_widgets/library/comfy_custom_nodes/ComfyUI-MimicMotionWrapper
+	url = https://github.com/kijai/ComfyUI-MimicMotionWrapper
+[submodule "proconfig/widgets/imagen_widgets/library/comfy_custom_nodes/ComfyUI-segment-anything-2"]
+	path = proconfig/widgets/imagen_widgets/library/comfy_custom_nodes/ComfyUI-segment-anything-2
+	url = https://github.com/kijai/ComfyUI-segment-anything-2
+[submodule "proconfig/widgets/imagen_widgets/library/comfy_custom_nodes/ComfyUI-Inspire-Pack"]
+	path = proconfig/widgets/imagen_widgets/library/comfy_custom_nodes/ComfyUI-Inspire-Pack
+	url = https://github.com/ltdrdata/ComfyUI-Inspire-Pack
+[submodule "proconfig/widgets/imagen_widgets/library/comfy_custom_nodes/ComfyUI-Image-Filters"]
+	path = proconfig/widgets/imagen_widgets/library/comfy_custom_nodes/ComfyUI-Image-Filters
+	url = https://github.com/spacepxl/ComfyUI-Image-Filters
+[submodule "proconfig/widgets/imagen_widgets/library/comfy_custom_nodes/comfyui-ollama"]
+	path = proconfig/widgets/imagen_widgets/library/comfy_custom_nodes/comfyui-ollama
+	url = https://github.com/stavsap/comfyui-ollama
+[submodule "proconfig/widgets/imagen_widgets/library/comfy_custom_nodes/ComfyUI-Logic"]
+	path = proconfig/widgets/imagen_widgets/library/comfy_custom_nodes/ComfyUI-Logic
+	url = https://github.com/theUpsider/ComfyUI-Logic
+[submodule "proconfig/widgets/imagen_widgets/library/comfy_custom_nodes/comfyui-tensorops"]
+	path = proconfig/widgets/imagen_widgets/library/comfy_custom_nodes/comfyui-tensorops
+	url = https://github.com/un-seen/comfyui-tensorops
+[submodule "proconfig/widgets/imagen_widgets/library/comfy_custom_nodes/ComfyUI-Crystools"]
+	path = proconfig/widgets/imagen_widgets/library/comfy_custom_nodes/ComfyUI-Crystools
+	url = https://github.com/crystian/ComfyUI-Crystools.git
