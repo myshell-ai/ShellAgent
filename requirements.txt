@@ -205,7 +205,7 @@ pluggy==1.5.0
 pooch==1.8.2
 portalocker==2.10.1
 prettytable==3.11.0
--e git+ssh://git@github.com-zwl/myshell-ai/ShellAgent.git@3044b2a30c441a6b494284eeafb533490f0cfca4#egg=proconfig
+-e git+ssh://git@github.com-zwl/myshell-ai/ShellAgent.git@e0ce98f4ab0d3acdbd6ef25f198fa0c17842f4b4#egg=proconfig
 prodigyopt==1.0
 prometheus-fastapi-instrumentator==6.0.0
 prometheus_client==0.20.0
