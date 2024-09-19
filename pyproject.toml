@@ -80,6 +80,8 @@ torchscale = "0.3.0"
 requests = "2.31.0"
 wget = "^3.2"
 pilgram = "^1.2.1"
+pilmoji = "^2.0.4"
+emoji = "1.7.0"
 
 
 [build-system]
