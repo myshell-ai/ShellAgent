@@ -203,7 +203,6 @@ export const genReactFlow: (
       },
       position: { x, y },
     });
-    x += STEP_SIZE;
     // 写入input&context
     setNodeData({
       id: NodeIdEnum.start,
@@ -239,6 +238,8 @@ export const genReactFlow: (
           if (xScale < 1) {
             xScale = 1.3;
           }
+          const currentX = pos?.[0] ? pos[0] * 1.3 + 200 : x;
+          const currentY = pos?.[1] ? pos[1] * 1.3 : y;
           nodes.push({
             id,
             type,
@@ -252,11 +253,11 @@ export const genReactFlow: (
               name: widgetName,
             },
             position: {
-              x: pos?.[0] ? pos[0] * 1.3 + 200 : x,
-              y: pos?.[1] ? pos[1] * 1.3 : y,
+              x: currentX,
+              y: currentY,
             },
           });
-          x += STEP_SIZE;
+          x = Math.max(x, currentX);
           const input = block.inputs;
           if (block.mode === 'undefined') {
             setNodeData({
@@ -324,9 +325,8 @@ export const genReactFlow: (
         type: NodeTypeEnum.end,
         name: NodeTypeEnum.end,
       },
-      position: { x, y },
+      position: { x: x + STEP_SIZE, y },
     });
-    //
     setNodeData({
       id: NodeIdEnum.end,
       data: {
