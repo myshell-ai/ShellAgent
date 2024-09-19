@@ -211,3 +211,6 @@
 [submodule "proconfig/widgets/imagen_widgets/library/comfy_custom_nodes/ComfyUI-LogicUtils"]
 	path = proconfig/widgets/imagen_widgets/library/comfy_custom_nodes/ComfyUI-LogicUtils
 	url = https://github.com/aria1th/ComfyUI-LogicUtils.git
+[submodule "proconfig/widgets/imagen_widgets/library/comfy_custom_nodes/comfyui_LLM_party"]
+	path = proconfig/widgets/imagen_widgets/library/comfy_custom_nodes/comfyui_LLM_party
+	url = https://github.com/heshengtao/comfyui_LLM_party
