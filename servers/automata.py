@@ -13,6 +13,7 @@ from flask import Response, request, jsonify
 from filelock import FileLock
 
 import torch
+import re
 
 from pydantic import BaseModel
 
@@ -265,17 +266,8 @@ def app_run():
                 continue
             
     client_queue = queue.Queue()
-    
-    # while True:
-    #     if len(clients) == 0:
-    #         clients.append(client_queue)
-    #         break
-    #     else:
-    #         time.sleep(2)
-    #         print("waiting...")
         
     threading.Thread(target=execute_automata, args=(task_id, client_queue, automata, environ, event_data.form_data, sess_id, sess_state)).start()
-    # return Response(generate(client_queue), mimetype='text/event-stream')
     resp = Response(generate(client_queue), mimetype='text/event-stream')
     headers = [
         ('Connection', 'keep-alive'),
@@ -335,7 +327,25 @@ def build_form_schema(target_inputs):
         canUploadFile=canUploadFile
     )
     return json_schema, inputSetting
-        
+      
+      
+def process_text_embeded_uri(text):
+    if text is None:
+        return ""
+    # Define a regular expression to find img, video, and audio tags with src attribute
+    def replace_src(match):
+        tag, attributes = match.groups()
+        # Find the src attribute and replace its value
+        new_attributes = re.sub(r'src=["\']([^"\']+)["\']', r'src="/api/files/\1"', attributes)
+        return f"<{tag} {new_attributes}>"
+    
+    # Regular expression to match <img>, <video>, or <audio> tags with attributes
+    pattern = r'<(img|video|audio)\s([^>]*src=["\'][^"\']+["\'][^>]*)>'
+    
+    # Replace the src attribute in all matches
+    text = re.sub(pattern, replace_src, text)
+    return text
+  
 RenderTypeMap = {
     "image": EmbedObjType.IMAGE,
     "audio": EmbedObjType.AUDIO,
@@ -403,10 +413,12 @@ def parse_server_message(session_id, render, event_mapping, message_count):
                 objs.append(media_obj)
             
     current_time = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+    render_text = process_text_embeded_uri(render.get("text", ""))
+    
     server_message = ServerMessage(
         session_id=session_id,
         id=str(message_count),
-        text=render.get("text", "") or "",
+        text=render_text,
         status="DONE",
         type="TEXT",
         createdDateUnix=current_time,
