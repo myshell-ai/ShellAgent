@@ -125,7 +125,6 @@ const getSchemaByInputs = (inputs: TValues): ISchema => {
         description,
         'x-component': 'Select',
         'x-component-props': {
-          triggerClassName: 'h-7',
           options: enumOptions.map((item: string) => ({
             label: item,
             value: item,

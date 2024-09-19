@@ -92,7 +92,6 @@ const WidgetNode: React.FC<NodeProps<WidgetNodeType>> = ({
         return;
       }
       if (selected) {
-        console.log('e: ', id);
         setCurrentCopyId(id);
       }
     },

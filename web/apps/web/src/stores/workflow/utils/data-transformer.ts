@@ -337,39 +337,6 @@ export const genReactFlow: (
     });
   }
 
-  // 将起始节点没有连线的widget节点连接到start节点
-  // 将target节点没有连线的widget节点连接到end节点
-  const widgetNodes = nodes.filter(
-    node =>
-      node.id !== NodeIdEnum.start &&
-      node.id !== NodeIdEnum.end &&
-      node.type === NodeTypeEnum.widget,
-  );
-
-  widgetNodes.forEach(node => {
-    // 找到target为node.id的edge
-    if (!edges.find(edge => edge.target === node.id)) {
-      edges.push({
-        id: uuidv4(),
-        source: NodeIdEnum.start,
-        target: node.id,
-        type: EdgeTypeEnum.default,
-        animated: false,
-        data: {},
-      });
-    }
-    if (!edges.find(edge => edge.source === node.id)) {
-      edges.push({
-        id: uuidv4(),
-        source: node.id,
-        target: NodeIdEnum.end,
-        type: EdgeTypeEnum.default,
-        animated: false,
-        data: {},
-      });
-    }
-  });
-
   return {
     nodes,
     edges,
