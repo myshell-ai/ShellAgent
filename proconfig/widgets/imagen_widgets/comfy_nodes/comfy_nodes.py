@@ -11,6 +11,8 @@ import re
 import glob
 import logging
 import traceback
+import importlib
+import folder_paths
 
 Ellipsis = ...
 
@@ -38,7 +40,7 @@ field_kwargs_map = {
     "max": "le",
     "step": "multiple_of",
     "multiline": "multiline",
-    "placeholder": "placeholder",
+    # "placeholder": "placeholder",
     "image_upload": "image_uplaod",
     "video_upload": "video_upload",
     "audio_upload": "audio_upload",
@@ -47,9 +49,12 @@ field_kwargs_map = {
     "padding": "padding"
 }
 
+reserved_names = ["if", "break", "else", "elif", "continue", "while", "pass", "in"]
+
 ignore_fields = [
     "pysssss.autocomplete",
-    "pysssss.binding"
+    "pysssss.binding",
+    "placeholder"
 ]
 
 save_image_nodes = ['PreviewImage', 'SaveImage']
@@ -89,11 +94,48 @@ def init_external_custom_nodes():
                 import_message = " (IMPORT FAILED)"
             logging.info("{:6.1f} seconds{}: {}".format(n[0], import_message, n[1]))
         logging.info("")
+        
+def execute_prestartup_script():
+    def execute_script(script_path):
+        module_name = os.path.splitext(script_path)[0]
+        try:
+            spec = importlib.util.spec_from_file_location(module_name, script_path)
+            module = importlib.util.module_from_spec(spec)
+            spec.loader.exec_module(module)
+            return True
+        except Exception as e:
+            print(f"Failed to execute startup-script: {script_path} / {e}")
+        return False
+
+    node_paths = ["proconfig/widgets/imagen_widgets/library/comfy_custom_nodes"]
+    for custom_node_path in node_paths:
+        possible_modules = os.listdir(custom_node_path)
+        node_prestartup_times = []
+
+        for possible_module in possible_modules:
+            module_path = os.path.join(custom_node_path, possible_module)
+            if os.path.isfile(module_path) or module_path.endswith(".disabled") or module_path == "__pycache__":
+                continue
+
+            script_path = os.path.join(module_path, "prestartup_script.py")
+            if os.path.exists(script_path):
+                time_before = time.perf_counter()
+                success = execute_script(script_path)
+                node_prestartup_times.append((time.perf_counter() - time_before, module_path, success))
+    if len(node_prestartup_times) > 0:
+        print("\nPrestartup times for custom nodes:")
+        for n in sorted(node_prestartup_times):
+            if n[2]:
+                import_message = ""
+            else:
+                import_message = " (PRESTARTUP FAILED)"
+            print("{:6.1f} seconds{}:".format(n[0], import_message), n[1])
+        print()
 
 def add_suffixes(input_list):
     count = {}
     result = []
-    
+    input_list = map(str, input_list)
     for item in input_list:
         if item in count:
             count[item] += 1
@@ -130,6 +172,10 @@ def to_valid_variable_name(input_string):
         return 'result'
     if input_string in native_types:
         input_string += "_var"
+    if input_string.startswith("_"):
+        input_string = "var" + input_string
+    if input_string in reserved_names:
+        input_string += "_input"
     return input_string
 
 
@@ -259,13 +305,7 @@ class ComfyWidget(BaseWidget):
                     field_kwargs["hidden"] = True
                 field_str = ", ".join([f"{k}={v}" if type(v) != str else f'{k}="{v}"' for k, v in field_kwargs.items()])
                 
-                new_var_name = var_name.replace('.', '_').replace(' ', '_').lower()
-                new_var_name = new_var_name.replace("+", "pos_").replace("-", "neg_")
-                
-                if new_var_name in native_types:
-                    new_var_name = new_var_name + "_input"
-                if new_var_name.startswith("_"):
-                    new_var_name = "input" + new_var_name
+                new_var_name = to_valid_variable_name(var_name)
                 var_name_map[new_var_name] = var_name
 
                 if INPUT_IS_LIST:
@@ -288,13 +328,13 @@ class ComfyWidget(BaseWidget):
                 line = f"        {new_var_name}: {var_type_display} = Field(default_value_map[{count}], {field_str})\n"
                 total_lines += line
     except Exception as e:
+        print(traceback.format_exc())
         print(e)
-        import pdb; pdb.set_trace()
+        
     # output schema
     output_line = ""
     return_dict_line = ""
     
-
     if not hasattr(NodeClass, "RETURN_NAMES"):
         RETURN_NAMES = add_suffixes(NodeClass.RETURN_TYPES)
     else:
@@ -393,6 +433,7 @@ return_dict['result'] = ComfyWidget
     return return_dict['result']
 
 init_external_custom_nodes()
+execute_prestartup_script()
 
 for NodeID, NodeClass in NODE_CLASS_MAPPINGS.items():
     try:
