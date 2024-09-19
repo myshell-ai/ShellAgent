@@ -321,8 +321,8 @@ class ComfyWidget(BaseWidget):
                     field_str = field_str
                     
                 default_value_new = f"\'{default_value}\'" if type(default_value) == str else default_value
-                if default_value_new == 'euler':
-                    import pdb; pdb.set_trace()
+                # if default_value_new == 'euler':
+                #     import pdb; pdb.set_trace()
                 default_value_map[count] = default_value
                 
                 line = f"        {new_var_name}: {var_type_display} = Field(default_value_map[{count}], {field_str})\n"

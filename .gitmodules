@@ -211,3 +211,6 @@
 [submodule "proconfig/widgets/imagen_widgets/library/comfy_custom_nodes/ComfyUI-Crystools"]
 	path = proconfig/widgets/imagen_widgets/library/comfy_custom_nodes/ComfyUI-Crystools
 	url = https://github.com/crystian/ComfyUI-Crystools.git
+[submodule "proconfig/widgets/imagen_widgets/library/comfy_custom_nodes/ComfyUI-LogicUtils"]
+	path = proconfig/widgets/imagen_widgets/library/comfy_custom_nodes/ComfyUI-LogicUtils
+	url = https://github.com/aria1th/ComfyUI-LogicUtils.git
