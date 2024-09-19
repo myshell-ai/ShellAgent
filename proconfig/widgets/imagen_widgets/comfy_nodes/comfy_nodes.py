@@ -83,6 +83,9 @@ def init_external_custom_nodes():
             if module_path.endswith(".disabled"): continue
             time_before = time.perf_counter()
             success = load_custom_node(module_path, base_node_names)
+            if not success:
+                print(module_path)
+                import pdb; pdb.set_trace()
             node_import_times.append((time.perf_counter() - time_before, module_path, success))
 
     if len(node_import_times) > 0:
@@ -435,12 +438,16 @@ return_dict['result'] = ComfyWidget
 init_external_custom_nodes()
 execute_prestartup_script()
 
+failed_nodes = []
 for NodeID, NodeClass in NODE_CLASS_MAPPINGS.items():
     try:
         WidgetClass = build_comfy_widget(NODE_DISPLAY_NAME_MAPPINGS.get(NodeID, NodeID), NodeID, NodeClass)
     except Exception as e:
         logging.warning(f"failed to load {NodeID}, \n {e}")
         print(traceback.format_exc())
+        failed_nodes.append(NodeID)
+        
+print("summary: failed nodes:", failed_nodes)
 
 if __name__ == '__main__':
     pass

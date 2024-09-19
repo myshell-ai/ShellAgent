@@ -157,9 +157,6 @@
 [submodule "proconfig/widgets/imagen_widgets/library/comfy_custom_nodes/ComfyUI-GGUF"]
 	path = proconfig/widgets/imagen_widgets/library/comfy_custom_nodes/ComfyUI-GGUF
 	url = https://github.com/city96/ComfyUI-GGUF
-[submodule "proconfig/widgets/imagen_widgets/library/comfy_custom_nodes/ComfyUI"]
-	path = proconfig/widgets/imagen_widgets/library/comfy_custom_nodes/ComfyUI
-	url = https://github.com/comfyanonymous/ComfyUI
 [submodule "proconfig/widgets/imagen_widgets/library/comfy_custom_nodes/comfyui-propost"]
 	path = proconfig/widgets/imagen_widgets/library/comfy_custom_nodes/comfyui-propost
 	url = https://github.com/digitaljohn/comfyui-propost
