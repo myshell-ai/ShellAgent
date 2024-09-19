@@ -4,9 +4,8 @@ import traceback
 import psutil
 import GPUtil
 
-
 from proconfig.widgets.imagen_widgets.comfy_nodes.convert_comfyui_json import convert_comfyui_to_proconfig
-
+from proconfig.widgets.tools.dependency_checker import check_dependency
 from servers.base import app
 
 
@@ -16,8 +15,11 @@ def convert_comfyui_to_proconfig_fn():
     proconfig = data["data"]
     try:
         result = convert_comfyui_to_proconfig(proconfig)
+        dependency_results = check_dependency(result)
         return_dict = {
-            "data": result
+            "data": result,
+            "non_existed_models": dependency_results["non_existed_models"],
+            "undefined_widgets": dependency_results["undefined_widgets"],
         }
         print("received blocks", len(result["blocks"]))
     except Exception as e:
