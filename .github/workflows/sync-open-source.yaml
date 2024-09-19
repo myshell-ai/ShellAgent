@@ -1,0 +1,31 @@
+name: Sync open-source
+
+on:
+  pull_request:
+    paths:
+      - "web/apps/web/**"
+      - "web/packages/**"
+      - ".github/**"
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - uses: cpina/github-action-push-to-another-repository@main
+        env:
+          SSH_DEPLOY_KEY: ${{ secrets.SSH_DEPLOY_KEY }}
+        with:
+          source-directory: web
+          target-directory: web
+          destination-github-username: "myshell-ai"
+          destination-repository-name: "open-source"
+          target-branch: ${{ github.head_ref }}
+          create-target-branch-if-needed: true
+          # https://github.com/orgs/community/discussions/25191
+          commit-message: See ${{github.repository}}@${{ github.event.pull_request.head.sha }}
+
+      - name: Test get variable exported by push-to-another-repository
+        run: echo $DESTINATION_CLONED_DIRECTORY
