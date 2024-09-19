@@ -121,3 +121,6 @@
 [submodule "proconfig/widgets/imagen_widgets/library/comfy_custom_nodes/ComfyUI-Easy-Use"]
 	path = proconfig/widgets/imagen_widgets/library/comfy_custom_nodes/ComfyUI-Easy-Use
 	url = https://github.com/yolain/ComfyUI-Easy-Use
+[submodule "proconfig/widgets/imagen_widgets/library/comfy_custom_nodes/x-flux-comfyui"]
+	path = proconfig/widgets/imagen_widgets/library/comfy_custom_nodes/x-flux-comfyui
+	url = https://github.com/XLabs-AI/x-flux-comfyui.git
