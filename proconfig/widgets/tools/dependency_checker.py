@@ -1,5 +1,4 @@
 import os
-import json5
 import json
 import copy
 from proconfig.core import Automata, Workflow
