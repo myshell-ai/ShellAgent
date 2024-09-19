@@ -8,6 +8,7 @@ from proconfig.widgets.base import build_widgets
 import proconfig.widgets.imagen_widgets
 import proconfig.widgets.language_models
 import proconfig.widgets.tools
+import proconfig.widgets.myshell_widgets
 # load custom widgets
 
 import os

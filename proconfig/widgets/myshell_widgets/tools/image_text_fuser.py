@@ -2,7 +2,6 @@ import os
 from proconfig.widgets.base import BaseWidget, WIDGETS
 from typing import Literal, Any, Dict
 import torch
-from proconfig.widgets.myshell_widgets.base import MyshellWidgetCategory
 from proconfig.utils.misc import upload_file_to_myshell
 from PIL import Image, ImageDraw, ImageFont
 import json
@@ -262,7 +261,7 @@ def add_content_to_image(template_path, content):
 @WIDGETS.register_module()
 class ImageTextFuserWidget(BaseWidget):
     NAME = "Image Text Fuser"
-    CATEGORY = MyshellWidgetCategory.TOOLS
+    CATEGORY = 'Myshell Widgets/Tools'
     
     class InputsSchema(BaseWidget.InputsSchema):
         config: str = ""
