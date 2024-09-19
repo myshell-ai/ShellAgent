@@ -8,7 +8,7 @@
     "lint": "turbo lint",
     "type-check": "turbo type-check",
     "clean": "turbo clean",
-    "prepare": "husky",
+    "prepare": "cd .. && husky ./web/.husky",
     "format": "prettier --write \"**/*.{ts,tsx,md}\"",
     "lint-staged": "lint-staged"
   },
