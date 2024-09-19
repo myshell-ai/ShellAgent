@@ -73,7 +73,7 @@ class BlockTask(TaskBase):
     block: Dict[str, Any] # should be validated later
     
 class WidgetTask(TaskBase):
-    mode: Literal["widget"] = "widget"
+    mode: Literal["widget", "undefined"] = "widget"
     widget_name: str = None
     package_name: str = None
     widget_class_name: str = None
