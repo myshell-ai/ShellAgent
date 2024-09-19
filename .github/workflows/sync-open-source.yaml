@@ -14,6 +14,13 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
+      - name: Get last commit author email
+        id: get_email
+        run: echo "COMMIT_AUTHOR_EMAIL=$(git log -n 1 --pretty=format:%ae)" >> $GITHUB_ENV
+
+      - name: Test author email
+        run: echo "The commit author email is $COMMIT_AUTHOR_EMAIL"
+
       - uses: cpina/github-action-push-to-another-repository@main
         env:
           SSH_DEPLOY_KEY: ${{ secrets.SSH_DEPLOY_KEY }}
@@ -25,6 +32,7 @@ jobs:
           target-branch: ${{ github.head_ref }}
           create-target-branch-if-needed: true
           user-name: ${{ github.event.pull_request.user.login }}
+          user-email: ${{ env.COMMIT_AUTHOR_EMAIL }}
           # https://github.com/orgs/community/discussions/25191
           commit-message: See ${{github.repository}}@${{ github.event.pull_request.head.sha }}
 
