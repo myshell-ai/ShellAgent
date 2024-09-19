@@ -24,6 +24,7 @@ jobs:
           destination-repository-name: "open-source"
           target-branch: ${{ github.head_ref }}
           create-target-branch-if-needed: true
+          user-name: ${{ github.event.pull_request.user.login }}
           # https://github.com/orgs/community/discussions/25191
           commit-message: See ${{github.repository}}@${{ github.event.pull_request.head.sha }}
 
