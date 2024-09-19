@@ -85,7 +85,6 @@ def init_external_custom_nodes():
             success = load_custom_node(module_path, base_node_names)
             if not success:
                 print(module_path)
-                import pdb; pdb.set_trace()
             node_import_times.append((time.perf_counter() - time_before, module_path, success))
 
     if len(node_import_times) > 0:
