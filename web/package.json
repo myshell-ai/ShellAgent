@@ -3,7 +3,6 @@
   "private": true,
   "author": "kun",
   "scripts": {
-    "flask-dev": "FLASK_DEBUG=1 pip3 install -r python/requirements.txt && python3 -m flask --app python/index run -p 5328",
     "build": "turbo build",
     "dev": "turbo dev",
     "lint": "turbo lint",
@@ -11,8 +10,7 @@
     "clean": "turbo clean",
     "prepare": "husky",
     "format": "prettier --write \"**/*.{ts,tsx,md}\"",
-    "lint-staged": "lint-staged",
-    "kill-flask": "lsof -i:5328 | awk 'NR>1 {print $2}' | xargs kill -9"
+    "lint-staged": "lint-staged"
   },
   "devDependencies": {
     "@commitlint/cli": "^17.8.1",
