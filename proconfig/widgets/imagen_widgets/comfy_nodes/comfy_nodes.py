@@ -17,8 +17,8 @@ import folder_paths
 Ellipsis = ...
 
 from nodes import init_builtin_extra_nodes, load_custom_node
-init_builtin_extra_nodes()
 from nodes import NODE_DISPLAY_NAME_MAPPINGS, NODE_CLASS_MAPPINGS
+init_builtin_extra_nodes()
 
 var_type_map = {
     "INT": "int",
