@@ -11,6 +11,34 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import PurePosixPath, Path
 
 
+def is_valid_url(candidate_str: Any) -> bool:
+    if not isinstance(candidate_str, str):
+        return False
+    parsed = urlparse(candidate_str)
+    return parsed.scheme != "" and parsed.netloc != ""
+    
+def _make_temp_file(file_path: str) -> IO:
+    """
+    A utility function to write bytes to a temporary file. This is useful
+    if one needs to pass a file object to a function, but only has bytes.
+    """
+    # If the source is a valid url, we will download the content and return it.
+    try:
+        content = requests.get(file_path).content
+    except Exception:
+        raise ValueError(f"Failed to download content from url: {file_path}")
+    
+    _, extension = os.path.splitext(file_path)
+    # get the temp file path
+    f = tempfile.NamedTemporaryFile(delete=False, suffix=extension)
+    f.write(content)
+    # Flush to make sure that the content is written.
+    f.flush()
+    # Seek to the beginning of the file so that the content can be read.
+    f.seek(0)
+    print(f'download url resources success to {f.name}')
+    return f
+
 def windows_to_linux_path(windows_path):
     return str(PurePosixPath(Path(windows_path)))
 
