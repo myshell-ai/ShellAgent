@@ -55,6 +55,7 @@ export interface AddNodeProps {
   data: {
     name: string;
     display_name: string;
+    type?: string;
     icon?: string;
     id?: string;
   };

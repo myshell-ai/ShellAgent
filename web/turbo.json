@@ -19,6 +19,7 @@
     },
     "lint": {},
     "type-check": {},
+    "build-storybook": {},
     "dev": {
       "cache": false,
       "persistent": true

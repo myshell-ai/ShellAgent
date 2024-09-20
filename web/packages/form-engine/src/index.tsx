@@ -81,7 +81,7 @@ const FormEngine = forwardRef<FormRef, IFormEngineProps>((props, ref) => {
         if (onChange) {
           onChange(values);
         }
-      }, 500),
+      }, 300),
     );
 
     return () => subscription.unsubscribe();

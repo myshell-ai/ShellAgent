@@ -9,7 +9,6 @@ output
 proconfig/widgets/imagen_widgets/library/models/
 docker/
 modal*
-web
 temp/
 package/
 servers/web-build

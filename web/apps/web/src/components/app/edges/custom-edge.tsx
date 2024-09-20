@@ -82,16 +82,19 @@ export const CustomEdge = ({
 
   const handleEditEvent = (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
     e.stopPropagation();
-    setTransitionSheetOpen({
-      open: true,
-      source,
-      sourceHandle: sourceHandleId || '',
-      data: {
-        ...(data || {}),
-        id,
-        target,
+    setTransitionSheetOpen({ open: false, source: '', sourceHandle: '' });
+    setTimeout(() => {
+      setTransitionSheetOpen({
+        open: true,
         source,
-      },
+        sourceHandle: sourceHandleId || '',
+        data: {
+          ...(data || {}),
+          id,
+          target,
+          source,
+        },
+      });
     });
   };
 

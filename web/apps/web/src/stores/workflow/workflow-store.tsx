@@ -29,6 +29,7 @@ import {
   GetWidgetListResponse,
   RunWorkflowResponse,
   EventStatusEnum,
+  ExistedInfo,
 } from '@/services/workflow/type';
 import {
   genNodeData,
@@ -64,6 +65,7 @@ export type WorkflowState = {
   };
   resetData: Record<string, TValues>;
   reloadSchemaMap: Record<string, boolean>;
+  existedInfo: ExistedInfo;
 };
 
 export type WorkflowAction = {
@@ -81,6 +83,7 @@ export type WorkflowAction = {
   setNodeData: (params: { id: NodeId; data: TValues }) => void;
   setFlowInstance: (instance: ReactFlowInstance) => void;
   getWidgetList: (params: GetWidgetListRequest) => void;
+  setExistedInfo: (params: ExistedInfo) => void;
   getWidgetSchema: (
     params: GetWidgetSchemaRequest & { id?: string },
     reload?: boolean,
@@ -134,6 +137,7 @@ export const initState: WorkflowState = {
   resetData: {},
   // reload
   reloadSchemaMap: {},
+  existedInfo: {},
 };
 
 export const createWorkflowStore = () => {
@@ -400,8 +404,8 @@ export const createWorkflowStore = () => {
         }
         if (type === EventStatusEnum.node_start) {
           get().flowInstance?.fitView({
-            minZoom: 0.5,
-            maxZoom: 1,
+            minZoom: 0.3,
+            maxZoom: 1.5,
             nodes: [{ id: data?.node_id as string }],
             padding: 400,
           });
@@ -523,6 +527,13 @@ export const createWorkflowStore = () => {
           produce(state => {
             delete state.config.fieldsModeMap?.[id];
             delete state.config.schemaModeMap?.[id];
+          }),
+        );
+      },
+      setExistedInfo(params) {
+        set(
+          produce(state => {
+            state.existedInfo = params;
           }),
         );
       },

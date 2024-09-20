@@ -2,9 +2,9 @@
 
 import { useReactFlowStore, getColor } from '@shellagent/flow-engine';
 import { TValues } from '@shellagent/form-engine';
-import { FormRef, Drawer } from '@shellagent/ui';
+import { Drawer } from '@shellagent/ui';
 import { useInjection } from 'inversify-react';
-import { useEffect, useRef, useMemo, useCallback, memo } from 'react';
+import { useMemo, useCallback, memo } from 'react';
 
 import {
   ICondition,
@@ -45,19 +45,13 @@ const TransitionSheet: React.FC<{}> = () => {
     runDrawerWidth: state.runDrawerWidth,
   }));
 
-  const formRef = useRef<FormRef>(null);
-  const loaded = useRef<boolean>(false);
+  const handleClose = useCallback(() => {
+    setTransitionSheetOpen({ open: false, source: '', sourceHandle: '' });
+  }, [setTransitionSheetOpen]);
 
-  useEffect(() => {
-    if (!loaded.current && transitionSheetOpen) {
-      const transitions = edgeData2Form(edges as ICustomEdge[], sourceHandle);
-      formRef.current?.reset({ transitions });
-      loaded.current = true;
-    }
-  }, [edges, sourceHandle, transitionSheetOpen]);
-
-  const handleTransitionsChange = useCallback(
-    (transitions: ICondition[] = []) => {
+  const handleChange = useCallback(
+    (values: TValues) => {
+      const transitions = (values?.transitions || []) as ICondition[];
       const { edgesToAdd, edgesToDelete, edgesToModify } = form2EdgeData({
         edges: edges as ICustomEdge[],
         values: transitions.map(transition => ({
@@ -130,22 +124,12 @@ const TransitionSheet: React.FC<{}> = () => {
         }),
       );
     },
-    [edges, onConnect, setEdges, sourceHandle, source],
+    [edges, onConnect, setEdges, sourceHandle],
   );
 
-  const handleClose = useCallback(() => {
-    setTransitionSheetOpen({ open: false, source: '', sourceHandle: '' });
-  }, [setTransitionSheetOpen]);
-
-  const handleChange = useCallback(
-    (values: TValues) => {
-      handleTransitionsChange(values?.transitions || []);
-    },
-    [handleTransitionsChange],
-  );
-
-  const values = useMemo<ICondition[]>(() => {
-    return edgeData2Form(edges as ICustomEdge[], sourceHandle);
+  const values = useMemo(() => {
+    const transitions = edgeData2Form(edges as ICustomEdge[], sourceHandle);
+    return { transitions };
   }, [edges, sourceHandle]);
 
   return (
@@ -167,7 +151,7 @@ const TransitionSheet: React.FC<{}> = () => {
       push={false}>
       <VariableProvider id={source} eventKey={currentEdegData?.event_key}>
         <NodeForm
-          ref={formRef}
+          key={sourceHandle}
           schema={transitionConfigSchema}
           values={values}
           onChange={handleChange}

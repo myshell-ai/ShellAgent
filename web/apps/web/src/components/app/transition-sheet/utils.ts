@@ -44,6 +44,13 @@ export const form2EdgeData = ({
   const edgesToDelete: ICustomEdge[] = [];
   const edgesToModify: { edge: ICustomEdge; newData: ICondition }[] = [];
 
+  const edgeMap = new Map<string, ICustomEdge>();
+  edges.forEach(edge => {
+    if (edge.sourceHandle === sourceHandle) {
+      edgeMap.set(edge.target, edge);
+    }
+  });
+
   values.forEach(v => {
     const id = `${sourceHandle}-${v.target}`;
     if (!result[id] || !result[id]?.conditions) {
@@ -53,10 +60,7 @@ export const form2EdgeData = ({
     }
     result[id].conditions?.push(v.condition);
 
-    // 检查是否需要添加新边
-    const existingEdge = edges.find(
-      edge => edge.sourceHandle === sourceHandle && edge.target === v.target,
-    );
+    const existingEdge = edgeMap.get(v.target);
     if (!existingEdge) {
       edgesToAdd.push(v);
     } else if (JSON.stringify(existingEdge.data) !== JSON.stringify(v)) {
@@ -64,15 +68,9 @@ export const form2EdgeData = ({
     }
   });
 
-  // 检查需要删除的边
-  edges.forEach(edge => {
-    if (edge.sourceHandle === sourceHandle) {
-      const matchingNewTransition = values.find(
-        nt => nt.target === edge.target,
-      );
-      if (!matchingNewTransition) {
-        edgesToDelete.push(edge);
-      }
+  edgeMap.forEach((edge, target) => {
+    if (!values.some(v => v.target === target)) {
+      edgesToDelete.push(edge);
     }
   });
 

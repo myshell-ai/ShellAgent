@@ -150,7 +150,7 @@
 
 .mentions__mention {
   position: relative;
-  z-index: 9999;
+  z-index: 99;
   color: #3e5cfa;
   pointer-events: none;
 }

@@ -4,8 +4,9 @@ import {
   MagnifyingGlassPlusIcon,
   MapIcon,
 } from '@heroicons/react/24/outline';
-import { useReactFlow } from 'reactflow';
 import { Tooltip, TooltipTrigger, TooltipContent } from '@shellagent/ui';
+import { useReactFlow } from 'reactflow';
+
 import 'reactflow/dist/style.css';
 import { useReactFlowStore } from '../../store/flow/provider';
 
