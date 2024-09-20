@@ -37,6 +37,7 @@ export interface IFormEngineProps {
   children?: React.ReactNode;
   modeMap?: Record<string, TFieldMode>;
   onModeChange?: (name: string, mode: TFieldMode) => void;
+  onStatusChange?: (obj: { [key: string]: string }) => void;
 }
 
 const FormEngine = forwardRef<FormRef, IFormEngineProps>((props, ref) => {
@@ -52,6 +53,7 @@ const FormEngine = forwardRef<FormRef, IFormEngineProps>((props, ref) => {
     onModeChange,
     onChange,
     onSubmit,
+    onStatusChange,
   } = props;
 
   const [fields, setFields] = useState(createFields(schema, values));
@@ -107,6 +109,7 @@ const FormEngine = forwardRef<FormRef, IFormEngineProps>((props, ref) => {
           <FormEngineProvider
             modeMap={modeMap}
             onModeChange={onModeChange}
+            onStatusChange={onStatusChange}
             fields={fields}
             parent={parent}
             layout={layout}
