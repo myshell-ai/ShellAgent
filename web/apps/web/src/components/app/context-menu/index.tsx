@@ -11,9 +11,10 @@ import { useSchemaContext } from '@/stores/app/schema-provider';
 import CopyMenu from './copy-menu';
 
 const ContextMenuProvider: React.FC<PropsWithChildren> = ({ children }) => {
-  const { type, id } = useSchemaContext(state => ({
+  const { type, id, name } = useSchemaContext(state => ({
     type: state.type,
     id: state.id,
+    name: state.name,
   }));
 
   return (
@@ -21,7 +22,7 @@ const ContextMenuProvider: React.FC<PropsWithChildren> = ({ children }) => {
       <ContextMenuTrigger>{children}</ContextMenuTrigger>
       {type === NodeTypeEnum.state && id && (
         <ContextMenuContent className="w-48">
-          <CopyMenu id={id} />
+          <CopyMenu id={id} name={name} />
         </ContextMenuContent>
       )}
     </ContextMenu>

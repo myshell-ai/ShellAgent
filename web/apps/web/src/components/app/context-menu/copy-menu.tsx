@@ -4,14 +4,20 @@ import React from 'react';
 import { useDuplicateState } from '@/components/app/nodes/state-node/hook/use-duplicate-state';
 // import ShortcutsName from '@/components/common/shortcuts-name';
 import { useAppState } from '@/stores/app/use-app-state';
+import { useAppStore } from '@/stores/app/app-provider';
 
-const CopyMenu: React.FC<{ id: string }> = ({ id }) => {
-  const setCurrentCopyId = useAppState(state => state.setCurrentCopyId);
-
+const CopyMenu: React.FC<{ id: string; name: string }> = ({ id, name }) => {
+  const setCurrentCopyStateData = useAppState(
+    state => state.setCurrentCopyStateData,
+  );
+  const nodeData = useAppStore(state => state.nodeData);
   const { duplicateState } = useDuplicateState(id);
 
   const handleCopy = () => {
-    setCurrentCopyId(id);
+    setCurrentCopyStateData({
+      ...nodeData[id],
+      name,
+    });
   };
 
   const handleDuplicate = () => {

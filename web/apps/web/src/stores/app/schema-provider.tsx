@@ -15,6 +15,7 @@ import { startSchema } from './utils/schema';
 
 type SchemaState = {
   id: string;
+  name: string;
   schema: ISchema;
   schemaMode: string;
   fieldMode: Record<string, TFieldMode>;
@@ -34,6 +35,7 @@ type SchemaStore = SchemaState & SchemaAction;
 
 export const initState: SchemaStore = {
   id: '',
+  name: '',
   schema: {},
   schemaMode: 'basic',
   setSchemaMode: () => {},
@@ -147,6 +149,7 @@ export const SchemaProvider: React.FC<SchemaProviderProps> = ({
   const schemaValue = useMemo<SchemaStore>(
     () => ({
       id,
+      name,
       schema,
       schemaMode,
       setSchemaMode,
@@ -160,6 +163,7 @@ export const SchemaProvider: React.FC<SchemaProviderProps> = ({
     }),
     [
       id,
+      name,
       schema,
       schemaMode,
       setSchemaMode,
