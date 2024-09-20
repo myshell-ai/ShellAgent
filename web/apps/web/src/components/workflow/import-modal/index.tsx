@@ -39,7 +39,6 @@ const ImportModal: React.FC<{
   onOpenChange: (open: boolean) => void;
 }> = ({ open, onOpenChange }) => {
   const [openTips, setOpenTips] = useBoolean(false);
-  const [isExpand, isExpandAction] = useBoolean(false);
   const [fileUrl, setFileUrl] = useState<string | undefined>();
   const [workflow, setWorkflow] = useState<Workflow | undefined>();
   const { existedInfo, importWorkflow, setExistedInfo } = useWorkflowStore(
@@ -204,31 +203,17 @@ const ImportModal: React.FC<{
               </AlertDialogTitle>
             </AlertDialogHeader>
             <AlertDialogDescription className="flex flex-col gap-1.5">
-              <Heading size="h2">Warning</Heading>
+              <Heading size="h2">Missing Items</Heading>
               <Text size="sm" color="subtle">
                 The following items are missing.
                 <br />
-                Replace it with installed models/widgets, or contact us to add
-                it to the standard environment.
+                If this workflow would run in MyShell, please replace the
+                missing models/widgets with similar installed ones, or contact
+                us to add them to the standard environment.
               </Text>
-              <div
-                className="flex items-center cursor-pointer"
-                onClick={() => isExpandAction.toggle()}>
-                <Text size="sm" color="subtler">
-                  {isExpand ? 'Show Less' : 'View Detail'}
-                </Text>
-                <ChevronDownIcon
-                  className={cn('w-4 h-4 ml-1.5 text-subtler', {
-                    'rotate-180': isExpand,
-                  })}
-                />
-              </div>
               <div
                 className={cn(
                   'flex-1 rounded-lg border border-default p-3 w-[340px] max-h-60 overflow-x-hidden',
-                  {
-                    hidden: !isExpand,
-                  },
                 )}>
                 {!isEmpty(existedInfo.non_existed_models) ? (
                   <div>

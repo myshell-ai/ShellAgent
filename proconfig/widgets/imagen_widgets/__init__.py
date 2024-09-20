@@ -1,6 +1,7 @@
 import sys
 import importlib
 import os
+import asyncio
 
 absolute_path = os.path.abspath(os.path.join("proconfig", "widgets", "imagen_widgets", "library", "ComfyUI"))
 sys.path.append(absolute_path)
@@ -8,7 +9,9 @@ sys.path.append(absolute_path)
 from proconfig.widgets.utils import load_module
 
 from server import PromptServer
-prompt_server = PromptServer(None)
+loop = asyncio.new_event_loop()
+asyncio.set_event_loop(loop)
+prompt_server = PromptServer(loop)
 sys.modules["custom_nodes"] = load_module("", "proconfig/widgets/imagen_widgets/library/comfy_custom_nodes")
 
 

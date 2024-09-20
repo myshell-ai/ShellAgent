@@ -336,7 +336,12 @@ def process_text_embeded_uri(text):
     def replace_src(match):
         tag, attributes = match.groups()
         # Find the src attribute and replace its value
-        new_attributes = re.sub(r'src=["\']([^"\']+)["\']', r'src="/api/files/\1"', attributes)
+        file_uri = re.search(r'src=["\']([^"\']+)["\']', attributes).groups()[0]
+        
+        new_file_uri = file_uri.strip()
+        if os.path.isfile(file_uri):
+            new_file_uri = "/api/files/" + new_file_uri
+        new_attributes = attributes.replace(file_uri, new_file_uri)
         return f"<{tag} {new_attributes}>"
     
     # Regular expression to match <img>, <video>, or <audio> tags with attributes
@@ -345,6 +350,7 @@ def process_text_embeded_uri(text):
     # Replace the src attribute in all matches
     text = re.sub(pattern, replace_src, text)
     return text
+
   
 RenderTypeMap = {
     "image": EmbedObjType.IMAGE,
