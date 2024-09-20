@@ -107,7 +107,7 @@ jobs:
           ./python.exe -s -m pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu${{ inputs.cu }}
           ./python.exe -s -m pip install --use-pep517 pygit2 Cython scikit_build_core enscons pytoml cmake==3.21
           ./python.exe -s -m pip install --use-pep517 -r ../ShellAgent/requirements.txt
-          ./python.exe -s -m pip install onnx==1.16.1 flask PyExecJS docx2txt fuzzywuzzy git cloudpickle
+          ./python.exe -s -m pip install onnx==1.16.1 flask PyExecJS docx2txt fuzzywuzzy cloudpickle
           sed -i '1i../ShellAgent' ./python3${{ inputs.python_minor }}._pth
           
           cd ..
