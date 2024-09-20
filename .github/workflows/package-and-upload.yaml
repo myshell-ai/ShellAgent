@@ -36,7 +36,8 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
-        ref: ${{ inputs.git_tag }}
+        with:
+          ref: ${{ inputs.git_tag }}
 
       - uses: pnpm/action-setup@v2
         with:
