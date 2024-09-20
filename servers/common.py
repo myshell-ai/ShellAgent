@@ -5,7 +5,7 @@ import uuid
 import importlib
 import sys
 
-from flask import request, jsonify, abort, send_from_directory
+from flask import request, jsonify, abort, send_from_directory, send_file
 
 from proconfig.widgets.base import WIDGETS
 from proconfig.widgets import load_custom_widgets
