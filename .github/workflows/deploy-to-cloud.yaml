@@ -1,0 +1,54 @@
+name: Deploy and test
+
+on:
+  push:
+    paths:
+      - "proconfig/**"
+      - "servers/**"
+      - ".github/**"
+      - "model_info.json"
+  pull_request:
+    paths:
+      - "proconfig/**"
+      - "servers/**"
+      - ".github/**"
+      - "model_info.json"
+
+jobs:
+  deploy:
+    name: Deploy-to-Cloud
+    runs-on: ubuntu-latest
+    env:
+      MODAL_TOKEN_ID: ${{ secrets.MODAL_TOKEN_ID }}
+      MODAL_TOKEN_SECRET: ${{ secrets.MODAL_TOKEN_SECRET }}
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Install Python 
+        uses: actions/setup-python@v5
+        with:
+          python-version: 3.10.12
+
+      - name: Install Modal
+        run: |
+          python -m pip install --upgrade pip
+          pip install modal
+          pip install json5
+          pip install requests
+
+      - name: Create deploy and test code
+        run: |
+          cp -r .ci/example_workflow/example_workflow.json ./
+          echo "${{ secrets.MODAL_DEPLOY_CODE }}" | base64 -d > deploy.py
+
+      - name: Deploy job
+        if: env.success == 'true'
+        run: |
+          echo "Going to deploy engine"
+          modal deploy deploy.py 2>&1 | sed '/https:/d' | sed 's/View Deployment:/Deployment successful./'
+
+      - name: Clean up
+        run: |
+          rm deploy.py
