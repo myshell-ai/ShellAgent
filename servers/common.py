@@ -69,8 +69,7 @@ def get_file(filename):
         if is_valid_url(filename):
             src = _make_temp_file(filename)
             filename = src.name
-            file_path = os.path.join(BASE_DIR, filename)
-            file_path = os.path.normpath(file_path)
+            return send_file(filename)
         else:
             # Ensure the file path is safe
             print("base dir:", BASE_DIR)
