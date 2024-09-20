@@ -52,14 +52,16 @@ export const useSchemaContext = <T,>(
 
 export interface SchemaProviderProps {
   id: string;
-  name: string | undefined;
-  display_name: string | undefined;
+  name?: string;
+  mode?: string;
+  display_name?: string;
   children: React.ReactNode | React.ReactNode[];
   output?: Record<string, any>;
 }
 
 export const SchemaProvider: React.FC<SchemaProviderProps> = ({
   name = '',
+  mode,
   display_name = '',
   id,
   children,
@@ -122,7 +124,7 @@ export const SchemaProvider: React.FC<SchemaProviderProps> = ({
       memoized.schema = endSchema;
     } else if (!isEmpty(currentWidgetSchema)) {
       const schema = getSchemaByWidget({
-        name: display_name,
+        name: mode === 'undefined' ? name : display_name,
         inputSchema: currentWidgetSchema?.input_schema,
         outputSchema: currentWidgetSchema?.output_schema,
         fieldsModeMap: currentFieldsModeMap,
@@ -142,7 +144,7 @@ export const SchemaProvider: React.FC<SchemaProviderProps> = ({
       outputs: memoized.outputRefTypes,
     });
     return memoized;
-  }, [id, name, display_name, currentWidgetSchema, currentFieldsModeMap]);
+  }, [id, mode, name, display_name, currentWidgetSchema, currentFieldsModeMap]);
 
   const formKey = useMemo(() => {
     return `${JSON.stringify({

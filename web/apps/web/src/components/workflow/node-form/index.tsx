@@ -65,6 +65,8 @@ const NodeForm = forwardRef<FormRef, NodeFormProps>(
       }
     }, [currentSchema, loading, defaultValues]);
 
+    console.log('values: ', values);
+
     if (loading || isEmpty(currentSchema)) {
       return <FormSkeleton />;
     }

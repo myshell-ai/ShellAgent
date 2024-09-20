@@ -48,17 +48,20 @@ const NodeCard: React.FC<
         <SchemaProvider
           id={id}
           name={name}
+          mode={mode}
           display_name={display_name}
           output={runtime_data?.output}>
           <ContextMenu>
             {isUndefined ? (
               <div className="pb-2">
                 <Heading size="h1" color="critical">
-                  Undefined Widget
+                  Missing Widget
                 </Heading>
+                {/* <Text color="critical">Missing Model</Text> */}
+                <br />
                 <Text color="critical">
-                  Replace it with installed widgets, or contact us to add it to
-                  the standard environment.
+                  Replace it with installed widgets/models, or contact us to add
+                  it to the standard environment.
                 </Text>
               </div>
             ) : null}
