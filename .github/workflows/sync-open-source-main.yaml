@@ -1,0 +1,47 @@
+name: Sync open-source main
+
+on:
+  push:
+    branches: 
+      - main
+    paths:
+      - "web/apps/web/**"
+      - "web/packages/**"
+      - ".github/**"
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Get last commit author email
+        id: get_email
+        run: echo "COMMIT_AUTHOR_EMAIL=$(git log -n 1 --pretty=format:%ae)" >> $GITHUB_ENV
+
+      - name: Test author email
+        run: echo "The commit author email is $COMMIT_AUTHOR_EMAIL"
+
+      - name: Get last commit author name
+        id: get_name
+        run: echo "COMMIT_AUTHOR_NAME=$(git log -n 1 --pretty=format:%an)" >> $GITHUB_ENV
+
+      - name: Test author name
+        run: echo "The commit author name is $COMMIT_AUTHOR_NAME"
+
+      - uses: cpina/github-action-push-to-another-repository@main
+        env:
+          SSH_DEPLOY_KEY: ${{ secrets.SSH_DEPLOY_KEY }}
+        with:
+          source-directory: web
+          target-directory: web
+          destination-github-username: "myshell-ai"
+          destination-repository-name: "open-source"
+          target-branch: main
+          create-target-branch-if-needed: false
+          user-name: ${{ env.COMMIT_AUTHOR_NAME }}
+          user-email: ${{ env.COMMIT_AUTHOR_EMAIL }}
+
+      - name: Test get variable exported by push-to-another-repository
+        run: echo $DESTINATION_CLONED_DIRECTORY
