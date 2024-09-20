@@ -1,0 +1,149 @@
+{
+    "type": "workflow",
+    "blocks": [
+      {
+        "type": "task",
+        "mode": "widget",
+        "name": "key_1724858183866",
+        "widget_class_name": "ComfyUI/CheckpointLoaderSimple",
+        "inputs": {
+          "ckpt_name": "majicmixRealistic_v7.safetensors"
+        },
+        "transitions": {
+          "ALWAYS": [
+            {
+              "target": "key_1724858336360"
+            },
+            {
+              "target": "key_1724858606305"
+            },
+            {
+              "target": "key_1724859288656"
+            },
+            {
+              "target": "key_1724859248065"
+            }
+          ]
+        }
+      },
+      {
+        "type": "task",
+        "mode": "widget",
+        "name": "key_1724858336360",
+        "widget_class_name": "ComfyUI/VAEDecode",
+        "inputs": {
+          "samples": "{{key_1724859288656.latent}}",
+          "vae": "{{key_1724858183866.vae}}"
+        },
+        "transitions": {
+          "ALWAYS": [
+            {
+              "target": "key_1724859346185"
+            }
+          ]
+        }
+      },
+      {
+        "type": "task",
+        "mode": "widget",
+        "name": "key_1724858606305",
+        "widget_class_name": "ComfyUI/CLIPTextEncode",
+        "inputs": {
+          "text": "Two dogs run in the rain",
+          "clip": "{{key_1724858183866.clip}}"
+        },
+        "transitions": {
+          "ALWAYS": [
+            {
+              "target": "key_1724859288656"
+            }
+          ]
+        }
+      },
+      {
+        "type": "task",
+        "mode": "widget",
+        "name": "key_1724859059262",
+        "widget_class_name": "ComfyUI/EmptyLatentImage",
+        "inputs": {
+          "width": 512,
+          "height": 512,
+          "batch_size": 1
+        },
+        "transitions": {
+          "ALWAYS": [
+            {
+              "target": "key_1724859288656"
+            }
+          ]
+        }
+      },
+      {
+        "type": "task",
+        "mode": "widget",
+        "name": "key_1724859248065",
+        "widget_class_name": "ComfyUI/CLIPTextEncode",
+        "inputs": {
+          "text": "Ugly",
+          "clip": "{{key_1724858183866.clip}}"
+        },
+        "transitions": {
+          "ALWAYS": [
+            {
+              "target": "key_1724859288656"
+            }
+          ]
+        }
+      },
+      {
+        "type": "task",
+        "mode": "widget",
+        "name": "key_1724859288656",
+        "widget_class_name": "ComfyUI/KSampler",
+        "inputs": {
+          "seed": 0,
+          "steps": 20,
+          "cfg": 8,
+          "sampler_name": "euler",
+          "scheduler": "normal",
+          "denoise": 1,
+          "model": "{{key_1724858183866.model}}",
+          "positive": "{{key_1724858606305.conditioning}}",
+          "negative": "{{key_1724859248065.conditioning}}",
+          "latent_image": "{{key_1724859059262.latent}}"
+        },
+        "transitions": {
+          "ALWAYS": [
+            {
+              "target": "key_1724858336360"
+            }
+          ]
+        }
+      },
+      {
+        "type": "task",
+        "mode": "widget",
+        "name": "key_1724859346185",
+        "widget_class_name": "ComfyUI/PreviewImage",
+        "inputs": {
+          "images": "{{key_1724858336360.image}}"
+        },
+        "transitions": {
+          "ALWAYS": [
+            {
+              "target": "@@@end"
+            }
+          ]
+        }
+      }
+    ],
+    "inputs": {},
+    "outputs": {
+      "key_1724858358123": {
+        "type": "text",
+        "value": "{{key_1724859346185.result}}",
+        "name": "output_image"
+      }
+    },
+    "context": {}
+  }

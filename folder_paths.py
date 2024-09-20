@@ -6,6 +6,7 @@ import mimetypes
 import logging
 from typing import Set, List, Dict, Tuple, Literal
 from collections.abc import Collection
+from proconfig.utils.misc import is_valid_url, _make_temp_file
 
 supported_pt_extensions: set[str] = {'.ckpt', '.pt', '.bin', '.pth', '.safetensors', '.pkl', '.sft'}
 
@@ -142,11 +143,16 @@ def annotated_filepath(name: str) -> tuple[str, str | None]:
 
     return name, base_dir
 
-
 def get_annotated_filepath(name: str, default_dir: str | None=None) -> str:
-    name, base_dir = annotated_filepath(name)
+    # in case there is space before name. eg. " xxx.jpg"
+    name, base_dir = annotated_filepath(name.strip())
 
     if base_dir is None:
+        # find a https url
+        if is_valid_url(name):
+            src = _make_temp_file(name)
+            return src.name
+
         if default_dir is not None:
             base_dir = default_dir
         else:
