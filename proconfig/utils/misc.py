@@ -6,6 +6,7 @@ from proconfig.utils.pytree import tree_map
 import torch
 import logging
 import time
+import numpy as np
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import PurePosixPath, Path
 
@@ -31,10 +32,12 @@ def convert_unserializable_display(var):
     if not is_serializable_type(var):
         if isinstance(var, torch.Tensor):
             return f"Tensor: {var.size()}".replace("torch.", "")
+        elif isinstance(var, np.ndarray):
+            return f"Array: {var.shape}"
         elif isinstance(var, object):
             return var.__class__.__name__
         else:
-            return type(var)
+            return str(type(var))
     return var
 
 def hash_dict(d):
