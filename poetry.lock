@@ -1498,6 +1498,19 @@ files = [
 ]
 
 [[package]]
+name = "emoji"
+version = "1.7.0"
+description = "Emoji for Python"
+optional = false
+python-versions = "*"
+files = [
+    {file = "emoji-1.7.0.tar.gz", hash = "sha256:65c54533ea3c78f30d0729288998715f418d7467de89ec258a31c0ce8660a1d1"},
+]
+
+[package.extras]
+dev = ["coverage", "coveralls", "pytest"]
+
+[[package]]
 name = "enscons"
 version = "0.30.0"
 description = "Tools for building Python packages with SCons"
@@ -4593,6 +4606,24 @@ files = [
 [package.extras]
 docs = ["furo", "olefile", "sphinx (>=2.4)", "sphinx-copybutton", "sphinx-inline-tabs", "sphinx-removed-in", "sphinxext-opengraph"]
 tests = ["check-manifest", "coverage", "defusedxml", "markdown2", "olefile", "packaging", "pyroma", "pytest", "pytest-cov", "pytest-timeout"]
+
+[[package]]
+name = "pilmoji"
+version = "2.0.4"
+description = "Pilmoji is an emoji renderer for Pillow, Python's imaging library."
+optional = false
+python-versions = ">=3.8.0"
+files = [
+    {file = "pilmoji-2.0.4-py3-none-any.whl", hash = "sha256:2fcb2116226ed8aa600fcf6e65d7693b5d08d60715f8c460553130081a5adc26"},
+    {file = "pilmoji-2.0.4.tar.gz", hash = "sha256:3861c09999f36bb32dd559e181b63a8a9c8068b2cddcac32637581e48de2d11f"},
+]
+
+[package.dependencies]
+emoji = "*"
+Pillow = "*"
+
+[package.extras]
+requests = ["requests"]
 
 [[package]]
 name = "pkginfo"
@@ -8821,4 +8852,4 @@ files = [
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.10,<3.12"
-content-hash = "00710a0626abe7b28296d6e6c69c3e45021676388681e38846e7cedbd8279b0c"
+content-hash = "78fb6cdbf77ab406a729b3d3a0783308cb4c5ba5d82157f60f8ed37272c55fa5"
