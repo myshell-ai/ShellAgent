@@ -44,5 +44,5 @@ export function calculateNearestValue(
   const decimalBaseValue = new Decimal(baseValue);
   const decimalStep = new Decimal(step);
   nearestValue = decimalBaseValue.add(finalSteps.times(decimalStep)).toNumber();
-  return nearestValue;
+  return Number.isNaN(nearestValue) ? value : nearestValue;
 }
