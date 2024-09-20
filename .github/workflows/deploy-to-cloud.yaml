@@ -45,7 +45,24 @@ jobs:
       - name: Deploy job
         run: |
           echo "Going to deploy engine"
-          modal deploy deploy.py 2>&1 | sed '/https:/d' | sed 's/View Deployment:/Deployment successful./'
+
+          output=$(modal deploy deploy.py 2>&1 | sed '/https:/d' | sed 's/View Deployment:/Deployment successful./')
+          echo "$output"
+          
+          if echo "$output" | grep -q '╭─ Error'; then
+            echo "::set-output name=error_detected::true"
+          else
+            echo "::set-output name=error_detected::false"
+          fi
+
+      - name: Check for errors and exit if necessary
+        run: |
+          if [ "${{ steps.deploy_job.outputs.error_detected }}" = "true" ]; then
+            echo "Error detected during deployment, exiting."
+            exit 1
+          else
+            echo "Deployment successful."
+          fi
 
       - name: Clean up
         run: |
