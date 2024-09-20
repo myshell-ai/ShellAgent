@@ -14,9 +14,19 @@ const NodeCard: React.FC<
   NodeData & {
     children: React.ReactNode;
     selected?: boolean;
+    has_error?: boolean;
     mode?: string;
   }
-> = ({ id, children, runtime_data, selected, name, display_name, mode }) => {
+> = ({
+  id,
+  children,
+  runtime_data,
+  selected,
+  name,
+  display_name,
+  mode,
+  has_error,
+}) => {
   const selectRef = useRef(null);
   const active = useHover(selectRef);
   const isUndefined = mode === 'undefined';
@@ -35,7 +45,9 @@ const NodeCard: React.FC<
         },
         {
           '!border-critical':
-            runtime_data?.node_status === NodeStatusEnum.failed || isUndefined,
+            runtime_data?.node_status === NodeStatusEnum.failed ||
+            isUndefined ||
+            has_error,
         },
         {
           '!border-brand': runtime_data?.node_status === NodeStatusEnum.start,

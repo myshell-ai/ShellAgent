@@ -6,7 +6,7 @@ import {
 import { TValues, TFieldMode } from '@shellagent/form-engine';
 import { FormRef } from '@shellagent/ui';
 import { useKeyPress } from 'ahooks';
-import React, { useCallback, useRef, useEffect } from 'react';
+import React, { useCallback, useRef, useEffect, useState } from 'react';
 import { useShallow } from 'zustand/react/shallow';
 
 import { useWorkflowState } from '@/stores/workflow/use-workflow-state';
@@ -36,6 +36,8 @@ const WidgetNode: React.FC<NodeProps<WidgetNodeType>> = ({
   const { setCurrentCopyId } = useWorkflowState(state => ({
     setCurrentCopyId: state.setCurrentCopyId,
   }));
+
+  const [hasError, setHasError] = useState(false);
 
   const {
     setNodeData,
@@ -144,14 +146,23 @@ const WidgetNode: React.FC<NodeProps<WidgetNodeType>> = ({
     }
   });
 
+  const onStatusChange = (status?: string) => {
+    setHasError(status === 'error');
+  };
+
   return (
-    <NodeCard selected={selected} mode={nodeData[data.id]?.mode} {...data}>
+    <NodeCard
+      selected={selected}
+      mode={nodeData[data.id]?.mode}
+      has_error={hasError}
+      {...data}>
       <NodeForm
         ref={formRef}
         loading={loading.getReactFlow}
         values={nodeData[data.id]}
         onChange={onChange}
         onModeChange={onModeChange}
+        onStatusChange={onStatusChange}
         modeMap={fieldsModeMap?.[data.id] || {}}
       />
     </NodeCard>
