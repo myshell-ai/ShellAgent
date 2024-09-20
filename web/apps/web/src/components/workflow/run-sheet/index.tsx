@@ -2,10 +2,10 @@
 
 import { NodeIdEnum, IFlow } from '@shellagent/flow-engine';
 import { TValues, getDefaultValueBySchema } from '@shellagent/form-engine';
-import { Button, Drawer } from '@shellagent/ui';
+import { Button, Drawer, FormRef } from '@shellagent/ui';
 import { usePrevious } from 'ahooks';
 import { isEmpty, isEqual, difference, keys, omit } from 'lodash-es';
-import { useEffect, useCallback } from 'react';
+import { useEffect, useCallback, useRef } from 'react';
 
 import NodeForm from '@/components/workflow/node-form';
 import { runWorkflow } from '@/services/workflow';
@@ -15,6 +15,7 @@ import { getSchemaByInputs } from '@/stores/workflow/utils/get-run-schema';
 import { useWorkflowStore } from '@/stores/workflow/workflow-provider';
 
 const RunSheet: React.FC = () => {
+  const formRef = useRef<FormRef>(null);
   const {
     userInputs,
     setUserInputs,
@@ -48,7 +49,9 @@ const RunSheet: React.FC = () => {
   useEffect(() => {
     if (!isEqual(prevInputs, inputs)) {
       const diffKeys = difference(keys(inputs), keys(prevInputs));
-      setUserInputs(omit(userInputs, diffKeys));
+      const values = omit(userInputs, diffKeys);
+      setUserInputs(values);
+      formRef.current?.reset(values);
     }
   }, [inputs, prevInputs]);
 
@@ -61,6 +64,7 @@ const RunSheet: React.FC = () => {
       runSheetOpen
     ) {
       setUserInputs(defaultValues);
+      formRef.current?.reset(defaultValues);
     }
   }, [runSheetOpen, runSchema, loading]);
 
@@ -103,6 +107,7 @@ const RunSheet: React.FC = () => {
       push={false}>
       <div className="flex flex-col gap-y-4">
         <NodeForm
+          ref={formRef}
           key={JSON.stringify(runSchema)}
           loading={loading.getProConfig || loading.getReactFlow}
           schema={runSchema}

@@ -189,7 +189,7 @@ export const genReactFlow: (
   if (workflow.type === 'workflow') {
     // start节点
     let x = 0;
-    const y = 0;
+    const y = 100;
     nodes.push({
       id: NodeIdEnum.start,
       type: NodeTypeEnum.start,
@@ -203,7 +203,6 @@ export const genReactFlow: (
       },
       position: { x, y },
     });
-    x += STEP_SIZE;
     // 写入input&context
     setNodeData({
       id: NodeIdEnum.start,
@@ -217,19 +216,13 @@ export const genReactFlow: (
 
     // widget节点
     if (workflow.blocks) {
-      const widgetIndexMap = new Map<string, number>();
       if (isArray(workflow.blocks)) {
         workflow.blocks.forEach(block => {
           const id = block.name as NodeId;
           const type = NodeTypeEnum.widget;
           const widgetName = (block as any).widget_class_name;
-          let widgetIndex: number;
-          if (widgetIndexMap.get(widgetName)) {
-            widgetIndex = widgetIndexMap.get(widgetName) || 1;
-          } else {
-            widgetIndex = 1;
-            widgetIndexMap.set(widgetName, widgetIndex);
-          }
+          const widgetIndex =
+            nodes.filter(item => item.data.name === widgetName).length + 1;
           const idx = comfyui.nodes?.findIndex(
             (item: any) => `node_${item.id}` === block.name,
           );
@@ -239,6 +232,8 @@ export const genReactFlow: (
           if (xScale < 1) {
             xScale = 1.3;
           }
+          const currentX = pos?.[0] ? pos[0] * 1.3 + 200 : x;
+          const currentY = pos?.[1] ? pos[1] * 1.3 : y;
           nodes.push({
             id,
             type,
@@ -252,11 +247,11 @@ export const genReactFlow: (
               name: widgetName,
             },
             position: {
-              x: pos?.[0] ? pos[0] * 1.3 + 200 : x,
-              y: pos?.[1] ? pos[1] * 1.3 : y,
+              x: currentX,
+              y: currentY,
             },
           });
-          x += STEP_SIZE;
+          x = Math.max(x, currentX);
           const input = block.inputs;
           if (block.mode === 'undefined') {
             setNodeData({
@@ -324,9 +319,8 @@ export const genReactFlow: (
         type: NodeTypeEnum.end,
         name: NodeTypeEnum.end,
       },
-      position: { x, y },
+      position: { x: x + STEP_SIZE, y },
     });
-    //
     setNodeData({
       id: NodeIdEnum.end,
       data: {
@@ -337,44 +331,11 @@ export const genReactFlow: (
     });
   }
 
-  // 将起始节点没有连线的widget节点连接到start节点
-  // 将target节点没有连线的widget节点连接到end节点
-  const widgetNodes = nodes.filter(
-    node =>
-      node.id !== NodeIdEnum.start &&
-      node.id !== NodeIdEnum.end &&
-      node.type === NodeTypeEnum.widget,
-  );
-
-  widgetNodes.forEach(node => {
-    // 找到target为node.id的edge
-    if (!edges.find(edge => edge.target === node.id)) {
-      edges.push({
-        id: uuidv4(),
-        source: NodeIdEnum.start,
-        target: node.id,
-        type: EdgeTypeEnum.default,
-        animated: false,
-        data: {},
-      });
-    }
-    if (!edges.find(edge => edge.source === node.id)) {
-      edges.push({
-        id: uuidv4(),
-        source: node.id,
-        target: NodeIdEnum.end,
-        type: EdgeTypeEnum.default,
-        animated: false,
-        data: {},
-      });
-    }
-  });
-
   return {
     nodes,
     edges,
     viewport: {
-      x: 0,
+      x: 100,
       y: 100,
       zoom: 0.4,
     },
