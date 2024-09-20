@@ -1,5 +1,4 @@
 import os
-import json5
 import json
 import copy
 from proconfig.core import Automata, Workflow
@@ -141,11 +140,11 @@ def check_dependency_recursive(config, non_existed_models: list, missing_models:
                 workflow_ids.append(config.workflow_id)
             payload = {k: calc_expression_no_strict(v, local_vars) for k, v in config.inputs.items()}
             workflow_config = Workflow.model_validate(workflow_config)
-            return check_dependency_recursive(workflow_config, missing_models, undefined_widgets, missing_widgets, {}, payload=payload, workflow_ids=workflow_ids)
+            return check_dependency_recursive(workflow_config, non_existed_models, missing_models, undefined_widgets, missing_widgets, {}, payload=payload, workflow_ids=workflow_ids)
         elif config.mode == "block":
             payload = {k: calc_expression_no_strict(v, local_vars) for k, v in config.inputs.items()}
             config.block = TypeMap[config.block["type"]].model_validate(config.block)
-            return check_dependency_recursive(config.block, missing_models, undefined_widgets, missing_widgets, local_vars, payload=payload, workflow_ids=workflow_ids)
+            return check_dependency_recursive(config.block, non_existed_models, missing_models, undefined_widgets, missing_widgets, local_vars, payload=payload, workflow_ids=workflow_ids)
     elif config.type in ["automata", "workflow", "state"]:
         if config.type == "automata":
             local_vars = {"context": config.context} # we do not know what other to do

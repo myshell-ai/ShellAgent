@@ -42,6 +42,7 @@ if __name__ == '__main__':
     parser.add_argument("--port", type=int, default=8099)
     parser.add_argument("--device", type=int, default=0)
     parser.add_argument("--project_root", type=str, default="data")
+    parser.add_argument("--cpu", default=False, action="store_true")
     args = parser.parse_args()
     
     os.environ["PROCONFIG_PROJECT_ROOT"] = str(args.project_root)
@@ -56,6 +57,11 @@ if __name__ == '__main__':
     import servers.tools
     
     import GPUtil
+    
+    import comfy
+    
+    if args.cpu:
+        comfy.model_management.cpu_state = comfy.model_management.CPUState.CPU
 
     # Start the watchdog thread
     if os.environ.get("ENABLE_WATCHDOG") == "1":
