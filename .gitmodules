@@ -220,3 +220,6 @@
 [submodule "proconfig/widgets/imagen_widgets/library/comfy_custom_nodes/ComfyUI-Marigold"]
 	path = proconfig/widgets/imagen_widgets/library/comfy_custom_nodes/ComfyUI-Marigold
 	url = https://github.com/kijai/ComfyUI-Marigold
+[submodule "proconfig/widgets/imagen_widgets/library/comfy_custom_nodes/ComfyUI-QualityOfLifeSuit_Omar92"]
+	path = proconfig/widgets/imagen_widgets/library/comfy_custom_nodes/ComfyUI-QualityOfLifeSuit_Omar92
+	url = https://github.com/omar92/ComfyUI-QualityOfLifeSuit_Omar92
