@@ -395,7 +395,6 @@ export const createWorkflowStore = () => {
           );
         }
         if (type === EventStatusEnum.workflow_end) {
-          get().flowInstance?.fitView();
           set(
             produce(state => {
               state.loading.workflowRunning = false;
@@ -453,11 +452,30 @@ export const createWorkflowStore = () => {
             return nodes;
           });
           if (data?.node_status === NodeStatusEnum.failed) {
+            get().flowInstance?.fitView({
+              minZoom: 0.8,
+              maxZoom: 1.5,
+              nodes: [{ id: data?.node_id as string }],
+              padding: 400,
+            });
+            // 设置为选中状态，放到最上层
+            get().flowInstance?.setNodes(nodes =>
+              nodes.map(node =>
+                node.id === data?.node_id
+                  ? {
+                      ...node,
+                      selected: true,
+                    }
+                  : node,
+              ),
+            );
             set(
               produce(state => {
                 state.loading.workflowRunning = false;
               }),
             );
+          } else {
+            get().flowInstance?.fitView();
           }
         }
       },

@@ -44,10 +44,22 @@ interface NodeFormProps {
   loading?: boolean;
   modeMap?: Record<string, TFieldMode>;
   onModeChange?: (name: string, mode: TFieldMode) => void;
+  onStatusChange?: (status: { [key: string]: string }) => void;
 }
 
 const NodeForm = forwardRef<FormRef, NodeFormProps>(
-  ({ values, onChange, schema, loading, onModeChange, modeMap }, ref) => {
+  (
+    {
+      values,
+      onChange,
+      schema,
+      loading,
+      onModeChange,
+      onStatusChange,
+      modeMap,
+    },
+    ref,
+  ) => {
     const { schema: formSchema, formKey } = useSchemaContext(state => ({
       schema: state.schema,
       formKey: state.formKey,
@@ -78,6 +90,7 @@ const NodeForm = forwardRef<FormRef, NodeFormProps>(
         schema={currentSchema}
         modeMap={modeMap}
         onModeChange={onModeChange}
+        onStatusChange={onStatusChange}
         components={{
           Input,
           Select,

@@ -26,6 +26,7 @@ const FormEngineContext = createContext<{
   reorder: (path: TPath, startIndex: number, endIndex: number) => void;
   modeMap?: Record<string, TFieldMode>;
   onModeChange?: (name: string, mode: TFieldMode) => void;
+  onStatusChange?: (obj: { [key: string]: string }) => void;
 }>({
   components: {},
   fields: {},
@@ -42,6 +43,7 @@ export interface IFormEngineProviderProps {
   layout?: 'Horizontal' | 'Vertical';
   modeMap?: Record<string, TFieldMode>;
   onModeChange?: (name: string, mode: TFieldMode) => void;
+  onStatusChange?: (obj: { [key: string]: string }) => void;
   children: React.ReactNode | React.ReactNode[];
 }
 
@@ -52,7 +54,8 @@ export const useFormEngineContext = () => {
 const Counter: { [path: string]: number } = {};
 
 export const FormEngineProvider: React.FC<IFormEngineProviderProps> = props => {
-  const { children, fields, components, parent, layout } = props;
+  const { children, fields, components, parent, layout, onStatusChange } =
+    props;
   const { getValues, setValue } = useFormContext();
 
   const [modeMap, setModeMap] = useImmer(props.modeMap || {});
@@ -178,6 +181,7 @@ export const FormEngineProvider: React.FC<IFormEngineProviderProps> = props => {
         reorder,
         modeMap,
         onModeChange,
+        onStatusChange,
       }}>
       {children}
     </FormEngineContext.Provider>
