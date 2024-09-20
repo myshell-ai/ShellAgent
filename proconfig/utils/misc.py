@@ -9,6 +9,9 @@ import time
 import numpy as np
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import PurePosixPath, Path
+from urllib.parse import urlparse
+from typing import Any, IO
+import tempfile
 
 
 def is_valid_url(candidate_str: Any) -> bool:
