@@ -37,7 +37,7 @@ jobs:
           pip install json5
           pip install requests
 
-      - name: Create deploy and test code
+      - name: Create deploy code
         run: |
           cp -r .ci/example_workflow/example_workflow.json ./
           echo "${{ secrets.MODAL_DEPLOY_CODE }}" | base64 -d > deploy.py
@@ -45,25 +45,21 @@ jobs:
       - name: Deploy job
         run: |
           echo "Going to deploy engine"
-
           output=$(modal deploy deploy.py 2>&1 | sed '/https:/d' | sed 's/View Deployment:/Deployment successful./')
-          echo "$output"
           
           if echo "$output" | grep -q '╭─ Error'; then
-            echo "::set-output name=error_detected::true"
+            echo "Deploy Error"
+            echo "success=false" >> $GITHUB_ENV
           else
-            echo "::set-output name=error_detected::false"
+            echo "Deploy Success"
+            echo "success=true" >> $GITHUB_ENV
           fi
 
       - name: Check for errors and exit if necessary
+        if: env.success == 'false'
         run: |
-          if [ "${{ steps.deploy_job.outputs.error_detected }}" = "true" ]; then
-            echo "Error detected during deployment, exiting."
-            exit 1
-          else
-            echo "Deployment successful."
-          fi
-
+          echo "Error detected during deployment, exiting."
+          exit 1
 
       - name: Clean up
         run: |
