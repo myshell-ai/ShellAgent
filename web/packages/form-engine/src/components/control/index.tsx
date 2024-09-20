@@ -287,12 +287,13 @@ const Control: React.FC<IControlProps> = props => {
           }
           const missOption =
             xComponentProps?.options?.length &&
+            newField[valuePropsName] &&
             !xComponentProps?.options?.find(
               (item: { value: string }) =>
                 item.value === (newField[valuePropsName] as unknown as string),
             );
-          if (missOption) {
-            onStatusChange?.('error');
+          if (missOption !== undefined) {
+            onStatusChange?.({ [name]: missOption ? 'missOption' : '' });
           }
           const FormItemWithDesc =
             (!checked && xSwithable) || xHiddenControl ? null : (

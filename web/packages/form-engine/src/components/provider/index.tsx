@@ -26,7 +26,7 @@ const FormEngineContext = createContext<{
   reorder: (path: TPath, startIndex: number, endIndex: number) => void;
   modeMap?: Record<string, TFieldMode>;
   onModeChange?: (name: string, mode: TFieldMode) => void;
-  onStatusChange?: (status?: string) => void;
+  onStatusChange?: (obj: { [key: string]: string }) => void;
 }>({
   components: {},
   fields: {},
@@ -43,7 +43,7 @@ export interface IFormEngineProviderProps {
   layout?: 'Horizontal' | 'Vertical';
   modeMap?: Record<string, TFieldMode>;
   onModeChange?: (name: string, mode: TFieldMode) => void;
-  onStatusChange?: (status?: string) => void;
+  onStatusChange?: (obj: { [key: string]: string }) => void;
   children: React.ReactNode | React.ReactNode[];
 }
 

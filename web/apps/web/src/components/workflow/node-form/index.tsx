@@ -44,7 +44,7 @@ interface NodeFormProps {
   loading?: boolean;
   modeMap?: Record<string, TFieldMode>;
   onModeChange?: (name: string, mode: TFieldMode) => void;
-  onStatusChange?: (status?: string) => void;
+  onStatusChange?: (status: { [key: string]: string }) => void;
 }
 
 const NodeForm = forwardRef<FormRef, NodeFormProps>(
