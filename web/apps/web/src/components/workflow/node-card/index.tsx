@@ -69,11 +69,9 @@ const NodeCard: React.FC<
                 <Heading size="h1" color="critical">
                   Missing Widget
                 </Heading>
-                {/* <Text color="critical">Missing Model</Text> */}
-                <br />
                 <Text color="critical">
-                  Replace it with installed widgets/models, or contact us to add
-                  it to the standard environment.
+                  Replace it with installed widgets, or contact us to add it to
+                  the standard environment.
                 </Text>
               </div>
             ) : null}
