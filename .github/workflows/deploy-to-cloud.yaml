@@ -1,5 +1,4 @@
-name: Deploy and test
-
+name: Deploy Cloud Server
 on:
   push:
     paths:
@@ -44,7 +43,6 @@ jobs:
           echo "${{ secrets.MODAL_DEPLOY_CODE }}" | base64 -d > deploy.py
 
       - name: Deploy job
-        if: env.success == 'true'
         run: |
           echo "Going to deploy engine"
           modal deploy deploy.py 2>&1 | sed '/https:/d' | sed 's/View Deployment:/Deployment successful./'
