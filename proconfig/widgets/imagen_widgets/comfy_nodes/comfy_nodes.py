@@ -209,6 +209,9 @@ def is_native_types(var_type):
         
     
 def build_comfy_widget(node_name, NodeID, NodeClass) -> BaseWidget:
+    if node_name in node_instances:
+        raise ValueError(f"node {node_name} is already registered!")
+    
     return_dict = {}
     
     types_lines = ''
@@ -413,6 +416,8 @@ class ComfyWidget(BaseWidget):
         except Exception as e:
             logging.error(e, exc_info=True)
             print(traceback.format_exc())
+            print(\'{output_line1}\')
+            print(node_instances[\"{node_name}\"])
             raise e
         if type(outputs) == dict:
             if 'result' in outputs:
