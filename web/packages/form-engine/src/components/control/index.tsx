@@ -14,6 +14,7 @@ import {
   TooltipContent,
   IconButton,
   Switch,
+  Text,
 } from '@shellagent/ui';
 import { isEmpty, omit } from 'lodash-es';
 import React, { useMemo, useRef, useState } from 'react';
@@ -37,7 +38,7 @@ type Mode = 'raw' | 'ui' | 'ref';
  */
 const Control: React.FC<IControlProps> = props => {
   const { name } = props;
-  const { fields, components, remove, modeMap, onModeChange } =
+  const { fields, components, remove, modeMap, onModeChange, onStatusChange } =
     useFormEngineContext();
   const { setValue, getValues } = useFormContext();
   const { schema, state, parent } = fields[name] || {};
@@ -284,11 +285,27 @@ const Control: React.FC<IControlProps> = props => {
           if (xOnChangePropsName) {
             newField[xOnChangePropsName] = field.onChange;
           }
+          const missOption =
+            xComponentProps?.options?.length &&
+            newField[valuePropsName] &&
+            !xComponentProps?.options?.find(
+              (item: { value: string }) =>
+                item.value === (newField[valuePropsName] as unknown as string),
+            );
+          if (missOption !== undefined) {
+            onStatusChange?.({ [name]: missOption ? 'missOption' : '' });
+          }
           const FormItemWithDesc =
             (!checked && xSwithable) || xHiddenControl ? null : (
               <div className="grow">
                 <FormControl>{renderFormItem()}</FormControl>
                 {fieldState.error ? <FormMessage /> : null}
+                {missOption ? (
+                  <Text color="critical">
+                    {newField[valuePropsName] as unknown as string} is
+                    undefined.
+                  </Text>
+                ) : null}
               </div>
             );
 
