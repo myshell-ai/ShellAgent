@@ -15,6 +15,9 @@ export const getStateSchema = (name: string): ISchema => {
         'x-title-size': 'h4',
         'x-collapsible': true,
         'x-component': 'TasksConfig',
+        'x-component-props': {
+          draggable: false,
+        },
       },
       transition: {
         type: 'object',

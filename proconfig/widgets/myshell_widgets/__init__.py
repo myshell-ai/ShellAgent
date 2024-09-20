@@ -1,0 +1,1 @@
+from proconfig.widgets.myshell_widgets.tools.image_text_fuser import ImageTextFuserWidget
