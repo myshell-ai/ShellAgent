@@ -93,6 +93,19 @@ export const materialList: MaterialListType = [
       },
     ],
   },
+  {
+    title: 'Tools',
+    plain: true,
+    no_border: true,
+    items: [
+      {
+        name: 'ImageTextFuserWidget',
+        display_name: 'Image Text Fuser',
+        type: NodeTypeEnum.widget,
+        undraggable: true,
+      },
+    ],
+  },
 ];
 
 export const inputSourceHandle = 'custom_message-input-source-handle';

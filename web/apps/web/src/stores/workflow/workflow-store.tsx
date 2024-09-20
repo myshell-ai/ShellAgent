@@ -404,8 +404,8 @@ export const createWorkflowStore = () => {
         }
         if (type === EventStatusEnum.node_start) {
           get().flowInstance?.fitView({
-            minZoom: 0.5,
-            maxZoom: 1,
+            minZoom: 0.3,
+            maxZoom: 1.5,
             nodes: [{ id: data?.node_id as string }],
             padding: 400,
           });

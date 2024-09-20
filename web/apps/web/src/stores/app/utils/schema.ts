@@ -873,6 +873,9 @@ const stateConfigSchema: ISchema = {
       'x-title-size': 'h4',
       'x-collapsible': true,
       'x-component': 'TasksConfig',
+      'x-component-props': {
+        draggable: true,
+      },
     },
     output: {
       type: 'object',
