@@ -29,7 +29,7 @@
       {
         "type": "task",
         "mode": "widget",
-        "name": "key_1724858336360",
+        "name": "key_1724858336360111",
         "widget_class_name": "ComfyUI/VAEDecode",
         "inputs": {
           "samples": "{{key_1724859288656.latent}}",
