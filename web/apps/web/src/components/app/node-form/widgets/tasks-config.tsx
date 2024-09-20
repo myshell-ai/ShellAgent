@@ -212,6 +212,7 @@ const TaskItem = ({
       const hoverMiddleY =
         (hoverBoundingRect.bottom - hoverBoundingRect.top) / 2;
       const clientOffset = monitor.getClientOffset() || { x: 0, y: 0 };
+      // eslint-disable-next-line no-unsafe-optional-chaining
       const hoverClientY = clientOffset?.y - hoverBoundingRect.top;
 
       if (
@@ -252,8 +253,7 @@ const TaskItem = ({
       {draggable && (
         <div
           ref={dragRef}
-          className="w-6 h-6 flex items-center justify-center cursor-grab"
-          role="Handle">
+          className="w-6 h-6 flex items-center justify-center cursor-grab">
           <Drag size="md" color="subtle" />
         </div>
       )}
