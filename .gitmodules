@@ -214,3 +214,9 @@
 [submodule "proconfig/widgets/imagen_widgets/library/comfy_custom_nodes/comfyui_LLM_party"]
 	path = proconfig/widgets/imagen_widgets/library/comfy_custom_nodes/comfyui_LLM_party
 	url = https://github.com/heshengtao/comfyui_LLM_party
+[submodule "proconfig/widgets/imagen_widgets/library/comfy_custom_nodes/ComfyUI-Gemini"]
+	path = proconfig/widgets/imagen_widgets/library/comfy_custom_nodes/ComfyUI-Gemini
+	url = https://github.com/ZHO-ZHO-ZHO/ComfyUI-Gemini
+[submodule "proconfig/widgets/imagen_widgets/library/comfy_custom_nodes/ComfyUI-Marigold"]
+	path = proconfig/widgets/imagen_widgets/library/comfy_custom_nodes/ComfyUI-Marigold
+	url = https://github.com/kijai/ComfyUI-Marigold
