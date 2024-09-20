@@ -13,4 +13,9 @@ setup(
     packages=find_packages(),  # Replace with your actual package
     package_dir={'': '.'},  # Root package directory
     install_requires=parse_requirements("requirements.txt"),
+    dependency_links=[
+        'git+https://github.com/WASasquatch/cstr',
+        'git+https://github.com/WASasquatch/ffmpy.git',
+        'git+https://github.com/WASasquatch/img2texture.git'
+    ],
 )
