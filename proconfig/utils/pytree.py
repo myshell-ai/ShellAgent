@@ -646,7 +646,7 @@ _LEAF_SPEC = LeafSpec()
 
 
 def _tree_flatten_helper(tree: PyTree, leaves: List[Any]) -> TreeSpec:
-    if type(tree) == edict:
+    if hasattr(tree, "keys"): # type(tree) == edict:
         tree = {**tree}
         
     if _is_leaf(tree):
