@@ -3,9 +3,9 @@
   "private": true,
   "author": "kun",
   "scripts": {
-    "build": "turbo build",
-    "dev": "turbo dev",
-    "lint": "turbo lint",
+    "build": "turbo build --filter=!storybook",
+    "dev": "turbo dev --filter=!storybook",
+    "lint": "turbo lint --filter=!storybook",
     "type-check": "turbo type-check",
     "clean": "turbo clean",
     "prepare": "cd .. && husky ./web/.husky",
