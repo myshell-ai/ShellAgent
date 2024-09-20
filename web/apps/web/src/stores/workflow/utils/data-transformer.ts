@@ -216,19 +216,13 @@ export const genReactFlow: (
 
     // widget节点
     if (workflow.blocks) {
-      const widgetIndexMap = new Map<string, number>();
       if (isArray(workflow.blocks)) {
         workflow.blocks.forEach(block => {
           const id = block.name as NodeId;
           const type = NodeTypeEnum.widget;
           const widgetName = (block as any).widget_class_name;
-          let widgetIndex: number;
-          if (widgetIndexMap.get(widgetName)) {
-            widgetIndex = widgetIndexMap.get(widgetName) || 1;
-          } else {
-            widgetIndex = 1;
-            widgetIndexMap.set(widgetName, widgetIndex);
-          }
+          const widgetIndex =
+            nodes.filter(item => item.data.name === widgetName).length + 1;
           const idx = comfyui.nodes?.findIndex(
             (item: any) => `node_${item.id}` === block.name,
           );
