@@ -189,7 +189,7 @@ export const genReactFlow: (
   if (workflow.type === 'workflow') {
     // start节点
     let x = 0;
-    const y = 0;
+    const y = 100;
     nodes.push({
       id: NodeIdEnum.start,
       type: NodeTypeEnum.start,
@@ -341,7 +341,7 @@ export const genReactFlow: (
     nodes,
     edges,
     viewport: {
-      x: 0,
+      x: 100,
       y: 100,
       zoom: 0.4,
     },
