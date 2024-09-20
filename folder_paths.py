@@ -144,7 +144,8 @@ def annotated_filepath(name: str) -> tuple[str, str | None]:
     return name, base_dir
 
 def get_annotated_filepath(name: str, default_dir: str | None=None) -> str:
-    name, base_dir = annotated_filepath(name)
+    # in case there is space before name. eg. " xxx.jpg"
+    name, base_dir = annotated_filepath(name.strip())
 
     if base_dir is None:
         # find a https url
