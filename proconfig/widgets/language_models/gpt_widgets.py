@@ -38,7 +38,7 @@ def encode_image(image_path):
 
 class MemoryItem(BaseModel):
     role: Literal["user", "assistant"]
-    content: str
+    content: str | List[Any]
 
 GPT_MEMORY_KEY = "GPT_MEMORY_KEY"
 @WIDGETS.register_module()
