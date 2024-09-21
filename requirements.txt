@@ -208,3 +208,4 @@ flask
 PyExecJS
 fuzzywuzzy
 cloudpickle
+albucore==0.0.16
