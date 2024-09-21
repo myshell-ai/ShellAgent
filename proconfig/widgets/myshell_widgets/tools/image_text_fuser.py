@@ -106,6 +106,7 @@ def resize_image(img, position, size, method='contain', rotation=0):
         raise ValueError("Invalid resize method. Choose 'cover', 'contain', or 'fill'.")
 
 def get_image(image_path):
+    image_path = image_path.strip()
     if image_path.startswith('http'):
         response = requests.get(image_path)
         response.raise_for_status()
