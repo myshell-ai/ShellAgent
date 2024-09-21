@@ -1,24 +1,35 @@
 'use client';
 
-import { TValues, getDefaultValueBySchema } from '@shellagent/form-engine';
+import {
+  TValues,
+  getDefaultValueBySchema,
+  TFieldMode,
+} from '@shellagent/form-engine';
 import { isEmpty, merge } from 'lodash-es';
 import { useEffect, useMemo, useCallback } from 'react';
 
 import NodeForm from '@/components/app/node-form';
 import { getSchemaByWidget } from '@/stores/app/utils/get-widget-schema';
 import { useWorkflowStore } from '@/stores/workflow/workflow-provider';
+import { useAppStore } from '@/stores/app/app-provider';
 
 interface WidgetConfigProps {
   values: TValues | undefined;
   parent: string;
+  id: string;
   onChange: (values: TValues) => void;
 }
 
 export const WidgetConfig: React.FC<WidgetConfigProps> = ({
   values,
   parent,
+  id,
   onChange,
 }) => {
+  const { setFieldsModeMap, fieldsModeMap } = useAppStore(state => ({
+    setFieldsModeMap: state.setFieldsModeMap,
+    fieldsModeMap: state.config?.fieldsModeMap,
+  }));
   const { loading, getWidgetSchema, widgetSchema } = useWorkflowStore(
     state => ({
       loading: state.loading.getWidgetSchema,
@@ -74,6 +85,13 @@ export const WidgetConfig: React.FC<WidgetConfigProps> = ({
     values,
   ]);
 
+  const onModeChange = useCallback(
+    (name: string, mode: TFieldMode) => {
+      setFieldsModeMap({ id: `${id}.${parent}`, name, mode });
+    },
+    [id, setFieldsModeMap, parent],
+  );
+
   if (!values) {
     return null;
   }
@@ -85,6 +103,8 @@ export const WidgetConfig: React.FC<WidgetConfigProps> = ({
       parent={parent}
       onChange={handleOnChange}
       loading={loading?.[values.widget_class_name]}
+      onModeChange={onModeChange}
+      modeMap={fieldsModeMap?.[`${id}.${parent}`] || {}}
     />
   );
 };
