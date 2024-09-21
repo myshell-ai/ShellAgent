@@ -6,12 +6,7 @@ import { Drawer } from '@shellagent/ui';
 import { useInjection } from 'inversify-react';
 import { useMemo, useCallback, memo } from 'react';
 
-import {
-  ICondition,
-  ICustomEdge,
-  EdgeDataTypeEnum,
-  EdgeTypeEnum,
-} from '@/components/app/edges';
+import { ICondition, ICustomEdge, EdgeTypeEnum } from '@/components/app/edges';
 import NodeForm from '@/components/app/node-form';
 import { AppBuilderChatModel } from '@/components/chat/app-builder-chat.model';
 import { useAppState } from '@/stores/app/use-app-state';
@@ -75,7 +70,7 @@ const TransitionSheet: React.FC<{}> = () => {
               id: generateUUID(),
               custom: true,
               event_key: generateUUID(),
-              type: EdgeDataTypeEnum.CHAT,
+              type: currentEdegData.type,
               source: newEdge.source,
               target: newEdge.target,
               conditions: [
