@@ -1,7 +1,11 @@
 'use client';
 
 import { NodeIdEnum } from '@shellagent/flow-engine';
-import { TValues, getDefaultValueBySchema } from '@shellagent/form-engine';
+import {
+  TValues,
+  getDefaultValueBySchema,
+  TFieldMode,
+} from '@shellagent/form-engine';
 import { merge } from 'lodash-es';
 import { useEffect, useMemo, useCallback } from 'react';
 
@@ -12,11 +16,15 @@ import { useWorkflowStore } from '@/stores/workflow/workflow-provider';
 
 interface WorkflowConfigProps {
   values: TValues | undefined;
+  parent: string;
+  id: string;
   onChange: (values: TValues) => void;
 }
 
 export const WorkflowConfig: React.FC<WorkflowConfigProps> = ({
   values,
+  parent,
+  id,
   onChange,
 }) => {
   const {
@@ -27,6 +35,11 @@ export const WorkflowConfig: React.FC<WorkflowConfigProps> = ({
     nodeData: state.nodeData,
     getProConfig: state.getProConfig,
     loading: state.loading,
+  }));
+
+  const { setFieldsModeMap, fieldsModeMap } = useAppStore(state => ({
+    setFieldsModeMap: state.setFieldsModeMap,
+    fieldsModeMap: state.config?.fieldsModeMap,
   }));
 
   const options = useAppStore(state => state.flowList).map(flow => ({
@@ -75,6 +88,13 @@ export const WorkflowConfig: React.FC<WorkflowConfigProps> = ({
     [defaultValues, onChange],
   );
 
+  const onModeChange = useCallback(
+    (name: string, mode: TFieldMode) => {
+      setFieldsModeMap({ id: `${id}.${parent}`, name, mode });
+    },
+    [id, setFieldsModeMap, parent],
+  );
+
   if (!values) {
     return null;
   }
@@ -82,10 +102,13 @@ export const WorkflowConfig: React.FC<WorkflowConfigProps> = ({
   return (
     <NodeForm
       key={JSON.stringify(schema)}
+      parent={parent}
       schema={schema}
       values={values}
       onChange={handleOnChange}
       loading={loading.getProConfig}
+      onModeChange={onModeChange}
+      modeMap={fieldsModeMap?.[`${id}.${parent}`] || {}}
     />
   );
 };
