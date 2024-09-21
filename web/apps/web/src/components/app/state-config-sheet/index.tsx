@@ -99,6 +99,7 @@ const StateConfigSheet: React.FC<{}> = () => {
       return {
         children: (
           <ButtonConfig
+            id={currentStateId}
             values={values}
             onChange={newValue =>
               nodeFormRef.current?.setValue(
@@ -119,7 +120,9 @@ const StateConfigSheet: React.FC<{}> = () => {
       return {
         children: (
           <WorkflowConfig
+            id={currentStateId}
             key={`workflow-config-${currentTaskIndex}`}
+            parent={`blocks.${currentTaskIndex}`}
             values={workflow}
             onChange={commonProps.onChange}
           />
@@ -140,6 +143,7 @@ const StateConfigSheet: React.FC<{}> = () => {
       return {
         children: (
           <WidgetConfig
+            id={currentStateId}
             key={`widget-config-${currentTaskIndex}`}
             parent={`blocks.${currentTaskIndex}`}
             values={widget}

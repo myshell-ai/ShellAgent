@@ -1,17 +1,22 @@
 name: Deploy Cloud Server
 on:
   push:
+    branches:
+      - main
     paths:
       - "proconfig/**"
       - "servers/**"
-      - ".github/**"
+      - ".github/workflows/deploy-to-cloud.yaml"
       - "model_info.json"
   pull_request:
+    branches:
+      - main
     paths:
       - "proconfig/**"
       - "servers/**"
-      - ".github/**"
+      - ".github/workflows/deploy-to-cloud.yaml"
       - "model_info.json"
+  workflow_dispatch:
 
 jobs:
   deploy:

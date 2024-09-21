@@ -2,13 +2,13 @@ from proconfig.utils.misc import is_valid_url, _make_temp_file
 
 folder_path_file_path = "proconfig/widgets/imagen_widgets/library/ComfyUI/folder_paths.py"
 
+
 # Load the content of another Python file
 with open(folder_path_file_path, 'r') as file:
     file_content = file.read()
 
 # Execute the content
 exec(file_content)
-
 
 def get_annotated_filepath(name: str, default_dir: str | None=None) -> str:
     # in case there is space before name. eg. " xxx.jpg"

@@ -104,7 +104,7 @@ jobs:
           cp -r ../ShellAgent/.ci/python_dependencies_wins/include ./include
           cp -r ../ShellAgent/.ci/python_dependencies_wins/Library ./Library
           cp -r ../ShellAgent/.ci/python_dependencies_wins/libs ./libs
-          ./python.exe -s -m pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu${{ inputs.cu }}
+          ./python.exe -s -m pip install xformers torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu${{ inputs.cu }}
           ./python.exe -s -m pip install --use-pep517 pygit2 Cython scikit_build_core enscons pytoml cmake==3.21
           ./python.exe -s -m pip install --use-pep517 -r ../ShellAgent/requirements.txt
           ./python.exe -s -m pip install onnx==1.16.1 flask PyExecJS docx2txt fuzzywuzzy cloudpickle
