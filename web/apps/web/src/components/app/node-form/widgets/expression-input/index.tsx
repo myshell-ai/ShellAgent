@@ -139,7 +139,7 @@ const ExpressionInput: React.FC<IExpressionInputProps> = ({
     onChange?.(e);
   };
 
-  const newValue = useMemo(() => (value ? v2l(value) : value), [value]);
+  const newValue = value ? v2l(value) : value;
 
   const mentions =
     flatOptions?.reduce<SuggestionDataItem[]>((memo, cur) => {
