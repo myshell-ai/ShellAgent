@@ -36,15 +36,21 @@ def fit_text_to_box(draw, text, box_size, font_path, max_font_size, min_font_siz
         lines = []
         current_line = []
 
+        try_next = False
         for word in words:
             current_line.append(word)
             line_width = calculate_text_width(' '.join(current_line), font)
             if line_width > max_width:
                 if len(current_line) == 1:
                     current_line = [word]
-                    continue  # Try the next font size
+                    try_next = True
+                    break
                 lines.append(' '.join(current_line[:-1]))
                 current_line = [word]
+        
+        if try_next:
+            font_size -= 1
+            continue
 
         if current_line:
             lines.append(' '.join(current_line))
