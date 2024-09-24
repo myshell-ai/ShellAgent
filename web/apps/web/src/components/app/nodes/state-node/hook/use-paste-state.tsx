@@ -37,12 +37,10 @@ export const usePasteState = ({
     currentCopyStateData: state.currentCopyStateData,
   }));
 
-  // TODO 需要把nodeData里的key都换掉
   const pasteState = useCallback(() => {
     const newId = uuid();
     const newData = initData(data);
-    console.log('data>>>>', data);
-    console.log('newData>>>>', newData);
+
     setNodeData({ id: newId, data: newData });
 
     const position = getCanvasCenter(reactFlowWrapper, viewport);

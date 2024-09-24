@@ -3,66 +3,98 @@ import { uuid } from '@shellagent/flow-engine';
 import { generateUUID } from '@/utils/common-helper';
 import { produce } from 'immer';
 import { IButtonType } from '@/components/app/node-form/widgets/button-editor';
+import {
+  IWorkflowTask,
+  IWidgetTask,
+} from '@/components/app/node-form/widgets/tasks-config';
+
+// 生成uuid的偏移量
+let offset = 0;
+
+// 更新 input 和 output 中的 key
+const updateKeys = (obj: { [key: string]: FieldValues }) => {
+  const keyMap: { [oldKey: string]: string } = {};
+  const newObj: { [key: string]: FieldValues } = {};
+
+  Object.entries(obj).forEach(([key, value]) => {
+    offset += 1;
+    const newKey = uuid(offset);
+    keyMap[key] = newKey;
+    newObj[newKey] = value;
+  });
+
+  // 返回新的对象和 keyMap
+  return { keyMap, newObj };
+};
+
+const replaceKeyInData = (
+  data: any,
+  keyMap: { [oldKey: string]: string },
+): any => {
+  if (typeof data === 'string') {
+    for (const oldKey in keyMap) {
+      data = data.replace(
+        new RegExp(`{{\\s*${oldKey}(\\s*[^0-9].*?)}}`, 'g'),
+        `{{${keyMap[oldKey]}$1}}`,
+      );
+    }
+    return data;
+  } else if (Array.isArray(data)) {
+    return data.map(item => replaceKeyInData(item, keyMap));
+  } else if (typeof data === 'object' && data !== null) {
+    for (const k in data) {
+      data[k] = replaceKeyInData(data[k], keyMap);
+    }
+  }
+  return data;
+};
 
 export const initData = (data: FieldValues) => {
   const newData = produce(data, draft => {
     // 更新 render.buttons 下的 id 和 on_click
     if (draft?.render?.buttons) {
       draft.render.buttons = draft?.render?.buttons?.map(
-        (button: IButtonType) => ({
-          ...button,
-          id: generateUUID(),
-          on_click: {
-            event: '',
-            payload: {},
-          },
-        }),
+        (button: IButtonType) => {
+          const { keyMap: payloadMap, newObj: newPayload } = updateKeys(
+            (button.on_click as any)?.payload || {},
+          );
+          return {
+            ...button,
+            id: generateUUID(),
+            on_click: {
+              event: '',
+              payload: replaceKeyInData(newPayload, payloadMap),
+            },
+          };
+        },
       );
     }
 
-    // 更新 input 和 output 中的 key
-    const updateKeys = (obj: { [key: string]: FieldValues }) => {
-      const keyMap: { [oldKey: string]: string } = {};
-
-      Object.entries(obj).forEach(([key, value], index) => {
-        const newKey = uuid(index);
-        keyMap[key] = newKey;
-        delete obj[key];
-        obj[newKey] = value;
+    // 更新 blocks 中的 name 并生成 keyMap
+    const blockKeyMap: { [oldKey: string]: string } = {};
+    if (draft?.blocks) {
+      draft.blocks = draft.blocks.map((block: IWorkflowTask | IWidgetTask) => {
+        offset += 1;
+        const newName = uuid(offset);
+        blockKeyMap[block.name] = newName;
+        return {
+          ...block,
+          name: newName,
+        };
       });
+    }
 
-      return keyMap;
-    };
+    const { keyMap: inputKeyMap, newObj: newInput } = updateKeys(
+      draft?.input || {},
+    );
+    const { keyMap: outputKeyMap, newObj: newOutput } = updateKeys(
+      draft?.output || {},
+    );
 
-    const replaceKeyInData = (
-      data: any,
-      keyMap: { [oldKey: string]: string },
-    ): any => {
-      if (typeof data === 'string') {
-        for (const oldKey in keyMap) {
-          data = data.replace(
-            new RegExp(`{{.*(${oldKey})(.*)}}`, 'g'),
-            `{{${keyMap[oldKey]}}}`,
-          );
-        }
-        return data;
-      } else if (Array.isArray(data)) {
-        return data.map(item => replaceKeyInData(item, keyMap));
-      } else if (typeof data === 'object' && data !== null) {
-        for (const k in data) {
-          data[k] = replaceKeyInData(data[k], keyMap);
-        }
-      }
-      return data;
-    };
+    const combinedKeyMap = { ...inputKeyMap, ...outputKeyMap, ...blockKeyMap };
 
-    const inputKeyMap = updateKeys(draft?.input || {});
-    const outputKeyMap = updateKeys(draft?.output || {});
-
-    const combinedKeyMap = { ...inputKeyMap, ...outputKeyMap };
-
-    draft.input = replaceKeyInData(draft?.input || {}, combinedKeyMap);
-    draft.output = replaceKeyInData(draft?.output || {}, combinedKeyMap);
+    draft.input = replaceKeyInData(newInput, combinedKeyMap);
+    draft.output = replaceKeyInData(newOutput, combinedKeyMap);
     draft.render = replaceKeyInData(draft?.render || {}, combinedKeyMap);
     draft.blocks = replaceKeyInData(draft?.blocks || [], combinedKeyMap);
   });
