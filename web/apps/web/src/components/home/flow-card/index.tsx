@@ -92,26 +92,26 @@ export const FlowCard = ({ id, metadata, onSuccess, type }: FlowCardProps) => {
   const onDuplicate = () => {
     runDuplicate({ name: `${metadata.name} copy`, id, type });
   };
-  const onExport = () => {
-    toast.success(<Text>Exporting {metadata.name}...</Text>, {
-      toastId: id,
-      position: 'top-center',
-      autoClose: 3000,
-      hideProgressBar: true,
-      isLoading: true,
-      pauseOnHover: true,
-      closeButton: false,
-    });
-    setTimeout(() => {
-      toast.update(id, {
-        type: 'success',
-        isLoading: false,
-        autoClose: 3000,
-        hideProgressBar: true,
-        render: 'success',
-      });
-    }, 3000);
-  };
+  // const onExport = () => {
+  //   toast.success(<Text>Exporting {metadata.name}...</Text>, {
+  //     toastId: id,
+  //     position: 'top-center',
+  //     autoClose: 3000,
+  //     hideProgressBar: true,
+  //     isLoading: true,
+  //     pauseOnHover: true,
+  //     closeButton: false,
+  //   });
+  //   setTimeout(() => {
+  //     toast.update(id, {
+  //       type: 'success',
+  //       isLoading: false,
+  //       autoClose: 3000,
+  //       hideProgressBar: true,
+  //       render: 'success',
+  //     });
+  //   }, 3000);
+  // };
   const onDelete = () => {
     setOpenDeleteDialog(true);
   };
