@@ -24,6 +24,7 @@ export enum NodeIdEnum {
 
 // 节点id通过uuid生成
 export type WidgetNodeId = `key_${string}`;
+export type StateNodeId = `key_${string}`;
 // 节点名称
 export type NodeName = `${string}#${number}`;
 

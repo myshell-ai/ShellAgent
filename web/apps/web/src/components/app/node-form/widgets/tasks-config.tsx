@@ -6,7 +6,6 @@ import { useClickAway } from 'ahooks';
 import { Dropdown } from 'antd';
 import { useState, useRef, useCallback } from 'react';
 import { useDrag, useDrop, DndProvider } from 'react-dnd';
-
 import { HTML5Backend } from 'react-dnd-html5-backend';
 
 import { materialList } from '@/components/app/constants';

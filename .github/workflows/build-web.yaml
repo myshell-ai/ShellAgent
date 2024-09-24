@@ -35,6 +35,8 @@ jobs:
 
       - working-directory: "./web"
         run: pnpm turbo run build --filter=web
+        env:
+          NEXT_PUBLIC_API_URL: ${{ secrets.NEXT_PUBLIC_API_URL }}
 
       - uses: actions/upload-artifact@v3
         with:

@@ -4,9 +4,9 @@ import { TValues, TFieldMode } from '@shellagent/form-engine';
 import { useCallback } from 'react';
 
 import NodeForm from '@/components/app/node-form';
+import { useAppStore } from '@/stores/app/app-provider';
 import { useAppState } from '@/stores/app/use-app-state';
 import { buttonConfigSchema } from '@/stores/app/utils/schema';
-import { useAppStore } from '@/stores/app/app-provider';
 
 interface ButtonConfigProps {
   values: TValues;

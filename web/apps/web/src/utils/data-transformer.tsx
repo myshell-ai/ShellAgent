@@ -6,11 +6,15 @@ import { TValues } from '@shellagent/form-engine';
 export const transformChoicesToValues = (input: TValues = {}) => {
   const transformedInput: Record<string, any> = {};
   Object.keys(input).forEach(key => {
-    if (input[key].choices) {
-      transformedInput[key] = {
-        ...input[key],
-        choices: input[key].choices.map((choice: any) => choice.value),
-      };
+    if (Array.isArray(input[key]?.choices)) {
+      if (!input[key].choices.length) {
+        delete input[key].choices;
+      } else {
+        transformedInput[key] = {
+          ...input[key],
+          choices: input[key].choices.map((choice: any) => choice.value),
+        };
+      }
     } else {
       transformedInput[key] = input[key];
     }
@@ -21,11 +25,15 @@ export const transformChoicesToValues = (input: TValues = {}) => {
 export const transformValuesToChoices = (input: TValues = {}) => {
   const transformedInput: Record<string, any> = {};
   Object.keys(input).forEach(key => {
-    if (input[key].choices) {
-      transformedInput[key] = {
-        ...input[key],
-        choices: input[key].choices.map((value: any) => ({ value })),
-      };
+    if (Array.isArray(input[key]?.choices)) {
+      if (!input[key].choices.length) {
+        delete input[key].choices;
+      } else {
+        transformedInput[key] = {
+          ...input[key],
+          choices: input[key].choices.map((value: any) => ({ value })),
+        };
+      }
     } else {
       transformedInput[key] = input[key];
     }

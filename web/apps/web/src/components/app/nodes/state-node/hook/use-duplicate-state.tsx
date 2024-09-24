@@ -2,11 +2,11 @@ import { useCallback } from 'react';
 
 import { usePasteState } from './use-paste-state';
 
-export const useDuplicateState = (id: string) => {
+export const useDuplicateState = () => {
   const { pasteState } = usePasteState({ enabeKeyboard: false });
 
   const duplicateState = useCallback(() => {
-    pasteState(id);
+    pasteState();
   }, [pasteState]);
 
   return { duplicateState };

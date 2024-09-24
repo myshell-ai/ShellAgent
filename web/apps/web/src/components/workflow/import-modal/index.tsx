@@ -1,4 +1,3 @@
-import { ChevronDownIcon } from '@heroicons/react/16/solid';
 import {
   ExclamationTriangleIcon,
   XMarkIcon,

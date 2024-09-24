@@ -1,6 +1,6 @@
 import {
   NodeProps,
-  StartNode as StartNodeType,
+  StateNode as StateNodeType,
   useReactFlowStore,
   NodeTypeEnum,
   Node,
@@ -33,7 +33,7 @@ import {
 import { useDuplicateState } from './hook/use-duplicate-state';
 import emitter, { EventType, useEventEmitter } from '../../emitter';
 
-const StateNode: React.FC<NodeProps<StartNodeType>> = ({
+const StateNode: React.FC<NodeProps<StateNodeType>> = ({
   id,
   selected,
   data,
@@ -65,15 +65,15 @@ const StateNode: React.FC<NodeProps<StartNodeType>> = ({
     setStateConfigSheetOpen,
     currentStateId,
     setSelectedNode,
-    setCurrentCopyId,
+    setCurrentCopyStateData,
   } = useAppState(state => ({
     setStateConfigSheetOpen: state.setStateConfigSheetOpen,
     currentStateId: state.currentStateId,
     setSelectedNode: state.setSelectedNode,
-    setCurrentCopyId: state.setCurrentCopyId,
+    setCurrentCopyStateData: state.setCurrentCopyStateData,
   }));
 
-  const { duplicateState } = useDuplicateState(id);
+  const { duplicateState } = useDuplicateState();
 
   const selectedNodeRef = useRef<Node | null>(null);
 
@@ -121,7 +121,10 @@ const StateNode: React.FC<NodeProps<StartNodeType>> = ({
         return;
       }
       if (selected) {
-        setCurrentCopyId(id);
+        setCurrentCopyStateData({
+          ...nodeData[id],
+          ...data,
+        });
       }
     },
     {
