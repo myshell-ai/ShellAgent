@@ -223,3 +223,6 @@
 [submodule "proconfig/widgets/imagen_widgets/library/comfy_custom_nodes/ComfyUI-QualityOfLifeSuit_Omar92"]
 	path = proconfig/widgets/imagen_widgets/library/comfy_custom_nodes/ComfyUI-QualityOfLifeSuit_Omar92
 	url = https://github.com/omar92/ComfyUI-QualityOfLifeSuit_Omar92
+[submodule "proconfig/widgets/imagen_widgets/library/comfy_custom_nodes/ComfyUI-GlifNodes"]
+	path = proconfig/widgets/imagen_widgets/library/comfy_custom_nodes/ComfyUI-GlifNodes
+	url = https://github.com/glifxyz/ComfyUI-GlifNodes
