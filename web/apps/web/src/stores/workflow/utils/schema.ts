@@ -813,6 +813,8 @@ const endSchema: ISchema = {
                       'x-component': 'Input',
                       'x-class': 'border-0 bg-inherit rounded-lg p-0',
                       'x-component-props': {
+                        type: 'text',
+                        pattern: '^[a-zA-Z0-9_]+$',
                         size: 'md',
                         maxLength: 30,
                         placeholder:
@@ -839,6 +841,7 @@ const endSchema: ISchema = {
                         'video',
                         'text_file',
                         'file',
+                        'unknown',
                       ],
                       title: 'Type',
                       'x-component': 'Select',
@@ -851,6 +854,7 @@ const endSchema: ISchema = {
                           { label: 'video', value: 'video' },
                           { label: 'text_file', value: 'text_file' },
                           { label: 'file', value: 'file' },
+                          { label: 'unknown', value: 'unknown' },
                         ],
                       },
                       'x-value-prop-name': 'defaultValue',
