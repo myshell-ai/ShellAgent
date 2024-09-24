@@ -13,6 +13,19 @@ from io import BytesIO
 
 font_dir = os.path.abspath('proconfig/widgets/myshell_widgets/tools/fonts')
 
+def calculate_text_width(text, font, node_spacing=1):
+    with Image.new('RGBA', (1, 1)) as tmp_img:
+        with Pilmoji(tmp_img) as pilmoji:
+            width, _ = pilmoji.getsize(text, font=font)
+    
+    # 计算表情符号的数量
+    emoji_count = sum(1 for char in text if char in emoji.EMOJI_DATA)
+    
+    # 添加 node_spacing 的宽度
+    total_width = width + emoji_count * node_spacing
+    
+    return total_width
+
 def fit_text_to_box(draw, text, box_size, font_path, max_font_size, min_font_size=10, line_spacing_factor=0.2):
     max_width, max_height = box_size
     font_size = max_font_size
@@ -23,15 +36,21 @@ def fit_text_to_box(draw, text, box_size, font_path, max_font_size, min_font_siz
         lines = []
         current_line = []
 
+        try_next = False
         for word in words:
             current_line.append(word)
-            line_width = font.getlength(' '.join(current_line))
+            line_width = calculate_text_width(' '.join(current_line), font)
             if line_width > max_width:
                 if len(current_line) == 1:
                     current_line = [word]
-                    continue  # Try the next font size
+                    try_next = True
+                    break
                 lines.append(' '.join(current_line[:-1]))
                 current_line = [word]
+        
+        if try_next:
+            font_size -= 1
+            continue
 
         if current_line:
             lines.append(' '.join(current_line))
@@ -62,7 +81,7 @@ def hex_to_rgb(hex_color):
         print(f"Warning: Invalid hex color format '{hex_color}'. Using black.")
         return (0, 0, 0, 255)  # Return black as default
 
-def add_outline_to_text(pilmoji_draw, text, x, y, font, text_color, outline_color, line_height):
+def add_outline_to_text(pilmoji_draw, text, x, y, font, text_color, outline_color, line_height, emoji_position_offset):
     # 绘制文本轮廓（不包含表情符号）
     text_without_emoji = ''.join(char for char in text if char not in emoji.EMOJI_DATA)
     pilmoji_draw.text((x-1, y-1), text_without_emoji, font=font, fill=outline_color)
@@ -71,7 +90,7 @@ def add_outline_to_text(pilmoji_draw, text, x, y, font, text_color, outline_colo
     pilmoji_draw.text((x+1, y+1), text_without_emoji, font=font, fill=outline_color)
 
     # Draw the text itself
-    pilmoji_draw.text((x, y), text, font=font, fill=text_color, node_spacing=1, emoji_position_offset=[0, int(0.25 * line_height)])
+    pilmoji_draw.text((x, y), text, font=font, fill=text_color, node_spacing=1, emoji_position_offset=[0, int(emoji_position_offset * line_height)])
 
 def resize_image(img, position, size, method='contain', rotation=0):
     original_width, original_height = img.size
@@ -113,11 +132,49 @@ def get_image(image_path):
         return Image.open(BytesIO(response.content)).convert('RGBA')
     else:
         return Image.open(image_path).convert('RGBA')
-# ImageFont.truetype(os.path.join(font_dir, title['font']), title['font_size'])
+
+from pilmoji.source import (
+    BaseSource, HTTPBasedSource, DiscordEmojiSourceMixin, EmojiCDNSource,
+    TwitterEmojiSource, AppleEmojiSource, GoogleEmojiSource, 
+    MicrosoftEmojiSource, FacebookEmojiSource, MessengerEmojiSource,
+    EmojidexEmojiSource, JoyPixelsEmojiSource, SamsungEmojiSource,
+    WhatsAppEmojiSource, MozillaEmojiSource, OpenmojiEmojiSource,
+    TwemojiEmojiSource, FacebookMessengerEmojiSource, Twemoji, Openmoji
+)
+
+def get_emoji_source(emoji_source_str):
+    source_class = EMOJI_SOURCES.get(emoji_source_str, TwitterEmojiSource)
+    return source_class()
+
+# 创建一个字典,将字符串映射到相应的 source 类
+EMOJI_SOURCES = {
+    'HTTPBasedSource': HTTPBasedSource,
+    'DiscordEmojiSourceMixin': DiscordEmojiSourceMixin,
+    'EmojiCDNSource': EmojiCDNSource,
+    'TwitterEmojiSource': TwitterEmojiSource,
+    'AppleEmojiSource': AppleEmojiSource,
+    'GoogleEmojiSource': GoogleEmojiSource,
+    'MicrosoftEmojiSource': MicrosoftEmojiSource,
+    'FacebookEmojiSource': FacebookEmojiSource,
+    'MessengerEmojiSource': MessengerEmojiSource,
+    'EmojidexEmojiSource': EmojidexEmojiSource,
+    'JoyPixelsEmojiSource': JoyPixelsEmojiSource,
+    'SamsungEmojiSource': SamsungEmojiSource,
+    'WhatsAppEmojiSource': WhatsAppEmojiSource,
+    'MozillaEmojiSource': MozillaEmojiSource,
+    'OpenmojiEmojiSource': OpenmojiEmojiSource,
+    'TwemojiEmojiSource': TwemojiEmojiSource,
+    'FacebookMessengerEmojiSource': FacebookMessengerEmojiSource,
+    'Twemoji': Twemoji,
+    'Openmoji': Openmoji
+}
+
 def add_content_to_image(template_path, content):
     image = get_image(template_path)
     draw = ImageDraw.Draw(image, mode='RGBA')
-    pilmoji_draw = Pilmoji(image)
+    emoji_source = content.get('emoji_source', 'TwitterEmojiSource')
+    emoji_source = get_emoji_source(emoji_source)
+    pilmoji_draw = Pilmoji(image, source=emoji_source)
 
     layers = []
     default_z_index = 0
@@ -144,7 +201,8 @@ def add_content_to_image(template_path, content):
                     'color': title_color,
                     'z_index': title.get('z_index', default_z_index),
                     'outline_color': title.get('outline_color'),
-                    'line_height': 0
+                    'line_height': 0,
+                    'emoji_position_offset': 0
                 })
                 y += line_height
                 default_z_index += 1
@@ -153,6 +211,7 @@ def add_content_to_image(template_path, content):
         position = tuple(box['position'])
         size = tuple(box['size'])
         z_index = box.get('z_index', default_z_index)
+        emoji_position_offset = box.get('emoji_position_offset', 0)
         default_z_index += 1
 
         if 'text' in box:
@@ -186,7 +245,7 @@ def add_content_to_image(template_path, content):
                 y_start = y + (box_height - text_height) / 2
 
             for line in lines:
-                line_width = font.getlength(line)
+                line_width = calculate_text_width(line, font)
                 
                 # Horizontal alignment
                 if text_align == 'left':
@@ -205,7 +264,8 @@ def add_content_to_image(template_path, content):
                     'underline': underline,
                     'z_index': z_index,
                     'outline_color': outline_color,
-                    'line_height': line_height
+                    'line_height': line_height,
+                    'emoji_position_offset': emoji_position_offset
                 })
                 y_start += line_height
 
@@ -241,9 +301,9 @@ def add_content_to_image(template_path, content):
                     outline_color = hex_to_rgb(outline_color)
                 print(layer['content'], layer['color'])
                 add_outline_to_text(pilmoji_draw, layer['content'], layer['position'][0], layer['position'][1], 
-                                    layer['font'], layer['color'], outline_color, layer['line_height'])
+                                    layer['font'], layer['color'], outline_color, layer['line_height'], layer['emoji_position_offset'])
             else:
-                pilmoji_draw.text(layer['position'], layer['content'], font=layer['font'], fill=layer['color'], node_spacing=1, emoji_position_offset=[0, int(0.25 * layer['line_height'])])
+                pilmoji_draw.text(layer['position'], layer['content'], font=layer['font'], fill=layer['color'], node_spacing=1, emoji_position_offset=[0, int(layer['emoji_position_offset'] * layer['line_height'])])
             
             if layer.get('underline', False):
                 x, y = layer['position']
@@ -255,10 +315,9 @@ def add_content_to_image(template_path, content):
             temp.paste(layer['content'], layer['position'], layer['content'])
             image = Image.alpha_composite(image, temp)
             draw = ImageDraw.Draw(image)
-            pilmoji_draw = Pilmoji(image)
+            pilmoji_draw = Pilmoji(image, source=emoji_source)
 
     return image
-
 @WIDGETS.register_module()
 class ImageTextFuserWidget(BaseWidget):
     NAME = "Image Text Fuser"
