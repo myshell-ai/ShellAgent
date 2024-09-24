@@ -5,6 +5,7 @@ import {
   MapIcon,
 } from '@heroicons/react/24/outline';
 import { Tooltip, TooltipTrigger, TooltipContent } from '@shellagent/ui';
+import React from 'react';
 import { useReactFlow } from 'reactflow';
 
 import 'reactflow/dist/style.css';

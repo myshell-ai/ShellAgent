@@ -73,7 +73,7 @@ const StateNode: React.FC<NodeProps<StateNodeType>> = ({
     setCurrentCopyStateData: state.setCurrentCopyStateData,
   }));
 
-  const { duplicateState } = useDuplicateState(id);
+  const { duplicateState } = useDuplicateState();
 
   const selectedNodeRef = useRef<Node | null>(null);
 

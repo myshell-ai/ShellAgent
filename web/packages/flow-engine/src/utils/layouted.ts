@@ -1,6 +1,6 @@
 import Dagre from '@dagrejs/dagre';
 
-import { IEdge, INode } from '..';
+import { IEdge } from '..';
 
 const initSize = {
   width: 500,

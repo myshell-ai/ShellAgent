@@ -1,12 +1,13 @@
+import { uuid, uuidRegex } from '@shellagent/flow-engine';
 import { FieldValues } from '@shellagent/ui';
-import { uuid } from '@shellagent/flow-engine';
-import { generateUUID } from '@/utils/common-helper';
 import { produce } from 'immer';
+
 import { IButtonType } from '@/components/app/node-form/widgets/button-editor';
 import {
   IWorkflowTask,
   IWidgetTask,
 } from '@/components/app/node-form/widgets/tasks-config';
+import { generateUUID } from '@/utils/common-helper';
 
 // 生成uuid的偏移量
 let offset = 0;
@@ -32,19 +33,18 @@ const replaceKeyInData = (
   keyMap: { [oldKey: string]: string },
 ): any => {
   if (typeof data === 'string') {
-    for (const oldKey in keyMap) {
-      data = data.replace(
-        new RegExp(`{{\\s*${oldKey}(\\s*[^0-9].*?)}}`, 'g'),
-        `{{${keyMap[oldKey]}$1}}`,
-      );
-    }
+    data = data.replace(uuidRegex, match => {
+      return keyMap[match] || match;
+    });
     return data;
-  } else if (Array.isArray(data)) {
-    return data.map(item => replaceKeyInData(item, keyMap));
-  } else if (typeof data === 'object' && data !== null) {
-    for (const k in data) {
+  }
+  if (Array.isArray(data)) {
+    return data.map((item: any) => replaceKeyInData(item, keyMap));
+  }
+  if (typeof data === 'object' && data !== null) {
+    Object.keys(data).forEach(k => {
       data[k] = replaceKeyInData(data[k], keyMap);
-    }
+    });
   }
   return data;
 };
@@ -85,18 +85,19 @@ export const initData = (data: FieldValues) => {
     }
 
     const { keyMap: inputKeyMap, newObj: newInput } = updateKeys(
-      draft?.inputs || {},
+      draft?.input || {},
     );
     const { keyMap: outputKeyMap, newObj: newOutput } = updateKeys(
-      draft?.outputs || {},
+      draft?.output || {},
     );
-
     const combinedKeyMap = { ...inputKeyMap, ...outputKeyMap, ...blockKeyMap };
 
-    draft.inputs = replaceKeyInData(newInput, combinedKeyMap);
-    draft.outputs = replaceKeyInData(newOutput, combinedKeyMap);
+    draft.input = replaceKeyInData(newInput, combinedKeyMap);
+    draft.output = replaceKeyInData(newOutput, combinedKeyMap);
     draft.render = replaceKeyInData(draft?.render || {}, combinedKeyMap);
-    draft.blocks = replaceKeyInData(draft?.blocks || [], combinedKeyMap);
+    draft.blocks = draft.blocks.map((block: IWorkflowTask | IWidgetTask) =>
+      replaceKeyInData(block, combinedKeyMap),
+    );
   });
 
   return newData;

@@ -5,4 +5,5 @@ function uuid(offset: number = 0): Lowercase<string> {
   return `key_${randomString}` as Lowercase<string>;
 }
 
-export { uuid };
+const uuidRegex = /key_\d{13}/g;
+export { uuid, uuidRegex };

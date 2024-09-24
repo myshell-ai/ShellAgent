@@ -20,9 +20,8 @@ export const usePasteState = ({
 }: {
   enabeKeyboard: boolean;
 }) => {
-  const { setNodeData, nodeData } = useAppStore(state => ({
+  const { setNodeData } = useAppStore(state => ({
     setNodeData: state.setNodeData,
-    nodeData: state.nodeData,
   }));
 
   const { reactFlowWrapper, viewport, onAddNode } = useReactFlowStore(
