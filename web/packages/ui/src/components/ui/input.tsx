@@ -40,12 +40,13 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
       outline = 'default',
       background = 'default',
       shadow = 'default',
+      onChange,
+      pattern,
       ...props
     },
     ref,
   ) => {
     const { readOnly } = props;
-
     const inputVariants = cva('', {
       variants: {
         rounded: {
@@ -102,6 +103,16 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
       // }
     };
 
+    const onValueChange = (e: any) => {
+      if (pattern && e.target.value) {
+        if (new RegExp(pattern)?.test?.(e.target.value)) {
+          onChange?.(e);
+        }
+      } else {
+        onChange?.(e);
+      }
+    };
+
     return (
       <input
         type={type}
@@ -119,6 +130,7 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
         ref={ref}
         {...props}
         onKeyDown={handleKeyDown}
+        onChange={onValueChange}
       />
     );
   },
