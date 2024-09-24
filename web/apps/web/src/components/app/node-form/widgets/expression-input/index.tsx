@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect } from 'react';
+import React, { useCallback, useEffect, useMemo } from 'react';
 import {
   MentionsInput,
   OnChangeHandlerFunc,
@@ -76,29 +76,44 @@ const ExpressionInput: React.FC<IExpressionInputProps> = ({
     return text;
   };
 
+  // TODO 如果多个value相同，只能映射到最后一个label
   const v2l = (value: string) => {
-    return (
-      flatOptions?.reduce<string>((prev, item) => {
-        const { value, label } = item;
-        if (value && prev) {
-          prev = prev.replaceAll(
-            value,
-            `@[${label || DEFAULT_LABEL}](value:${value})`,
-          );
-        }
-        return prev;
-      }, value) || value
-    );
+    const valueToLabelMap = new Map<string, string>();
+
+    // 构建 value 到 label 的映射
+    flatOptions.forEach(item => {
+      const { value: itemValue, label } = item;
+      if (itemValue) {
+        valueToLabelMap.set(itemValue, label || DEFAULT_LABEL);
+      }
+    });
+
+    // 替换 value 为对应的 label
+    valueToLabelMap.forEach((label, itemValue) => {
+      const regex = new RegExp(`\\b${itemValue}\\b`, 'g');
+      // 确保替换时没有重复替换
+      value = value.replace(regex, match => {
+        // 检查是否已经被替换过
+        const alreadyReplaced = new RegExp(
+          `@\\[${label}\\]\\(value:${itemValue}\\)`,
+        ).test(value);
+        return alreadyReplaced ? match : `@[${label}](value:${itemValue})`;
+      });
+    });
+
+    return value;
   };
+
   const l2v = (label: string) => {
     const str =
       flatOptions?.reduce<string>((prev, item) => {
-        const { value, label } = item;
+        const { value, label: itemLabel } = item;
         if (value && prev) {
-          prev = prev.replaceAll(
-            `@[${label || DEFAULT_LABEL}](value:${value})`,
-            value || '',
+          const regex = new RegExp(
+            `@\\[${itemLabel || DEFAULT_LABEL}\\]\\(value:${value}\\)`,
+            'g',
           );
+          prev = prev.replace(regex, value || '');
         }
         return prev;
       }, label) || label;

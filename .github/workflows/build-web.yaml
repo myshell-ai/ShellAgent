@@ -5,12 +5,12 @@ on:
     paths:
       - "web/apps/web/**"
       - "web/packages/**"
-      - ".github/**"
+      - ".github/workflows/build-web.yaml"
   pull_request:
     paths:
       - "web/apps/web/**"
       - "web/packages/**"
-      - ".github/**"
+      - ".github/workflows/build-web.yaml"
 
 jobs:
   build:

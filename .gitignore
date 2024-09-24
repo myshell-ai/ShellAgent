@@ -1,4 +1,5 @@
 __pycache__
+*.egg-info
 .env
 /models
 __MACOSX
@@ -12,9 +13,11 @@ modal*
 temp/
 package/
 servers/web-build
+servers/web
 settings.json
 styles
 data_template
+web/extensions
 package_models
 hf_repo
 *.7z

@@ -31,7 +31,7 @@ if not exist "output" (
 )
 
 if not exist "servers\web" (
-    mkdir -p "servers\web"
+    mkdir "servers\web"
 )
 
 if not exist "models\model_status.json" (

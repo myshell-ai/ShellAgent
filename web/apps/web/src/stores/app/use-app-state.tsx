@@ -62,7 +62,7 @@ const initialState: State = {
     id: '',
     custom: true,
     event_key: '',
-    type: EdgeDataTypeEnum.CHAT,
+    type: EdgeDataTypeEnum.ALWAYS,
     target: '',
     conditions: [],
   },

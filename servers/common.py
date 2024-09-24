@@ -5,10 +5,11 @@ import uuid
 import importlib
 import sys
 
-from flask import request, jsonify, abort, send_from_directory
+from flask import request, jsonify, abort, send_from_directory, send_file
 
 from proconfig.widgets.base import WIDGETS
 from proconfig.widgets import load_custom_widgets
+from proconfig.utils.misc import is_valid_url, _make_temp_file
 
 from servers.base import app, APP_SAVE_ROOT, WORKFLOW_SAVE_ROOT, get_file_times
 
@@ -65,17 +66,22 @@ BASE_DIR = os.getcwd()
 @app.route('/api/files/<path:filename>')
 def get_file(filename):
     try:
-        # Ensure the file path is safe
-        print("base dir:", BASE_DIR)
-        print("filename:", filename)
-        # if filename.startswith(BASE_DIR):
-        #     file_path = filename
-        # elif filename.startswith(BASE_DIR[1:]):
-        #     file_path = "/" + filename
-        # else:
-        file_path = os.path.join(BASE_DIR, filename)
-        file_path = os.path.normpath(file_path)
-        # filename = file_path[len(BASE_DIR) + 1:]
+        if is_valid_url(filename):
+            src = _make_temp_file(filename)
+            filename = src.name
+            return send_file(filename)
+        else:
+            # Ensure the file path is safe
+            print("base dir:", BASE_DIR)
+            print("filename:", filename)
+            # if filename.startswith(BASE_DIR):
+            #     file_path = filename
+            # elif filename.startswith(BASE_DIR[1:]):
+            #     file_path = "/" + filename
+            # else:
+            file_path = os.path.join(BASE_DIR, filename)
+            file_path = os.path.normpath(file_path)
+
         if os.path.isfile(file_path):
             # Send the file to the client
             print("ready to send", filename)

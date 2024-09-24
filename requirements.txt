@@ -204,3 +204,8 @@ yacs
 yapf
 pilmoji==2.0.4
 emoji==1.7.0
+flask
+PyExecJS
+fuzzywuzzy
+cloudpickle
+albucore==0.0.16
