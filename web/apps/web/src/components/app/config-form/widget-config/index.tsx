@@ -12,6 +12,7 @@ import NodeForm from '@/components/app/node-form';
 import { useAppStore } from '@/stores/app/app-provider';
 import { getSchemaByWidget } from '@/stores/app/utils/get-widget-schema';
 import { useWorkflowStore } from '@/stores/workflow/workflow-provider';
+import { getPlugin } from '@/components/app/plugins';
 
 interface WidgetConfigProps {
   values: TValues | undefined;
@@ -20,7 +21,20 @@ interface WidgetConfigProps {
   onChange: (values: TValues) => void;
 }
 
-export const WidgetConfig: React.FC<WidgetConfigProps> = ({
+const CustomWidgetConfig: React.FC<WidgetConfigProps> = ({ values }) => {
+  if (!values) {
+    return null;
+  }
+
+  const PluginComponent = getPlugin(values.widget_class_name);
+  if (PluginComponent) {
+    return <PluginComponent />;
+  }
+
+  return null;
+};
+
+const StandardWidgetConfig: React.FC<WidgetConfigProps> = ({
   values,
   parent,
   id,
@@ -107,4 +121,11 @@ export const WidgetConfig: React.FC<WidgetConfigProps> = ({
       modeMap={fieldsModeMap?.[`${id}.${parent}`] || {}}
     />
   );
+};
+
+export const WidgetConfig: React.FC<WidgetConfigProps> = props => {
+  if (props.values?.custom) {
+    return <CustomWidgetConfig {...props} />;
+  }
+  return <StandardWidgetConfig {...props} />;
 };

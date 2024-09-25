@@ -1,6 +1,6 @@
 import { PlusIcon } from '@heroicons/react/24/outline';
 import { XMarkIcon } from '@heroicons/react/24/solid';
-import { WidgetItem, uuid } from '@shellagent/flow-engine';
+import { WidgetItem, uuid, NodeTypeEnum } from '@shellagent/flow-engine';
 import { Button, useFormContext, Drag } from '@shellagent/ui';
 import { useClickAway } from 'ahooks';
 import { Dropdown } from 'antd';
@@ -17,7 +17,7 @@ export interface IWorkflowTask {
   type: 'task';
   display_name: string;
   name: string;
-  mode: 'workflow';
+  mode: NodeTypeEnum.workflow;
   workflow_id: string;
   key: string;
   inputs: {
@@ -32,7 +32,7 @@ export interface IWidgetTask {
   type: 'task';
   display_name: string;
   name: string;
-  mode: 'widget';
+  mode: NodeTypeEnum.widget;
   widget_name: string;
   widget_class_name: string;
   key: string;
@@ -87,17 +87,19 @@ const TasksConfig = ({
   const handleSelect = useCallback(
     (task: WidgetItem) => {
       setOpen(false);
-
       const newTask = {
         type: 'task',
         display_name: task.display_name,
         name: uuid(), // 需要是key_xxx，作为ref引用
-        mode: task.type === 'workflow' ? 'workflow' : 'widget',
-        workflow_id: task.type === 'workflow' ? generateUUID() : undefined,
-        widget_name: task.type === 'widget' ? task.name : undefined,
-        widget_class_name: task.type === 'widget' ? task.name : undefined,
+        mode: task.type,
+        workflow_id:
+          task.type === NodeTypeEnum.workflow ? generateUUID() : undefined,
+        widget_name: task.type === NodeTypeEnum.widget ? task.name : undefined,
+        widget_class_name:
+          task.type === NodeTypeEnum.widget ? task.name : undefined,
         inputs: {},
         outputs: {},
+        custom: task.custom,
       };
 
       const blocks = Array.isArray(values) ? [...values, newTask] : [newTask];

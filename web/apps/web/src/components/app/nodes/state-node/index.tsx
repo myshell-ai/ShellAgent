@@ -208,32 +208,42 @@ const StateNode: React.FC<NodeProps<StateNodeType>> = ({
     () => ({
       accept: DRAGGABLE_NODE_ID,
       drop: item => {
-        const newTask = {
-          type: 'task',
-          display_name: item.display_name,
-          name: uuid(),
-          mode: item.nodeType === 'workflow' ? 'workflow' : 'widget',
-          workflow_id:
-            item.nodeType === 'workflow' ? generateUUID() : undefined,
-          widget_name: item.nodeType === 'widget' ? item.name : undefined,
-          widget_class_name: item.nodeType === 'widget' ? item.name : undefined,
-          inputs: {},
-          outputs: {},
-        };
+        if (
+          item.nodeType === NodeTypeEnum.widget ||
+          item.nodeType === NodeTypeEnum.workflow
+        ) {
+          const newTask = {
+            type: 'task',
+            display_name: item.display_name,
+            name: uuid(),
+            mode: item.nodeType,
+            workflow_id:
+              item.nodeType === NodeTypeEnum.workflow
+                ? generateUUID()
+                : undefined,
+            widget_name:
+              item.nodeType === NodeTypeEnum.widget ? item.name : undefined,
+            widget_class_name:
+              item.nodeType === NodeTypeEnum.widget ? item.name : undefined,
+            inputs: {},
+            outputs: {},
+            custom: item.custom,
+          };
 
-        setNodeData({
-          id,
-          data: {
-            ...nodeData[id],
-            blocks: [...(nodeData[id]?.blocks || []), newTask],
-          },
-        });
-        setFormKey(uuid());
-        emitter.emit(EventType.STATE_FORM_CHANGE, {
-          id: data.id as NodeId,
-          data: `${new Date().valueOf()}`,
-          type: 'StateCard',
-        });
+          setNodeData({
+            id,
+            data: {
+              ...nodeData[id],
+              blocks: [...(nodeData[id]?.blocks || []), newTask],
+            },
+          });
+          setFormKey(uuid());
+          emitter.emit(EventType.STATE_FORM_CHANGE, {
+            id: data.id as NodeId,
+            data: `${new Date().valueOf()}`,
+            type: 'StateCard',
+          });
+        }
       },
     }),
     [setNodeData, nodeData, id],
