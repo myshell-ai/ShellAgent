@@ -140,5 +140,3 @@ def check_repo_status():
 @app.route('/about')
 def about():
     return "About Page"
-
-print(check_repo_status())
