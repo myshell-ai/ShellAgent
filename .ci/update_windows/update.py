@@ -80,10 +80,10 @@ else:
     print("No need to update submodules")
 
 try:
-    print("暂存当前更改")
+    print("Stashing current changes")
     repo.stash(ident)
 except KeyError:
-    print("没有需要暂存的更改")
+    print("No changes to stash")
 
 backup_branch_name = 'backup_branch_{}'.format(datetime.today().strftime('%Y-%m-%d_%H_%M_%S'))
 print("creating backup branch: {}".format(backup_branch_name))
@@ -92,7 +92,7 @@ try:
 except:
     pass
 
-print("检出 main 分支")
+print("Checking out main branch")
 branch = repo.lookup_branch('main')
 if branch is None:
     ref = repo.lookup_reference('refs/remotes/origin/main')
@@ -104,7 +104,7 @@ else:
     ref = repo.lookup_reference(branch.name)
     repo.checkout(ref)
 
-print("拉取最新更改")
+print("Pulling latest changes")
 pull(repo, branch='main')
 
 if "--stable" in sys.argv:
