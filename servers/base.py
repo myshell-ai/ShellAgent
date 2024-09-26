@@ -1,11 +1,10 @@
-
 import flask
-from flask import Flask, render_template
+from flask import Flask, render_template, jsonify
 import os
 import time
 import json
+import pygit2
 import __main__
-
 
 # define the app and some basic settings
 
@@ -103,6 +102,43 @@ def app_detail_page():
 def workflow_detail_page():
     return render_template("workflow/detail.html")
 
+@app.route('/check_repo_status')
+def check_repo_status():
+    pygit2.option(pygit2.GIT_OPT_SET_OWNER_VALIDATION, 0)
+    repo = pygit2.Repository('../ShellAgent')
+
+    has_new_commits = False
+    for remote in repo.remotes:
+        if remote.name == 'origin':
+            remote.fetch()
+            remote_main_id = repo.lookup_reference('refs/remotes/origin/main').target
+            merge_result, _ = repo.merge_analysis(remote_main_id)
+            if not (merge_result & pygit2.GIT_MERGE_ANALYSIS_UP_TO_DATE):
+                has_new_commits = True
+                break
+
+    has_new_stable = False
+    current_tag = None
+    for reference in repo.references:
+        if reference.startswith('refs/tags/v'):
+            current_tag = reference
+
+    if current_tag:
+        latest_tag = max((ref for ref in repo.references if ref.startswith('refs/tags/v')), key=lambda x: [int(i) for i in x.split('/')[-1][1:].split('.')])
+        has_new_stable = latest_tag != current_tag
+
+
+    print({
+        "has_new_commits": has_new_commits,
+        "has_new_stable": has_new_stable
+    })
+    return jsonify({
+        "has_new_commits": has_new_commits,
+        "has_new_stable": has_new_stable
+    })
+
 @app.route('/about')
 def about():
     return "About Page"
+
+print(check_repo_status())
