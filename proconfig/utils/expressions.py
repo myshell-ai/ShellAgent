@@ -7,18 +7,21 @@ import logging
 from proconfig.utils.pytree import tree_map
 from proconfig.utils.misc import is_serializable_type
 from easydict import EasyDict as edict
-
+import time
 from typing import Any
+
 package_ctx = {
     'np': np,
     'json': json,
+    'time': time,
 }
 
 def evaluate_expression_python(expression, context, check_valid=True):
     try:
         # Replace variables in the expression with their values from the context
         context = {k: edict(v) if type(v) == dict else v for k, v in context.items()}
-        evaluated_expression = eval(expression, {}, context)
+        combined_ctx = {**context, **package_ctx}
+        evaluated_expression = eval(expression, {}, combined_ctx)
         if isinstance(evaluated_expression, edict):
             evaluated_expression = {**evaluated_expression}
         return evaluated_expression
