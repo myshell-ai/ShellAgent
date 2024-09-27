@@ -4,8 +4,18 @@
 
 import { PlusOutlined } from '@ant-design/icons';
 import { css } from '@emotion/react';
-import { contentPadding, Icon, TrashIcon } from '@shellagent/ui';
-import { Button as AButton, Form, Input, Modal, theme, Typography } from 'antd';
+import { AButton, contentPadding, Icon, TrashIcon, Text } from '@shellagent/ui';
+import {
+  Button as Button,
+  Card,
+  Divider,
+  Form,
+  Input,
+  Modal,
+  Switch,
+  theme,
+  Typography,
+} from 'antd';
 import { Field, FieldArray, FieldProps, Formik } from 'formik';
 import { useInjection } from 'inversify-react';
 import { observer } from 'mobx-react-lite';
@@ -16,7 +26,7 @@ import { SettingEnvFormValue } from './settings-definitions';
 import { SettingsSideBar } from './settings-sidebar';
 import { SettingsModel } from './settings.model';
 
-export const SettingsForm = () => {
+export const EnvForm = () => {
   const model = useInjection(SettingsModel);
   return (
     <Formik<SettingEnvFormValue>
@@ -87,7 +97,7 @@ export const SettingsForm = () => {
                       </Flex>
                     </Box>
                   ))}
-                  <AButton
+                  <Button
                     css={css`
                       color: var(--ant-color-primary);
                     `}
@@ -99,7 +109,7 @@ export const SettingsForm = () => {
                     }
                     icon={<PlusOutlined />}>
                     Add
-                  </AButton>
+                  </Button>
                 </div>
               )}
             />
@@ -107,6 +117,61 @@ export const SettingsForm = () => {
         );
       }}
     </Formik>
+  );
+};
+
+export const Update = () => {
+  const model = useInjection(SettingsModel);
+  return (
+    <div>
+      <Box mb={3}>
+        <Card bodyStyle={{ padding: 12 }}>
+          <Flex justifyContent="space-between">
+            <Text>Automatic Updates</Text>
+            <Switch />
+          </Flex>
+        </Card>
+      </Box>
+
+      <Box mb={3}>
+        <Card bodyStyle={{ padding: 12 }}>
+          <Flex justifyContent="space-between">
+            <Text>Check for update</Text>
+            <AButton>Check Now</AButton>
+          </Flex>
+        </Card>
+      </Box>
+
+      <Box mb={3}>
+        <Card bodyStyle={{ padding: 12 }}>
+          <Flex justifyContent="space-between">
+            <Box>
+              <div>
+                <Text size="lg">New updates are available</Text>
+              </div>
+              <Text size="sm" color="subtler">
+                v1.36 (07.21 2024)
+              </Text>
+            </Box>
+            <AButton>Update now</AButton>
+          </Flex>
+          <Divider style={{ margin: '12px 0' }} />
+          <a onClick={model.changelogModal.open}>View Detail</a>
+        </Card>
+      </Box>
+
+      <Box mb={3}>
+        <Card bodyStyle={{ padding: 12 }}>
+          <div>
+            <Text size="lg">It is the latest version.</Text>
+          </div>
+          <Text size="sm" color="subtler">
+            Last check time 08:32 today.
+          </Text>
+        </Card>
+      </Box>
+      <ChangelogDialog />
+    </div>
   );
 };
 
@@ -160,7 +225,8 @@ export const SettingsDialog = observer(() => {
             `}
             className="bg-surface-container-default h-12 px-4 py-2 border-b flex justify-start items-end rounded-none">
             <div className="w-fit text-subtler rounded-none text-base">
-              Environment
+              {model.sidebar === 'Environment' ? 'Environment' : null}
+              {model.sidebar === 'SoftwareUpdate' ? 'Software Update' : null}
             </div>
           </div>
           <Box
@@ -168,10 +234,67 @@ export const SettingsDialog = observer(() => {
             css={css`
               overflow-y: auto;
             `}>
-            <SettingsForm />
+            {model.sidebar === 'Environment' ? <EnvForm /> : null}
+            {model.sidebar === 'SoftwareUpdate' ? <Update /> : null}
           </Box>
         </div>
       </Flex>
+    </Modal>
+  );
+});
+
+export const ChangelogDialog = observer(() => {
+  const model = useInjection(SettingsModel);
+  const { token } = theme.useToken();
+  return (
+    <Modal
+      open={model.changelogModal.isOpen}
+      title="Changelog"
+      width="900px"
+      height="80%"
+      onCancel={() => model.changelogModal.close()}
+      footer={
+        <Flex mx={-1} justifyContent={'flex-end'}>
+          <Box mx={1}>
+            <AButton size="large">Close</AButton>
+          </Box>
+          <Box mx={1}>
+            <Button
+              size="large"
+              css={css`
+                border-radius: 9999px;
+              `}
+              type="primary">
+              Update Now
+            </Button>
+          </Box>
+        </Flex>
+      }
+      styles={{
+        header: {
+          padding: `${contentPadding}px`,
+          marginBottom: 0,
+          borderBottom: `1px solid ${token.colorBorder}`,
+          borderTopLeftRadius: 24,
+          borderTopRightRadius: 24,
+        },
+        footer: {
+          marginTop: 0,
+          padding: `${contentPadding}px`,
+          borderTop: `1px solid ${token.colorBorder}`,
+          borderRadius: `0 0 ${token.borderRadius}px ${token.borderRadius}px`,
+        },
+        content: {
+          padding: 0,
+          borderRadius: 24,
+          height: '100%',
+        },
+        body: {
+          padding: 0,
+          height: '100%',
+        },
+      }}>
+      Changelog
     </Modal>
   );
 });

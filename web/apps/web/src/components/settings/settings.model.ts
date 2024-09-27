@@ -11,13 +11,14 @@ import {
   saveSettingEnvFormUrl,
 } from './settings-definitions';
 
-export type SidebarValue = 'Environment';
+export type SidebarValue = 'Environment' | 'SoftwareUpdate';
 
 @injectable()
 export class SettingsModel {
   constructor(
     @inject(EmitterModel) private emitter: EmitterModel,
     @inject(ModalModel) public modal: ModalModel,
+    @inject(ModalModel) public changelogModal: ModalModel,
   ) {
     makeObservable(this);
 

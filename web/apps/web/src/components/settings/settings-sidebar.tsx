@@ -29,6 +29,11 @@ export const SettingsSideBar = observer(() => {
         className="w-full h-full p-0">
         <TabsList className="flex flex-col h-full items-start justify-start p-0 gap-y-1.5">
           <TabsTrigger
+            value="SoftwareUpdate"
+            className="w-full justify-start text-subtler rounded-md border-b-0 mx-0 px-2 py-1 data-[state=active]:bg-surface-accent-blue-subtler">
+            Software Update
+          </TabsTrigger>
+          <TabsTrigger
             value="Environment"
             className="w-full justify-start text-subtler rounded-md border-b-0 mx-0 px-2 py-1 data-[state=active]:bg-surface-accent-blue-subtler">
             Environment
