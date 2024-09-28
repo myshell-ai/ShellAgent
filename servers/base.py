@@ -137,6 +137,22 @@ def check_repo_status():
         "has_new_stable": has_new_stable
     })
 
+@app.route('/restart')
+def restart():
+    print("Restart signal triggered")
+    # Return a response to the client
+    response = jsonify({"message": "Server is restarting"})
+    response.status_code = 200
+    # Use a thread to exit the program after a short delay
+    import sys
+    import threading
+    def delayed_exit():
+        import time
+        time.sleep(1)  # Wait for 1 second to ensure the response has been sent
+        os._exit(42)  # Use exit code 42 to indicate restart signal
+    threading.Thread(target=delayed_exit).start()
+    return response
+
 @app.route('/about')
 def about():
     return "About Page"
