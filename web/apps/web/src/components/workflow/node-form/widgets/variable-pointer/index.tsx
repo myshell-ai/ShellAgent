@@ -95,9 +95,6 @@ function VariablePointer({
           item.sourceHandle === connection.sourceHandle,
       );
       if (targetType !== sourceType) {
-        edges?.splice(currentIdx, 1);
-        flowInstance?.setEdges(edges);
-      } else {
         const edges = flowInstance?.getEdges() || [];
         const deleteIdx = edges.findIndex(
           item =>

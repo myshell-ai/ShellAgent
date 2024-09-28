@@ -90,21 +90,21 @@ function VariableNode() {
     setTimeout(() => {
       const edges = flowInstance?.getEdges() || [];
       const targetType =
-        connection.target && connection.targetHandle
-          ? get(fieldTypes, [
-              connection.target,
-              'inputs',
-              connection?.targetHandle,
-            ])
-          : '';
+        (connection.target && connection.targetHandle
+          ? get(
+              fieldTypes,
+              [connection.target, 'inputs', connection?.targetHandle],
+              '',
+            )
+          : '') || 'any';
       const sourceType =
-        connection.source && connection.sourceHandle
-          ? get(fieldTypes, [
-              connection.source,
-              'outputs',
-              connection?.sourceHandle,
-            ])
-          : '';
+        (connection.source && connection.sourceHandle
+          ? get(
+              fieldTypes,
+              [connection.source, 'outputs', connection?.sourceHandle],
+              '',
+            )
+          : '') || 'any';
 
       const currentIdx = edges.findIndex(
         item =>
@@ -114,7 +114,11 @@ function VariableNode() {
           item.sourceHandle === connection.sourceHandle,
       );
 
-      if (targetType !== sourceType && connection.target !== NodeIdEnum.end) {
+      if (
+        targetType !== sourceType &&
+        connection.target !== NodeIdEnum.end &&
+        ![targetType, sourceType].includes('any')
+      ) {
         edges?.splice(currentIdx, 1);
         flowInstance?.setEdges(edges);
       } else {
