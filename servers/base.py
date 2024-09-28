@@ -4,7 +4,9 @@ import os
 import time
 import json
 import pygit2
+import subprocess
 import __main__
+import requests
 
 # define the app and some basic settings
 
@@ -107,35 +109,64 @@ def check_repo_status():
     pygit2.option(pygit2.GIT_OPT_SET_OWNER_VALIDATION, 0)
     repo = pygit2.Repository('../ShellAgent')
 
-    has_new_commits = False
-    for remote in repo.remotes:
-        if remote.name == 'origin':
-            remote.fetch()
-            remote_main_id = repo.lookup_reference('refs/remotes/origin/main').target
-            merge_result, _ = repo.merge_analysis(remote_main_id)
-            if not (merge_result & pygit2.GIT_MERGE_ANALYSIS_UP_TO_DATE):
-                has_new_commits = True
-                break
-
     has_new_stable = False
     current_tag = None
+    
+    current_branch = repo.head.shorthand
+    
+    latest_commit = repo.revparse_single(current_branch)
+    
     for reference in repo.references:
         if reference.startswith('refs/tags/v'):
-            current_tag = reference
+            tag = repo.lookup_reference(reference)
+            if tag.peel().id == latest_commit.id:
+                current_tag = reference
+                break
+    print(f'current_tag: {current_tag}')
 
     if current_tag:
         latest_tag = max((ref for ref in repo.references if ref.startswith('refs/tags/v')), key=lambda x: [int(i) for i in x.split('/')[-1][1:].split('.')])
+        print(f"latest_tag: {latest_tag}")
         has_new_stable = latest_tag != current_tag
 
+        if has_new_stable:
+            latest_tag_name = latest_tag.split('/')[-1]
+            
+            # get changelog
+            github_api_url = f"https://api.github.com/repos/myshell-ai/ShellAgent/releases/tags/{latest_tag_name}"
+            response = requests.get(github_api_url)
+            if response.status_code == 200:
+                release_data = response.json()
+                changelog = release_data.get('body', 'No changelog found')
+            else:
+                changelog = f"Failed to get changelog. HTTP status code: {response.status_code}"
 
-    print({
-        "has_new_commits": has_new_commits,
+            print(f"Latest tag: {latest_tag_name}")
+            print(f"Changelog:\n{changelog}")
+
+    response = {
         "has_new_stable": has_new_stable
-    })
-    return jsonify({
-        "has_new_commits": has_new_commits,
-        "has_new_stable": has_new_stable
-    })
+    }
+    if has_new_stable:
+        response["latest_tag_name"] = latest_tag_name
+        response["changelog"] = changelog
+    return jsonify(response)
+
+def update_stable():
+    try:
+        script_path = os.path.join('.ci', 'update_windows', 'update.py')
+        result = subprocess.run(['python', script_path, './', '--stable'], capture_output=True, text=True, check=True)
+        return result.stdout
+    except subprocess.CalledProcessError as e:
+        raise Exception(f"update failed: {e.stderr}")
+
+@app.route('/update/stable')
+def update_stable_route():
+    try:
+        result = update_stable()
+        return jsonify({"success": True, "message": result}), 200
+    except Exception as e:
+        return jsonify({"success": False, "error": str(e)}), 500
 
 @app.route('/restart')
 def restart():
@@ -144,7 +175,6 @@ def restart():
     response = jsonify({"message": "Server is restarting"})
     response.status_code = 200
     # Use a thread to exit the program after a short delay
-    import sys
     import threading
     def delayed_exit():
         import time
