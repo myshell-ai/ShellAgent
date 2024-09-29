@@ -21,10 +21,11 @@ import { useInjection } from 'inversify-react';
 import { observer } from 'mobx-react-lite';
 import { useEffect } from 'react';
 import { Box, Flex } from 'react-system';
-
+import Markdown from 'react-markdown';
 import { SettingEnvFormValue } from './settings-definitions';
 import { SettingsSideBar } from './settings-sidebar';
 import { SettingsModel } from './settings.model';
+import dayjs from 'dayjs';
 
 export const EnvForm = () => {
   const model = useInjection(SettingsModel);
@@ -120,60 +121,100 @@ export const EnvForm = () => {
   );
 };
 
-export const Update = () => {
+export const Update = observer(() => {
   const model = useInjection(SettingsModel);
+  useEffect(() => {
+    model.getCurrentVersion();
+  }, [model.checkedStatus]);
   return (
-    <div>
-      <Box mb={3}>
-        <Card bodyStyle={{ padding: 12 }}>
-          <Flex justifyContent="space-between">
-            <Text>Automatic Updates</Text>
-            <Switch />
-          </Flex>
-        </Card>
-      </Box>
+    <Flex
+      flexDirection="column"
+      justifyContent="space-between"
+      css={css`
+        height: 100%;
+      `}>
+      <div>
+        <Box mb={3}>
+          <Card bodyStyle={{ padding: 12 }}>
+            <Flex justifyContent="space-between">
+              <Text>Automatic Updates</Text>
+              <Switch
+                value={model.isAutoCheck}
+                onChange={model.setAutoCheck}
+                loading={model.isAutoCheckLoading}
+              />
+            </Flex>
+          </Card>
+        </Box>
 
-      <Box mb={3}>
-        <Card bodyStyle={{ padding: 12 }}>
-          <Flex justifyContent="space-between">
-            <Text>Check for update</Text>
-            <AButton>Check Now</AButton>
-          </Flex>
-        </Card>
-      </Box>
+        {model.checkedStatus == null ? (
+          <Box mb={3}>
+            <Card bodyStyle={{ padding: 12 }}>
+              <Flex justifyContent="space-between">
+                <Text>Check for update</Text>
+                <AButton onClick={model.checkNow} loading={model.isChecking}>
+                  Check Now
+                </AButton>
+              </Flex>
+            </Card>
+          </Box>
+        ) : null}
 
-      <Box mb={3}>
-        <Card bodyStyle={{ padding: 12 }}>
-          <Flex justifyContent="space-between">
-            <Box>
+        {model.checkedStatus === 'newUpdate' ? (
+          <Box mb={3}>
+            <Card bodyStyle={{ padding: 12 }}>
+              <Flex justifyContent="space-between">
+                <Box>
+                  <div>
+                    <Text size="lg">New updates are available</Text>
+                  </div>
+                  <Text size="sm" color="subtler">
+                    {`${model.checkRet.latest_tag_name} (${dayjs(model.checkRet.target_release_date).format('DD.MM YYYY')})`}
+                  </Text>
+                </Box>
+                {model.isToRestart ? (
+                  <AButton onClick={model.updateNow} loading={model.isUpdating}>
+                    Update now
+                  </AButton>
+                ) : (
+                  <AButton onClick={model.restart} loading={model.isRestarting}>
+                    Restart now
+                  </AButton>
+                )}
+              </Flex>
+              <Divider style={{ margin: '12px 0' }} />
+              <a onClick={model.openChangelog}>View Detail</a>
+            </Card>
+          </Box>
+        ) : null}
+
+        {model.checkedStatus === 'latest' ? (
+          <Box mb={3}>
+            <Card bodyStyle={{ padding: 12 }}>
               <div>
-                <Text size="lg">New updates are available</Text>
+                <Text size="lg">It is the latest version.</Text>
               </div>
               <Text size="sm" color="subtler">
-                v1.36 (07.21 2024)
+                Last check time{' '}
+                {model.lastChecktime === ''
+                  ? ''
+                  : dayjs(model.lastChecktime).fromNow()}
               </Text>
-            </Box>
-            <AButton>Update now</AButton>
-          </Flex>
-          <Divider style={{ margin: '12px 0' }} />
-          <a onClick={model.changelogModal.open}>View Detail</a>
-        </Card>
-      </Box>
-
-      <Box mb={3}>
-        <Card bodyStyle={{ padding: 12 }}>
-          <div>
-            <Text size="lg">It is the latest version.</Text>
-          </div>
-          <Text size="sm" color="subtler">
-            Last check time 08:32 today.
-          </Text>
-        </Card>
-      </Box>
-      <ChangelogDialog />
-    </div>
+            </Card>
+          </Box>
+        ) : null}
+      </div>
+      <Text
+        size="sm"
+        color="subtler"
+        css={css`
+          text-align: center;
+        `}>
+        Current version {model.checkRet.current_version}
+      </Text>
+    </Flex>
   );
-};
+});
 
 export const SettingsDialog = observer(() => {
   const model = useInjection(SettingsModel);
@@ -233,6 +274,7 @@ export const SettingsDialog = observer(() => {
             p={3}
             css={css`
               overflow-y: auto;
+              height: 100%;
             `}>
             {model.sidebar === 'Environment' ? <EnvForm /> : null}
             {model.sidebar === 'SoftwareUpdate' ? <Update /> : null}
@@ -252,14 +294,19 @@ export const ChangelogDialog = observer(() => {
       title="Changelog"
       width="900px"
       height="80%"
-      onCancel={() => model.changelogModal.close()}
+      onCancel={() => model.closeChangelog()}
       footer={
         <Flex mx={-1} justifyContent={'flex-end'}>
           <Box mx={1}>
-            <AButton size="large">Close</AButton>
+            <AButton size="large" onClick={model.closeChangelog}>
+              Close
+            </AButton>
           </Box>
           <Box mx={1}>
             <Button
+              loading={model.isUpdating}
+              disabled={model.isToRestart}
+              onClick={model.onClickChangelogUpdateNow}
               size="large"
               css={css`
                 border-radius: 9999px;
@@ -290,11 +337,11 @@ export const ChangelogDialog = observer(() => {
           height: '100%',
         },
         body: {
-          padding: 0,
+          padding: 24,
           height: '100%',
         },
       }}>
-      Changelog
+      <Markdown>{model.checkRet.changelog}</Markdown>
     </Modal>
   );
 });

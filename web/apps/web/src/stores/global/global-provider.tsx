@@ -3,7 +3,10 @@ import { useStore } from 'zustand';
 import { createStore } from 'zustand/vanilla';
 
 import { ManagerDialog } from '@/components/manager';
-import { SettingsDialog } from '@/components/settings/settings';
+import {
+  ChangelogDialog,
+  SettingsDialog,
+} from '@/components/settings/settings';
 
 export enum ManagerTypeEnum {
   widget = 'widget',
@@ -65,6 +68,7 @@ export const GlobalStoreProvider = ({ children }: GlobalStoreProviderProps) => {
       {children}
       <ManagerDialog />
       <SettingsDialog />
+      <ChangelogDialog />
     </GlobalStoreContext.Provider>
   );
 };
