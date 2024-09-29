@@ -176,6 +176,11 @@ export class SettingsModel {
   @action.bound
   async restart() {
     this.isRestarting = true;
+    const res = await axios.get(`/api/restart`, {
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
     const pollInterval = 3000;
     const poll = async () => {
       try {
