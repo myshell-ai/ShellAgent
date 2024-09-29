@@ -93,7 +93,6 @@ export class SettingsModel {
       this.lastChecktime = res.data.last_check_time;
     } catch (e: any) {
       this.emitter.emitter.emit('message.error', e.message);
-      return null;
     }
   }
 
@@ -131,7 +130,6 @@ export class SettingsModel {
       this.isAutoCheck = isAutoCheck;
     } catch (e: any) {
       this.emitter.emitter.emit('message.error', e.message);
-      return null;
     } finally {
       this.isAutoCheckLoading = false;
     }
@@ -156,7 +154,6 @@ export class SettingsModel {
       }
     } catch (e: any) {
       this.emitter.emitter.emit('message.error', e.message);
-      return null;
     } finally {
       this.isChecking = false;
     }
@@ -173,7 +170,6 @@ export class SettingsModel {
       this.checkRet.current_version = res.data.current_version;
     } catch (e: any) {
       this.emitter.emitter.emit('message.error', e.message);
-      return null;
     }
   }
 
@@ -187,6 +183,7 @@ export class SettingsModel {
         this.isRestarting = false;
         window.location.reload();
       } catch (e: any) {
+        // noop
       } finally {
         setTimeout(poll, pollInterval);
       }
@@ -206,7 +203,6 @@ export class SettingsModel {
       this.isToRestart = true;
     } catch (e: any) {
       this.emitter.emitter.emit('message.error', e.message);
-      return null;
     } finally {
       this.isUpdating = false;
     }

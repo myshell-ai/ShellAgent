@@ -6,7 +6,7 @@ import { PlusOutlined } from '@ant-design/icons';
 import { css } from '@emotion/react';
 import { AButton, contentPadding, Icon, TrashIcon, Text } from '@shellagent/ui';
 import {
-  Button as Button,
+  Button,
   Card,
   Divider,
   Form,
@@ -183,7 +183,9 @@ export const Update = observer(() => {
                 )}
               </Flex>
               <Divider style={{ margin: '12px 0' }} />
-              <a onClick={model.openChangelog}>View Detail</a>
+              <Button type="link" onClick={model.openChangelog}>
+                View Detail
+              </Button>
             </Card>
           </Box>
         ) : null}
@@ -296,7 +298,7 @@ export const ChangelogDialog = observer(() => {
       height="80%"
       onCancel={() => model.closeChangelog()}
       footer={
-        <Flex mx={-1} justifyContent={'flex-end'}>
+        <Flex mx={-1} justifyContent="flex-end">
           <Box mx={1}>
             <AButton size="large" onClick={model.closeChangelog}>
               Close
