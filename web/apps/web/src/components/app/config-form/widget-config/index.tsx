@@ -14,21 +14,22 @@ import { getSchemaByWidget } from '@/stores/app/utils/get-widget-schema';
 import { useWorkflowStore } from '@/stores/workflow/workflow-provider';
 import { getPlugin } from '@/components/app/plugins';
 
-interface WidgetConfigProps {
+export interface WidgetConfigProps {
   values: TValues | undefined;
   parent: string;
   id: string;
   onChange: (values: TValues) => void;
 }
 
-const CustomWidgetConfig: React.FC<WidgetConfigProps> = ({ values }) => {
+const CustomWidgetConfig: React.FC<WidgetConfigProps> = props => {
+  const { values } = props;
   if (!values) {
     return null;
   }
 
   const PluginComponent = getPlugin(values.widget_class_name);
   if (PluginComponent) {
-    return <PluginComponent />;
+    return <PluginComponent {...props} />;
   }
 
   return null;
