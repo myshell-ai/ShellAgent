@@ -173,12 +173,12 @@ export const Update = observer(() => {
                   </Text>
                 </Box>
                 {model.isToRestart ? (
-                  <AButton onClick={model.updateNow} loading={model.isUpdating}>
-                    Update now
-                  </AButton>
-                ) : (
                   <AButton onClick={model.restart} loading={model.isRestarting}>
                     Restart now
+                  </AButton>
+                ) : (
+                  <AButton onClick={model.updateNow} loading={model.isUpdating}>
+                    Update now
                   </AButton>
                 )}
               </Flex>
