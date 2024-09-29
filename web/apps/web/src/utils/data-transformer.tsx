@@ -7,7 +7,7 @@ export const transformChoicesToValues = (input: TValues = {}) => {
   const transformedInput: Record<string, any> = {};
   Object.keys(input).forEach(key => {
     if (Array.isArray(input[key]?.choices)) {
-      if (!input[key].choices.length) {
+      if (!input[key].choices.length || input[key]?.type !== 'text') {
         delete input[key].choices;
       } else {
         transformedInput[key] = {
@@ -26,7 +26,7 @@ export const transformValuesToChoices = (input: TValues = {}) => {
   const transformedInput: Record<string, any> = {};
   Object.keys(input).forEach(key => {
     if (Array.isArray(input[key]?.choices)) {
-      if (!input[key].choices.length) {
+      if (!input[key].choices.length || input[key]?.type !== 'text') {
         delete input[key].choices;
       } else {
         transformedInput[key] = {
