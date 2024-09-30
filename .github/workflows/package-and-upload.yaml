@@ -138,6 +138,10 @@ jobs:
           # ../python_embeded/python.exe servers/main.py
 
           cd ..
+
+          mkdir update
+          cp -r ShellAgent/.ci/update_windows/* ./update/
+
           cd ..
 
           "C:\Program Files\7-Zip\7z.exe" a -t7z -m0=lzma2 -mx=8 -mfb=64 -md=32m -ms=on -mf=BCJ2 ShellAgent_windows_portable.7z ShellAgent_windows_portable/*
@@ -166,3 +170,41 @@ jobs:
               token="${{ secrets.HF_TOKEN }}"
           )
         shell: python
+
+  create_github_release:
+    needs: [build, package_shellagent_windows]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.git_tag }}
+
+      - name: Download web-build artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: web-build
+          path: ./web-build
+
+      - name: Zip web-build
+        run: zip -r web-build.zip ./web-build
+
+      - name: Create Release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ inputs.version }}
+          release_name: Release ${{ inputs.version }}
+          draft: false
+          prerelease: false
+
+      - name: Upload Release Asset
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./web-build.zip
+          asset_name: web-build-${{ inputs.version }}.zip
+          asset_content_type: application/zip
