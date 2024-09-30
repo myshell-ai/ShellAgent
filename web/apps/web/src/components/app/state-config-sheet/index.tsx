@@ -11,6 +11,8 @@ import { useInjection } from 'inversify-react';
 import { isEqual, isNumber } from 'lodash-es';
 import { observer } from 'mobx-react-lite';
 import { useMemo, useRef, useCallback, useState } from 'react';
+import { DndProvider } from 'react-dnd';
+import { HTML5Backend } from 'react-dnd-html5-backend';
 
 import { ButtonConfig } from '@/components/app/config-form/button-config';
 import { WidgetConfig } from '@/components/app/config-form/widget-config';
@@ -248,30 +250,32 @@ const StateConfigSheet: React.FC<{}> = () => {
           display_name={selectedNode?.data.display_name}
           name={selectedNode?.data.name}
           id={currentStateId}>
-          <NodeForm
-            key={formKey}
-            loading={loading.getAutomata || loading.getReactFlow}
-            schema={stateConfigSchema}
-            values={nodeData[currentStateId]}
-            onChange={onChange}
-            onModeChange={onModeChange}
-            ref={nodeFormRef}
-            modeMap={fieldsModeMap?.[currentStateId] || {}}
-          />
-          <Drawer
-            open={insideSheetOpen}
-            height="95%"
-            placement="bottom"
-            className="rounded-lg"
-            closable
-            getContainer={false}
-            onClose={() =>
-              setInsideSheetOpen({ stateId: currentStateId, open: false })
-            }
-            autoFocus={false}
-            {...drawerProps}>
-            {drawerProps.children}
-          </Drawer>
+          <DndProvider backend={HTML5Backend}>
+            <NodeForm
+              key={formKey}
+              loading={loading.getAutomata || loading.getReactFlow}
+              schema={stateConfigSchema}
+              values={nodeData[currentStateId]}
+              onChange={onChange}
+              onModeChange={onModeChange}
+              ref={nodeFormRef}
+              modeMap={fieldsModeMap?.[currentStateId] || {}}
+            />
+            <Drawer
+              open={insideSheetOpen}
+              height="95%"
+              placement="bottom"
+              className="rounded-lg"
+              closable
+              getContainer={false}
+              onClose={() =>
+                setInsideSheetOpen({ stateId: currentStateId, open: false })
+              }
+              autoFocus={false}
+              {...drawerProps}>
+              {drawerProps.children}
+            </Drawer>
+          </DndProvider>
         </SchemaProvider>
       </VariableProvider>
     </Drawer>
