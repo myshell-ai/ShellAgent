@@ -4,16 +4,39 @@ const schema: ISchema = {
   'x-type': 'Section',
   'x-title-copiable': false,
   properties: {
-    upload: {
+    api: {
       type: 'string',
-      title: 'ComfyUI JSON',
+      title: 'api',
       'x-layout': 'Vertical',
       'x-type': 'Control',
-      'x-component': 'FileUpload',
+      'x-component': 'Input',
+      'x-title-size': 'h4',
+    },
+    input: {
+      type: 'string',
+      title: 'Input',
+      'x-layout': 'Vertical',
+      'x-type': 'Control',
+      'x-component': 'Input',
+      'x-title-size': 'h4',
+    },
+    outputs: {
+      type: 'object',
+      title: 'Output',
+      'x-type': 'Block',
       'x-title-size': 'h4',
       'x-raw': true,
-      'x-raw-default': 'ui',
-      'x-raw-options': ['ui', 'raw'],
+      properties: {
+        display: {
+          type: 'string',
+          // default: types,
+          'x-type': 'Control',
+          'x-component': 'JSONView',
+          'x-component-props': {
+            hiddenName: true,
+          },
+        },
+      },
     },
   },
 };
