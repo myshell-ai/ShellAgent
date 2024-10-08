@@ -5,8 +5,136 @@ import uuid
 import json
 import urllib
 import os
+<<<<<<< HEAD
+from datetime import datetime
+
+from servers.base import app, PROJECT_ROOT
+
+COMFY_ROOT = os.path.join(PROJECT_ROOT, "comfy_workflow")
+@app.route(f'/api/comfyui/upload', methods=['POST'])
+def upload_workflow():
+    data = request.get_json()
+    workflow_id = data["comfy_workflow_id"]
+    workflow = data["workflow"]
+    
+    # step 1: decide workflow type
+    if all([k in workflow for k in ["schemas", "dependencies", "workflow", "workflow_api"]]):
+        # is shellagent workflow
+        return_dict = {
+            "success": True,
+            "comfy_workflow": workflow["workflow"],
+            "message": ""
+        }
+        # save both
+        fname_mapping = {
+            "workflow.shellagent.json": workflow, # with dependency
+            "workflow.json": workflow["workflow"],
+        }
+        save_root = os.path.join(COMFY_ROOT, workflow_id)
+        os.makedirs(save_root, exist_ok=True)
+        for fname, dict_to_save in fname_mapping.items():
+            with open(os.path.join(save_root, fname), "w") as f:
+                json.dump(dict_to_save, f, indent=2)
+        
+    elif isinstance(workflow, dict) and all([key in workflow for key in ["last_node_id", "last_link_id", "nodes", "links"]]):
+        # save both
+        fname_mapping = {
+            "workflow.json": workflow,
+        }
+        save_root = os.path.join(COMFY_ROOT, workflow_id)
+        os.makedirs(save_root, exist_ok=True)
+        for fname, dict_to_save in fname_mapping.items():
+            with open(os.path.join(save_root, fname), "w") as f:
+                json.dump(dict_to_save, f, indent=2)
+        return_dict = {
+            "success": True,
+            "comfy_workflow": workflow,
+            "message": ""
+        }
+    else:
+        return_dict = {
+            "success": False,
+            "comfy_workflow": None,
+            "message": "invalid json"
+        }
+    return jsonify(return_dict)
+
+    
+@app.route(f'/api/comfyui/save', methods=['POST'])
+def save_comfyui_workflow():
+    data = request.get_json()
+    api = data["comfyui_api"]
+    workflow_api = data["prompt"]
+    workflow = data["workflow"]
+    workflow_id = data["comfy_workflow_id"]
+    
+    # metadata.json
+    metadata = {
+        # "name": data["name"],
+        "workflow_id": workflow_id,
+        "create_time": datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+    }
+    
+    post_data = {
+        "prompt": workflow_api,
+    }
+    
+    results = requests.post(f"{api}/shellagent/export", json=post_data).json()
+    if results["success"]:
+        shellagent_json = {
+            "workflow": workflow,
+            "workflow_api": workflow_api,
+            "dependencies": results["dependencies"],
+            "schemas": results["schemas"],
+        }
+        return_dict = {
+            "success": True,
+            "data": shellagent_json
+        }
+        
+        save_root = os.path.join(COMFY_ROOT, workflow_id)
+        os.makedirs(save_root, exist_ok=True)
+        
+        fname_mapping = {
+            "workflow.json": workflow,
+            "workflow.shellagent.json": shellagent_json,
+            "metadata.json": metadata,
+        }
+        
+        for fname, dict_to_save in fname_mapping.items():
+            with open(os.path.join(save_root, fname), "w") as f:
+                json.dump(dict_to_save, f, indent=2)
+    else:
+        return_dict = {
+            "success": False,
+            "message": results["message"]
+        }
+    return jsonify(return_dict)
+
+
+@app.route(f'/api/comfyui/get_file', methods=['POST'])
+def comfyui_get_file():
+    data = request.get_json()
+    filename = data["filename"]
+    workflow_id = data["comfy_workflow_id"]
+    json_path = os.path.join(COMFY_ROOT, workflow_id, filename)
+    
+    return_dict = {}
+    if os.path.isfile(json_path):
+        data = json.load(open(json_path))
+        return_dict["data"] = data
+        return_dict["success"] = True
+    else:
+        return_dict["data"] = {}
+        return_dict["success"] = False
+        return_dict["message"] = f"{json_path} does not exists"
+    
+    return jsonify(return_dict)
+    
+=======
 
 from servers.base import app
+>>>>>>> f01bfabca6bdd347f051ca338722b68c1da3c709
 
 @app.route(f'/comfyui/list_workflow', methods=['POST'])
 def comfyui_list_workflow():
@@ -40,12 +168,20 @@ def get_history(server_address, prompt_id):
     with urllib.request.urlopen("http://{}/history/{}".format(server_address, prompt_id)) as response:
         return json.loads(response.read())
 
+<<<<<<< HEAD
+def get_media(server_address, filename, subfolder, folder_type):
+=======
 def get_image(server_address, filename, subfolder, folder_type):
+>>>>>>> f01bfabca6bdd347f051ca338722b68c1da3c709
     data = {"filename": filename, "subfolder": subfolder, "type": folder_type}
     url_values = urllib.parse.urlencode(data)
     with urllib.request.urlopen("http://{}/view?{}".format(server_address, url_values)) as response:
         return response.read()
     
+<<<<<<< HEAD
+NON_FILE_INPUT_TYPES = ["text", "number", "integer"]
+=======
+>>>>>>> f01bfabca6bdd347f051ca338722b68c1da3c709
 @app.route(f'/comfyui/run', methods=['POST'])
 def comfyui_run():
     data = request.get_json()
@@ -72,7 +208,11 @@ def comfyui_run():
     # first replace the prompt
     for node_id, node_schema in schemas["inputs"].items():
         input_value = user_inputs[node_schema["name"]]
+<<<<<<< HEAD
+        if node_schema["type"] not in NON_FILE_INPUT_TYPES: # file input
+=======
         if node_schema["type"] not in ["text"]: # file input
+>>>>>>> f01bfabca6bdd347f051ca338722b68c1da3c709
             input_value = os.path.join(os.getcwd(), input_value)
             
         prompt[node_id]["inputs"]["default_value"] = input_value
@@ -102,13 +242,31 @@ def comfyui_run():
         if schemas["outputs"][node_id]["type"] == "image":
             images_output = []
             for image in node_output['images']:
+<<<<<<< HEAD
+                image_data = get_media(server_address, image['filename'], image['subfolder'], image['type'])
+=======
                 image_data = get_image(server_address, image['filename'], image['subfolder'], image['type'])
+>>>>>>> f01bfabca6bdd347f051ca338722b68c1da3c709
                 save_path = os.path.join(image["type"], image['subfolder'], image['filename'])
                 os.makedirs(os.path.dirname(save_path), exist_ok=True)
                 with open(save_path, "wb") as f:
                     f.write(image_data)
                 images_output.append(save_path)
             outputs[schemas["outputs"][node_id]["name"]] = images_output
+<<<<<<< HEAD
+        elif schemas["outputs"][node_id]["type"] == "video":
+            videos_output = []
+            for video_path in node_output['video']:
+                output_dir, filename = os.path.split(video_path)
+                video_data = get_media(server_address, filename, "", output_dir)
+                save_path = video_path
+                os.makedirs(os.path.dirname(save_path), exist_ok=True)
+                with open(save_path, "wb") as f:
+                    f.write(video_data)
+                videos_output.append(save_path)
+            outputs[schemas["outputs"][node_id]["name"]] = videos_output
+=======
+>>>>>>> f01bfabca6bdd347f051ca338722b68c1da3c709
     return_dict = {
         "outputs": outputs
     }
