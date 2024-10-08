@@ -2,15 +2,15 @@
 
 import {
   NodeId,
-  useReactFlowStore,
   NodeTypeEnum,
+  useReactFlowStore,
 } from '@shellagent/flow-engine';
-import { TValues, TFieldMode } from '@shellagent/form-engine';
-import { FormRef, Drawer } from '@shellagent/ui';
+import { TFieldMode, TValues } from '@shellagent/form-engine';
+import { Button, Drawer, FormRef } from '@shellagent/ui';
 import { useInjection } from 'inversify-react';
 import { isEqual, isNumber } from 'lodash-es';
 import { observer } from 'mobx-react-lite';
-import { useMemo, useRef, useCallback, useState } from 'react';
+import { useCallback, useMemo, useRef, useState } from 'react';
 
 import { ButtonConfig } from '@/components/app/config-form/button-config';
 import { WidgetConfig } from '@/components/app/config-form/widget-config';
@@ -18,8 +18,8 @@ import { WorkflowConfig } from '@/components/app/config-form/workflow-config';
 import { EditableTitle } from '@/components/app/editable-title';
 import NodeForm from '@/components/app/node-form';
 import {
-  IWorkflowTask,
   IWidgetTask,
+  IWorkflowTask,
 } from '@/components/app/node-form/widgets/tasks-config';
 import { AppBuilderChatModel } from '@/components/chat/app-builder-chat.model';
 import { useAppStore } from '@/stores/app/app-provider';
@@ -30,6 +30,8 @@ import { VariableProvider } from '@/stores/app/variable-provider';
 
 import emitter, { EventType, useEventEmitter } from '../emitter';
 import { IButtonType } from '../node-form/widgets';
+import { Divider } from 'antd';
+import { Box } from 'react-system';
 
 const StateConfigSheet: React.FC<{}> = () => {
   const appBuilderChatModel = useInjection(AppBuilderChatModel);
@@ -142,13 +144,18 @@ const StateConfigSheet: React.FC<{}> = () => {
         : {};
       return {
         children: (
-          <WidgetConfig
-            id={currentStateId}
-            key={`widget-config-${currentTaskIndex}`}
-            parent={`blocks.${currentTaskIndex}`}
-            values={widget}
-            onChange={commonProps.onChange}
-          />
+          <>
+            <Box mb={1} mt={2}>
+              <Button size="sm">Open Image Canvas Editor</Button>
+            </Box>
+            <WidgetConfig
+              id={currentStateId}
+              key={`widget-config-${currentTaskIndex}`}
+              parent={`blocks.${currentTaskIndex}`}
+              values={widget}
+              onChange={commonProps.onChange}
+            />
+          </>
         ),
         title: (
           <EditableTitle

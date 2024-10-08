@@ -8,6 +8,7 @@ import { Workflow } from '@shellagent/pro-config';
 
 import { CustomEdge, EdgeTypeEnum } from '@/components/app/edges';
 import { StartNode, StateNode } from '@/components/app/nodes';
+import { Button } from '@shellagent/ui';
 
 export const nodeTypes = {
   [NodeTypeEnum.start]: StartNode,
@@ -100,9 +101,10 @@ export const materialList: MaterialListType = [
     items: [
       {
         name: 'ImageTextFuserWidget',
-        display_name: 'Image Text Fuser',
+        display_name: 'Image Canvas',
         type: NodeTypeEnum.widget,
         undraggable: true,
+        customRender: () => <Button size="sm">Open Image Canvas Editor</Button>,
       },
     ],
   },
