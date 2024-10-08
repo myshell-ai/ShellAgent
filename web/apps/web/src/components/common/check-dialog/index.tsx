@@ -3,6 +3,7 @@
 import { ButtonProps, AModal } from '@shellagent/ui';
 
 import { useGlobalStore } from '@/stores/global/global-provider';
+
 import { CheckerContent } from './content';
 
 interface ManagerDialogProps {

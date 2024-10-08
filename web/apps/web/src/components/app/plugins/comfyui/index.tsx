@@ -1,14 +1,14 @@
-import React, { useRef, useEffect, useState } from 'react';
 import { ISchema } from '@shellagent/form-engine';
 import { FormRef } from '@shellagent/ui';
+import { useRequest } from 'ahooks';
+import { nanoid } from 'nanoid';
+import React, { useRef, useEffect, useState } from 'react';
 
 import { WidgetConfigProps } from '@/components/app/config-form/widget-config';
 import NodeForm from '@/components/app/node-form';
-import { useRequest } from 'ahooks';
-import { nanoid } from 'nanoid';
-import { getFile } from './services';
 
 import { getComfyuiSchema, defaultSchema } from './schema';
+import { getFile } from './services';
 import { ComfyUIEditor } from './widgets/comfyui-editor';
 
 const ComfyUIPlugin: React.FC<WidgetConfigProps> = ({ values, onChange }) => {

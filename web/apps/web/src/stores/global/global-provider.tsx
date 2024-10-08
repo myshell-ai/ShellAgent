@@ -2,8 +2,8 @@ import { type ReactNode, createContext, useRef, useContext } from 'react';
 import { useStore } from 'zustand';
 import { createStore } from 'zustand/vanilla';
 
-import { ManagerDialog } from '@/components/manager';
 import { CheckDialog } from '@/components/common/check-dialog';
+import { ManagerDialog } from '@/components/manager';
 import { SettingsDialog } from '@/components/settings/settings';
 
 export enum ManagerTypeEnum {

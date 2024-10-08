@@ -38,8 +38,8 @@ export const CheckerContent = () => {
           Models
         </TabsTrigger>
       </TabsList>
-      <TabsContent value={BaseTypeEnum.marketplace}></TabsContent>
-      <TabsContent value={BaseTypeEnum.installed}></TabsContent>
+      <TabsContent value={BaseTypeEnum.marketplace} />
+      <TabsContent value={BaseTypeEnum.installed} />
     </Tabs>
   );
 };

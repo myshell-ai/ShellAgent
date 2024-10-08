@@ -1,4 +1,5 @@
 import { ISchema, TValues } from '@shellagent/form-engine';
+
 import { getSchemaByInputs } from '@/stores/app/utils/get-workflow-schema';
 
 export const defaultSchema: ISchema = {

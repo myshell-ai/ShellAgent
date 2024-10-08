@@ -1,8 +1,9 @@
-import React, { useState, useRef, useEffect } from 'react';
-import { Input, Button, useFormContext, Spinner } from '@shellagent/ui';
-import { Modal, Upload } from 'antd';
 import { UploadOutlined } from '@ant-design/icons';
+import { Input, Button, useFormContext, Spinner } from '@shellagent/ui';
 import { useRequest } from 'ahooks';
+import { Modal, Upload } from 'antd';
+import React, { useState, useRef, useEffect } from 'react';
+
 import { saveComfy, uploadComfy } from '../services';
 
 export const ComfyUIEditor = ({
@@ -117,10 +118,13 @@ export const ComfyUIEditor = ({
   return (
     <div>
       <div className="mb-4 flex items-center">
-        <label className="w-12 mr-3 text-sm font-medium peer-disabled:cursor-not-allowed peer-disabled:opacity-30 break-all flex items-center">
+        <label
+          htmlFor="comfyui-api"
+          className="w-12 mr-3 text-sm font-medium peer-disabled:cursor-not-allowed peer-disabled:opacity-30 break-all flex items-center">
           API
         </label>
         <Input
+          id="comfyui-api"
           size="sm"
           value={value}
           onChange={e => {
@@ -183,6 +187,7 @@ export const ComfyUIEditor = ({
           </div>
         )} */}
         <iframe
+          title="comfyui"
           ref={iframeRef}
           src={value}
           height="600px"
