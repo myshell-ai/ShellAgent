@@ -63,7 +63,8 @@ def initialize_envs():
         json.dump({}, open(CUSTOM_WIDGETS_STATUS_PATH, "w"))
         
     for k, v in env["envs"].items():
-        os.environ[k] = str(v)
+        if k != "":
+            os.environ[k] = str(v)
         
 initialize_envs()
 
