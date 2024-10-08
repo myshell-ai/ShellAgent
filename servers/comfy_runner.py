@@ -69,7 +69,7 @@ def save_comfyui_workflow():
     
     # metadata.json
     metadata = {
-        "name": data["name"],
+        # "name": data["name"],
         "workflow_id": workflow_id,
         "create_time": datetime.now().strftime('%Y-%m-%d %H:%M:%S')
     }
