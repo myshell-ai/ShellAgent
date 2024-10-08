@@ -3,6 +3,7 @@ import { useStore } from 'zustand';
 import { createStore } from 'zustand/vanilla';
 
 import { ManagerDialog } from '@/components/manager';
+import { CheckDialog } from '@/components/common/check-dialog';
 import { SettingsDialog } from '@/components/settings/settings';
 
 export enum ManagerTypeEnum {
@@ -17,12 +18,14 @@ export enum BaseTypeEnum {
 
 export type GlobalState = {
   managerDialogOpen: boolean;
+  checkDialogOpen: boolean;
   managerType: ManagerTypeEnum;
   baseType: BaseTypeEnum;
 };
 
 export type GlobalAction = {
   setManagerDialogOpen: (open: GlobalState['managerDialogOpen']) => void;
+  setCheckDialogOpen: (open: GlobalState['checkDialogOpen']) => void;
   setManagerType: (type: GlobalState['managerType']) => void;
   setBaseType: (type: GlobalState['baseType']) => void;
 };
@@ -31,6 +34,7 @@ export type GlobalStore = GlobalState & GlobalAction;
 
 export const initState: GlobalState = {
   managerDialogOpen: false,
+  checkDialogOpen: false,
   managerType: ManagerTypeEnum.widget,
   baseType: BaseTypeEnum.marketplace,
 };
@@ -40,6 +44,7 @@ export const createGlobalStore = () => {
     ...initState,
     setManagerDialogOpen: managerDialogOpen =>
       set(() => ({ managerDialogOpen })),
+    setCheckDialogOpen: checkDialogOpen => set(() => ({ checkDialogOpen })),
     setManagerType: managerType => set(() => ({ managerType })),
     setBaseType: baseType => set(() => ({ baseType })),
   }));
@@ -65,6 +70,7 @@ export const GlobalStoreProvider = ({ children }: GlobalStoreProviderProps) => {
       {children}
       <ManagerDialog />
       <SettingsDialog />
+      <CheckDialog />
     </GlobalStoreContext.Provider>
   );
 };

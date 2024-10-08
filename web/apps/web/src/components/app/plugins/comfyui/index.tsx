@@ -1,4 +1,5 @@
-import React, { useRef, useEffect } from 'react';
+import React, { useRef, useEffect, useState } from 'react';
+import { ISchema } from '@shellagent/form-engine';
 import { FormRef } from '@shellagent/ui';
 
 import { WidgetConfigProps } from '@/components/app/config-form/widget-config';
@@ -7,11 +8,12 @@ import { generateUUID } from '@/utils/common-helper';
 import { useRequest } from 'ahooks';
 import { getFile } from './services';
 
-import schema from './schema';
+import { getComfyuiSchema, defaultSchema } from './schema';
 import { ComfyUIEditor } from './widgets/comfyui-editor';
 
 const ComfyUIPlugin: React.FC<WidgetConfigProps> = ({ values, onChange }) => {
   const formRef = useRef<FormRef>(null);
+  const [schema, setSchema] = useState<ISchema>(defaultSchema);
 
   useEffect(() => {
     const values = formRef.current?.getValues();
@@ -20,24 +22,31 @@ const ComfyUIPlugin: React.FC<WidgetConfigProps> = ({ values, onChange }) => {
     }
   }, []);
 
-  const { run: getComfySchema, data } = useRequest(getFile, {
+  const { run: getComfySchema } = useRequest(getFile, {
     manual: true,
     onSuccess: result => {
-      console.log('Save successful:', result);
-    },
-    onError: error => {
-      console.error('Save failed:', error);
+      if (result.success) {
+        const {
+          data: { schemas },
+        } = result;
+        setSchema(
+          getComfyuiSchema({
+            inputs: schemas.inputs || {},
+            outputs: schemas.outputs || {},
+          }),
+        );
+      }
     },
   });
 
   useEffect(() => {
-    getComfySchema({
-      comfy_workflow_id: values?.comfy_workflow_id,
-      file_name: 'schema.json',
-    });
+    if (values?.comfy_workflow_id) {
+      getComfySchema({
+        comfy_workflow_id: values?.comfy_workflow_id,
+        filename: 'workflow.shellagent.json',
+      });
+    }
   }, [values?.comfy_workflow_id]);
-
-  console.log('data>>>', data);
 
   if (!values) {
     return null;
@@ -47,6 +56,7 @@ const ComfyUIPlugin: React.FC<WidgetConfigProps> = ({ values, onChange }) => {
     <div className="comfyui-widget flex flex-col">
       <NodeForm
         ref={formRef}
+        key={JSON.stringify(schema)}
         schema={schema}
         values={values}
         onChange={onChange}

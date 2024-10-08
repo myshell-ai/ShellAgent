@@ -24,10 +24,61 @@ export interface SaveResponse {
 }
 
 export interface GetFileRequest {
-  file_name: string;
+  // metadata.json
+  // workflow.json
+  // workflow.shellagent.json
+  filename: string;
   comfy_workflow_id: string;
 }
 
 export interface GetFileResponse {
-  result: any;
+  data: {
+    workflow: any;
+    workflow_api: any;
+    dependencies: {
+      comfyui_version: {
+        name: string;
+        repo: string;
+        commit: string;
+      };
+      custom_nodes: Array<{
+        name: string;
+        repo: string;
+        commit: string;
+      }>;
+      models: Record<
+        string,
+        {
+          filename: string;
+          save_path: string;
+          urls: string[];
+        }
+      >;
+      files: Record<string, any>;
+    };
+    schemas: {
+      inputs: Record<
+        string,
+        {
+          title: string;
+          type: string;
+          default?: any;
+          description: string;
+        }
+      >;
+      outputs: Record<
+        string,
+        {
+          title: string;
+          type: string;
+          items?: {
+            type: string;
+            url_type: string;
+          };
+        }
+      >;
+    };
+  };
+  message: string;
+  success: boolean;
 }
