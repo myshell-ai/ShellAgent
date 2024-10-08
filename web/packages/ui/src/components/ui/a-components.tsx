@@ -22,6 +22,7 @@ export const AInput = styled(Input)`
 
 export const AButton = styled(Button)`
   border-radius: ${antdToken.buttonRadius}px;
+  color: var(--ant-color-primary);
 `;
 
 export const ADropdownButton = styled(Dropdown.Button)`

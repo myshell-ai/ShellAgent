@@ -16,6 +16,9 @@ import React from 'react';
 import { useGlobalStore } from '@/stores/global/global-provider';
 
 import { SettingsModel } from '../settings/settings.model';
+import { Badge } from 'antd';
+import { Flex } from 'react-system';
+import { observer } from 'mobx-react-lite';
 
 interface ItemType {
   href?: string;
@@ -49,10 +52,23 @@ const ItemFooter = ({
         'cursor-not-allowed': disabled,
       })}>
       {icon}
-      <Text color={disabled ? 'disabled' : 'subtler'}>{title}</Text>
+      {title === 'Settings' ? (
+        <SettingsItem />
+      ) : (
+        <Text color={disabled ? 'disabled' : 'subtler'}>{title}</Text>
+      )}
     </Link>
   );
 };
+
+const SettingsItem = observer(() => {
+  const model = useInjection(SettingsModel);
+  return (
+    <Badge dot={model.checkRet.has_new_stable} offset={[36, 12]}>
+      <Text color="subtler">Settings</Text>
+    </Badge>
+  );
+});
 
 export default function SideFooter() {
   const settingsModel = useInjection(SettingsModel);
