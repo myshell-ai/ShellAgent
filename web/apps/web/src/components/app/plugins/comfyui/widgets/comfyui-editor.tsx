@@ -118,6 +118,7 @@ export const ComfyUIEditor = ({
   return (
     <div>
       <div className="mb-4 flex items-center">
+        {/* eslint-disable-next-line jsx-a11y/label-has-associated-control */}
         <label
           htmlFor="comfyui-api"
           className="w-12 mr-3 text-sm font-medium peer-disabled:cursor-not-allowed peer-disabled:opacity-30 break-all flex items-center">

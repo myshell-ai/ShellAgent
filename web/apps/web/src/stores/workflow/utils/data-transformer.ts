@@ -8,6 +8,7 @@ import {
   NodeData,
   NodeId,
   getNodeName,
+  EdgeTypeEnum,
 } from '@shellagent/flow-engine';
 import { TValues } from '@shellagent/form-engine';
 import { Workflow, Task } from '@shellagent/pro-config';
