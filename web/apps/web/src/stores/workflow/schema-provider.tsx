@@ -1,32 +1,29 @@
 import { NodeIdEnum } from '@shellagent/flow-engine';
-import { ISchema } from '@shellagent/form-engine';
+import { ISchema, TFieldMode } from '@shellagent/form-engine';
 import { isEmpty } from 'lodash-es';
-import { useMemo, useEffect } from 'react';
+import { useMemo, useEffect, useState } from 'react';
 import { useContextSelector, createContext } from 'use-context-selector';
-import { useShallow } from 'zustand/react/shallow';
 
+import { JsonSchema7 } from '@/services/workflow/type';
 import { useWorkflowStore } from '@/stores/workflow/workflow-provider';
-import { generateUUID } from '@/utils/common-helper';
 
-import {
-  getSchemaByWidget,
-  getVariableBySchema,
-} from './utils/get-widget-schema';
+import { getSchemaByWidget } from './utils/get-widget-schema';
 import { startSchema, endSchema } from './utils/schema';
+import { useVariableContext } from './variable-provider';
 
 type SchemaState = {
   id: string;
   schema: ISchema;
   schemaMode: string;
+  fieldMode: Record<string, TFieldMode>;
+  multiSchema: boolean;
   output?: Record<string, any>;
-  name?: string;
-  inputRefTypes: Record<string, string>;
-  outputRefTypes: Record<string, string>;
-  inputAllTypes: Record<string, string>;
-  formKey: string;
+  outputSchema: JsonSchema7;
 };
+
 type SchemaAction = {
   setSchemaMode: (mode: string) => void;
+  setFieldMode: (field: string, mode: TFieldMode) => void;
 };
 
 type SchemaStore = SchemaState & SchemaAction;
@@ -36,10 +33,10 @@ export const initState: SchemaStore = {
   schema: {},
   schemaMode: 'basic',
   setSchemaMode: () => {},
-  inputRefTypes: {},
-  inputAllTypes: {},
-  outputRefTypes: {},
-  formKey: generateUUID(),
+  fieldMode: {},
+  setFieldMode: () => {},
+  multiSchema: true,
+  outputSchema: {},
 };
 
 const SchemaContext = createContext<SchemaStore>(initState);
@@ -52,119 +49,114 @@ export const useSchemaContext = <T,>(
 
 export interface SchemaProviderProps {
   id: string;
-  name?: string;
-  mode?: string;
-  display_name?: string;
+  name: string | undefined;
+  display_name: string | undefined;
   children: React.ReactNode | React.ReactNode[];
   output?: Record<string, any>;
 }
 
 export const SchemaProvider: React.FC<SchemaProviderProps> = ({
   name = '',
-  mode,
   display_name = '',
   id,
   children,
   output,
 }) => {
-  const {
-    fieldsModeMap,
-    widgetSchema,
-    getWidgetSchema,
-    schemaModeMap,
-    setSchemaModeMap,
-    setFieldTypes,
-    reloadSchemaMap,
-  } = useWorkflowStore(
-    useShallow(state => ({
+  const context = useVariableContext(state => state.context);
+  const [fieldMode = {}, setFieldModeStorage] = useState<
+    Record<string, TFieldMode>
+  >({});
+
+  const setFieldMode = (field: string, mode: TFieldMode) => {
+    setFieldModeStorage(prev => ({
+      ...prev,
+      [field]: mode,
+    }));
+  };
+
+  const { widgetSchema, getWidgetSchema, schemaModeMap, setSchemaModeMap } =
+    useWorkflowStore(state => ({
       widgetSchema: state.widgetSchema,
       getWidgetSchema: state.getWidgetSchema,
       schemaModeMap: state.config?.schemaModeMap || {},
       setSchemaModeMap: state.setSchemaModeMap,
-      fieldsModeMap: state.config?.fieldsModeMap || {},
-      setFieldTypes: state?.setFieldTypes,
-      reloadSchemaMap: state.reloadSchemaMap,
-    })),
+    }));
+
+  const schemaMode = useMemo(
+    () => schemaModeMap[id] || initState.schemaMode,
+    [schemaModeMap, id],
   );
-
-  const currentFieldsModeMap = fieldsModeMap[id];
-
-  const currentWidgetSchema = widgetSchema?.[name];
-
-  const reloadSchema = reloadSchemaMap?.[name];
-
-  const schemaMode = schemaModeMap[id] || initState.schemaMode;
 
   const setSchemaMode = (mode: string) => {
     setSchemaModeMap({ id, mode });
   };
 
+  const multiSchema = useMemo(() => {
+    if (!name || !widgetSchema) {
+      return false;
+    }
+    return widgetSchema[name]?.multi_input_schema;
+  }, [widgetSchema, name]);
+
   useEffect(() => {
     if (
       name &&
-      !currentWidgetSchema &&
+      !widgetSchema[name] &&
       id !== NodeIdEnum.start &&
       id !== NodeIdEnum.end
     ) {
-      getWidgetSchema({ widget_name: name, id });
+      getWidgetSchema({ widget_name: name });
     }
   }, [name]);
 
-  const memoizedData = useMemo(() => {
-    const memoized = {
-      schema: {} as ISchema,
-      resolveRefsSchema: {},
-      inputRefTypes: {} as Record<string, string>,
-      outputRefTypes: {} as Record<string, string>,
-      inputAllTypes: {} as Record<string, string>,
-    };
+  const schema = useMemo(() => {
     if (id === NodeIdEnum.start) {
-      memoized.schema = startSchema;
-    } else if (id === NodeIdEnum.end) {
-      memoized.schema = endSchema;
-    } else if (!isEmpty(currentWidgetSchema)) {
-      const schema = getSchemaByWidget({
-        name: mode === 'undefined' ? name : display_name,
-        inputSchema: currentWidgetSchema?.input_schema,
-        outputSchema: currentWidgetSchema?.output_schema,
-        fieldsModeMap: currentFieldsModeMap,
-      });
-      memoized.schema = schema.formSchema;
-      memoized.resolveRefsSchema = schema.resolveRefsSchema;
+      return startSchema;
     }
-    const { input_variable: inputVariable, output_variable: outputVariable } =
-      memoized.schema.properties?.variable?.properties || {};
-    memoized.inputRefTypes = getVariableBySchema(inputVariable || {});
-    memoized.outputRefTypes = getVariableBySchema(outputVariable || {});
-    memoized.inputAllTypes = getVariableBySchema(
-      (memoized.resolveRefsSchema as ISchema) || {},
-    );
-    setFieldTypes?.(id, {
-      inputs: memoized.inputRefTypes,
-      outputs: memoized.outputRefTypes,
-    });
-    return memoized;
-  }, [id, mode, name, display_name, currentWidgetSchema, currentFieldsModeMap]);
+    if (id === NodeIdEnum.end) {
+      return endSchema;
+    }
+    if (!name || !display_name || isEmpty(widgetSchema?.[name])) {
+      return {};
+    }
 
-  const formKey = useMemo(() => {
-    return `${JSON.stringify({
-      ...currentFieldsModeMap,
-      schemaMode,
-      reloadSchema,
-    })}`;
-  }, [schemaMode, currentFieldsModeMap, reloadSchema]);
+    return getSchemaByWidget({
+      name: display_name,
+      mode: schemaMode,
+      input_schema: widgetSchema?.[name]?.input_schema,
+      output_schema: widgetSchema?.[name]?.output_schema,
+      multi_input_schema: widgetSchema?.[name]?.multi_input_schema,
+    });
+  }, [id, name, display_name, widgetSchema, context, schemaMode]);
+
+  const outputSchema = useMemo(
+    () => widgetSchema?.[name]?.output_schema,
+    [widgetSchema, name],
+  );
 
   const schemaValue = useMemo<SchemaStore>(
     () => ({
       id,
+      schema,
       schemaMode,
       setSchemaMode,
-      name,
-      formKey,
+      fieldMode,
+      setFieldMode,
+      multiSchema,
       output,
-      ...memoizedData,
+      outputSchema,
     }),
-    [id, memoizedData, schemaMode, name, formKey, output],
+    [
+      id,
+      schema,
+      schemaMode,
+      setSchemaMode,
+      fieldMode,
+      setFieldMode,
+      multiSchema,
+      output,
+      outputSchema,
+    ],
   );
 
   return (
