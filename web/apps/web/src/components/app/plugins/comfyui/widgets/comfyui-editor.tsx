@@ -148,7 +148,7 @@ export const ComfyUIEditor = ({
                 handleImport(file);
                 return false;
               }}>
-              <Button size="sm" disabled={!loaded}>
+              <Button size="sm">
                 <UploadOutlined className="mr-2" />
                 Import
               </Button>
@@ -171,11 +171,7 @@ export const ComfyUIEditor = ({
               onClick={handleCancel}>
               Cancel
             </Button>
-            <Button
-              key="save"
-              size="sm"
-              onClick={handleSave}
-              disabled={!loaded}>
+            <Button key="save" size="sm" onClick={handleSave}>
               Save
             </Button>
           </div>
