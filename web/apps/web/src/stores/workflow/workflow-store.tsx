@@ -8,7 +8,7 @@ import {
 } from '@shellagent/flow-engine';
 import { TValues, TFieldMode } from '@shellagent/form-engine';
 import { Workflow } from '@shellagent/pro-config';
-import { setAutoFreeze, produce } from 'immer';
+import { produce, setAutoFreeze } from 'immer';
 import { createStore } from 'zustand/vanilla';
 import { computed } from 'zustand-computed-state';
 
@@ -29,7 +29,6 @@ import {
   GetWidgetListResponse,
   RunWorkflowResponse,
   EventStatusEnum,
-  ExistedInfo,
 } from '@/services/workflow/type';
 import {
   genNodeData,
@@ -48,12 +47,6 @@ export type WorkflowState = {
   };
   userInputs: TValues;
   nodeData: Record<string, TValues>;
-  fieldTypes: {
-    [id: string]: {
-      inputs: Record<string, string>;
-      outputs: Record<string, string>;
-    };
-  };
   widgetSchema: Record<string, GetWidgetSchemaResponse>;
   flowInstance: ReactFlowInstance | null;
   loading: {
@@ -64,8 +57,6 @@ export type WorkflowState = {
     workflowRunning?: boolean;
   };
   resetData: Record<string, TValues>;
-  reloadSchemaMap: Record<string, boolean>;
-  existedInfo: ExistedInfo;
 };
 
 export type WorkflowAction = {
@@ -73,26 +64,15 @@ export type WorkflowAction = {
   initNodeData: (nodeData: Record<string, TValues>) => void;
   // 运行用户输入表单
   setUserInputs: (userInputs: TValues) => void;
-  setFieldTypes?: (
-    id: string,
-    fieldTypes: {
-      inputs: Record<string, string>;
-      outputs: Record<string, string>;
-    },
-  ) => void;
   setNodeData: (params: { id: NodeId; data: TValues }) => void;
   setFlowInstance: (instance: ReactFlowInstance) => void;
   getWidgetList: (params: GetWidgetListRequest) => void;
-  setExistedInfo: (params: ExistedInfo) => void;
-  getWidgetSchema: (
-    params: GetWidgetSchemaRequest & { id?: string },
-    reload?: boolean,
-  ) => void;
+  getWidgetSchema: (params: GetWidgetSchemaRequest) => void;
   getReactFlow: (params: GetFlowRequest, instance: ReactFlowInstance) => void;
   getProConfig: (params: GetProconfigRequest) => void;
   onWorkflowMessage: (params: EventSourceMessage) => void;
   clearRuntimeData: () => void;
-  importWorkflow: (params: { workflow: Workflow; comfyui: any }) => void;
+  importWorkflow: (params: { workflow: Workflow }) => void;
   updateMetadata: (params: { metadata: Partial<Metadata> }) => void;
   setSchemaModeMap: (params: { id: string; mode: string }) => void;
   setFieldsModeMap: (params: {
@@ -100,10 +80,9 @@ export type WorkflowAction = {
     name: string;
     mode: TFieldMode;
   }) => void;
-  setResetData: (data: { path: string; value?: string }) => void;
+  setResetData: (data: { path: string; value: string }) => void;
   clearResetData: (path: string) => void;
   delConfigMap: (id: string) => void;
-  setRunLoading: (loading: boolean) => void;
 };
 
 export type WorkflowStore = WorkflowState & WorkflowAction;
@@ -121,12 +100,12 @@ export const initState: WorkflowState = {
   },
   userInputs: {},
   widgetSchema: {},
-  fieldTypes: {},
   nodeData: {
     [NodeIdEnum.start]: {},
     [NodeIdEnum.end]: {},
   },
   flowInstance: null,
+  // TODO 看看后续能不能拆出来
   loading: {
     getWidgetList: false,
     getWidgetSchema: {},
@@ -135,9 +114,6 @@ export const initState: WorkflowState = {
     workflowRunning: false,
   },
   resetData: {},
-  // reload
-  reloadSchemaMap: {},
-  existedInfo: {},
 };
 
 export const createWorkflowStore = () => {
@@ -192,12 +168,6 @@ export const createWorkflowStore = () => {
             state.userInputs = userInputs;
           }),
         ),
-      setFieldTypes: (id, fieldTypes) =>
-        set(
-          produce(state => {
-            state.fieldTypes[id] = fieldTypes;
-          }),
-        ),
       setNodeData: ({ id, data }) => {
         set(
           produce(state => {
@@ -226,77 +196,13 @@ export const createWorkflowStore = () => {
           );
         }
       },
-      getWidgetSchema: async (params, reload) => {
+      getWidgetSchema: async params => {
         set(
           produce(state => {
             state.loading.getWidgetSchema[params.widget_name] = true;
           }),
         );
-        if (reload) {
-          set(
-            produce(state => {
-              state.reloadSchemaMap[params.widget_name] = true;
-            }),
-          );
-        }
-        const { nodeData } = get();
-        let response = {};
-        try {
-          response = await fetchWidgetSchema({
-            widget_name: params.widget_name,
-          });
-          if (
-            params.id &&
-            nodeData[params.id].mode === 'undefined' &&
-            response
-          ) {
-            set(
-              produce(state => {
-                state.nodeData[params.id!] = {
-                  input: nodeData[params.id!].input,
-                  name: nodeData[params.id!].name,
-                  output: nodeData[params.id!].output,
-                };
-              }),
-            );
-          }
-        } catch (error) {
-          if (nodeData[params.id!]?.mode === 'undefined') {
-            const { input_names, input_types, output_names, output_types } =
-              nodeData[params.id!];
-            response = {
-              input_schema: {
-                properties: input_names.reduce(
-                  (memo: any, field: string, idx: number) => {
-                    memo[field] = {
-                      title: field,
-                      type: input_types[idx],
-                    };
-                    return memo;
-                  },
-                  {},
-                ),
-                title: 'InputsSchema',
-                type: 'object',
-              },
-              multi_input_schema: false,
-              output_schema: {
-                properties: output_names.reduce(
-                  (memo: any, field: string, idx: number) => {
-                    memo[field] = {
-                      title: field,
-                      type: output_types[idx],
-                    };
-                    return memo;
-                  },
-                  {},
-                ),
-                title: 'OutputsSchema',
-                type: 'object',
-              },
-            };
-          }
-        }
+        const response = await fetchWidgetSchema(params);
 
         set(
           produce(state => {
@@ -304,14 +210,6 @@ export const createWorkflowStore = () => {
             state.loading.getWidgetSchema[params.widget_name] = false;
           }),
         );
-
-        if (reload) {
-          set(
-            produce(state => {
-              state.reloadSchemaMap[params.widget_name] = false;
-            }),
-          );
-        }
       },
       getReactFlow: async (params, instance) => {
         try {
@@ -367,25 +265,11 @@ export const createWorkflowStore = () => {
           );
         }
       },
-      setRunLoading(loading) {
-        set(
-          produce(state => {
-            state.loading.workflowRunning = loading;
-          }),
-        );
-      },
       onWorkflowMessage(event) {
         const type = event.event;
-        let data: any = null;
-        try {
-          data = JSON.parse(event.data || '{}') as RunWorkflowResponse['data'];
-        } catch (e) {
-          // noop
-          console.log('err json', event.data);
-        }
-        if (data === null) {
-          return;
-        }
+        const data = JSON.parse(
+          event.data || '{}',
+        ) as RunWorkflowResponse['data'];
         if (type === EventStatusEnum.workflow_start) {
           get().flowInstance?.fitView();
           set(
@@ -395,6 +279,7 @@ export const createWorkflowStore = () => {
           );
         }
         if (type === EventStatusEnum.workflow_end) {
+          get().flowInstance?.fitView();
           set(
             produce(state => {
               state.loading.workflowRunning = false;
@@ -403,8 +288,8 @@ export const createWorkflowStore = () => {
         }
         if (type === EventStatusEnum.node_start) {
           get().flowInstance?.fitView({
-            minZoom: 0.3,
-            maxZoom: 1.5,
+            minZoom: 0.5,
+            maxZoom: 1,
             nodes: [{ id: data?.node_id as string }],
             padding: 400,
           });
@@ -452,30 +337,11 @@ export const createWorkflowStore = () => {
             return nodes;
           });
           if (data?.node_status === NodeStatusEnum.failed) {
-            get().flowInstance?.fitView({
-              minZoom: 0.8,
-              maxZoom: 1.5,
-              nodes: [{ id: data?.node_id as string }],
-              padding: 400,
-            });
-            // 设置为选中状态，放到最上层
-            get().flowInstance?.setNodes(nodes =>
-              nodes.map(node =>
-                node.id === data?.node_id
-                  ? {
-                      ...node,
-                      selected: true,
-                    }
-                  : node,
-              ),
-            );
             set(
               produce(state => {
                 state.loading.workflowRunning = false;
               }),
             );
-          } else {
-            get().flowInstance?.fitView();
           }
         }
       },
@@ -500,14 +366,13 @@ export const createWorkflowStore = () => {
           }),
         );
       },
-      importWorkflow({ workflow, comfyui }) {
+      importWorkflow({ workflow }) {
         workflow = genWorkflowData(workflow);
-        const { setNodeData, setFieldsModeMap } = get();
+        const { setNodeData, setSchemaModeMap, widgetSchema } = get();
         set(
           produce(state => {
             state.config = initState.config;
             state.nodeData = initState.nodeData;
-            state.widgetSchema = initState.widgetSchema;
           }),
         );
         // 先清空
@@ -519,9 +384,9 @@ export const createWorkflowStore = () => {
         setTimeout(() => {
           const reactflow = genReactFlow(
             workflow,
+            widgetSchema,
             setNodeData,
-            setFieldsModeMap,
-            comfyui,
+            setSchemaModeMap,
           );
           get().initReactFlow(reactflow);
         });
@@ -545,13 +410,6 @@ export const createWorkflowStore = () => {
           produce(state => {
             delete state.config.fieldsModeMap?.[id];
             delete state.config.schemaModeMap?.[id];
-          }),
-        );
-      },
-      setExistedInfo(params) {
-        set(
-          produce(state => {
-            state.existedInfo = params;
           }),
         );
       },

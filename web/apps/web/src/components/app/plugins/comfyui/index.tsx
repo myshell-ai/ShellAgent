@@ -4,8 +4,8 @@ import { FormRef } from '@shellagent/ui';
 
 import { WidgetConfigProps } from '@/components/app/config-form/widget-config';
 import NodeForm from '@/components/app/node-form';
-import { generateUUID } from '@/utils/common-helper';
 import { useRequest } from 'ahooks';
+import { nanoid } from 'nanoid';
 import { getFile } from './services';
 
 import { getComfyuiSchema, defaultSchema } from './schema';
@@ -18,7 +18,7 @@ const ComfyUIPlugin: React.FC<WidgetConfigProps> = ({ values, onChange }) => {
   useEffect(() => {
     const values = formRef.current?.getValues();
     if (!values?.comfy_workflow_id) {
-      formRef.current?.setValue('comfy_workflow_id', generateUUID());
+      formRef.current?.setValue('comfy_workflow_id', nanoid());
     }
   }, []);
 
