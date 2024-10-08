@@ -28,6 +28,7 @@ const ComfyUIPlugin: React.FC<WidgetConfigProps> = ({ values, onChange }) => {
         workflow: event.data.workflow,
         name: event.data.name,
         comfy_workflow_id: event.data.comfy_workflow_id,
+        comfyui_api: '',
       });
     }
 
