@@ -1,12 +1,12 @@
 'use client';
 
 import {
-  TValues,
   getDefaultValueBySchema,
   TFieldMode,
+  TValues,
 } from '@shellagent/form-engine';
 import { isEmpty, merge } from 'lodash-es';
-import { useEffect, useMemo, useCallback } from 'react';
+import { useCallback, useEffect, useMemo } from 'react';
 
 import NodeForm from '@/components/app/node-form';
 import { useAppStore } from '@/stores/app/app-provider';
@@ -44,14 +44,21 @@ export const WidgetConfig: React.FC<WidgetConfigProps> = ({
     }
   }, [values?.widget_class_name, getWidgetSchema, widgetSchema]);
 
-  const schema = useMemo(
-    () =>
-      getSchemaByWidget({
-        mode: 'basic',
-        ...widgetSchema[values?.widget_class_name],
-      }),
-    [widgetSchema, values?.widget_class_name],
-  );
+  const schema = useMemo(() => {
+    const schema = getSchemaByWidget({
+      mode: 'basic',
+      ...widgetSchema[values?.widget_class_name],
+    });
+    // Special process ImageTextFuserWidget
+    if (values?.widget_class_name === 'ImageTextFuserWidget') {
+      if (schema?.properties?.inputs?.properties?.config) {
+        schema.properties.inputs.properties.config['x-component'] =
+          'OpenImageCanvas';
+        schema.properties.inputs.properties.config['x-component-props'] = {};
+      }
+    }
+    return schema;
+  }, [widgetSchema, values?.widget_class_name]);
 
   const defaultValues = useMemo(
     () => getDefaultValueBySchema(schema, false),

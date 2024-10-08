@@ -144,18 +144,13 @@ const StateConfigSheet: React.FC<{}> = () => {
         : {};
       return {
         children: (
-          <>
-            <Box mb={1} mt={2}>
-              <Button size="sm">Open Image Canvas Editor</Button>
-            </Box>
-            <WidgetConfig
-              id={currentStateId}
-              key={`widget-config-${currentTaskIndex}`}
-              parent={`blocks.${currentTaskIndex}`}
-              values={widget}
-              onChange={commonProps.onChange}
-            />
-          </>
+          <WidgetConfig
+            id={currentStateId}
+            key={`widget-config-${currentTaskIndex}`}
+            parent={`blocks.${currentTaskIndex}`}
+            values={widget}
+            onChange={commonProps.onChange}
+          />
         ),
         title: (
           <EditableTitle
