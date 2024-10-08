@@ -1,4 +1,5 @@
 import { Node } from '@shellagent/flow-engine';
+import { FieldValues } from '@shellagent/ui';
 import { create } from 'zustand';
 
 import { EdgeDataTypeEnum, CustomEdgeData } from '@/components/app/edges';
@@ -18,8 +19,7 @@ type State = {
   currentTransitionSourceHandle: string;
   currentEdegData: CustomEdgeData;
   targetInputsSheetOpen: boolean;
-  // 当前copy的id
-  currentCopyId?: string;
+  currentCopyStateData: FieldValues;
 };
 
 type Action = {
@@ -42,7 +42,7 @@ type Action = {
   setTargetInputsSheetOpen: (open: State['targetInputsSheetOpen']) => void;
   setRunDrawerWidth: (width: number) => void;
   resetState: () => void;
-  setCurrentCopyId: (id: string) => void;
+  setCurrentCopyStateData: (data: FieldValues) => void;
 };
 
 const initialState: State = {
@@ -58,7 +58,6 @@ const initialState: State = {
   currentTransitionSourceHandle: '',
   runDrawerWidth: 715,
   transitionSheetOpen: false,
-  currentCopyId: '',
   currentEdegData: {
     id: '',
     custom: true,
@@ -67,6 +66,7 @@ const initialState: State = {
     target: '',
     conditions: [],
   },
+  currentCopyStateData: {},
 };
 
 export const useAppState = create<State & Action>(set => ({
@@ -75,7 +75,6 @@ export const useAppState = create<State & Action>(set => ({
   setEditing: editing => set(() => ({ editing })),
   setRunDrawerWidth: runDrawerWidth => set(() => ({ runDrawerWidth })),
   setSelectedNode: selectedNode => set(() => ({ selectedNode })),
-  setCurrentCopyId: (id: string) => set(() => ({ currentCopyId: id })),
   setStateConfigSheetOpen: (stateId, open) =>
     set(state => {
       if (open && state.currentStateId !== stateId) {
@@ -164,4 +163,6 @@ export const useAppState = create<State & Action>(set => ({
       ...state,
       targetInputsSheetOpen: open,
     })),
+  setCurrentCopyStateData: (data: FieldValues) =>
+    set(() => ({ currentCopyStateData: data })),
 }));

@@ -1,9 +1,9 @@
 [submodule "proconfig/widgets/imagen_widgets/library/ComfyUI"]
 	path = proconfig/widgets/imagen_widgets/library/ComfyUI
-	url = git@github.com:comfyanonymous/ComfyUI.git
+	url = https://github.com/comfyanonymous/ComfyUI.git
 [submodule "proconfig/widgets/imagen_widgets/library/comfy_custom_nodes/ComfyUI_UltimateSDUpscale"]
 	path = proconfig/widgets/imagen_widgets/library/comfy_custom_nodes/ComfyUI_UltimateSDUpscale
-	url = git@github.com:ssitu/ComfyUI_UltimateSDUpscale.git
+	url = https://github.com/ssitu/ComfyUI_UltimateSDUpscale.git
 [submodule "proconfig/widgets/imagen_widgets/library/comfy_custom_nodes/comfyui-mixlab-nodes"]
 	path = proconfig/widgets/imagen_widgets/library/comfy_custom_nodes/comfyui-mixlab-nodes
 	url = https://github.com/shadowcz007/comfyui-mixlab-nodes
@@ -36,10 +36,10 @@
 	url = https://github.com/storyicon/comfyui_segment_anything
 [submodule "proconfig/widgets/imagen_widgets/library/comfy_custom_nodes/ComfyUI-BiRefNet-ZHO"]
 	path = proconfig/widgets/imagen_widgets/library/comfy_custom_nodes/ComfyUI-BiRefNet-ZHO
-	url = git@github.com:ZHO-ZHO-ZHO/ComfyUI-BiRefNet-ZHO.git
+	url = https://github.com/ZHO-ZHO-ZHO/ComfyUI-BiRefNet-ZHO.git
 [submodule "proconfig/widgets/imagen_widgets/library/comfy_custom_nodes/rembg-comfyui-node"]
 	path = proconfig/widgets/imagen_widgets/library/comfy_custom_nodes/rembg-comfyui-node
-	url = git@github.com:Jcd1230/rembg-comfyui-node.git
+	url = https://github.com/Jcd1230/rembg-comfyui-node.git
 [submodule "proconfig/widgets/imagen_widgets/library/comfy_custom_nodes/ComfyMath"]
 	path = proconfig/widgets/imagen_widgets/library/comfy_custom_nodes/ComfyMath
 	url = https://github.com/evanspearman/ComfyMath
@@ -78,13 +78,13 @@
 	url = https://github.com/Cherwayway/ComfyUI-AnimateAnyone-Evolved.git
 [submodule "proconfig/widgets/imagen_widgets/library/comfy_custom_nodes/ComfyUI-LivePortraitKJ"]
 	path = proconfig/widgets/imagen_widgets/library/comfy_custom_nodes/ComfyUI-LivePortraitKJ
-	url = git@github.com:kijai/ComfyUI-LivePortraitKJ.git
+	url = https://github.com/kijai/ComfyUI-LivePortraitKJ.git
 [submodule "proconfig/widgets/imagen_widgets/library/comfy_custom_nodes/ComfyUI_Comfyroll_CustomNodes"]
 	path = proconfig/widgets/imagen_widgets/library/comfy_custom_nodes/ComfyUI_Comfyroll_CustomNodes
-	url = git@github.com:Suzie1/ComfyUI_Comfyroll_CustomNodes.git
+	url = https://github.com/Suzie1/ComfyUI_Comfyroll_CustomNodes.git
 [submodule "proconfig/widgets/imagen_widgets/library/comfy_custom_nodes/rgthree-comfy"]
 	path = proconfig/widgets/imagen_widgets/library/comfy_custom_nodes/rgthree-comfy
-	url = git@github.com:rgthree/rgthree-comfy.git
+	url = https://github.com/rgthree/rgthree-comfy.git
 [submodule "proconfig/widgets/imagen_widgets/library/comfy_custom_nodes/Derfuu_ComfyUI_ModdedNodes"]
 	path = proconfig/widgets/imagen_widgets/library/comfy_custom_nodes/Derfuu_ComfyUI_ModdedNodes
 	url = https://github.com/Derfuu/Derfuu_ComfyUI_ModdedNodes

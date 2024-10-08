@@ -9,9 +9,9 @@ import { isEmpty, merge } from 'lodash-es';
 import { useEffect, useMemo, useCallback } from 'react';
 
 import NodeForm from '@/components/app/node-form';
+import { useAppStore } from '@/stores/app/app-provider';
 import { getSchemaByWidget } from '@/stores/app/utils/get-widget-schema';
 import { useWorkflowStore } from '@/stores/workflow/workflow-provider';
-import { useAppStore } from '@/stores/app/app-provider';
 
 interface WidgetConfigProps {
   values: TValues | undefined;

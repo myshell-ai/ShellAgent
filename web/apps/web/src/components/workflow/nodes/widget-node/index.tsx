@@ -6,13 +6,8 @@ import {
 import { TValues, TFieldMode } from '@shellagent/form-engine';
 import { FormRef } from '@shellagent/ui';
 import { useKeyPress } from 'ahooks';
-import React, {
-  useCallback,
-  useRef,
-  useEffect,
-  useState,
-  useMemo,
-} from 'react';
+import { some } from 'lodash-es';
+import React, { useCallback, useRef, useEffect, useState } from 'react';
 import { useShallow } from 'zustand/react/shallow';
 
 import { useWorkflowState } from '@/stores/workflow/use-workflow-state';
@@ -27,7 +22,6 @@ import { useDuplicateState } from './hook/use-duplicate-state';
 import { EventType, useEventEmitter } from '../../emitter';
 import NodeCard from '../../node-card';
 import NodeForm from '../../node-form';
-import { some } from 'lodash-es';
 
 const WidgetNode: React.FC<NodeProps<WidgetNodeType>> = ({
   id,

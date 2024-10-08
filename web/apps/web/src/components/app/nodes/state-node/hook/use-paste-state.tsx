@@ -13,14 +13,15 @@ import {
   isEventTargetInputArea,
 } from '@/utils/common-helper';
 
+import { initData } from '../utils';
+
 export const usePasteState = ({
   enabeKeyboard = false,
 }: {
   enabeKeyboard: boolean;
 }) => {
-  const { setNodeData, nodeData } = useAppStore(state => ({
+  const { setNodeData } = useAppStore(state => ({
     setNodeData: state.setNodeData,
-    nodeData: state.nodeData,
   }));
 
   const { reactFlowWrapper, viewport, onAddNode } = useReactFlowStore(
@@ -31,35 +32,34 @@ export const usePasteState = ({
     }),
   );
 
-  const { currentCopyId } = useAppState(state => ({
-    currentCopyId: state.currentCopyId,
+  const { currentCopyStateData: data } = useAppState(state => ({
+    currentCopyStateData: state.currentCopyStateData,
   }));
 
-  // TODO 需要把nodeData里的key都换掉
-  const pasteState = useCallback(
-    (id: string) => {
-      const newId = uuid();
-      setNodeData({ id: newId, data: nodeData[id] });
-      const position = getCanvasCenter(reactFlowWrapper, viewport);
-      onAddNode({
-        type: nodeData[id].type,
-        position,
-        data: {
-          id: newId,
-          name: nodeData[id].name || '',
-          display_name: 'State',
-        },
-      });
-    },
-    [setNodeData, nodeData, reactFlowWrapper, viewport, onAddNode],
-  );
+  const pasteState = useCallback(() => {
+    const newId = uuid();
+    const newData = initData(data);
+
+    setNodeData({ id: newId, data: newData });
+
+    const position = getCanvasCenter(reactFlowWrapper, viewport);
+    onAddNode({
+      type: data.type || 'state',
+      position,
+      data: {
+        id: newId,
+        name: data.name || '',
+        display_name: 'State',
+      },
+    });
+  }, [setNodeData, data, reactFlowWrapper, viewport, onAddNode]);
 
   useKeyPress(`${getKeyboardKeyCodeBySystem('ctrl')}.v`, e => {
     if (isEventTargetInputArea(e.target as HTMLElement)) {
       return;
     }
-    if (currentCopyId && enabeKeyboard) {
-      pasteState(currentCopyId);
+    if (data && enabeKeyboard) {
+      pasteState();
     }
   });
 

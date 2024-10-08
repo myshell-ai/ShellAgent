@@ -30,10 +30,7 @@ module.exports = {
     return config;
   },
   rewrites: async () => {
-    const NEXT_PUBLIC_API_URL =
-      process.env.NODE_ENV === 'development'
-        ? 'http://34.239.158.245:8099'
-        : process.env.NEXT_PUBLIC_API_URL || 'http://34.239.158.245:8098';
+    const NEXT_PUBLIC_API_URL = process.env.NEXT_PUBLIC_API_URL;
     return [
       {
         source: '/api/:path*',
