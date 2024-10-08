@@ -5,7 +5,6 @@ import uuid
 import json
 import urllib
 import os
-<<<<<<< HEAD
 from datetime import datetime
 
 from servers.base import app, PROJECT_ROOT
@@ -131,10 +130,6 @@ def comfyui_get_file():
     
     return jsonify(return_dict)
     
-=======
-
-from servers.base import app
->>>>>>> f01bfabca6bdd347f051ca338722b68c1da3c709
 
 @app.route(f'/comfyui/list_workflow', methods=['POST'])
 def comfyui_list_workflow():
@@ -242,18 +237,13 @@ def comfyui_run():
         if schemas["outputs"][node_id]["type"] == "image":
             images_output = []
             for image in node_output['images']:
-<<<<<<< HEAD
                 image_data = get_media(server_address, image['filename'], image['subfolder'], image['type'])
-=======
-                image_data = get_image(server_address, image['filename'], image['subfolder'], image['type'])
->>>>>>> f01bfabca6bdd347f051ca338722b68c1da3c709
                 save_path = os.path.join(image["type"], image['subfolder'], image['filename'])
                 os.makedirs(os.path.dirname(save_path), exist_ok=True)
                 with open(save_path, "wb") as f:
                     f.write(image_data)
                 images_output.append(save_path)
             outputs[schemas["outputs"][node_id]["name"]] = images_output
-<<<<<<< HEAD
         elif schemas["outputs"][node_id]["type"] == "video":
             videos_output = []
             for video_path in node_output['video']:
@@ -265,8 +255,6 @@ def comfyui_run():
                     f.write(video_data)
                 videos_output.append(save_path)
             outputs[schemas["outputs"][node_id]["name"]] = videos_output
-=======
->>>>>>> f01bfabca6bdd347f051ca338722b68c1da3c709
     return_dict = {
         "outputs": outputs
     }
