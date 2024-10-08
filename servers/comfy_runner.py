@@ -163,20 +163,13 @@ def get_history(server_address, prompt_id):
     with urllib.request.urlopen("http://{}/history/{}".format(server_address, prompt_id)) as response:
         return json.loads(response.read())
 
-<<<<<<< HEAD
 def get_media(server_address, filename, subfolder, folder_type):
-=======
-def get_image(server_address, filename, subfolder, folder_type):
->>>>>>> f01bfabca6bdd347f051ca338722b68c1da3c709
     data = {"filename": filename, "subfolder": subfolder, "type": folder_type}
     url_values = urllib.parse.urlencode(data)
     with urllib.request.urlopen("http://{}/view?{}".format(server_address, url_values)) as response:
         return response.read()
     
-<<<<<<< HEAD
 NON_FILE_INPUT_TYPES = ["text", "number", "integer"]
-=======
->>>>>>> f01bfabca6bdd347f051ca338722b68c1da3c709
 @app.route(f'/comfyui/run', methods=['POST'])
 def comfyui_run():
     data = request.get_json()
@@ -203,11 +196,7 @@ def comfyui_run():
     # first replace the prompt
     for node_id, node_schema in schemas["inputs"].items():
         input_value = user_inputs[node_schema["name"]]
-<<<<<<< HEAD
         if node_schema["type"] not in NON_FILE_INPUT_TYPES: # file input
-=======
-        if node_schema["type"] not in ["text"]: # file input
->>>>>>> f01bfabca6bdd347f051ca338722b68c1da3c709
             input_value = os.path.join(os.getcwd(), input_value)
             
         prompt[node_id]["inputs"]["default_value"] = input_value
