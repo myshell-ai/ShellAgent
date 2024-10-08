@@ -5,6 +5,7 @@ import { IconButton, Lego, Setting } from '@shellagent/ui';
 import { useSearchParams } from 'next/navigation';
 import { useEffect, useRef } from 'react';
 import { useShallow } from 'zustand/react/shallow';
+import '../../reflect-metadata-client-side';
 
 import { Header } from '@/components/workflow/header';
 import { EndNode, StartNode, WidgetNode } from '@/components/workflow/nodes';
