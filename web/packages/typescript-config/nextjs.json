@@ -18,7 +18,8 @@
     "plugins": [{ "name": "next" }],
     "declaration": false,
     "declarationMap": false,
-    "target": "es5"
+    "target": "es5",
+    "allowImportingTsExtensions": false
   },
   "include": ["src", "next-env.d.ts"],
   "exclude": ["node_modules"]
