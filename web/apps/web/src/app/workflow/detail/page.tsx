@@ -7,11 +7,11 @@ import { useEffect, useRef } from 'react';
 import { useShallow } from 'zustand/react/shallow';
 import '../../reflect-metadata-client-side';
 
+import FlowHeader from '@/components/workflow/flow-header';
 import { Header } from '@/components/workflow/header';
 import { EndNode, StartNode, WidgetNode } from '@/components/workflow/nodes';
 import { useGlobalStore } from '@/stores/global/global-provider';
 import { useWorkflowStore } from '@/stores/workflow/workflow-provider';
-import FlowHeader from '@/components/workflow/flow-header';
 
 const nodeTypes = {
   [NodeTypeEnum.start]: StartNode,
