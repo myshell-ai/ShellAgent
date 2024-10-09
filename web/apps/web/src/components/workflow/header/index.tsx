@@ -45,6 +45,7 @@ import { genWorkflow } from '@/stores/workflow/utils/data-transformer';
 import { useWorkflowStore } from '@/stores/workflow/workflow-provider';
 import { cn } from '@/utils/cn';
 import { deleteKey } from '@/utils/common-helper';
+import PerformanceMonitor from '@/components/common/performance-monitor';
 
 import VersionSkeleton from './skeleton';
 
@@ -552,18 +553,6 @@ export const Header: React.FC<{ container: HTMLElement | null }> = ({
               </Button>
             </Popover>
           )}
-        </div>
-        <div className="absolute right-3 top-16 z-10 w-full text-right">
-          {version ? (
-            <Text size="sm" color="subtlest">
-              Current preview version: {version}
-            </Text>
-          ) : null}
-          {autoSavedTime && !version ? (
-            <Text size="sm" color="subtlest">
-              Auto Saved {dayjs(autoSavedTime).format('HH:mm:ss')}
-            </Text>
-          ) : null}
         </div>
       </div>
       <RunSheet
