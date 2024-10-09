@@ -1,3 +1,5 @@
+/* eslint-disable react/destructuring-assignment */
+
 'use client';
 
 import {
@@ -9,10 +11,10 @@ import { isEmpty, merge } from 'lodash-es';
 import { useEffect, useMemo, useCallback } from 'react';
 
 import NodeForm from '@/components/app/node-form';
+import { getPlugin } from '@/components/app/plugins';
 import { useAppStore } from '@/stores/app/app-provider';
 import { getSchemaByWidget } from '@/stores/app/utils/get-widget-schema';
 import { useWorkflowStore } from '@/stores/workflow/workflow-provider';
-import { getPlugin } from '@/components/app/plugins';
 
 export interface WidgetConfigProps {
   values: TValues | undefined;

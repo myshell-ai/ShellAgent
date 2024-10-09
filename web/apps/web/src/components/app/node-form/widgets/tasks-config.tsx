@@ -5,8 +5,7 @@ import { Button, useFormContext, Drag } from '@shellagent/ui';
 import { useClickAway } from 'ahooks';
 import { Dropdown } from 'antd';
 import { useState, useRef, useCallback } from 'react';
-import { useDrag, useDrop, DndProvider } from 'react-dnd';
-import { HTML5Backend } from 'react-dnd-html5-backend';
+import { useDrag, useDrop } from 'react-dnd';
 
 import { materialList } from '@/components/app/constants';
 import { TaskList } from '@/components/app/task-list';
@@ -121,59 +120,57 @@ const TasksConfig = ({
   );
 
   return (
-    <DndProvider backend={HTML5Backend}>
-      <div>
-        {values?.length > 0 && (
-          <div className="flex flex-col gap-2 mb-1.5">
-            {values.map((task, idx) => (
-              <TaskItem
-                key={task.name}
-                name={task.display_name}
-                onDelete={() => handleItemDelete(idx)}
-                onClick={() => handleItemClick(idx)}
-                index={idx}
-                moveTask={moveTask}
-                draggable={draggable} // 传递draggable参数
-              />
-            ))}
+    <div>
+      {values?.length > 0 && (
+        <div className="flex flex-col gap-2 mb-1.5">
+          {values.map((task, idx) => (
+            <TaskItem
+              key={task.name}
+              name={task.display_name}
+              onDelete={() => handleItemDelete(idx)}
+              onClick={() => handleItemClick(idx)}
+              index={idx}
+              moveTask={moveTask}
+              draggable={draggable} // 传递draggable参数
+            />
+          ))}
+        </div>
+      )}
+      <Dropdown
+        placement="bottomRight"
+        trigger={['click']}
+        overlayClassName="shadow-modal-default"
+        overlayStyle={{ borderRadius: 12, overflow: 'hidden' }}
+        getPopupContainer={() => btnRef.current || document.body}
+        open={open}
+        overlay={
+          <div
+            onWheelCapture={e => e.stopPropagation()}
+            className="w-[200px] max-h-[349px] overflow-y-auto"
+            onClick={e => e.stopPropagation()}>
+            <TaskList
+              className="rounded-xl"
+              data={materialList.slice(1)}
+              loading={false}
+              onChange={handleSelect}
+            />
           </div>
-        )}
-        <Dropdown
-          placement="bottomRight"
-          trigger={['click']}
-          overlayClassName="shadow-modal-default"
-          overlayStyle={{ borderRadius: 12, overflow: 'hidden' }}
-          getPopupContainer={() => btnRef.current || document.body}
-          open={open}
-          overlay={
-            <div
-              onWheelCapture={e => e.stopPropagation()}
-              className="w-[200px] max-h-[349px] overflow-y-auto"
-              onClick={e => e.stopPropagation()}>
-              <TaskList
-                className="rounded-xl"
-                data={materialList.slice(1)}
-                loading={false}
-                onChange={handleSelect}
-              />
-            </div>
-          }>
-          <Button
-            ref={btnRef}
-            icon={PlusIcon}
-            onClick={e => {
-              e.stopPropagation();
-              setOpen(true);
-            }}
-            variant="outline"
-            size="sm"
-            type="button"
-            className="rounded-lg w-18 border-default">
-            Add
-          </Button>
-        </Dropdown>
-      </div>
-    </DndProvider>
+        }>
+        <Button
+          ref={btnRef}
+          icon={PlusIcon}
+          onClick={e => {
+            e.stopPropagation();
+            setOpen(true);
+          }}
+          variant="outline"
+          size="sm"
+          type="button"
+          className="rounded-lg w-18 border-default">
+          Add
+        </Button>
+      </Dropdown>
+    </div>
   );
 };
 

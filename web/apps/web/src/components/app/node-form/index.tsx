@@ -47,11 +47,21 @@ interface NodeFormProps {
   parent?: string;
   modeMap?: Record<string, TFieldMode>;
   onModeChange?: (name: string, mode: TFieldMode) => void;
+  components?: Record<string, React.FC<any>>;
 }
 
 const NodeForm = forwardRef<FormRef, NodeFormProps>(
   (
-    { values, onChange, schema, loading, onModeChange, modeMap, parent },
+    {
+      values,
+      onChange,
+      schema,
+      loading,
+      onModeChange,
+      modeMap,
+      parent,
+      components = {},
+    },
     ref,
   ) => {
     const { schema: formSchema, formKey } = useSchemaContext(state => ({
@@ -108,6 +118,7 @@ const NodeForm = forwardRef<FormRef, NodeFormProps>(
           WorkflowSelect,
           TransitionConditionEditor,
           VariableNameInput,
+          ...components,
         }}
       />
     );
