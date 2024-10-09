@@ -45,7 +45,6 @@ import { genWorkflow } from '@/stores/workflow/utils/data-transformer';
 import { useWorkflowStore } from '@/stores/workflow/workflow-provider';
 import { cn } from '@/utils/cn';
 import { deleteKey } from '@/utils/common-helper';
-import PerformanceMonitor from '@/components/common/performance-monitor';
 
 import VersionSkeleton from './skeleton';
 

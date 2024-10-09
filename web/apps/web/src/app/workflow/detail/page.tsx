@@ -92,11 +92,7 @@ export default function WorkflowPage() {
               <IconButton variant="ghost" className="w-9 h-9" icon={Setting} />
             </div>
           }
-          header={
-            <>
-              <FlowHeader flowId={flowId} version={version} />
-            </>
-          }
+          header={<FlowHeader flowId={flowId} version={version} />}
         />
       </main>
     </div>
