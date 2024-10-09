@@ -1,4 +1,5 @@
 import 'image-canvas/index.css';
+import 'image-canvas/assets/react-colors-beauty.css';
 
 import type { Meta, StoryObj } from '@storybook/react';
 

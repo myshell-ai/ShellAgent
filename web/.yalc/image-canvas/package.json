@@ -5,8 +5,11 @@
     "@ant-design/icons": "^5.2.6",
     "@emoji-mart/data": "^1.1.2",
     "@emoji-mart/react": "^1.1.1",
+    "@ice/jsx-runtime": "^0.2.0",
     "@ice/runtime": "^1.2.7",
+    "@swc/helpers": "^0.5.1",
     "antd": "^5.11.0",
+    "classnames": "^2.5.1",
     "cropperjs": "^1.6.1",
     "dayjs": "^1.11.11",
     "emoji-mart": "^5.5.2",
@@ -19,14 +22,17 @@
     "i18next-browser-languagedetector": "^8.0.0",
     "i18next-http-backend": "^2.5.2",
     "lodash-es": "^4.17.21",
+    "rc-input": "~1.4.2",
+    "rc-input-number": "~8.6.1",
     "react": "^18.2.0",
     "react-colors-beauty": "1.0.3",
     "react-dom": "^18.2.0",
     "react-i18next": "^14.1.1",
     "roughjs": "^4.6.6",
+    "universal-env": "^3.3.3",
     "uuid": "^9.0.1"
   },
   "main": "./index.bundle.js",
   "types": "./index.bundle.d.ts",
-  "yalcSig": "1a5109b71bdb35e4f336c8ab83393a66"
+  "yalcSig": "bedae247c5726db0d7871812bf037ae9"
 }

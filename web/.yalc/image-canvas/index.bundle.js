@@ -1,19 +1,21 @@
 'use strict';
 
+var classNames = require('classnames');
+var React = require('react');
 var jsxRuntime = require('react/jsx-runtime');
-var react = require('react');
 var antd = require('antd');
 var icons = require('@ant-design/icons');
 var i18n = require('i18next');
 var reactI18next = require('react-i18next');
-var Backend = require('i18next-http-backend');
 var fabric$1 = require('fabric');
 var FontFaceObserver = require('fontfaceobserver');
 var uuid$1 = require('uuid');
 var googleFonts = require('google-fonts');
-var reactColorsBeauty = require('react-colors-beauty');
+var universalEnv = require('universal-env');
+var RcInputNumber = require('rc-input-number');
+var RcInput = require('rc-input');
 var data = require('@emoji-mart/data');
-var Picker = require('@emoji-mart/react');
+var Picker$1 = require('@emoji-mart/react');
 var Cropper = require('cropperjs');
 var lodashEs = require('lodash-es');
 var hotkeys = require('hotkeys-js');
@@ -49,50 +51,336 @@ function _interopNamespace(e) {
   return Object.freeze(n);
 }
 
+var classNames__default = /*#__PURE__*/ _interopDefault(classNames);
+var React__default = /*#__PURE__*/ _interopDefault(React);
 var i18n__default = /*#__PURE__*/ _interopDefault(i18n);
-var Backend__default = /*#__PURE__*/ _interopDefault(Backend);
 var FontFaceObserver__namespace =
   /*#__PURE__*/ _interopNamespace(FontFaceObserver);
 var googleFonts__default = /*#__PURE__*/ _interopDefault(googleFonts);
+var RcInputNumber__default = /*#__PURE__*/ _interopDefault(RcInputNumber);
+var RcInput__default = /*#__PURE__*/ _interopDefault(RcInput);
 var data__default = /*#__PURE__*/ _interopDefault(data);
-var Picker__default = /*#__PURE__*/ _interopDefault(Picker);
+var Picker__default = /*#__PURE__*/ _interopDefault(Picker$1);
 var Cropper__default = /*#__PURE__*/ _interopDefault(Cropper);
 var hotkeys__default = /*#__PURE__*/ _interopDefault(hotkeys);
 var rough__default = /*#__PURE__*/ _interopDefault(rough);
 
-const GlobalStateContext = react.createContext(null);
+function Title$1(props) {
+  const { children } = props;
+  return jsxRuntime.jsx(antd.Divider, { children: children });
+}
 
-const ROTATE_SVG = `data:image/svg+xml;charset=utf-8,${encodeURIComponent('<svg t="1699434105329" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="6530" width="32" height="32" xmlns:xlink="http://www.w3.org/1999/xlink"><path d="M508.018 995.557c-269.887 0-488.675-218.785-488.675-488.675S238.13 18.206 508.018 18.206s488.676 218.787 488.676 488.676c0 269.89-218.788 488.675-488.676 488.675z m0-885.723c-219.283 0-397.048 177.763-397.048 397.048 0 219.284 177.765 397.05 397.048 397.05 219.285 0 397.049-177.766 397.049-397.05 0-219.285-177.764-397.048-397.049-397.048z m206.72 336.247h-87.822c-11.193 0-20.267-9.074-20.267-20.267s9.074-20.267 20.267-20.267h34.905c-31.736-44.89-83.812-74.31-142.994-74.31-97.007 0-175.645 78.638-175.645 175.643 0 11.194-9.074 20.267-20.267 20.267-11.192 0-20.266-9.073-20.266-20.267 0-119.391 96.786-216.177 216.178-216.177 72.505 0 136.49 35.795 175.644 90.603v-36.56c0-11.192 9.073-20.265 20.267-20.265s20.266 9.073 20.266 20.266v81.066c0 11.194-9.073 20.268-20.266 20.268z m-391.822 121.6h87.822c11.193 0 20.266 9.073 20.266 20.266 0 11.193-9.073 20.267-20.266 20.267h-35.18c31.76 44.942 84.035 74.31 143.269 74.31 97.005 0 175.644-78.638 175.644-175.644 0-11.193 9.073-20.266 20.267-20.266s20.266 9.073 20.266 20.266c0 119.392-96.786 216.179-216.177 216.179-72.597 0-136.54-35.95-175.645-90.892v36.847c0 11.193-9.074 20.267-20.267 20.267-11.192 0-20.267-9.074-20.267-20.267v-81.067c0-11.193 9.075-20.266 20.268-20.266z" fill="#515151" p-id="6531"></path></svg>')}`;
-const ROTATE_SVG_ACTIVE = `data:image/svg+xml;charset=utf-8,${encodeURIComponent('<svg t="1699434105329" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="6530" width="32" height="32" xmlns:xlink="http://www.w3.org/1999/xlink"><path d="M508.018 995.557c-269.887 0-488.675-218.785-488.675-488.675S238.13 18.206 508.018 18.206s488.676 218.787 488.676 488.676c0 269.89-218.788 488.675-488.676 488.675z m0-885.723c-219.283 0-397.048 177.763-397.048 397.048 0 219.284 177.765 397.05 397.048 397.05 219.285 0 397.049-177.766 397.049-397.05 0-219.285-177.764-397.048-397.049-397.048z m206.72 336.247h-87.822c-11.193 0-20.267-9.074-20.267-20.267s9.074-20.267 20.267-20.267h34.905c-31.736-44.89-83.812-74.31-142.994-74.31-97.007 0-175.645 78.638-175.645 175.643 0 11.194-9.074 20.267-20.267 20.267-11.192 0-20.266-9.073-20.266-20.267 0-119.391 96.786-216.177 216.178-216.177 72.505 0 136.49 35.795 175.644 90.603v-36.56c0-11.192 9.073-20.265 20.267-20.265s20.266 9.073 20.266 20.266v81.066c0 11.194-9.073 20.268-20.266 20.268z m-391.822 121.6h87.822c11.193 0 20.266 9.073 20.266 20.266 0 11.193-9.073 20.267-20.266 20.267h-35.18c31.76 44.942 84.035 74.31 143.269 74.31 97.005 0 175.644-78.638 175.644-175.644 0-11.193 9.073-20.266 20.267-20.266s20.266 9.073 20.266 20.266c0 119.392-96.786 216.179-216.177 216.179-72.597 0-136.54-35.95-175.645-90.892v36.847c0 11.193-9.074 20.267-20.267 20.267-11.192 0-20.267-9.074-20.267-20.267v-81.067c0-11.193 9.075-20.266 20.268-20.266z" fill="#F50909" p-id="6531"></path></svg>')}`;
-const ROTATE_CURSOR = encodeURIComponent(`
-<svg xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink' width='24' height='24'>
-  <defs>
-    <filter id='a' width='266.7%' height='156.2%' x='-75%' y='-21.9%' filterUnits='objectBoundingBox'>
-      <feOffset dy='1' in='SourceAlpha' result='shadowOffsetOuter1'/>
-      <feGaussianBlur in='shadowOffsetOuter1' result='shadowBlurOuter1' stdDeviation='1'/>
-      <feColorMatrix in='shadowBlurOuter1' result='shadowMatrixOuter1' values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.2 0'/>
-      <feMerge>
-        <feMergeNode in='shadowMatrixOuter1'/>
-        <feMergeNode in='SourceGraphic'/>
-      </feMerge>
-    </filter>
-    <path id='b' d='M1.67 12.67a7.7 7.7 0 0 0 0-9.34L0 5V0h5L3.24 1.76a9.9 9.9 0 0 1 0 12.48L5 16H0v-5l1.67 1.67z'/>
-  </defs>
-  <g fill='none' fill-rule='evenodd'><path d='M0 24V0h24v24z'/>
-    <g fill-rule='nonzero' filter='url(#a)' transform='rotate(90 5.25 14.75)'>
-      <use fill='#000' fill-rule='evenodd' xlink:href='#b'/>
-      <path stroke='#FFF' d='M1.6 11.9a7.21 7.21 0 0 0 0-7.8L-.5 6.2V-.5h6.7L3.9 1.8a10.4 10.4 0 0 1 0 12.4l2.3 2.3H-.5V9.8l2.1 2.1z'/>
-    </g>
-  </g>
-</svg>`);
-const COPY_SVG = `data:image/svg+xml;charset=utf-8,${encodeURIComponent('<svg t="1702138272519" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="16833" width="32" height="32"><path d="M810.666667 85.333333a85.333333 85.333333 0 0 1 85.333333 85.333334v512a85.333333 85.333333 0 0 1-85.333333 85.333333h-85.333334v85.333333a85.333333 85.333333 0 0 1-85.333333 85.333334H213.333333a85.333333 85.333333 0 0 1-85.333333-85.333334V341.333333a85.333333 85.333333 0 0 1 85.333333-85.333333h85.333334V170.666667a85.333333 85.333333 0 0 1 85.333333-85.333334h426.666667z m-384 554.666667H341.333333a42.666667 42.666667 0 0 0-4.992 85.034667L341.333333 725.333333h85.333334a42.666667 42.666667 0 0 0 4.992-85.034666L426.666667 640z m384-469.333333H384v85.333333h256a85.333333 85.333333 0 0 1 85.333333 85.333333v341.333334h85.333334V170.666667z m-298.666667 298.666666H341.333333a42.666667 42.666667 0 1 0 0 85.333334h170.666667a42.666667 42.666667 0 1 0 0-85.333334z" p-id="16834" fill="#515151"></path></svg>')}`;
-const COPY_SVG_ACTIVE = `data:image/svg+xml;charset=utf-8,${encodeURIComponent('<svg t="1702138272519" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="16833" width="32" height="32"><path d="M810.666667 85.333333a85.333333 85.333333 0 0 1 85.333333 85.333334v512a85.333333 85.333333 0 0 1-85.333333 85.333333h-85.333334v85.333333a85.333333 85.333333 0 0 1-85.333333 85.333334H213.333333a85.333333 85.333333 0 0 1-85.333333-85.333334V341.333333a85.333333 85.333333 0 0 1 85.333333-85.333333h85.333334V170.666667a85.333333 85.333333 0 0 1 85.333333-85.333334h426.666667z m-384 554.666667H341.333333a42.666667 42.666667 0 0 0-4.992 85.034667L341.333333 725.333333h85.333334a42.666667 42.666667 0 0 0 4.992-85.034666L426.666667 640z m384-469.333333H384v85.333333h256a85.333333 85.333333 0 0 1 85.333333 85.333333v341.333334h85.333334V170.666667z m-298.666667 298.666666H341.333333a42.666667 42.666667 0 1 0 0 85.333334h170.666667a42.666667 42.666667 0 1 0 0-85.333334z" p-id="16834" fill="#d81e06"></path></svg>')}`;
-const DEL_SVG = `data:image/svg+xml;charset=utf-8,${encodeURIComponent('<svg t="1702138440243" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="19137" width="32" height="32"><path d="M853.333333 192v42.666667a21.333333 21.333333 0 0 1-21.333333 21.333333h-640a21.333333 21.333333 0 0 1-21.333333-21.333333v-42.666667a21.333333 21.333333 0 0 1 21.333333-21.333333H384V128a42.666667 42.666667 0 0 1 42.666667-42.666667h170.666666a42.666667 42.666667 0 0 1 42.666667 42.666667v42.666667h192a21.333333 21.333333 0 0 1 21.333333 21.333333zM250.453333 859.306667a85.333333 85.333333 0 0 0 85.333334 79.36h353.28a85.333333 85.333333 0 0 0 85.333333-79.36L810.666667 341.333333H213.333333z" p-id="19138" fill="#515151"></path></svg>')}`;
-const DEL_SVG_ACTIVE = `data:image/svg+xml;charset=utf-8,${encodeURIComponent('<svg t="1702138440243" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="19137" width="32" height="32"><path d="M853.333333 192v42.666667a21.333333 21.333333 0 0 1-21.333333 21.333333h-640a21.333333 21.333333 0 0 1-21.333333-21.333333v-42.666667a21.333333 21.333333 0 0 1 21.333333-21.333333H384V128a42.666667 42.666667 0 0 1 42.666667-42.666667h170.666666a42.666667 42.666667 0 0 1 42.666667 42.666667v42.666667h192a21.333333 21.333333 0 0 1 21.333333 21.333333zM250.453333 859.306667a85.333333 85.333333 0 0 0 85.333334 79.36h353.28a85.333333 85.333333 0 0 0 85.333333-79.36L810.666667 341.333333H213.333333z" p-id="19138" fill="#d81e06"></path></svg>')}`;
-const DRAW_MODE_CURSOR =
-  '<svg t="1701336130548" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="46063" width="16" height="16"><path d="M666.112 549.568l116.032-116.8-241.856-244.16-115.2 116.928-104.64 105.152-94.912 94.784A5667.84 5667.84 0 0 0 154.88 577.536c-19.456 19.456-30.784 31.744-36.48 36.992-10.304 10.048-19.584 21.12-27.52 32.96a198.272 198.272 0 0 0-17.088 33.088 208.64 208.64 0 0 0-17.088 42.88c-7.296 20.8-13.824 43.52-21.12 68.16-7.296 24.704-14.592 48.64-21.12 71.424a411.968 411.968 0 0 0-12.16 52.48 61.184 61.184 0 0 0 6.528 48.064 50.56 50.56 0 0 0 46.272 10.368c11.264-1.792 28.352-5.696 51.136-11.648a1664.32 1664.32 0 0 0 145.28-46.784c18.112-6.272 35.584-13.632 52.8-22.016 12.544-5.248 24.32-12.288 34.944-20.8 11.328-8.704 21.12-16.896 30.08-24.32a520.96 520.96 0 0 0 32.384-31.168l68.16-69.44c27.52-28.16 58.432-59.136 93.248-92.8l103.04-105.408z m232.064-232.384c5.632-6.08 12.928-12.992 21.12-20.8 8.128-7.808 17.856-16.896 27.52-27.328 8.96-9.472 16-20.48 21.12-32.448 4.16-10.752 6.336-22.208 6.528-33.728a202.24 202.24 0 0 0-3.2-32.448 119.872 119.872 0 0 0-8.96-27.328 272.512 272.512 0 0 0-50.304-74.56 255.04 255.04 0 0 0-60.096-49.92 205.952 205.952 0 0 0-30.784-11.648 141.568 141.568 0 0 0-35.712-5.888 112.768 112.768 0 0 0-38.08 5.248 115.52 115.52 0 0 0-38.08 20.096c-8.96 8.192-21.12 18.432-34.944 31.808-13.824 13.376-26.816 24.832-37.376 34.304l241.92 242.816c5.632-5.12 12.032-11.2 19.328-18.176z" fill="#2c2c2c" p-id="46064"></path></svg>';
-const DRAG_ICON =
-  '<svg viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="4941" width="22" height="22"><path d="M630.57970569 637.6867208l110.35938764 236.66748681c6.20083831 13.29490805 0.44014302 29.08827497-12.84181964 35.28911328l-96.26186588 44.88164187c-13.29490805 6.20083831-29.08827497 0.45308839-35.28911329-12.84181965l-112.87079191-242.05276602-138.77450271 138.77450272c-10.36925155 10.36925155-27.17235831 10.36925155-37.54160987 0.01294537a26.56392533 26.56392533 0 0 1-7.78017501-18.78375032V147.18616969c0-14.66711861 11.88386133-26.55097995 26.55097995-26.55097996 6.60214518 0 12.97127348 2.45962272 17.86462814 6.89988899l494.18998519 449.26950715c10.84823072 9.86438163 11.65084445 26.65454302 1.78646281 37.50277374a26.56004172 26.56004172 0 0 1-17.6057205 8.6086795L630.57970569 637.6867208z" p-id="4942" fill="#2c2c2c"></path></svg>';
+var common = {
+  ok: 'OK',
+  shadow: 'Shadow',
+  color: 'Color',
+  line_width: 'LineWidth',
+  width: 'Width',
+  offset: 'Offset',
+  operate: 'Operate',
+  text: 'Text',
+  size: 'Size',
+  background_color: 'BackgroundColor',
+  fill: 'Fill',
+  stroke: 'Stroke',
+  stroke_color: 'Color',
+  stroke_width: 'StrokeWidth',
+  blur: 'Blur',
+  border: 'Border',
+  style: 'Style',
+  round: 'Round',
+};
+var header = {
+  fabritor_desc: 'Image canvas',
+  export: {
+    jpg: 'Export as JPG',
+    png: 'Export as PNG',
+    svg: 'Export as SVG',
+    json: 'Export as JSON',
+    clipboard: 'Copy to Clipboard',
+    load: 'Load',
+    export: 'Export',
+    copy_success: 'Copied successfully',
+    copy_failed: 'Copy failed, please choose to export to local',
+  },
+  toolbar: {
+    undo: 'Undo',
+    redo: 'Redo',
+    select: 'Select',
+    pan: 'Pan',
+    clear: 'Clear',
+    clear_confirm:
+      'Confirm to clear the canvas and clear the historical operation records?',
+  },
+};
+var panel = {
+  design: {
+    title: 'Design',
+    start: 'Start with your creativity',
+    start_demo: 'Or start with a simple DEMO',
+  },
+  text: {
+    title: 'Text',
+    add: 'Text Box',
+    add_title: 'Title',
+    add_subtitle: 'Subtitle',
+    add_body_text: 'a body of text',
+    add_text_border: 'Text border',
+    presets: 'Presets',
+  },
+  image: {
+    title: 'Image',
+    local: 'Local Image',
+    remote: 'Remote Image',
+    remote_placeholder: 'Remote Image Url',
+  },
+  material: {
+    title: 'Material',
+    line: 'Line',
+    shape: 'Shape',
+    hand_drawn: 'Hand-Drawn',
+  },
+  paint: {
+    title: 'Paint',
+    stop: 'Stop Drawing',
+    start: 'Start Drawing',
+    pencil: 'Pencil',
+    marker_pen: 'Marker Pen',
+  },
+  app: {
+    title: 'App',
+    qrcode: 'QRCode',
+    emoji: 'Emoji',
+    error_level: 'Error Level',
+    image: 'Image',
+    image_size: 'Image Size',
+    only_image_url: 'Only Support Image Url',
+    add: 'Add',
+    more: 'More Config',
+  },
+};
+var setter = {
+  size: {
+    width: 'W',
+    height: 'H',
+  },
+  sketch: {
+    title: 'Canvas',
+    size: 'Canvas Size',
+    fill: 'Canvas Background Color',
+  },
+  text: {
+    font_family: 'Font',
+    font_size: 'Font Size',
+    fill: 'Color',
+    text_align: 'Alignment',
+    font_styles: 'Style',
+    char_spacing: 'Char Space',
+    line_height: 'Line Height',
+    fx: {
+      title: 'Effects',
+      fill_image: 'Fill Image',
+      text_path: 'Wavy Text',
+    },
+  },
+  image: {
+    filter: 'Filter',
+    replace: 'Replace Image',
+    crop: 'Crop',
+  },
+  group: {
+    title: 'Group',
+    g: 'Group',
+    ung: 'UnGroup',
+  },
+  common: {
+    align: 'Align',
+    center: 'Center',
+    align_left: 'Align Left',
+    center_h: 'Horizontal Center',
+    align_right: 'Align Right',
+    align_top: 'Align Top',
+    center_v: 'Vertical Center',
+    align_bottom: 'Align Bottom',
+    lock: 'Lock',
+    unlock: 'UnLock',
+    opacity: 'Opacity',
+    copy: 'Copy',
+    paste: 'Paste',
+    create_a_copy: 'Create a copy',
+    del: 'Delete',
+    flip: 'Flip',
+    flip_x: 'Flip X',
+    flip_y: 'Flip Y',
+    adjust_position: 'Adjust Position',
+    px: 'PX',
+    lock_ratio: 'Lock Ratio',
+    rotate: 'Rotate',
+    layer: 'Layer',
+    layer_up: 'Move Up',
+    layer_top: 'Move to Top',
+    layer_down: 'Move Down',
+    layer_bottom: 'Move to Bottom',
+  },
+};
+var translationEN = {
+  common: common,
+  header: header,
+  panel: panel,
+  setter: setter,
+};
+
+const resources = {
+  en: {
+    translation: translationEN,
+  },
+};
+i18n__default.default.use(reactI18next.initReactI18next).init({
+  resources,
+  fallbackLng: 'en-US',
+  debug: true,
+  interpolation: {
+    escapeValue: false,
+  },
+});
+
+const translate = key => {
+  return i18n__default.default.t(key);
+};
+
+const PRESET_FONT_LIST = [
+  {
+    label: jsxRuntime.jsx(
+      'div',
+      Object.assign(
+        {
+          style: { fontSize: 30, fontFamily: 'SmileySans', fontWeight: 'bold' },
+        },
+        {
+          children: jsxRuntime.jsx(reactI18next.Trans, {
+            i18nKey: 'panel.text.add_title',
+          }),
+        },
+      ),
+    ),
+    key: 'title',
+    config: {
+      fontFamily: 'SmileySans',
+      fontWeight: 'bold',
+      fontSize: 120,
+      text: () => translate('panel.text.add_title'),
+      top: 100,
+    },
+  },
+  {
+    label: jsxRuntime.jsx(
+      'div',
+      Object.assign(
+        { style: { fontSize: 24, fontFamily: 'AlibabaPuHuiTi' } },
+        {
+          children: jsxRuntime.jsx(reactI18next.Trans, {
+            i18nKey: 'panel.text.add_subtitle',
+          }),
+        },
+      ),
+    ),
+    key: 'sub-title',
+    config: {
+      fontFamily: 'AlibabaPuHuiTi',
+      fontWeight: 'bold',
+      fontSize: 100,
+      text: () => translate('panel.text.add_subtitle'),
+      top: 400,
+    },
+  },
+  {
+    label: jsxRuntime.jsx(
+      'div',
+      Object.assign(
+        { style: { fontSize: 16, fontFamily: 'SourceHanSerif' } },
+        {
+          children: jsxRuntime.jsx(reactI18next.Trans, {
+            i18nKey: 'panel.text.add_body_text',
+          }),
+        },
+      ),
+    ),
+    key: 'content',
+    config: {
+      fontFamily: 'SourceHanSerif',
+      fontSize: 80,
+      text: () => translate('panel.text.add_body_text'),
+    },
+  },
+  {
+    label: jsxRuntime.jsx(
+      'div',
+      Object.assign(
+        {
+          style: {
+            fontSize: 26,
+            fontFamily: '霞鹜文楷',
+            color: '#ffffff',
+            WebkitTextStroke: '1px rgb(255, 87, 87)',
+          },
+        },
+        {
+          children: jsxRuntime.jsx(reactI18next.Trans, {
+            i18nKey: 'panel.text.add_text_border',
+          }),
+        },
+      ),
+    ),
+    key: 'content',
+    config: {
+      fontFamily: '霞鹜文楷',
+      fontSize: 100,
+      text: () => translate('panel.text.add_text_border'),
+      fill: '#ffffff',
+      stroke: '#ff5757',
+      strokeWidth: 12,
+    },
+  },
+];
+function PresetFontPanel(props) {
+  const { addTextBox } = props;
+  const { t } = reactI18next.useTranslation();
+  const handleClick = item => {
+    addTextBox === null || addTextBox === void 0
+      ? void 0
+      : addTextBox(item.config);
+  };
+  return jsxRuntime.jsxs(
+    antd.Flex,
+    Object.assign(
+      { vertical: true, gap: 8, style: { marginTop: 16 } },
+      {
+        children: [
+          jsxRuntime.jsx(Title$1, { children: t('panel.text.presets') }),
+          PRESET_FONT_LIST.map(item =>
+            jsxRuntime.jsx(
+              antd.Card,
+              Object.assign(
+                {
+                  hoverable: true,
+                  onClick: () => {
+                    handleClick(item);
+                  },
+                  bodyStyle: {
+                    padding: '12px 30px',
+                    userSelect: 'none',
+                  },
+                },
+                { children: item.label },
+              ),
+              item.key,
+            ),
+          ),
+        ],
+      },
+    ),
+  );
+}
 
 /******************************************************************************
 Copyright (c) Microsoft Corporation.
@@ -137,206 +425,6 @@ typeof SuppressedError === 'function'
         e
       );
     };
-
-function Center(props) {
-  const { children, height = 46, style } = props,
-    rest = __rest(props, ['children', 'height', 'style']);
-  return jsxRuntime.jsx(
-    antd.Flex,
-    Object.assign(
-      { justify: 'center', align: 'center' },
-      rest,
-      { style: Object.assign({ height }, style) },
-      { children: children },
-    ),
-  );
-}
-const CenterV = props => {
-  return jsxRuntime.jsx(Center, Object.assign({ justify: 'normal' }, props));
-};
-
-function ToolbarItem(props) {
-  const { onClick, title, disabled, tooltipProps, children } = props;
-  const handleClick = () => {
-    if (!disabled) {
-      onClick === null || onClick === void 0 ? void 0 : onClick();
-    }
-  };
-  return jsxRuntime.jsx(
-    antd.Tooltip,
-    Object.assign(
-      {
-        placement: 'bottom',
-        title: jsxRuntime.jsx(
-          'span',
-          Object.assign({ style: { fontSize: 12 } }, { children: title }),
-        ),
-      },
-      tooltipProps,
-      {
-        children: jsxRuntime.jsx(
-          'span',
-          Object.assign(
-            {
-              className: 'fabritor-toolbar-item',
-              style: {
-                color: disabled ? '#cccccc' : 'rgba(0, 0, 0, 0.88)',
-              },
-              onClick: handleClick,
-            },
-            { children: children },
-          ),
-        ),
-      },
-    ),
-  );
-}
-
-function ToolbarDivider() {
-  return jsxRuntime.jsx(antd.Divider, {
-    type: 'vertical',
-    style: { height: 32 },
-  });
-}
-
-i18n__default.default
-  .use(Backend__default.default)
-  .use(reactI18next.initReactI18next)
-  .init({
-    fallbackLng: 'en-US',
-    debug: true,
-    interpolation: {
-      escapeValue: false,
-    },
-  });
-
-const translate = key => {
-  return i18n__default.default.t(key);
-};
-
-const i18nKeySuffix$1 = 'header.toolbar';
-function Toolbar() {
-  const { setActiveObject, editor } = react.useContext(GlobalStateContext);
-  const [panEnable, setPanEnable] = react.useState(false);
-  const [canUndo, setCanUndo] = react.useState(false);
-  const [canRedo, setCanRedo] = react.useState(false);
-  const clearCanvas = () => {
-    antd.Modal.confirm({
-      title: jsxRuntime.jsx(reactI18next.Trans, {
-        i18nKey: `${i18nKeySuffix$1}.clear_confirm`,
-      }),
-      icon: jsxRuntime.jsx(icons.ExclamationCircleFilled, {}),
-      async onOk() {
-        await editor.clearCanvas();
-        setActiveObject(editor.sketch);
-        editor.fireCustomModifiedEvent();
-      },
-    });
-  };
-  const enablePan = () => {
-    const enable = editor.switchEnablePan();
-    setPanEnable(enable);
-  };
-  react.useEffect(() => {
-    if (editor) {
-      setCanUndo(editor.fhistory.canUndo());
-      setCanRedo(editor.fhistory.canRedo());
-    }
-  });
-  return jsxRuntime.jsxs(
-    CenterV,
-    Object.assign(
-      { gap: 4, style: { borderRight: '1px solid #e8e8e8', paddingRight: 12 } },
-      {
-        children: [
-          jsxRuntime.jsx(
-            ToolbarItem,
-            Object.assign(
-              {
-                disabled: !canUndo,
-                title: jsxRuntime.jsx(reactI18next.Trans, {
-                  i18nKey: `${i18nKeySuffix$1}.undo`,
-                }),
-                onClick: () => {
-                  editor.fhistory.undo();
-                },
-              },
-              {
-                children: jsxRuntime.jsx(icons.UndoOutlined, {
-                  style: { fontSize: 20 },
-                }),
-              },
-            ),
-          ),
-          jsxRuntime.jsx(
-            ToolbarItem,
-            Object.assign(
-              {
-                disabled: !canRedo,
-                title: jsxRuntime.jsx(reactI18next.Trans, {
-                  i18nKey: `${i18nKeySuffix$1}.redo`,
-                }),
-                onClick: () => {
-                  editor.fhistory.redo();
-                },
-              },
-              {
-                children: jsxRuntime.jsx(icons.RedoOutlined, {
-                  style: { fontSize: 20 },
-                }),
-              },
-            ),
-          ),
-          jsxRuntime.jsx(ToolbarDivider, {}),
-          jsxRuntime.jsx(
-            ToolbarItem,
-            Object.assign(
-              {
-                onClick: enablePan,
-                title: panEnable
-                  ? jsxRuntime.jsx(reactI18next.Trans, {
-                      i18nKey: `${i18nKeySuffix$1}.select`,
-                    })
-                  : jsxRuntime.jsx(reactI18next.Trans, {
-                      i18nKey: `${i18nKeySuffix$1}.pan`,
-                    }),
-              },
-              {
-                children: panEnable
-                  ? jsxRuntime.jsx(icons.DragOutlined, {
-                      style: {
-                        fontSize: 22,
-                        color: panEnable ? '#000' : '#ccc',
-                      },
-                    })
-                  : jsxRuntime.jsx('img', {
-                      src: `data:image/svg+xml;charset=utf-8,${encodeURIComponent(DRAG_ICON)}`,
-                      style: { width: 22, height: 22 },
-                    }),
-              },
-            ),
-          ),
-          jsxRuntime.jsx(
-            ToolbarItem,
-            Object.assign(
-              {
-                onClick: clearCanvas,
-                title: jsxRuntime.jsx(reactI18next.Trans, {
-                  i18nKey: `${i18nKeySuffix$1}.clear`,
-                }),
-              },
-              {
-                children: jsxRuntime.jsx(icons.ClearOutlined, {
-                  style: { fontSize: 20 },
-                }),
-              },
-            ),
-          ),
-        ],
-      },
-    ),
-  );
-}
 
 const APP_NAME = 'fabritor';
 const SCHEMA_VERSION = 3.1;
@@ -689,14 +777,6 @@ const loadFont = async f => {
 const uuid = () => {
   return uuid$1.v4();
 };
-const downloadFile = (content, type, name) => {
-  const link = document.createElement('a');
-  link.href = content;
-  link.download = `${name || uuid()}.${type}`;
-  document.body.appendChild(link);
-  link.click();
-  document.body.removeChild(link);
-};
 const AngleCoordsMap = {
   45: JSON.stringify({ x1: 0, y1: 1, x2: 1, y2: 0 }),
   90: JSON.stringify({ x1: 0, y1: 0, x2: 1, y2: 0 }),
@@ -812,370 +892,6 @@ const getSystemClipboard = async () => {
     return null;
   }
 };
-const base64ToBlob = async base64Data => {
-  return fetch(base64Data).then(res => {
-    return res.blob();
-  });
-};
-
-function LocalFileSelector(props, ref) {
-  const { onChange, accept } = props;
-  const formRef = react.useRef(null);
-  const inputRef = react.useRef(null);
-  const handleFileChange = evt => {
-    var _a, _b;
-    const file = evt.target.files[0];
-    if (!file) return;
-    onChange && onChange(evt.target.files[0]);
-    (_b =
-      (_a = formRef.current) === null || _a === void 0 ? void 0 : _a.reset) ===
-      null || _b === void 0
-      ? void 0
-      : _b.call(_a);
-  };
-  react.useImperativeHandle(ref, () => ({
-    start: () => {
-      var _a, _b;
-      (_b =
-        (_a = inputRef.current) === null || _a === void 0
-          ? void 0
-          : _a.click) === null || _b === void 0
-        ? void 0
-        : _b.call(_a);
-    },
-    reset: () => {
-      var _a, _b;
-      (_b =
-        (_a = formRef.current) === null || _a === void 0
-          ? void 0
-          : _a.reset) === null || _b === void 0
-        ? void 0
-        : _b.call(_a);
-    },
-  }));
-  return jsxRuntime.jsx(
-    'form',
-    Object.assign(
-      { style: { display: 'none' }, ref: formRef },
-      {
-        children: jsxRuntime.jsx('input', {
-          type: 'file',
-          accept: accept || 'image/*',
-          ref: inputRef,
-          onChange: handleFileChange,
-        }),
-      },
-    ),
-  );
-}
-var LocalFileSelector$1 = react.forwardRef(LocalFileSelector);
-
-const MAX_HISTORY_LENGTH = 100;
-const PANEL_WIDTH = 360;
-const SETTER_WIDTH = 280;
-
-const i18nKeySuffix = 'header.export';
-const items$1 = ['json', 'clipboard'].map(item =>
-  item === 'divider'
-    ? { type: 'divider' }
-    : {
-        key: item,
-        label: jsxRuntime.jsx(reactI18next.Trans, {
-          i18nKey: `${i18nKeySuffix}.${item}`,
-        }),
-      },
-);
-function Export() {
-  const { editor, setReady, setActiveObject } =
-    react.useContext(GlobalStateContext);
-  const localFileSelectorRef = react.useRef();
-  const { t } = reactI18next.useTranslation();
-  const selectJsonFile = () => {
-    var _a, _b;
-    (_b =
-      (_a = localFileSelectorRef.current) === null || _a === void 0
-        ? void 0
-        : _a.start) === null || _b === void 0
-      ? void 0
-      : _b.call(_a);
-  };
-  const handleFileChange = file => {
-    setReady(false);
-    const reader = new FileReader();
-    reader.onload = async evt => {
-      var _a;
-      const json =
-        (_a = evt.target) === null || _a === void 0 ? void 0 : _a.result;
-      if (json) {
-        await editor.loadFromJSON(json, true);
-        editor.fhistory.reset();
-        setReady(true);
-        setActiveObject(null);
-        editor.fireCustomModifiedEvent();
-      }
-    };
-    reader.readAsText(file);
-  };
-  const copyImage = async () => {
-    try {
-      const png = editor.export2Img({ format: 'png' });
-      const blob = await base64ToBlob(png);
-      await navigator.clipboard.write([
-        new ClipboardItem({
-          'image/png': blob,
-        }),
-      ]);
-      antd.message.success(t(`${i18nKeySuffix}.copy_success`));
-    } catch (e) {
-      antd.message.error(t(`${i18nKeySuffix}.copy_fail`));
-    }
-  };
-  const handleClick = ({ key }) => {
-    const { sketch } = editor;
-    const name = sketch.fabritor_desc;
-    switch (key) {
-      case 'json':
-        const json = editor.canvas2Json();
-        downloadFile(
-          `data:text/json;charset=utf-8,${encodeURIComponent(JSON.stringify(json, null, 2))}`,
-          'json',
-          name,
-        );
-        break;
-      case 'clipboard':
-        copyImage();
-        break;
-    }
-  };
-  return jsxRuntime.jsxs(
-    CenterV,
-    Object.assign(
-      {
-        justify: 'flex-end',
-        gap: 16,
-        style: {
-          width: SETTER_WIDTH,
-          paddingRight: 16,
-        },
-      },
-      {
-        children: [
-          jsxRuntime.jsx(
-            antd.Button,
-            Object.assign(
-              {
-                onClick: selectJsonFile,
-                icon: jsxRuntime.jsx(icons.FileOutlined, {}),
-              },
-              { children: t(`${i18nKeySuffix}.load`) },
-            ),
-          ),
-          jsxRuntime.jsx(
-            antd.Dropdown,
-            Object.assign(
-              {
-                menu: { items: items$1, onClick: handleClick },
-                arrow: { pointAtCenter: true },
-                placement: 'bottom',
-              },
-              {
-                children: jsxRuntime.jsx(
-                  antd.Button,
-                  Object.assign(
-                    {
-                      type: 'primary',
-                      icon: jsxRuntime.jsx(icons.ExportOutlined, {}),
-                    },
-                    { children: t(`${i18nKeySuffix}.export`) },
-                  ),
-                ),
-              },
-            ),
-          ),
-          jsxRuntime.jsx(LocalFileSelector$1, {
-            accept: 'application/json',
-            ref: localFileSelectorRef,
-            onChange: handleFileChange,
-          }),
-        ],
-      },
-    ),
-  );
-}
-
-const { Header } = antd.Layout;
-const headerStyle = {
-  padding: 0,
-  height: 50,
-  backgroundColor: '#fff',
-  display: 'flex',
-  alignItems: 'center',
-  borderBottom: '1px solid #e8e8e8',
-};
-function Header$1() {
-  return jsxRuntime.jsxs(
-    Header,
-    Object.assign(
-      { style: headerStyle },
-      {
-        children: [
-          jsxRuntime.jsxs(
-            CenterV,
-            Object.assign(
-              { justify: 'space-between', style: { flex: 1 } },
-              {
-                children: [
-                  jsxRuntime.jsx('span', {}),
-                  jsxRuntime.jsx(Toolbar, {}),
-                ],
-              },
-            ),
-          ),
-          jsxRuntime.jsx(Export, {}),
-        ],
-      },
-    ),
-  );
-}
-
-function Title$1(props) {
-  const { children } = props;
-  return jsxRuntime.jsx(antd.Divider, { children: children });
-}
-
-const PRESET_FONT_LIST = [
-  {
-    label: jsxRuntime.jsx(
-      'div',
-      Object.assign(
-        {
-          style: { fontSize: 30, fontFamily: 'SmileySans', fontWeight: 'bold' },
-        },
-        {
-          children: jsxRuntime.jsx(reactI18next.Trans, {
-            i18nKey: 'panel.text.add_title',
-          }),
-        },
-      ),
-    ),
-    key: 'title',
-    config: {
-      fontFamily: 'SmileySans',
-      fontWeight: 'bold',
-      fontSize: 120,
-      text: () => translate('panel.text.add_title'),
-      top: 100,
-    },
-  },
-  {
-    label: jsxRuntime.jsx(
-      'div',
-      Object.assign(
-        { style: { fontSize: 24, fontFamily: 'AlibabaPuHuiTi' } },
-        {
-          children: jsxRuntime.jsx(reactI18next.Trans, {
-            i18nKey: 'panel.text.add_subtitle',
-          }),
-        },
-      ),
-    ),
-    key: 'sub-title',
-    config: {
-      fontFamily: 'AlibabaPuHuiTi',
-      fontWeight: 'bold',
-      fontSize: 100,
-      text: () => translate('panel.text.add_subtitle'),
-      top: 400,
-    },
-  },
-  {
-    label: jsxRuntime.jsx(
-      'div',
-      Object.assign(
-        { style: { fontSize: 16, fontFamily: 'SourceHanSerif' } },
-        {
-          children: jsxRuntime.jsx(reactI18next.Trans, {
-            i18nKey: 'panel.text.add_body_text',
-          }),
-        },
-      ),
-    ),
-    key: 'content',
-    config: {
-      fontFamily: 'SourceHanSerif',
-      fontSize: 80,
-      text: () => translate('panel.text.add_body_text'),
-    },
-  },
-  {
-    label: jsxRuntime.jsx(
-      'div',
-      Object.assign(
-        {
-          style: {
-            fontSize: 26,
-            fontFamily: '霞鹜文楷',
-            color: '#ffffff',
-            WebkitTextStroke: '1px rgb(255, 87, 87)',
-          },
-        },
-        {
-          children: jsxRuntime.jsx(reactI18next.Trans, {
-            i18nKey: 'panel.text.add_text_border',
-          }),
-        },
-      ),
-    ),
-    key: 'content',
-    config: {
-      fontFamily: '霞鹜文楷',
-      fontSize: 100,
-      text: () => translate('panel.text.add_text_border'),
-      fill: '#ffffff',
-      stroke: '#ff5757',
-      strokeWidth: 12,
-    },
-  },
-];
-function PresetFontPanel(props) {
-  const { addTextBox } = props;
-  const { t } = reactI18next.useTranslation();
-  const handleClick = item => {
-    addTextBox === null || addTextBox === void 0
-      ? void 0
-      : addTextBox(item.config);
-  };
-  return jsxRuntime.jsxs(
-    antd.Flex,
-    Object.assign(
-      { vertical: true, gap: 8, style: { marginTop: 16 } },
-      {
-        children: [
-          jsxRuntime.jsx(Title$1, { children: t('panel.text.presets') }),
-          PRESET_FONT_LIST.map(item =>
-            jsxRuntime.jsx(
-              antd.Card,
-              Object.assign(
-                {
-                  hoverable: true,
-                  onClick: () => {
-                    handleClick(item);
-                  },
-                  bodyStyle: {
-                    padding: '12px 30px',
-                    userSelect: 'none',
-                  },
-                },
-                { children: item.label },
-              ),
-              item.key,
-            ),
-          ),
-        ],
-      },
-    ),
-  );
-}
 
 const getTextboxWidth = textbox => {
   const textLines = textbox.textLines || [];
@@ -1268,8 +984,10 @@ const createTextbox = async options => {
   return textBox;
 };
 
+const GlobalStateContext = React.createContext(null);
+
 function TextPanel() {
-  const { editor } = react.useContext(GlobalStateContext);
+  const { editor } = React.useContext(GlobalStateContext);
   const { t } = reactI18next.useTranslation();
   const handleAddText = async options => {
     await createTextbox(
@@ -1379,10 +1097,62 @@ const createFImage = async options => {
   canvas.requestRenderAll();
 };
 
+function LocalFileSelector(props, ref) {
+  const { onChange, accept } = props;
+  const formRef = React.useRef(null);
+  const inputRef = React.useRef(null);
+  const handleFileChange = evt => {
+    var _a, _b;
+    const file = evt.target.files[0];
+    if (!file) return;
+    onChange && onChange(evt.target.files[0]);
+    (_b =
+      (_a = formRef.current) === null || _a === void 0 ? void 0 : _a.reset) ===
+      null || _b === void 0
+      ? void 0
+      : _b.call(_a);
+  };
+  React.useImperativeHandle(ref, () => ({
+    start: () => {
+      var _a, _b;
+      (_b =
+        (_a = inputRef.current) === null || _a === void 0
+          ? void 0
+          : _a.click) === null || _b === void 0
+        ? void 0
+        : _b.call(_a);
+    },
+    reset: () => {
+      var _a, _b;
+      (_b =
+        (_a = formRef.current) === null || _a === void 0
+          ? void 0
+          : _a.reset) === null || _b === void 0
+        ? void 0
+        : _b.call(_a);
+    },
+  }));
+  return jsxRuntime.jsx(
+    'form',
+    Object.assign(
+      { style: { display: 'none' }, ref: formRef },
+      {
+        children: jsxRuntime.jsx('input', {
+          type: 'file',
+          accept: accept || 'image/*',
+          ref: inputRef,
+          onChange: handleFileChange,
+        }),
+      },
+    ),
+  );
+}
+var LocalFileSelector$1 = React.forwardRef(LocalFileSelector);
+
 function LocalImageSelector(props) {
   const { onChange } = props,
     rest = __rest(props, ['onChange']);
-  const localFileSelectorRef = react.useRef();
+  const localFileSelectorRef = React.useRef();
   const { t } = reactI18next.useTranslation();
   const handleClick = () => {
     var _a, _b;
@@ -1427,7 +1197,7 @@ function LocalImageSelector(props) {
 function RemoteImageSelector(props) {
   const { onChange } = props,
     rest = __rest(props, ['onChange']);
-  const [url, setUrl] = react.useState('');
+  const [url, setUrl] = React.useState('');
   const { t } = reactI18next.useTranslation();
   const handleClick = () => {
     if (url) {
@@ -1495,7 +1265,7 @@ function ImageSelector(props) {
 }
 
 function ImagePanel() {
-  const { editor } = react.useContext(GlobalStateContext);
+  const { editor } = React.useContext(GlobalStateContext);
   const addImage = async url => {
     await createFImage({
       imageSource: url,
@@ -1862,8 +1632,25 @@ const createPathFromSvg = async options => {
   return svg;
 };
 
+function Center(props) {
+  const { children, height = 46, style } = props,
+    rest = __rest(props, ['children', 'height', 'style']);
+  return jsxRuntime.jsx(
+    antd.Flex,
+    Object.assign(
+      { justify: 'center', align: 'center' },
+      rest,
+      { style: Object.assign({ height }, style) },
+      { children: children },
+    ),
+  );
+}
+const CenterV = props => {
+  return jsxRuntime.jsx(Center, Object.assign({ justify: 'normal' }, props));
+};
+
 function ShapePanel() {
-  const { editor, roughSvg } = react.useContext(GlobalStateContext);
+  const { editor, roughSvg } = React.useContext(GlobalStateContext);
   const { t } = reactI18next.useTranslation();
   const addLine = item => {
     const { type, options = {} } = item;
@@ -2067,6 +1854,38 @@ function ShapePanel() {
   );
 }
 
+const ROTATE_SVG = `data:image/svg+xml;charset=utf-8,${encodeURIComponent('<svg t="1699434105329" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="6530" width="32" height="32" xmlns:xlink="http://www.w3.org/1999/xlink"><path d="M508.018 995.557c-269.887 0-488.675-218.785-488.675-488.675S238.13 18.206 508.018 18.206s488.676 218.787 488.676 488.676c0 269.89-218.788 488.675-488.676 488.675z m0-885.723c-219.283 0-397.048 177.763-397.048 397.048 0 219.284 177.765 397.05 397.048 397.05 219.285 0 397.049-177.766 397.049-397.05 0-219.285-177.764-397.048-397.049-397.048z m206.72 336.247h-87.822c-11.193 0-20.267-9.074-20.267-20.267s9.074-20.267 20.267-20.267h34.905c-31.736-44.89-83.812-74.31-142.994-74.31-97.007 0-175.645 78.638-175.645 175.643 0 11.194-9.074 20.267-20.267 20.267-11.192 0-20.266-9.073-20.266-20.267 0-119.391 96.786-216.177 216.178-216.177 72.505 0 136.49 35.795 175.644 90.603v-36.56c0-11.192 9.073-20.265 20.267-20.265s20.266 9.073 20.266 20.266v81.066c0 11.194-9.073 20.268-20.266 20.268z m-391.822 121.6h87.822c11.193 0 20.266 9.073 20.266 20.266 0 11.193-9.073 20.267-20.266 20.267h-35.18c31.76 44.942 84.035 74.31 143.269 74.31 97.005 0 175.644-78.638 175.644-175.644 0-11.193 9.073-20.266 20.267-20.266s20.266 9.073 20.266 20.266c0 119.392-96.786 216.179-216.177 216.179-72.597 0-136.54-35.95-175.645-90.892v36.847c0 11.193-9.074 20.267-20.267 20.267-11.192 0-20.267-9.074-20.267-20.267v-81.067c0-11.193 9.075-20.266 20.268-20.266z" fill="#515151" p-id="6531"></path></svg>')}`;
+const ROTATE_SVG_ACTIVE = `data:image/svg+xml;charset=utf-8,${encodeURIComponent('<svg t="1699434105329" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="6530" width="32" height="32" xmlns:xlink="http://www.w3.org/1999/xlink"><path d="M508.018 995.557c-269.887 0-488.675-218.785-488.675-488.675S238.13 18.206 508.018 18.206s488.676 218.787 488.676 488.676c0 269.89-218.788 488.675-488.676 488.675z m0-885.723c-219.283 0-397.048 177.763-397.048 397.048 0 219.284 177.765 397.05 397.048 397.05 219.285 0 397.049-177.766 397.049-397.05 0-219.285-177.764-397.048-397.049-397.048z m206.72 336.247h-87.822c-11.193 0-20.267-9.074-20.267-20.267s9.074-20.267 20.267-20.267h34.905c-31.736-44.89-83.812-74.31-142.994-74.31-97.007 0-175.645 78.638-175.645 175.643 0 11.194-9.074 20.267-20.267 20.267-11.192 0-20.266-9.073-20.266-20.267 0-119.391 96.786-216.177 216.178-216.177 72.505 0 136.49 35.795 175.644 90.603v-36.56c0-11.192 9.073-20.265 20.267-20.265s20.266 9.073 20.266 20.266v81.066c0 11.194-9.073 20.268-20.266 20.268z m-391.822 121.6h87.822c11.193 0 20.266 9.073 20.266 20.266 0 11.193-9.073 20.267-20.266 20.267h-35.18c31.76 44.942 84.035 74.31 143.269 74.31 97.005 0 175.644-78.638 175.644-175.644 0-11.193 9.073-20.266 20.267-20.266s20.266 9.073 20.266 20.266c0 119.392-96.786 216.179-216.177 216.179-72.597 0-136.54-35.95-175.645-90.892v36.847c0 11.193-9.074 20.267-20.267 20.267-11.192 0-20.267-9.074-20.267-20.267v-81.067c0-11.193 9.075-20.266 20.268-20.266z" fill="#F50909" p-id="6531"></path></svg>')}`;
+const ROTATE_CURSOR = encodeURIComponent(`
+<svg xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink' width='24' height='24'>
+  <defs>
+    <filter id='a' width='266.7%' height='156.2%' x='-75%' y='-21.9%' filterUnits='objectBoundingBox'>
+      <feOffset dy='1' in='SourceAlpha' result='shadowOffsetOuter1'/>
+      <feGaussianBlur in='shadowOffsetOuter1' result='shadowBlurOuter1' stdDeviation='1'/>
+      <feColorMatrix in='shadowBlurOuter1' result='shadowMatrixOuter1' values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.2 0'/>
+      <feMerge>
+        <feMergeNode in='shadowMatrixOuter1'/>
+        <feMergeNode in='SourceGraphic'/>
+      </feMerge>
+    </filter>
+    <path id='b' d='M1.67 12.67a7.7 7.7 0 0 0 0-9.34L0 5V0h5L3.24 1.76a9.9 9.9 0 0 1 0 12.48L5 16H0v-5l1.67 1.67z'/>
+  </defs>
+  <g fill='none' fill-rule='evenodd'><path d='M0 24V0h24v24z'/>
+    <g fill-rule='nonzero' filter='url(#a)' transform='rotate(90 5.25 14.75)'>
+      <use fill='#000' fill-rule='evenodd' xlink:href='#b'/>
+      <path stroke='#FFF' d='M1.6 11.9a7.21 7.21 0 0 0 0-7.8L-.5 6.2V-.5h6.7L3.9 1.8a10.4 10.4 0 0 1 0 12.4l2.3 2.3H-.5V9.8l2.1 2.1z'/>
+    </g>
+  </g>
+</svg>`);
+const COPY_SVG = `data:image/svg+xml;charset=utf-8,${encodeURIComponent('<svg t="1702138272519" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="16833" width="32" height="32"><path d="M810.666667 85.333333a85.333333 85.333333 0 0 1 85.333333 85.333334v512a85.333333 85.333333 0 0 1-85.333333 85.333333h-85.333334v85.333333a85.333333 85.333333 0 0 1-85.333333 85.333334H213.333333a85.333333 85.333333 0 0 1-85.333333-85.333334V341.333333a85.333333 85.333333 0 0 1 85.333333-85.333333h85.333334V170.666667a85.333333 85.333333 0 0 1 85.333333-85.333334h426.666667z m-384 554.666667H341.333333a42.666667 42.666667 0 0 0-4.992 85.034667L341.333333 725.333333h85.333334a42.666667 42.666667 0 0 0 4.992-85.034666L426.666667 640z m384-469.333333H384v85.333333h256a85.333333 85.333333 0 0 1 85.333333 85.333333v341.333334h85.333334V170.666667z m-298.666667 298.666666H341.333333a42.666667 42.666667 0 1 0 0 85.333334h170.666667a42.666667 42.666667 0 1 0 0-85.333334z" p-id="16834" fill="#515151"></path></svg>')}`;
+const COPY_SVG_ACTIVE = `data:image/svg+xml;charset=utf-8,${encodeURIComponent('<svg t="1702138272519" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="16833" width="32" height="32"><path d="M810.666667 85.333333a85.333333 85.333333 0 0 1 85.333333 85.333334v512a85.333333 85.333333 0 0 1-85.333333 85.333333h-85.333334v85.333333a85.333333 85.333333 0 0 1-85.333333 85.333334H213.333333a85.333333 85.333333 0 0 1-85.333333-85.333334V341.333333a85.333333 85.333333 0 0 1 85.333333-85.333333h85.333334V170.666667a85.333333 85.333333 0 0 1 85.333333-85.333334h426.666667z m-384 554.666667H341.333333a42.666667 42.666667 0 0 0-4.992 85.034667L341.333333 725.333333h85.333334a42.666667 42.666667 0 0 0 4.992-85.034666L426.666667 640z m384-469.333333H384v85.333333h256a85.333333 85.333333 0 0 1 85.333333 85.333333v341.333334h85.333334V170.666667z m-298.666667 298.666666H341.333333a42.666667 42.666667 0 1 0 0 85.333334h170.666667a42.666667 42.666667 0 1 0 0-85.333334z" p-id="16834" fill="#d81e06"></path></svg>')}`;
+const DEL_SVG = `data:image/svg+xml;charset=utf-8,${encodeURIComponent('<svg t="1702138440243" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="19137" width="32" height="32"><path d="M853.333333 192v42.666667a21.333333 21.333333 0 0 1-21.333333 21.333333h-640a21.333333 21.333333 0 0 1-21.333333-21.333333v-42.666667a21.333333 21.333333 0 0 1 21.333333-21.333333H384V128a42.666667 42.666667 0 0 1 42.666667-42.666667h170.666666a42.666667 42.666667 0 0 1 42.666667 42.666667v42.666667h192a21.333333 21.333333 0 0 1 21.333333 21.333333zM250.453333 859.306667a85.333333 85.333333 0 0 0 85.333334 79.36h353.28a85.333333 85.333333 0 0 0 85.333333-79.36L810.666667 341.333333H213.333333z" p-id="19138" fill="#515151"></path></svg>')}`;
+const DEL_SVG_ACTIVE = `data:image/svg+xml;charset=utf-8,${encodeURIComponent('<svg t="1702138440243" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="19137" width="32" height="32"><path d="M853.333333 192v42.666667a21.333333 21.333333 0 0 1-21.333333 21.333333h-640a21.333333 21.333333 0 0 1-21.333333-21.333333v-42.666667a21.333333 21.333333 0 0 1 21.333333-21.333333H384V128a42.666667 42.666667 0 0 1 42.666667-42.666667h170.666666a42.666667 42.666667 0 0 1 42.666667 42.666667v42.666667h192a21.333333 21.333333 0 0 1 21.333333 21.333333zM250.453333 859.306667a85.333333 85.333333 0 0 0 85.333334 79.36h353.28a85.333333 85.333333 0 0 0 85.333333-79.36L810.666667 341.333333H213.333333z" p-id="19138" fill="#d81e06"></path></svg>')}`;
+const DRAW_MODE_CURSOR =
+  '<svg t="1701336130548" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="46063" width="16" height="16"><path d="M666.112 549.568l116.032-116.8-241.856-244.16-115.2 116.928-104.64 105.152-94.912 94.784A5667.84 5667.84 0 0 0 154.88 577.536c-19.456 19.456-30.784 31.744-36.48 36.992-10.304 10.048-19.584 21.12-27.52 32.96a198.272 198.272 0 0 0-17.088 33.088 208.64 208.64 0 0 0-17.088 42.88c-7.296 20.8-13.824 43.52-21.12 68.16-7.296 24.704-14.592 48.64-21.12 71.424a411.968 411.968 0 0 0-12.16 52.48 61.184 61.184 0 0 0 6.528 48.064 50.56 50.56 0 0 0 46.272 10.368c11.264-1.792 28.352-5.696 51.136-11.648a1664.32 1664.32 0 0 0 145.28-46.784c18.112-6.272 35.584-13.632 52.8-22.016 12.544-5.248 24.32-12.288 34.944-20.8 11.328-8.704 21.12-16.896 30.08-24.32a520.96 520.96 0 0 0 32.384-31.168l68.16-69.44c27.52-28.16 58.432-59.136 93.248-92.8l103.04-105.408z m232.064-232.384c5.632-6.08 12.928-12.992 21.12-20.8 8.128-7.808 17.856-16.896 27.52-27.328 8.96-9.472 16-20.48 21.12-32.448 4.16-10.752 6.336-22.208 6.528-33.728a202.24 202.24 0 0 0-3.2-32.448 119.872 119.872 0 0 0-8.96-27.328 272.512 272.512 0 0 0-50.304-74.56 255.04 255.04 0 0 0-60.096-49.92 205.952 205.952 0 0 0-30.784-11.648 141.568 141.568 0 0 0-35.712-5.888 112.768 112.768 0 0 0-38.08 5.248 115.52 115.52 0 0 0-38.08 20.096c-8.96 8.192-21.12 18.432-34.944 31.808-13.824 13.376-26.816 24.832-37.376 34.304l241.92 242.816c5.632-5.12 12.032-11.2 19.328-18.176z" fill="#2c2c2c" p-id="46064"></path></svg>';
+const DRAG_ICON =
+  '<svg viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="4941" width="22" height="22"><path d="M630.57970569 637.6867208l110.35938764 236.66748681c6.20083831 13.29490805 0.44014302 29.08827497-12.84181964 35.28911328l-96.26186588 44.88164187c-13.29490805 6.20083831-29.08827497 0.45308839-35.28911329-12.84181965l-112.87079191-242.05276602-138.77450271 138.77450272c-10.36925155 10.36925155-27.17235831 10.36925155-37.54160987 0.01294537a26.56392533 26.56392533 0 0 1-7.78017501-18.78375032V147.18616969c0-14.66711861 11.88386133-26.55097995 26.55097995-26.55097996 6.60214518 0 12.97127348 2.45962272 17.86462814 6.89988899l494.18998519 449.26950715c10.84823072 9.86438163 11.65084445 26.65454302 1.78646281 37.50277374a26.56004172 26.56004172 0 0 1-17.6057205 8.6086795L630.57970569 637.6867208z" p-id="4942" fill="#2c2c2c"></path></svg>';
+
 var BrushList = [
   {
     key: 'p-1',
@@ -2094,13 +1913,3683 @@ var BrushList = [
   },
 ];
 
+function _array_with_holes(arr) {
+  if (Array.isArray(arr)) return arr;
+}
+
+function _iterable_to_array_limit(arr, i) {
+  var _i =
+    arr == null
+      ? null
+      : (typeof Symbol !== 'undefined' && arr[Symbol.iterator]) ||
+        arr['@@iterator'];
+
+  if (_i == null) return;
+
+  var _arr = [];
+  var _n = true;
+  var _d = false;
+  var _s, _e;
+
+  try {
+    for (_i = _i.call(arr); !(_n = (_s = _i.next()).done); _n = true) {
+      _arr.push(_s.value);
+      if (i && _arr.length === i) break;
+    }
+  } catch (err) {
+    _d = true;
+    _e = err;
+  } finally {
+    try {
+      if (!_n && _i['return'] != null) _i['return']();
+    } finally {
+      if (_d) throw _e;
+    }
+  }
+
+  return _arr;
+}
+
+function _non_iterable_rest() {
+  throw new TypeError(
+    'Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.',
+  );
+}
+
+function _array_like_to_array(arr, len) {
+  if (len == null || len > arr.length) len = arr.length;
+
+  for (var i = 0, arr2 = new Array(len); i < len; i++) arr2[i] = arr[i];
+
+  return arr2;
+}
+
+function _unsupported_iterable_to_array(o, minLen) {
+  if (!o) return;
+  if (typeof o === 'string') return _array_like_to_array(o, minLen);
+
+  var n = Object.prototype.toString.call(o).slice(8, -1);
+
+  if (n === 'Object' && o.constructor) n = o.constructor.name;
+  if (n === 'Map' || n === 'Set') return Array.from(n);
+  if (n === 'Arguments' || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n))
+    return _array_like_to_array(o, minLen);
+}
+
+function _sliced_to_array(arr, i) {
+  return (
+    _array_with_holes(arr) ||
+    _iterable_to_array_limit(arr, i) ||
+    _unsupported_iterable_to_array(arr, i) ||
+    _non_iterable_rest()
+  );
+}
+
+var RPX_REG = /"[^"]+"|'[^']+'|url\([^\)]+\)|(\d*\.?\d+)rpx/g;
+
+var __rpx_coefficient__;
+
+var __viewport_width__; // convertUnit method targetPlatform
+
+var targetPlatform = universalEnv.isWeb
+  ? 'web'
+  : universalEnv.isWeex
+    ? 'weex'
+    : universalEnv.isNode
+      ? 'node'
+      : ''; // Init toFixed method
+
+var unitPrecision = 4;
+
+var toFixed = function toFixed(number, precision) {
+  var multiplier = Math.pow(10, precision + 1);
+  var wholeNumber = Math.floor(number * multiplier);
+  return (Math.round(wholeNumber / 10) * 10) / multiplier;
+}; // Dedault decimal px transformer.
+
+var decimalPixelTransformer = function decimalPixelTransformer(rpx, $1) {
+  return $1 ? parseFloat(rpx) * getRpx() + 'px' : rpx;
+}; // Default decimal vw transformer.
+
+var decimalVWTransformer = function decimalVWTransformer(rpx, $1) {
+  return $1
+    ? toFixed(parseFloat(rpx) / (getViewportWidth() / 100), unitPrecision) +
+        'vw'
+    : rpx;
+}; // Default 1 rpx to 1 px
+
+if (getRpx() === undefined) {
+  setRpx(1);
+} // Viewport width, default to 750.
+
+if (getViewportWidth() === undefined) {
+  setViewportWidth(750);
+}
+
+var CustomMap = /*#__PURE__*/ (function () {
+  function CustomMap() {
+    this.__store = {};
+  }
+
+  var _proto = CustomMap.prototype;
+
+  _proto.set = function set(key, value) {
+    this.__store[key + '_' + typeof key] = value;
+  };
+
+  _proto.get = function get(key) {
+    return this.__store[key + '_' + typeof key];
+  };
+
+  _proto.has = function has(key) {
+    return Object.prototype.hasOwnProperty.call(
+      this.__store,
+      key + '_' + typeof key,
+    );
+  };
+
+  return CustomMap;
+})();
+/**
+ * Is string contains rpx
+ * note: rpx is an alias to rpx
+ * @param {String} str
+ * @returns {Boolean}
+ */
+
+function isRpx(str) {
+  return typeof str === 'string' && RPX_REG.test(str);
+}
+/**
+ * Calculate rpx
+ * @param {String} str
+ * @returns {String}
+ */
+
+function calcRpx(str) {
+  if (targetPlatform === 'web' || targetPlatform === 'node') {
+    // In Web convert rpx to 'vw', same as driver-dom and driver-universal.
+    // In Node is same as web for SSR.
+    // '375rpx' => '50vw'
+    return str.replace(RPX_REG, decimalVWTransformer);
+  } else if (targetPlatform === 'weex') {
+    // In Weex convert rpx to 'px'.
+    // '375rpx' => 375 * px
+    return str.replace(RPX_REG, decimalPixelTransformer);
+  } else {
+    // Other platform return original value, like Mini-App and WX Mini-Program ...
+    // '375rpx' => '375rpx'
+    return str;
+  }
+}
+function getRpx() {
+  return __rpx_coefficient__;
+}
+function setRpx(rpx) {
+  __rpx_coefficient__ = rpx;
+}
+function getViewportWidth() {
+  return __viewport_width__;
+}
+function setViewportWidth(viewport) {
+  __viewport_width__ = viewport;
+}
+/**
+ * Create a cached version of a pure function.
+ * Use the first params as cache key.
+ */
+
+function cached(fn) {
+  var cache = new CustomMap();
+  return function cachedFn() {
+    var key = arguments.length <= 0 ? undefined : arguments[0];
+    if (!cache.has(key)) cache.set(key, fn.apply(void 0, arguments));
+    return cache.get(key);
+  };
+}
+function setTargetPlatform(platform) {
+  targetPlatform = platform;
+}
+/**
+ * Convert rpx.
+ * @param value
+ * @param prop
+ * @param platform
+ * @return {String} Transformed value.
+ */
+
+var convertUnit = cached(function (value, prop, platform) {
+  if (platform) {
+    setTargetPlatform(platform);
+  }
+
+  return isRpx(value) ? calcRpx(value) : value;
+});
+
+// @ts-ignore
+var STYLE = 'style';
+/**
+ * https://github.com/reactjs/rfcs/pull/107
+ * @param {*} type
+ * @param {object} props
+ * @param {string} maybeKey
+ * @param {object} source
+ * @param {any} self
+ */ function jsx(type, props, maybeKey, source, self) {
+  return jsxRuntime.jsx(
+    type,
+    hijackElementProps(props),
+    maybeKey,
+    source,
+    self,
+  );
+}
+// Same as jsx method, special case jsxs internally to take advantage of static children.
+// // for now we can ship identical prod functions.
+function jsxs(type, props, maybeKey, source, self) {
+  return jsxRuntime.jsxs(
+    type,
+    hijackElementProps(props),
+    maybeKey,
+    source,
+    self,
+  );
+}
+function isObject(obj) {
+  return typeof obj === 'object';
+}
+// Support rpx unit.
+function hijackElementProps(props) {
+  if (props && STYLE in props) {
+    var style = props.style;
+    if (isObject(style)) {
+      var result = Object.assign({}, props);
+      var convertedStyle = {};
+      for (var prop in style) // @ts-ignore
+        convertedStyle[prop] =
+          typeof style[prop] === 'string'
+            ? convertUnit(style[prop])
+            : style[prop];
+      result['style'] = convertedStyle;
+      return result;
+    }
+  }
+  return props;
+}
+
+function _extends() {
+  _extends = Object.assign
+    ? Object.assign.bind()
+    : function (target) {
+        for (var i = 1; i < arguments.length; i++) {
+          var source = arguments[i];
+          for (var key in source) {
+            if (Object.prototype.hasOwnProperty.call(source, key)) {
+              target[key] = source[key];
+            }
+          }
+        }
+        return target;
+      };
+  return _extends.apply(this, arguments);
+}
+
+function _typeof(o) {
+  '@babel/helpers - typeof';
+
+  return (
+    (_typeof =
+      'function' == typeof Symbol && 'symbol' == typeof Symbol.iterator
+        ? function (o) {
+            return typeof o;
+          }
+        : function (o) {
+            return o &&
+              'function' == typeof Symbol &&
+              o.constructor === Symbol &&
+              o !== Symbol.prototype
+              ? 'symbol'
+              : typeof o;
+          }),
+    _typeof(o)
+  );
+}
+
+function _toPrimitive(input, hint) {
+  if (_typeof(input) !== 'object' || input === null) return input;
+  var prim = input[Symbol.toPrimitive];
+  if (prim !== undefined) {
+    var res = prim.call(input, hint || 'default');
+    if (_typeof(res) !== 'object') return res;
+    throw new TypeError('@@toPrimitive must return a primitive value.');
+  }
+  return (hint === 'string' ? String : Number)(input);
+}
+
+function _toPropertyKey(arg) {
+  var key = _toPrimitive(arg, 'string');
+  return _typeof(key) === 'symbol' ? key : String(key);
+}
+
+function _defineProperty(obj, key, value) {
+  key = _toPropertyKey(key);
+  if (key in obj) {
+    Object.defineProperty(obj, key, {
+      value: value,
+      enumerable: true,
+      configurable: true,
+      writable: true,
+    });
+  } else {
+    obj[key] = value;
+  }
+  return obj;
+}
+
+function _arrayWithHoles(arr) {
+  if (Array.isArray(arr)) return arr;
+}
+
+function _iterableToArrayLimit(r, l) {
+  var t =
+    null == r
+      ? null
+      : ('undefined' != typeof Symbol && r[Symbol.iterator]) || r['@@iterator'];
+  if (null != t) {
+    var e,
+      n,
+      i,
+      u,
+      a = [],
+      f = !0,
+      o = !1;
+    try {
+      if (((i = (t = t.call(r)).next), 0 === l));
+      else
+        for (
+          ;
+          !(f = (e = i.call(t)).done) && (a.push(e.value), a.length !== l);
+          f = !0
+        );
+    } catch (r) {
+      (o = !0), (n = r);
+    } finally {
+      try {
+        if (!f && null != t['return'] && ((u = t['return']()), Object(u) !== u))
+          return;
+      } finally {
+        if (o) throw n;
+      }
+    }
+    return a;
+  }
+}
+
+function _arrayLikeToArray(arr, len) {
+  if (len == null || len > arr.length) len = arr.length;
+  for (var i = 0, arr2 = new Array(len); i < len; i++) arr2[i] = arr[i];
+  return arr2;
+}
+
+function _unsupportedIterableToArray(o, minLen) {
+  if (!o) return;
+  if (typeof o === 'string') return _arrayLikeToArray(o, minLen);
+  var n = Object.prototype.toString.call(o).slice(8, -1);
+  if (n === 'Object' && o.constructor) n = o.constructor.name;
+  if (n === 'Map' || n === 'Set') return Array.from(o);
+  if (n === 'Arguments' || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n))
+    return _arrayLikeToArray(o, minLen);
+}
+
+function _nonIterableRest() {
+  throw new TypeError(
+    'Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.',
+  );
+}
+
+function _slicedToArray(arr, i) {
+  return (
+    _arrayWithHoles(arr) ||
+    _iterableToArrayLimit(arr, i) ||
+    _unsupportedIterableToArray(arr, i) ||
+    _nonIterableRest()
+  );
+}
+
+function ownKeys$1(e, r) {
+  var t = Object.keys(e);
+  if (Object.getOwnPropertySymbols) {
+    var o = Object.getOwnPropertySymbols(e);
+    r &&
+      (o = o.filter(function (r) {
+        return Object.getOwnPropertyDescriptor(e, r).enumerable;
+      })),
+      t.push.apply(t, o);
+  }
+  return t;
+}
+function _objectSpread2(e) {
+  for (var r = 1; r < arguments.length; r++) {
+    var t = null != arguments[r] ? arguments[r] : {};
+    r % 2
+      ? ownKeys$1(Object(t), !0).forEach(function (r) {
+          _defineProperty(e, r, t[r]);
+        })
+      : Object.getOwnPropertyDescriptors
+        ? Object.defineProperties(e, Object.getOwnPropertyDescriptors(t))
+        : ownKeys$1(Object(t)).forEach(function (r) {
+            Object.defineProperty(e, r, Object.getOwnPropertyDescriptor(t, r));
+          });
+  }
+  return e;
+}
+
+function _classCallCheck(instance, Constructor) {
+  if (!(instance instanceof Constructor)) {
+    throw new TypeError('Cannot call a class as a function');
+  }
+}
+
+function _defineProperties(target, props) {
+  for (var i = 0; i < props.length; i++) {
+    var descriptor = props[i];
+    descriptor.enumerable = descriptor.enumerable || false;
+    descriptor.configurable = true;
+    if ('value' in descriptor) descriptor.writable = true;
+    Object.defineProperty(target, _toPropertyKey(descriptor.key), descriptor);
+  }
+}
+function _createClass(Constructor, protoProps, staticProps) {
+  if (protoProps) _defineProperties(Constructor.prototype, protoProps);
+  Object.defineProperty(Constructor, 'prototype', {
+    writable: false,
+  });
+  return Constructor;
+}
+
+function _setPrototypeOf(o, p) {
+  _setPrototypeOf = Object.setPrototypeOf
+    ? Object.setPrototypeOf.bind()
+    : function _setPrototypeOf(o, p) {
+        o.__proto__ = p;
+        return o;
+      };
+  return _setPrototypeOf(o, p);
+}
+
+function _inherits(subClass, superClass) {
+  if (typeof superClass !== 'function' && superClass !== null) {
+    throw new TypeError('Super expression must either be null or a function');
+  }
+  subClass.prototype = Object.create(superClass && superClass.prototype, {
+    constructor: {
+      value: subClass,
+      writable: true,
+      configurable: true,
+    },
+  });
+  Object.defineProperty(subClass, 'prototype', {
+    writable: false,
+  });
+  if (superClass) _setPrototypeOf(subClass, superClass);
+}
+
+function _getPrototypeOf(o) {
+  _getPrototypeOf = Object.setPrototypeOf
+    ? Object.getPrototypeOf.bind()
+    : function _getPrototypeOf(o) {
+        return o.__proto__ || Object.getPrototypeOf(o);
+      };
+  return _getPrototypeOf(o);
+}
+
+function _isNativeReflectConstruct() {
+  if (typeof Reflect === 'undefined' || !Reflect.construct) return false;
+  if (Reflect.construct.sham) return false;
+  if (typeof Proxy === 'function') return true;
+  try {
+    Boolean.prototype.valueOf.call(
+      Reflect.construct(Boolean, [], function () {}),
+    );
+    return true;
+  } catch (e) {
+    return false;
+  }
+}
+
+function _assertThisInitialized(self) {
+  if (self === void 0) {
+    throw new ReferenceError(
+      "this hasn't been initialised - super() hasn't been called",
+    );
+  }
+  return self;
+}
+
+function _possibleConstructorReturn(self, call) {
+  if (call && (_typeof(call) === 'object' || typeof call === 'function')) {
+    return call;
+  } else if (call !== void 0) {
+    throw new TypeError(
+      'Derived constructors may only return object or undefined',
+    );
+  }
+  return _assertThisInitialized(self);
+}
+
+function _createSuper(Derived) {
+  var hasNativeReflectConstruct = _isNativeReflectConstruct();
+  return function _createSuperInternal() {
+    var Super = _getPrototypeOf(Derived),
+      result;
+    if (hasNativeReflectConstruct) {
+      var NewTarget = _getPrototypeOf(this).constructor;
+      result = Reflect.construct(Super, arguments, NewTarget);
+    } else {
+      result = Super.apply(this, arguments);
+    }
+    return _possibleConstructorReturn(this, result);
+  };
+}
+
+function _objectWithoutPropertiesLoose(source, excluded) {
+  if (source == null) return {};
+  var target = {};
+  var sourceKeys = Object.keys(source);
+  var key, i;
+  for (i = 0; i < sourceKeys.length; i++) {
+    key = sourceKeys[i];
+    if (excluded.indexOf(key) >= 0) continue;
+    target[key] = source[key];
+  }
+  return target;
+}
+
+function _objectWithoutProperties(source, excluded) {
+  if (source == null) return {};
+  var target = _objectWithoutPropertiesLoose(source, excluded);
+  var key, i;
+  if (Object.getOwnPropertySymbols) {
+    var sourceSymbolKeys = Object.getOwnPropertySymbols(source);
+    for (i = 0; i < sourceSymbolKeys.length; i++) {
+      key = sourceSymbolKeys[i];
+      if (excluded.indexOf(key) >= 0) continue;
+      if (!Object.prototype.propertyIsEnumerable.call(source, key)) continue;
+      target[key] = source[key];
+    }
+  }
+  return target;
+}
+
+/**
+ * Take input from [0, n] and return it as [0, 1]
+ * @hidden
+ */
+function bound01(n, max) {
+  if (isOnePointZero(n)) {
+    n = '100%';
+  }
+  var isPercent = isPercentage(n);
+  n = max === 360 ? n : Math.min(max, Math.max(0, parseFloat(n)));
+  // Automatically convert percentage into number
+  if (isPercent) {
+    n = parseInt(String(n * max), 10) / 100;
+  }
+  // Handle floating point rounding errors
+  if (Math.abs(n - max) < 0.000001) {
+    return 1;
+  }
+  // Convert into [0, 1] range if it isn't already
+  if (max === 360) {
+    // If n is a hue given in degrees,
+    // wrap around out-of-range values into [0, 360] range
+    // then convert into [0, 1].
+    n = (n < 0 ? (n % max) + max : n % max) / parseFloat(String(max));
+  } else {
+    // If n not a hue given in degrees
+    // Convert into [0, 1] range if it isn't already.
+    n = (n % max) / parseFloat(String(max));
+  }
+  return n;
+}
+/**
+ * Force a number between 0 and 1
+ * @hidden
+ */
+function clamp01(val) {
+  return Math.min(1, Math.max(0, val));
+}
+/**
+ * Need to handle 1.0 as 100%, since once it is a number, there is no difference between it and 1
+ * <http://stackoverflow.com/questions/7422072/javascript-how-to-detect-number-as-a-decimal-including-1-0>
+ * @hidden
+ */
+function isOnePointZero(n) {
+  return typeof n === 'string' && n.indexOf('.') !== -1 && parseFloat(n) === 1;
+}
+/**
+ * Check to see if string passed in is a percentage
+ * @hidden
+ */
+function isPercentage(n) {
+  return typeof n === 'string' && n.indexOf('%') !== -1;
+}
+/**
+ * Return a valid alpha value [0,1] with all invalid values being set to 1
+ * @hidden
+ */
+function boundAlpha(a) {
+  a = parseFloat(a);
+  if (isNaN(a) || a < 0 || a > 1) {
+    a = 1;
+  }
+  return a;
+}
+/**
+ * Replace a decimal with it's percentage value
+ * @hidden
+ */
+function convertToPercentage(n) {
+  if (n <= 1) {
+    return ''.concat(Number(n) * 100, '%');
+  }
+  return n;
+}
+/**
+ * Force a hex value to have 2 characters
+ * @hidden
+ */
+function pad2(c) {
+  return c.length === 1 ? '0' + c : String(c);
+}
+
+// `rgbToHsl`, `rgbToHsv`, `hslToRgb`, `hsvToRgb` modified from:
+// <http://mjijackson.com/2008/02/rgb-to-hsl-and-rgb-to-hsv-color-model-conversion-algorithms-in-javascript>
+/**
+ * Handle bounds / percentage checking to conform to CSS color spec
+ * <http://www.w3.org/TR/css3-color/>
+ * *Assumes:* r, g, b in [0, 255] or [0, 1]
+ * *Returns:* { r, g, b } in [0, 255]
+ */
+function rgbToRgb(r, g, b) {
+  return {
+    r: bound01(r, 255) * 255,
+    g: bound01(g, 255) * 255,
+    b: bound01(b, 255) * 255,
+  };
+}
+/**
+ * Converts an RGB color value to HSL.
+ * *Assumes:* r, g, and b are contained in [0, 255] or [0, 1]
+ * *Returns:* { h, s, l } in [0,1]
+ */
+function rgbToHsl(r, g, b) {
+  r = bound01(r, 255);
+  g = bound01(g, 255);
+  b = bound01(b, 255);
+  var max = Math.max(r, g, b);
+  var min = Math.min(r, g, b);
+  var h = 0;
+  var s = 0;
+  var l = (max + min) / 2;
+  if (max === min) {
+    s = 0;
+    h = 0; // achromatic
+  } else {
+    var d = max - min;
+    s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
+    switch (max) {
+      case r:
+        h = (g - b) / d + (g < b ? 6 : 0);
+        break;
+      case g:
+        h = (b - r) / d + 2;
+        break;
+      case b:
+        h = (r - g) / d + 4;
+        break;
+    }
+    h /= 6;
+  }
+  return { h: h, s: s, l: l };
+}
+function hue2rgb(p, q, t) {
+  if (t < 0) {
+    t += 1;
+  }
+  if (t > 1) {
+    t -= 1;
+  }
+  if (t < 1 / 6) {
+    return p + (q - p) * (6 * t);
+  }
+  if (t < 1 / 2) {
+    return q;
+  }
+  if (t < 2 / 3) {
+    return p + (q - p) * (2 / 3 - t) * 6;
+  }
+  return p;
+}
+/**
+ * Converts an HSL color value to RGB.
+ *
+ * *Assumes:* h is contained in [0, 1] or [0, 360] and s and l are contained [0, 1] or [0, 100]
+ * *Returns:* { r, g, b } in the set [0, 255]
+ */
+function hslToRgb(h, s, l) {
+  var r;
+  var g;
+  var b;
+  h = bound01(h, 360);
+  s = bound01(s, 100);
+  l = bound01(l, 100);
+  if (s === 0) {
+    // achromatic
+    g = l;
+    b = l;
+    r = l;
+  } else {
+    var q = l < 0.5 ? l * (1 + s) : l + s - l * s;
+    var p = 2 * l - q;
+    r = hue2rgb(p, q, h + 1 / 3);
+    g = hue2rgb(p, q, h);
+    b = hue2rgb(p, q, h - 1 / 3);
+  }
+  return { r: r * 255, g: g * 255, b: b * 255 };
+}
+/**
+ * Converts an RGB color value to HSV
+ *
+ * *Assumes:* r, g, and b are contained in the set [0, 255] or [0, 1]
+ * *Returns:* { h, s, v } in [0,1]
+ */
+function rgbToHsv(r, g, b) {
+  r = bound01(r, 255);
+  g = bound01(g, 255);
+  b = bound01(b, 255);
+  var max = Math.max(r, g, b);
+  var min = Math.min(r, g, b);
+  var h = 0;
+  var v = max;
+  var d = max - min;
+  var s = max === 0 ? 0 : d / max;
+  if (max === min) {
+    h = 0; // achromatic
+  } else {
+    switch (max) {
+      case r:
+        h = (g - b) / d + (g < b ? 6 : 0);
+        break;
+      case g:
+        h = (b - r) / d + 2;
+        break;
+      case b:
+        h = (r - g) / d + 4;
+        break;
+    }
+    h /= 6;
+  }
+  return { h: h, s: s, v: v };
+}
+/**
+ * Converts an HSV color value to RGB.
+ *
+ * *Assumes:* h is contained in [0, 1] or [0, 360] and s and v are contained in [0, 1] or [0, 100]
+ * *Returns:* { r, g, b } in the set [0, 255]
+ */
+function hsvToRgb(h, s, v) {
+  h = bound01(h, 360) * 6;
+  s = bound01(s, 100);
+  v = bound01(v, 100);
+  var i = Math.floor(h);
+  var f = h - i;
+  var p = v * (1 - s);
+  var q = v * (1 - f * s);
+  var t = v * (1 - (1 - f) * s);
+  var mod = i % 6;
+  var r = [v, q, p, p, t, v][mod];
+  var g = [t, v, v, q, p, p][mod];
+  var b = [p, p, t, v, v, q][mod];
+  return { r: r * 255, g: g * 255, b: b * 255 };
+}
+/**
+ * Converts an RGB color to hex
+ *
+ * Assumes r, g, and b are contained in the set [0, 255]
+ * Returns a 3 or 6 character hex
+ */
+function rgbToHex(r, g, b, allow3Char) {
+  var hex = [
+    pad2(Math.round(r).toString(16)),
+    pad2(Math.round(g).toString(16)),
+    pad2(Math.round(b).toString(16)),
+  ];
+  // Return a 3 character hex if possible
+  if (
+    allow3Char &&
+    hex[0].startsWith(hex[0].charAt(1)) &&
+    hex[1].startsWith(hex[1].charAt(1)) &&
+    hex[2].startsWith(hex[2].charAt(1))
+  ) {
+    return hex[0].charAt(0) + hex[1].charAt(0) + hex[2].charAt(0);
+  }
+  return hex.join('');
+}
+/**
+ * Converts an RGBA color plus alpha transparency to hex
+ *
+ * Assumes r, g, b are contained in the set [0, 255] and
+ * a in [0, 1]. Returns a 4 or 8 character rgba hex
+ */
+// eslint-disable-next-line max-params
+function rgbaToHex(r, g, b, a, allow4Char) {
+  var hex = [
+    pad2(Math.round(r).toString(16)),
+    pad2(Math.round(g).toString(16)),
+    pad2(Math.round(b).toString(16)),
+    pad2(convertDecimalToHex(a)),
+  ];
+  // Return a 4 character hex if possible
+  if (
+    allow4Char &&
+    hex[0].startsWith(hex[0].charAt(1)) &&
+    hex[1].startsWith(hex[1].charAt(1)) &&
+    hex[2].startsWith(hex[2].charAt(1)) &&
+    hex[3].startsWith(hex[3].charAt(1))
+  ) {
+    return (
+      hex[0].charAt(0) + hex[1].charAt(0) + hex[2].charAt(0) + hex[3].charAt(0)
+    );
+  }
+  return hex.join('');
+}
+/** Converts a decimal to a hex value */
+function convertDecimalToHex(d) {
+  return Math.round(parseFloat(d) * 255).toString(16);
+}
+/** Converts a hex value to a decimal */
+function convertHexToDecimal(h) {
+  return parseIntFromHex(h) / 255;
+}
+/** Parse a base-16 hex value into a base-10 integer */
+function parseIntFromHex(val) {
+  return parseInt(val, 16);
+}
+function numberInputToObject(color) {
+  return {
+    r: color >> 16,
+    g: (color & 0xff00) >> 8,
+    b: color & 0xff,
+  };
+}
+
+// https://github.com/bahamas10/css-color-names/blob/master/css-color-names.json
+/**
+ * @hidden
+ */
+var names = {
+  aliceblue: '#f0f8ff',
+  antiquewhite: '#faebd7',
+  aqua: '#00ffff',
+  aquamarine: '#7fffd4',
+  azure: '#f0ffff',
+  beige: '#f5f5dc',
+  bisque: '#ffe4c4',
+  black: '#000000',
+  blanchedalmond: '#ffebcd',
+  blue: '#0000ff',
+  blueviolet: '#8a2be2',
+  brown: '#a52a2a',
+  burlywood: '#deb887',
+  cadetblue: '#5f9ea0',
+  chartreuse: '#7fff00',
+  chocolate: '#d2691e',
+  coral: '#ff7f50',
+  cornflowerblue: '#6495ed',
+  cornsilk: '#fff8dc',
+  crimson: '#dc143c',
+  cyan: '#00ffff',
+  darkblue: '#00008b',
+  darkcyan: '#008b8b',
+  darkgoldenrod: '#b8860b',
+  darkgray: '#a9a9a9',
+  darkgreen: '#006400',
+  darkgrey: '#a9a9a9',
+  darkkhaki: '#bdb76b',
+  darkmagenta: '#8b008b',
+  darkolivegreen: '#556b2f',
+  darkorange: '#ff8c00',
+  darkorchid: '#9932cc',
+  darkred: '#8b0000',
+  darksalmon: '#e9967a',
+  darkseagreen: '#8fbc8f',
+  darkslateblue: '#483d8b',
+  darkslategray: '#2f4f4f',
+  darkslategrey: '#2f4f4f',
+  darkturquoise: '#00ced1',
+  darkviolet: '#9400d3',
+  deeppink: '#ff1493',
+  deepskyblue: '#00bfff',
+  dimgray: '#696969',
+  dimgrey: '#696969',
+  dodgerblue: '#1e90ff',
+  firebrick: '#b22222',
+  floralwhite: '#fffaf0',
+  forestgreen: '#228b22',
+  fuchsia: '#ff00ff',
+  gainsboro: '#dcdcdc',
+  ghostwhite: '#f8f8ff',
+  goldenrod: '#daa520',
+  gold: '#ffd700',
+  gray: '#808080',
+  green: '#008000',
+  greenyellow: '#adff2f',
+  grey: '#808080',
+  honeydew: '#f0fff0',
+  hotpink: '#ff69b4',
+  indianred: '#cd5c5c',
+  indigo: '#4b0082',
+  ivory: '#fffff0',
+  khaki: '#f0e68c',
+  lavenderblush: '#fff0f5',
+  lavender: '#e6e6fa',
+  lawngreen: '#7cfc00',
+  lemonchiffon: '#fffacd',
+  lightblue: '#add8e6',
+  lightcoral: '#f08080',
+  lightcyan: '#e0ffff',
+  lightgoldenrodyellow: '#fafad2',
+  lightgray: '#d3d3d3',
+  lightgreen: '#90ee90',
+  lightgrey: '#d3d3d3',
+  lightpink: '#ffb6c1',
+  lightsalmon: '#ffa07a',
+  lightseagreen: '#20b2aa',
+  lightskyblue: '#87cefa',
+  lightslategray: '#778899',
+  lightslategrey: '#778899',
+  lightsteelblue: '#b0c4de',
+  lightyellow: '#ffffe0',
+  lime: '#00ff00',
+  limegreen: '#32cd32',
+  linen: '#faf0e6',
+  magenta: '#ff00ff',
+  maroon: '#800000',
+  mediumaquamarine: '#66cdaa',
+  mediumblue: '#0000cd',
+  mediumorchid: '#ba55d3',
+  mediumpurple: '#9370db',
+  mediumseagreen: '#3cb371',
+  mediumslateblue: '#7b68ee',
+  mediumspringgreen: '#00fa9a',
+  mediumturquoise: '#48d1cc',
+  mediumvioletred: '#c71585',
+  midnightblue: '#191970',
+  mintcream: '#f5fffa',
+  mistyrose: '#ffe4e1',
+  moccasin: '#ffe4b5',
+  navajowhite: '#ffdead',
+  navy: '#000080',
+  oldlace: '#fdf5e6',
+  olive: '#808000',
+  olivedrab: '#6b8e23',
+  orange: '#ffa500',
+  orangered: '#ff4500',
+  orchid: '#da70d6',
+  palegoldenrod: '#eee8aa',
+  palegreen: '#98fb98',
+  paleturquoise: '#afeeee',
+  palevioletred: '#db7093',
+  papayawhip: '#ffefd5',
+  peachpuff: '#ffdab9',
+  peru: '#cd853f',
+  pink: '#ffc0cb',
+  plum: '#dda0dd',
+  powderblue: '#b0e0e6',
+  purple: '#800080',
+  rebeccapurple: '#663399',
+  red: '#ff0000',
+  rosybrown: '#bc8f8f',
+  royalblue: '#4169e1',
+  saddlebrown: '#8b4513',
+  salmon: '#fa8072',
+  sandybrown: '#f4a460',
+  seagreen: '#2e8b57',
+  seashell: '#fff5ee',
+  sienna: '#a0522d',
+  silver: '#c0c0c0',
+  skyblue: '#87ceeb',
+  slateblue: '#6a5acd',
+  slategray: '#708090',
+  slategrey: '#708090',
+  snow: '#fffafa',
+  springgreen: '#00ff7f',
+  steelblue: '#4682b4',
+  tan: '#d2b48c',
+  teal: '#008080',
+  thistle: '#d8bfd8',
+  tomato: '#ff6347',
+  turquoise: '#40e0d0',
+  violet: '#ee82ee',
+  wheat: '#f5deb3',
+  white: '#ffffff',
+  whitesmoke: '#f5f5f5',
+  yellow: '#ffff00',
+  yellowgreen: '#9acd32',
+};
+
+/* eslint-disable @typescript-eslint/no-redundant-type-constituents */
+/**
+ * Given a string or object, convert that input to RGB
+ *
+ * Possible string inputs:
+ * ```
+ * "red"
+ * "#f00" or "f00"
+ * "#ff0000" or "ff0000"
+ * "#ff000000" or "ff000000"
+ * "rgb 255 0 0" or "rgb (255, 0, 0)"
+ * "rgb 1.0 0 0" or "rgb (1, 0, 0)"
+ * "rgba (255, 0, 0, 1)" or "rgba 255, 0, 0, 1"
+ * "rgba (1.0, 0, 0, 1)" or "rgba 1.0, 0, 0, 1"
+ * "hsl(0, 100%, 50%)" or "hsl 0 100% 50%"
+ * "hsla(0, 100%, 50%, 1)" or "hsla 0 100% 50%, 1"
+ * "hsv(0, 100%, 100%)" or "hsv 0 100% 100%"
+ * ```
+ */
+function inputToRGB(color) {
+  var rgb = { r: 0, g: 0, b: 0 };
+  var a = 1;
+  var s = null;
+  var v = null;
+  var l = null;
+  var ok = false;
+  var format = false;
+  if (typeof color === 'string') {
+    color = stringInputToObject(color);
+  }
+  if (typeof color === 'object') {
+    if (
+      isValidCSSUnit(color.r) &&
+      isValidCSSUnit(color.g) &&
+      isValidCSSUnit(color.b)
+    ) {
+      rgb = rgbToRgb(color.r, color.g, color.b);
+      ok = true;
+      format = String(color.r).substr(-1) === '%' ? 'prgb' : 'rgb';
+    } else if (
+      isValidCSSUnit(color.h) &&
+      isValidCSSUnit(color.s) &&
+      isValidCSSUnit(color.v)
+    ) {
+      s = convertToPercentage(color.s);
+      v = convertToPercentage(color.v);
+      rgb = hsvToRgb(color.h, s, v);
+      ok = true;
+      format = 'hsv';
+    } else if (
+      isValidCSSUnit(color.h) &&
+      isValidCSSUnit(color.s) &&
+      isValidCSSUnit(color.l)
+    ) {
+      s = convertToPercentage(color.s);
+      l = convertToPercentage(color.l);
+      rgb = hslToRgb(color.h, s, l);
+      ok = true;
+      format = 'hsl';
+    }
+    if (Object.prototype.hasOwnProperty.call(color, 'a')) {
+      a = color.a;
+    }
+  }
+  a = boundAlpha(a);
+  return {
+    ok: ok,
+    format: color.format || format,
+    r: Math.min(255, Math.max(rgb.r, 0)),
+    g: Math.min(255, Math.max(rgb.g, 0)),
+    b: Math.min(255, Math.max(rgb.b, 0)),
+    a: a,
+  };
+}
+// <http://www.w3.org/TR/css3-values/#integers>
+var CSS_INTEGER = '[-\\+]?\\d+%?';
+// <http://www.w3.org/TR/css3-values/#number-value>
+var CSS_NUMBER = '[-\\+]?\\d*\\.\\d+%?';
+// Allow positive/negative integer/number.  Don't capture the either/or, just the entire outcome.
+var CSS_UNIT = '(?:'.concat(CSS_NUMBER, ')|(?:').concat(CSS_INTEGER, ')');
+// Actual matching.
+// Parentheses and commas are optional, but not required.
+// Whitespace can take the place of commas or opening paren
+var PERMISSIVE_MATCH3 = '[\\s|\\(]+('
+  .concat(CSS_UNIT, ')[,|\\s]+(')
+  .concat(CSS_UNIT, ')[,|\\s]+(')
+  .concat(CSS_UNIT, ')\\s*\\)?');
+var PERMISSIVE_MATCH4 = '[\\s|\\(]+('
+  .concat(CSS_UNIT, ')[,|\\s]+(')
+  .concat(CSS_UNIT, ')[,|\\s]+(')
+  .concat(CSS_UNIT, ')[,|\\s]+(')
+  .concat(CSS_UNIT, ')\\s*\\)?');
+var matchers = {
+  CSS_UNIT: new RegExp(CSS_UNIT),
+  rgb: new RegExp('rgb' + PERMISSIVE_MATCH3),
+  rgba: new RegExp('rgba' + PERMISSIVE_MATCH4),
+  hsl: new RegExp('hsl' + PERMISSIVE_MATCH3),
+  hsla: new RegExp('hsla' + PERMISSIVE_MATCH4),
+  hsv: new RegExp('hsv' + PERMISSIVE_MATCH3),
+  hsva: new RegExp('hsva' + PERMISSIVE_MATCH4),
+  hex3: /^#?([0-9a-fA-F]{1})([0-9a-fA-F]{1})([0-9a-fA-F]{1})$/,
+  hex6: /^#?([0-9a-fA-F]{2})([0-9a-fA-F]{2})([0-9a-fA-F]{2})$/,
+  hex4: /^#?([0-9a-fA-F]{1})([0-9a-fA-F]{1})([0-9a-fA-F]{1})([0-9a-fA-F]{1})$/,
+  hex8: /^#?([0-9a-fA-F]{2})([0-9a-fA-F]{2})([0-9a-fA-F]{2})([0-9a-fA-F]{2})$/,
+};
+/**
+ * Permissive string parsing.  Take in a number of formats, and output an object
+ * based on detected format.  Returns `{ r, g, b }` or `{ h, s, l }` or `{ h, s, v}`
+ */
+function stringInputToObject(color) {
+  color = color.trim().toLowerCase();
+  if (color.length === 0) {
+    return false;
+  }
+  var named = false;
+  if (names[color]) {
+    color = names[color];
+    named = true;
+  } else if (color === 'transparent') {
+    return { r: 0, g: 0, b: 0, a: 0, format: 'name' };
+  }
+  // Try to match string input using regular expressions.
+  // Keep most of the number bounding out of this function - don't worry about [0,1] or [0,100] or [0,360]
+  // Just return an object and let the conversion functions handle that.
+  // This way the result will be the same whether the tinycolor is initialized with string or object.
+  var match = matchers.rgb.exec(color);
+  if (match) {
+    return { r: match[1], g: match[2], b: match[3] };
+  }
+  match = matchers.rgba.exec(color);
+  if (match) {
+    return { r: match[1], g: match[2], b: match[3], a: match[4] };
+  }
+  match = matchers.hsl.exec(color);
+  if (match) {
+    return { h: match[1], s: match[2], l: match[3] };
+  }
+  match = matchers.hsla.exec(color);
+  if (match) {
+    return { h: match[1], s: match[2], l: match[3], a: match[4] };
+  }
+  match = matchers.hsv.exec(color);
+  if (match) {
+    return { h: match[1], s: match[2], v: match[3] };
+  }
+  match = matchers.hsva.exec(color);
+  if (match) {
+    return { h: match[1], s: match[2], v: match[3], a: match[4] };
+  }
+  match = matchers.hex8.exec(color);
+  if (match) {
+    return {
+      r: parseIntFromHex(match[1]),
+      g: parseIntFromHex(match[2]),
+      b: parseIntFromHex(match[3]),
+      a: convertHexToDecimal(match[4]),
+      format: named ? 'name' : 'hex8',
+    };
+  }
+  match = matchers.hex6.exec(color);
+  if (match) {
+    return {
+      r: parseIntFromHex(match[1]),
+      g: parseIntFromHex(match[2]),
+      b: parseIntFromHex(match[3]),
+      format: named ? 'name' : 'hex',
+    };
+  }
+  match = matchers.hex4.exec(color);
+  if (match) {
+    return {
+      r: parseIntFromHex(match[1] + match[1]),
+      g: parseIntFromHex(match[2] + match[2]),
+      b: parseIntFromHex(match[3] + match[3]),
+      a: convertHexToDecimal(match[4] + match[4]),
+      format: named ? 'name' : 'hex8',
+    };
+  }
+  match = matchers.hex3.exec(color);
+  if (match) {
+    return {
+      r: parseIntFromHex(match[1] + match[1]),
+      g: parseIntFromHex(match[2] + match[2]),
+      b: parseIntFromHex(match[3] + match[3]),
+      format: named ? 'name' : 'hex',
+    };
+  }
+  return false;
+}
+/**
+ * Check to see if it looks like a CSS unit
+ * (see `matchers` above for definition).
+ */
+function isValidCSSUnit(color) {
+  return Boolean(matchers.CSS_UNIT.exec(String(color)));
+}
+
+var TinyColor = /** @class */ (function () {
+  function TinyColor(color, opts) {
+    if (color === void 0) {
+      color = '';
+    }
+    if (opts === void 0) {
+      opts = {};
+    }
+    var _a;
+    // If input is already a tinycolor, return itself
+    if (color instanceof TinyColor) {
+      // eslint-disable-next-line no-constructor-return
+      return color;
+    }
+    if (typeof color === 'number') {
+      color = numberInputToObject(color);
+    }
+    this.originalInput = color;
+    var rgb = inputToRGB(color);
+    this.originalInput = color;
+    this.r = rgb.r;
+    this.g = rgb.g;
+    this.b = rgb.b;
+    this.a = rgb.a;
+    this.roundA = Math.round(100 * this.a) / 100;
+    this.format =
+      (_a = opts.format) !== null && _a !== void 0 ? _a : rgb.format;
+    this.gradientType = opts.gradientType;
+    // Don't let the range of [0,255] come back in [0,1].
+    // Potentially lose a little bit of precision here, but will fix issues where
+    // .5 gets interpreted as half of the total, instead of half of 1
+    // If it was supposed to be 128, this was already taken care of by `inputToRgb`
+    if (this.r < 1) {
+      this.r = Math.round(this.r);
+    }
+    if (this.g < 1) {
+      this.g = Math.round(this.g);
+    }
+    if (this.b < 1) {
+      this.b = Math.round(this.b);
+    }
+    this.isValid = rgb.ok;
+  }
+  TinyColor.prototype.isDark = function () {
+    return this.getBrightness() < 128;
+  };
+  TinyColor.prototype.isLight = function () {
+    return !this.isDark();
+  };
+  /**
+   * Returns the perceived brightness of the color, from 0-255.
+   */
+  TinyColor.prototype.getBrightness = function () {
+    // http://www.w3.org/TR/AERT#color-contrast
+    var rgb = this.toRgb();
+    return (rgb.r * 299 + rgb.g * 587 + rgb.b * 114) / 1000;
+  };
+  /**
+   * Returns the perceived luminance of a color, from 0-1.
+   */
+  TinyColor.prototype.getLuminance = function () {
+    // http://www.w3.org/TR/2008/REC-WCAG20-20081211/#relativeluminancedef
+    var rgb = this.toRgb();
+    var R;
+    var G;
+    var B;
+    var RsRGB = rgb.r / 255;
+    var GsRGB = rgb.g / 255;
+    var BsRGB = rgb.b / 255;
+    if (RsRGB <= 0.03928) {
+      R = RsRGB / 12.92;
+    } else {
+      // eslint-disable-next-line prefer-exponentiation-operator
+      R = Math.pow((RsRGB + 0.055) / 1.055, 2.4);
+    }
+    if (GsRGB <= 0.03928) {
+      G = GsRGB / 12.92;
+    } else {
+      // eslint-disable-next-line prefer-exponentiation-operator
+      G = Math.pow((GsRGB + 0.055) / 1.055, 2.4);
+    }
+    if (BsRGB <= 0.03928) {
+      B = BsRGB / 12.92;
+    } else {
+      // eslint-disable-next-line prefer-exponentiation-operator
+      B = Math.pow((BsRGB + 0.055) / 1.055, 2.4);
+    }
+    return 0.2126 * R + 0.7152 * G + 0.0722 * B;
+  };
+  /**
+   * Returns the alpha value of a color, from 0-1.
+   */
+  TinyColor.prototype.getAlpha = function () {
+    return this.a;
+  };
+  /**
+   * Sets the alpha value on the current color.
+   *
+   * @param alpha - The new alpha value. The accepted range is 0-1.
+   */
+  TinyColor.prototype.setAlpha = function (alpha) {
+    this.a = boundAlpha(alpha);
+    this.roundA = Math.round(100 * this.a) / 100;
+    return this;
+  };
+  /**
+   * Returns whether the color is monochrome.
+   */
+  TinyColor.prototype.isMonochrome = function () {
+    var s = this.toHsl().s;
+    return s === 0;
+  };
+  /**
+   * Returns the object as a HSVA object.
+   */
+  TinyColor.prototype.toHsv = function () {
+    var hsv = rgbToHsv(this.r, this.g, this.b);
+    return { h: hsv.h * 360, s: hsv.s, v: hsv.v, a: this.a };
+  };
+  /**
+   * Returns the hsva values interpolated into a string with the following format:
+   * "hsva(xxx, xxx, xxx, xx)".
+   */
+  TinyColor.prototype.toHsvString = function () {
+    var hsv = rgbToHsv(this.r, this.g, this.b);
+    var h = Math.round(hsv.h * 360);
+    var s = Math.round(hsv.s * 100);
+    var v = Math.round(hsv.v * 100);
+    return this.a === 1
+      ? 'hsv('.concat(h, ', ').concat(s, '%, ').concat(v, '%)')
+      : 'hsva('
+          .concat(h, ', ')
+          .concat(s, '%, ')
+          .concat(v, '%, ')
+          .concat(this.roundA, ')');
+  };
+  /**
+   * Returns the object as a HSLA object.
+   */
+  TinyColor.prototype.toHsl = function () {
+    var hsl = rgbToHsl(this.r, this.g, this.b);
+    return { h: hsl.h * 360, s: hsl.s, l: hsl.l, a: this.a };
+  };
+  /**
+   * Returns the hsla values interpolated into a string with the following format:
+   * "hsla(xxx, xxx, xxx, xx)".
+   */
+  TinyColor.prototype.toHslString = function () {
+    var hsl = rgbToHsl(this.r, this.g, this.b);
+    var h = Math.round(hsl.h * 360);
+    var s = Math.round(hsl.s * 100);
+    var l = Math.round(hsl.l * 100);
+    return this.a === 1
+      ? 'hsl('.concat(h, ', ').concat(s, '%, ').concat(l, '%)')
+      : 'hsla('
+          .concat(h, ', ')
+          .concat(s, '%, ')
+          .concat(l, '%, ')
+          .concat(this.roundA, ')');
+  };
+  /**
+   * Returns the hex value of the color.
+   * @param allow3Char will shorten hex value to 3 char if possible
+   */
+  TinyColor.prototype.toHex = function (allow3Char) {
+    if (allow3Char === void 0) {
+      allow3Char = false;
+    }
+    return rgbToHex(this.r, this.g, this.b, allow3Char);
+  };
+  /**
+   * Returns the hex value of the color -with a # prefixed.
+   * @param allow3Char will shorten hex value to 3 char if possible
+   */
+  TinyColor.prototype.toHexString = function (allow3Char) {
+    if (allow3Char === void 0) {
+      allow3Char = false;
+    }
+    return '#' + this.toHex(allow3Char);
+  };
+  /**
+   * Returns the hex 8 value of the color.
+   * @param allow4Char will shorten hex value to 4 char if possible
+   */
+  TinyColor.prototype.toHex8 = function (allow4Char) {
+    if (allow4Char === void 0) {
+      allow4Char = false;
+    }
+    return rgbaToHex(this.r, this.g, this.b, this.a, allow4Char);
+  };
+  /**
+   * Returns the hex 8 value of the color -with a # prefixed.
+   * @param allow4Char will shorten hex value to 4 char if possible
+   */
+  TinyColor.prototype.toHex8String = function (allow4Char) {
+    if (allow4Char === void 0) {
+      allow4Char = false;
+    }
+    return '#' + this.toHex8(allow4Char);
+  };
+  /**
+   * Returns the shorter hex value of the color depends on its alpha -with a # prefixed.
+   * @param allowShortChar will shorten hex value to 3 or 4 char if possible
+   */
+  TinyColor.prototype.toHexShortString = function (allowShortChar) {
+    if (allowShortChar === void 0) {
+      allowShortChar = false;
+    }
+    return this.a === 1
+      ? this.toHexString(allowShortChar)
+      : this.toHex8String(allowShortChar);
+  };
+  /**
+   * Returns the object as a RGBA object.
+   */
+  TinyColor.prototype.toRgb = function () {
+    return {
+      r: Math.round(this.r),
+      g: Math.round(this.g),
+      b: Math.round(this.b),
+      a: this.a,
+    };
+  };
+  /**
+   * Returns the RGBA values interpolated into a string with the following format:
+   * "RGBA(xxx, xxx, xxx, xx)".
+   */
+  TinyColor.prototype.toRgbString = function () {
+    var r = Math.round(this.r);
+    var g = Math.round(this.g);
+    var b = Math.round(this.b);
+    return this.a === 1
+      ? 'rgb('.concat(r, ', ').concat(g, ', ').concat(b, ')')
+      : 'rgba('
+          .concat(r, ', ')
+          .concat(g, ', ')
+          .concat(b, ', ')
+          .concat(this.roundA, ')');
+  };
+  /**
+   * Returns the object as a RGBA object.
+   */
+  TinyColor.prototype.toPercentageRgb = function () {
+    var fmt = function (x) {
+      return ''.concat(Math.round(bound01(x, 255) * 100), '%');
+    };
+    return {
+      r: fmt(this.r),
+      g: fmt(this.g),
+      b: fmt(this.b),
+      a: this.a,
+    };
+  };
+  /**
+   * Returns the RGBA relative values interpolated into a string
+   */
+  TinyColor.prototype.toPercentageRgbString = function () {
+    var rnd = function (x) {
+      return Math.round(bound01(x, 255) * 100);
+    };
+    return this.a === 1
+      ? 'rgb('
+          .concat(rnd(this.r), '%, ')
+          .concat(rnd(this.g), '%, ')
+          .concat(rnd(this.b), '%)')
+      : 'rgba('
+          .concat(rnd(this.r), '%, ')
+          .concat(rnd(this.g), '%, ')
+          .concat(rnd(this.b), '%, ')
+          .concat(this.roundA, ')');
+  };
+  /**
+   * The 'real' name of the color -if there is one.
+   */
+  TinyColor.prototype.toName = function () {
+    if (this.a === 0) {
+      return 'transparent';
+    }
+    if (this.a < 1) {
+      return false;
+    }
+    var hex = '#' + rgbToHex(this.r, this.g, this.b, false);
+    for (var _i = 0, _a = Object.entries(names); _i < _a.length; _i++) {
+      var _b = _a[_i],
+        key = _b[0],
+        value = _b[1];
+      if (hex === value) {
+        return key;
+      }
+    }
+    return false;
+  };
+  TinyColor.prototype.toString = function (format) {
+    var formatSet = Boolean(format);
+    format = format !== null && format !== void 0 ? format : this.format;
+    var formattedString = false;
+    var hasAlpha = this.a < 1 && this.a >= 0;
+    var needsAlphaFormat =
+      !formatSet && hasAlpha && (format.startsWith('hex') || format === 'name');
+    if (needsAlphaFormat) {
+      // Special case for "transparent", all other non-alpha formats
+      // will return rgba when there is transparency.
+      if (format === 'name' && this.a === 0) {
+        return this.toName();
+      }
+      return this.toRgbString();
+    }
+    if (format === 'rgb') {
+      formattedString = this.toRgbString();
+    }
+    if (format === 'prgb') {
+      formattedString = this.toPercentageRgbString();
+    }
+    if (format === 'hex' || format === 'hex6') {
+      formattedString = this.toHexString();
+    }
+    if (format === 'hex3') {
+      formattedString = this.toHexString(true);
+    }
+    if (format === 'hex4') {
+      formattedString = this.toHex8String(true);
+    }
+    if (format === 'hex8') {
+      formattedString = this.toHex8String();
+    }
+    if (format === 'name') {
+      formattedString = this.toName();
+    }
+    if (format === 'hsl') {
+      formattedString = this.toHslString();
+    }
+    if (format === 'hsv') {
+      formattedString = this.toHsvString();
+    }
+    return formattedString || this.toHexString();
+  };
+  TinyColor.prototype.toNumber = function () {
+    return (
+      (Math.round(this.r) << 16) +
+      (Math.round(this.g) << 8) +
+      Math.round(this.b)
+    );
+  };
+  TinyColor.prototype.clone = function () {
+    return new TinyColor(this.toString());
+  };
+  /**
+   * Lighten the color a given amount. Providing 100 will always return white.
+   * @param amount - valid between 1-100
+   */
+  TinyColor.prototype.lighten = function (amount) {
+    if (amount === void 0) {
+      amount = 10;
+    }
+    var hsl = this.toHsl();
+    hsl.l += amount / 100;
+    hsl.l = clamp01(hsl.l);
+    return new TinyColor(hsl);
+  };
+  /**
+   * Brighten the color a given amount, from 0 to 100.
+   * @param amount - valid between 1-100
+   */
+  TinyColor.prototype.brighten = function (amount) {
+    if (amount === void 0) {
+      amount = 10;
+    }
+    var rgb = this.toRgb();
+    rgb.r = Math.max(
+      0,
+      Math.min(255, rgb.r - Math.round(255 * -(amount / 100))),
+    );
+    rgb.g = Math.max(
+      0,
+      Math.min(255, rgb.g - Math.round(255 * -(amount / 100))),
+    );
+    rgb.b = Math.max(
+      0,
+      Math.min(255, rgb.b - Math.round(255 * -(amount / 100))),
+    );
+    return new TinyColor(rgb);
+  };
+  /**
+   * Darken the color a given amount, from 0 to 100.
+   * Providing 100 will always return black.
+   * @param amount - valid between 1-100
+   */
+  TinyColor.prototype.darken = function (amount) {
+    if (amount === void 0) {
+      amount = 10;
+    }
+    var hsl = this.toHsl();
+    hsl.l -= amount / 100;
+    hsl.l = clamp01(hsl.l);
+    return new TinyColor(hsl);
+  };
+  /**
+   * Mix the color with pure white, from 0 to 100.
+   * Providing 0 will do nothing, providing 100 will always return white.
+   * @param amount - valid between 1-100
+   */
+  TinyColor.prototype.tint = function (amount) {
+    if (amount === void 0) {
+      amount = 10;
+    }
+    return this.mix('white', amount);
+  };
+  /**
+   * Mix the color with pure black, from 0 to 100.
+   * Providing 0 will do nothing, providing 100 will always return black.
+   * @param amount - valid between 1-100
+   */
+  TinyColor.prototype.shade = function (amount) {
+    if (amount === void 0) {
+      amount = 10;
+    }
+    return this.mix('black', amount);
+  };
+  /**
+   * Desaturate the color a given amount, from 0 to 100.
+   * Providing 100 will is the same as calling greyscale
+   * @param amount - valid between 1-100
+   */
+  TinyColor.prototype.desaturate = function (amount) {
+    if (amount === void 0) {
+      amount = 10;
+    }
+    var hsl = this.toHsl();
+    hsl.s -= amount / 100;
+    hsl.s = clamp01(hsl.s);
+    return new TinyColor(hsl);
+  };
+  /**
+   * Saturate the color a given amount, from 0 to 100.
+   * @param amount - valid between 1-100
+   */
+  TinyColor.prototype.saturate = function (amount) {
+    if (amount === void 0) {
+      amount = 10;
+    }
+    var hsl = this.toHsl();
+    hsl.s += amount / 100;
+    hsl.s = clamp01(hsl.s);
+    return new TinyColor(hsl);
+  };
+  /**
+   * Completely desaturates a color into greyscale.
+   * Same as calling `desaturate(100)`
+   */
+  TinyColor.prototype.greyscale = function () {
+    return this.desaturate(100);
+  };
+  /**
+   * Spin takes a positive or negative amount within [-360, 360] indicating the change of hue.
+   * Values outside of this range will be wrapped into this range.
+   */
+  TinyColor.prototype.spin = function (amount) {
+    var hsl = this.toHsl();
+    var hue = (hsl.h + amount) % 360;
+    hsl.h = hue < 0 ? 360 + hue : hue;
+    return new TinyColor(hsl);
+  };
+  /**
+   * Mix the current color a given amount with another color, from 0 to 100.
+   * 0 means no mixing (return current color).
+   */
+  TinyColor.prototype.mix = function (color, amount) {
+    if (amount === void 0) {
+      amount = 50;
+    }
+    var rgb1 = this.toRgb();
+    var rgb2 = new TinyColor(color).toRgb();
+    var p = amount / 100;
+    var rgba = {
+      r: (rgb2.r - rgb1.r) * p + rgb1.r,
+      g: (rgb2.g - rgb1.g) * p + rgb1.g,
+      b: (rgb2.b - rgb1.b) * p + rgb1.b,
+      a: (rgb2.a - rgb1.a) * p + rgb1.a,
+    };
+    return new TinyColor(rgba);
+  };
+  TinyColor.prototype.analogous = function (results, slices) {
+    if (results === void 0) {
+      results = 6;
+    }
+    if (slices === void 0) {
+      slices = 30;
+    }
+    var hsl = this.toHsl();
+    var part = 360 / slices;
+    var ret = [this];
+    for (hsl.h = (hsl.h - ((part * results) >> 1) + 720) % 360; --results; ) {
+      hsl.h = (hsl.h + part) % 360;
+      ret.push(new TinyColor(hsl));
+    }
+    return ret;
+  };
+  /**
+   * taken from https://github.com/infusion/jQuery-xcolor/blob/master/jquery.xcolor.js
+   */
+  TinyColor.prototype.complement = function () {
+    var hsl = this.toHsl();
+    hsl.h = (hsl.h + 180) % 360;
+    return new TinyColor(hsl);
+  };
+  TinyColor.prototype.monochromatic = function (results) {
+    if (results === void 0) {
+      results = 6;
+    }
+    var hsv = this.toHsv();
+    var h = hsv.h;
+    var s = hsv.s;
+    var v = hsv.v;
+    var res = [];
+    var modification = 1 / results;
+    while (results--) {
+      res.push(new TinyColor({ h: h, s: s, v: v }));
+      v = (v + modification) % 1;
+    }
+    return res;
+  };
+  TinyColor.prototype.splitcomplement = function () {
+    var hsl = this.toHsl();
+    var h = hsl.h;
+    return [
+      this,
+      new TinyColor({ h: (h + 72) % 360, s: hsl.s, l: hsl.l }),
+      new TinyColor({ h: (h + 216) % 360, s: hsl.s, l: hsl.l }),
+    ];
+  };
+  /**
+   * Compute how the color would appear on a background
+   */
+  TinyColor.prototype.onBackground = function (background) {
+    var fg = this.toRgb();
+    var bg = new TinyColor(background).toRgb();
+    var alpha = fg.a + bg.a * (1 - fg.a);
+    return new TinyColor({
+      r: (fg.r * fg.a + bg.r * bg.a * (1 - fg.a)) / alpha,
+      g: (fg.g * fg.a + bg.g * bg.a * (1 - fg.a)) / alpha,
+      b: (fg.b * fg.a + bg.b * bg.a * (1 - fg.a)) / alpha,
+      a: alpha,
+    });
+  };
+  /**
+   * Alias for `polyad(3)`
+   */
+  TinyColor.prototype.triad = function () {
+    return this.polyad(3);
+  };
+  /**
+   * Alias for `polyad(4)`
+   */
+  TinyColor.prototype.tetrad = function () {
+    return this.polyad(4);
+  };
+  /**
+   * Get polyad colors, like (for 1, 2, 3, 4, 5, 6, 7, 8, etc...)
+   * monad, dyad, triad, tetrad, pentad, hexad, heptad, octad, etc...
+   */
+  TinyColor.prototype.polyad = function (n) {
+    var hsl = this.toHsl();
+    var h = hsl.h;
+    var result = [this];
+    var increment = 360 / n;
+    for (var i = 1; i < n; i++) {
+      result.push(
+        new TinyColor({ h: (h + i * increment) % 360, s: hsl.s, l: hsl.l }),
+      );
+    }
+    return result;
+  };
+  /**
+   * compare color vs current color
+   */
+  TinyColor.prototype.equals = function (color) {
+    return this.toRgbString() === new TinyColor(color).toRgbString();
+  };
+  return TinyColor;
+})();
+
+var _excluded = ['b'],
+  _excluded2 = ['v'];
+var getRoundNumber = function getRoundNumber(value) {
+  return Math.round(Number(value || 0));
+};
+var convertHsb2Hsv = function convertHsb2Hsv(color) {
+  if (color && _typeof(color) === 'object' && 'h' in color && 'b' in color) {
+    var _ref = color,
+      b = _ref.b,
+      resets = _objectWithoutProperties(_ref, _excluded);
+    return _objectSpread2(
+      _objectSpread2({}, resets),
+      {},
+      {
+        v: b,
+      },
+    );
+  }
+  if (typeof color === 'string' && /hsb/.test(color)) {
+    return color.replace(/hsb/, 'hsv');
+  }
+  return color;
+};
+var Color = /*#__PURE__*/ (function (_TinyColor) {
+  _inherits(Color, _TinyColor);
+  var _super = _createSuper(Color);
+  function Color(color) {
+    _classCallCheck(this, Color);
+    return _super.call(this, convertHsb2Hsv(color));
+  }
+  _createClass(Color, [
+    {
+      key: 'toHsbString',
+      value: function toHsbString() {
+        var hsb = this.toHsb();
+        var saturation = getRoundNumber(hsb.s * 100);
+        var lightness = getRoundNumber(hsb.b * 100);
+        var hue = getRoundNumber(hsb.h);
+        var alpha = hsb.a;
+        var hsbString = 'hsb('
+          .concat(hue, ', ')
+          .concat(saturation, '%, ')
+          .concat(lightness, '%)');
+        var hsbaString = 'hsba('
+          .concat(hue, ', ')
+          .concat(saturation, '%, ')
+          .concat(lightness, '%, ')
+          .concat(alpha.toFixed(alpha === 0 ? 0 : 2), ')');
+        return alpha === 1 ? hsbString : hsbaString;
+      },
+    },
+    {
+      key: 'toHsb',
+      value: function toHsb() {
+        var hsv = this.toHsv();
+        if (_typeof(this.originalInput) === 'object' && this.originalInput) {
+          if ('h' in this.originalInput) {
+            hsv = this.originalInput;
+          }
+        }
+        var _hsv = hsv;
+        _hsv.v;
+        var resets = _objectWithoutProperties(_hsv, _excluded2);
+        return _objectSpread2(
+          _objectSpread2({}, resets),
+          {},
+          {
+            b: hsv.v,
+          },
+        );
+      },
+    },
+  ]);
+  return Color;
+})(TinyColor);
+
+var ColorPickerPrefixCls = 'rc-color-picker';
+var generateColor = function generateColor(color) {
+  if (color instanceof Color) {
+    return color;
+  }
+  return new Color(color);
+};
+var defaultColor = generateColor('#1677ff');
+var calculateColor = function calculateColor(props) {
+  var offset = props.offset,
+    targetRef = props.targetRef,
+    containerRef = props.containerRef,
+    color = props.color,
+    type = props.type;
+  var _containerRef$current = containerRef.current.getBoundingClientRect(),
+    width = _containerRef$current.width,
+    height = _containerRef$current.height;
+  var _targetRef$current$ge = targetRef.current.getBoundingClientRect(),
+    targetWidth = _targetRef$current$ge.width,
+    targetHeight = _targetRef$current$ge.height;
+  var centerOffsetX = targetWidth / 2;
+  var centerOffsetY = targetHeight / 2;
+  var saturation = (offset.x + centerOffsetX) / width;
+  var bright = 1 - (offset.y + centerOffsetY) / height;
+  var hsb = color.toHsb();
+  var alphaOffset = saturation;
+  var hueOffset = ((offset.x + centerOffsetX) / width) * 360;
+  if (type) {
+    switch (type) {
+      case 'hue':
+        return generateColor(
+          _objectSpread2(
+            _objectSpread2({}, hsb),
+            {},
+            {
+              h: hueOffset <= 0 ? 0 : hueOffset,
+            },
+          ),
+        );
+      case 'alpha':
+        return generateColor(
+          _objectSpread2(
+            _objectSpread2({}, hsb),
+            {},
+            {
+              a: alphaOffset <= 0 ? 0 : alphaOffset,
+            },
+          ),
+        );
+    }
+  }
+  return generateColor({
+    h: hsb.h,
+    s: saturation <= 0 ? 0 : saturation,
+    b: bright >= 1 ? 1 : bright,
+    a: hsb.a,
+  });
+};
+var calculateOffset = function calculateOffset(
+  containerRef,
+  targetRef,
+  color,
+  type,
+) {
+  var _containerRef$current2 = containerRef.current.getBoundingClientRect(),
+    width = _containerRef$current2.width,
+    height = _containerRef$current2.height;
+  var _targetRef$current$ge2 = targetRef.current.getBoundingClientRect(),
+    targetWidth = _targetRef$current$ge2.width,
+    targetHeight = _targetRef$current$ge2.height;
+  var centerOffsetX = targetWidth / 2;
+  var centerOffsetY = targetHeight / 2;
+  var hsb = color.toHsb();
+
+  // Exclusion of boundary cases
+  if (
+    (targetWidth === 0 && targetHeight === 0) ||
+    targetWidth !== targetHeight
+  ) {
+    return;
+  }
+  if (type) {
+    switch (type) {
+      case 'hue':
+        return {
+          x: (hsb.h / 360) * width - centerOffsetX,
+          y: -centerOffsetY / 3,
+        };
+      case 'alpha':
+        return {
+          x: (hsb.a / 1) * width - centerOffsetX,
+          y: -centerOffsetY / 3,
+        };
+    }
+  }
+  return {
+    x: hsb.s * width - centerOffsetX,
+    y: (1 - hsb.b) * height - centerOffsetY,
+  };
+};
+
+var ColorBlock = function ColorBlock(_ref) {
+  var color = _ref.color,
+    prefixCls = _ref.prefixCls,
+    className = _ref.className,
+    style = _ref.style,
+    onClick = _ref.onClick;
+  var colorBlockCls = ''.concat(prefixCls, '-color-block');
+  return /*#__PURE__*/ React__default.default.createElement(
+    'div',
+    {
+      className: classNames__default.default(colorBlockCls, className),
+      style: style,
+      onClick: onClick,
+    },
+    /*#__PURE__*/ React__default.default.createElement('div', {
+      className: ''.concat(colorBlockCls, '-inner'),
+      style: {
+        background: color,
+      },
+    }),
+  );
+};
+
+function getPosition(e) {
+  var obj = 'touches' in e ? e.touches[0] : e;
+  var scrollXOffset =
+    document.documentElement.scrollLeft ||
+    document.body.scrollLeft ||
+    window.pageXOffset;
+  var scrollYOffset =
+    document.documentElement.scrollTop ||
+    document.body.scrollTop ||
+    window.pageYOffset;
+  return {
+    pageX: obj.pageX - scrollXOffset,
+    pageY: obj.pageY - scrollYOffset,
+  };
+}
+function useColorDrag(props) {
+  var offset = props.offset,
+    targetRef = props.targetRef,
+    containerRef = props.containerRef,
+    direction = props.direction,
+    onDragChange = props.onDragChange,
+    onDragChangeComplete = props.onDragChangeComplete,
+    calculate = props.calculate,
+    color = props.color,
+    disabledDrag = props.disabledDrag;
+  var _useState = React.useState(
+      offset || {
+        x: 0,
+        y: 0,
+      },
+    ),
+    _useState2 = _slicedToArray(_useState, 2),
+    offsetValue = _useState2[0],
+    setOffsetValue = _useState2[1];
+  var mouseMoveRef = React.useRef(null);
+  var mouseUpRef = React.useRef(null);
+  var dragRef = React.useRef({
+    flag: false,
+  });
+  React.useEffect(
+    function () {
+      if (dragRef.current.flag === false) {
+        var calcOffset =
+          calculate === null || calculate === void 0
+            ? void 0
+            : calculate(containerRef);
+        if (calcOffset) {
+          setOffsetValue(calcOffset);
+        }
+      }
+    },
+    [color, containerRef],
+  );
+  React.useEffect(function () {
+    return function () {
+      document.removeEventListener('mousemove', mouseMoveRef.current);
+      document.removeEventListener('mouseup', mouseUpRef.current);
+      document.removeEventListener('touchmove', mouseMoveRef.current);
+      document.removeEventListener('touchend', mouseUpRef.current);
+      mouseMoveRef.current = null;
+      mouseUpRef.current = null;
+    };
+  }, []);
+  var updateOffset = function updateOffset(e) {
+    var _getPosition = getPosition(e),
+      pageX = _getPosition.pageX,
+      pageY = _getPosition.pageY;
+    var _containerRef$current = containerRef.current.getBoundingClientRect(),
+      rectX = _containerRef$current.x,
+      rectY = _containerRef$current.y,
+      width = _containerRef$current.width,
+      height = _containerRef$current.height;
+    var _targetRef$current$ge = targetRef.current.getBoundingClientRect(),
+      targetWidth = _targetRef$current$ge.width,
+      targetHeight = _targetRef$current$ge.height;
+    var centerOffsetX = targetWidth / 2;
+    var centerOffsetY = targetHeight / 2;
+    var offsetX = Math.max(0, Math.min(pageX - rectX, width)) - centerOffsetX;
+    var offsetY = Math.max(0, Math.min(pageY - rectY, height)) - centerOffsetY;
+    var calcOffset = {
+      x: offsetX,
+      y: direction === 'x' ? offsetValue.y : offsetY,
+    };
+
+    // Exclusion of boundary cases
+    if (
+      (targetWidth === 0 && targetHeight === 0) ||
+      targetWidth !== targetHeight
+    ) {
+      return false;
+    }
+    setOffsetValue(calcOffset);
+    onDragChange === null || onDragChange === void 0
+      ? void 0
+      : onDragChange(calcOffset);
+  };
+  var onDragMove = function onDragMove(e) {
+    e.preventDefault();
+    updateOffset(e);
+  };
+  var onDragStop = function onDragStop(e) {
+    e.preventDefault();
+    dragRef.current.flag = false;
+    document.removeEventListener('mousemove', mouseMoveRef.current);
+    document.removeEventListener('mouseup', mouseUpRef.current);
+    document.removeEventListener('touchmove', mouseMoveRef.current);
+    document.removeEventListener('touchend', mouseUpRef.current);
+    mouseMoveRef.current = null;
+    mouseUpRef.current = null;
+    onDragChangeComplete === null || onDragChangeComplete === void 0
+      ? void 0
+      : onDragChangeComplete();
+  };
+  var onDragStart = function onDragStart(e) {
+    // https://github.com/ant-design/ant-design/issues/43529
+    document.removeEventListener('mousemove', mouseMoveRef.current);
+    document.removeEventListener('mouseup', mouseUpRef.current);
+    if (disabledDrag) {
+      return;
+    }
+    updateOffset(e);
+    dragRef.current.flag = true;
+    document.addEventListener('mousemove', onDragMove);
+    document.addEventListener('mouseup', onDragStop);
+    document.addEventListener('touchmove', onDragMove);
+    document.addEventListener('touchend', onDragStop);
+    mouseMoveRef.current = onDragMove;
+    mouseUpRef.current = onDragStop;
+  };
+  return [offsetValue, onDragStart];
+}
+
+var Handler = function Handler(_ref) {
+  var _ref$size = _ref.size,
+    size = _ref$size === void 0 ? 'default' : _ref$size,
+    color = _ref.color,
+    prefixCls = _ref.prefixCls;
+  return /*#__PURE__*/ React__default.default.createElement('div', {
+    className: classNames__default.default(
+      ''.concat(prefixCls, '-handler'),
+      _defineProperty(
+        {},
+        ''.concat(prefixCls, '-handler-sm'),
+        size === 'small',
+      ),
+    ),
+    style: {
+      backgroundColor: color,
+    },
+  });
+};
+
+var Palette = function Palette(_ref) {
+  var children = _ref.children,
+    style = _ref.style,
+    prefixCls = _ref.prefixCls;
+  return /*#__PURE__*/ React__default.default.createElement(
+    'div',
+    {
+      className: ''.concat(prefixCls, '-palette'),
+      style: _objectSpread2(
+        {
+          position: 'relative',
+        },
+        style,
+      ),
+    },
+    children,
+  );
+};
+
+var Transform = /*#__PURE__*/ React.forwardRef(function (props, ref) {
+  var children = props.children,
+    offset = props.offset;
+  return /*#__PURE__*/ React__default.default.createElement(
+    'div',
+    {
+      ref: ref,
+      style: {
+        position: 'absolute',
+        left: offset.x,
+        top: offset.y,
+        zIndex: 1,
+      },
+    },
+    children,
+  );
+});
+
+var Picker = function Picker(_ref) {
+  var color = _ref.color,
+    onChange = _ref.onChange,
+    prefixCls = _ref.prefixCls,
+    onChangeComplete = _ref.onChangeComplete,
+    disabled = _ref.disabled;
+  var pickerRef = React.useRef();
+  var transformRef = React.useRef();
+  var colorRef = React.useRef(color);
+  var _useColorDrag = useColorDrag({
+      color: color,
+      containerRef: pickerRef,
+      targetRef: transformRef,
+      calculate: function calculate(containerRef) {
+        return calculateOffset(containerRef, transformRef, color);
+      },
+      onDragChange: function onDragChange(offsetValue) {
+        var calcColor = calculateColor({
+          offset: offsetValue,
+          targetRef: transformRef,
+          containerRef: pickerRef,
+          color: color,
+        });
+        colorRef.current = calcColor;
+        onChange(calcColor);
+      },
+      onDragChangeComplete: function onDragChangeComplete() {
+        return onChangeComplete === null || onChangeComplete === void 0
+          ? void 0
+          : onChangeComplete(colorRef.current);
+      },
+      disabledDrag: disabled,
+    }),
+    _useColorDrag2 = _slicedToArray(_useColorDrag, 2),
+    offset = _useColorDrag2[0],
+    dragStartHandle = _useColorDrag2[1];
+  return /*#__PURE__*/ React__default.default.createElement(
+    'div',
+    {
+      ref: pickerRef,
+      className: ''.concat(prefixCls, '-select'),
+      onMouseDown: dragStartHandle,
+      onTouchStart: dragStartHandle,
+    },
+    /*#__PURE__*/ React__default.default.createElement(
+      Palette,
+      {
+        prefixCls: prefixCls,
+      },
+      /*#__PURE__*/ React__default.default.createElement(
+        Transform,
+        {
+          offset: offset,
+          ref: transformRef,
+        },
+        /*#__PURE__*/ React__default.default.createElement(Handler, {
+          color: color.toRgbString(),
+          prefixCls: prefixCls,
+        }),
+      ),
+      /*#__PURE__*/ React__default.default.createElement('div', {
+        className: ''.concat(prefixCls, '-saturation'),
+        style: {
+          backgroundColor: 'hsl('.concat(color.toHsb().h, ',100%, 50%)'),
+          backgroundImage:
+            'linear-gradient(0deg, #000, transparent),linear-gradient(90deg, #fff, hsla(0, 0%, 100%, 0))',
+        },
+      }),
+    ),
+  );
+};
+
+var Gradient = function Gradient(_ref) {
+  var colors = _ref.colors,
+    children = _ref.children,
+    _ref$direction = _ref.direction,
+    direction = _ref$direction === void 0 ? 'to right' : _ref$direction,
+    type = _ref.type,
+    prefixCls = _ref.prefixCls;
+  var gradientColors = React.useMemo(
+    function () {
+      return colors
+        .map(function (color, idx) {
+          var result = generateColor(color);
+          if (type === 'alpha' && idx === colors.length - 1) {
+            result.setAlpha(1);
+          }
+          return result.toRgbString();
+        })
+        .join(',');
+    },
+    [colors, type],
+  );
+  return /*#__PURE__*/ React__default.default.createElement(
+    'div',
+    {
+      className: ''.concat(prefixCls, '-gradient'),
+      style: {
+        position: 'absolute',
+        inset: 0,
+        background: 'linear-gradient('
+          .concat(direction, ', ')
+          .concat(gradientColors, ')'),
+      },
+    },
+    children,
+  );
+};
+
+var Slider = function Slider(_ref) {
+  var gradientColors = _ref.gradientColors,
+    direction = _ref.direction,
+    _ref$type = _ref.type,
+    type = _ref$type === void 0 ? 'hue' : _ref$type,
+    color = _ref.color,
+    value = _ref.value,
+    onChange = _ref.onChange,
+    onChangeComplete = _ref.onChangeComplete,
+    disabled = _ref.disabled,
+    prefixCls = _ref.prefixCls;
+  var sliderRef = React.useRef();
+  var transformRef = React.useRef();
+  var colorRef = React.useRef(color);
+  var _useColorDrag = useColorDrag({
+      color: color,
+      targetRef: transformRef,
+      containerRef: sliderRef,
+      calculate: function calculate(containerRef) {
+        return calculateOffset(containerRef, transformRef, color, type);
+      },
+      onDragChange: function onDragChange(offsetValue) {
+        var calcColor = calculateColor({
+          offset: offsetValue,
+          targetRef: transformRef,
+          containerRef: sliderRef,
+          color: color,
+          type: type,
+        });
+        colorRef.current = calcColor;
+        onChange(calcColor);
+      },
+      onDragChangeComplete: function onDragChangeComplete() {
+        onChangeComplete === null || onChangeComplete === void 0
+          ? void 0
+          : onChangeComplete(colorRef.current, type);
+      },
+      direction: 'x',
+      disabledDrag: disabled,
+    }),
+    _useColorDrag2 = _slicedToArray(_useColorDrag, 2),
+    offset = _useColorDrag2[0],
+    dragStartHandle = _useColorDrag2[1];
+  return /*#__PURE__*/ React__default.default.createElement(
+    'div',
+    {
+      ref: sliderRef,
+      className: classNames__default.default(
+        ''.concat(prefixCls, '-slider'),
+        ''.concat(prefixCls, '-slider-').concat(type),
+      ),
+      onMouseDown: dragStartHandle,
+      onTouchStart: dragStartHandle,
+    },
+    /*#__PURE__*/ React__default.default.createElement(
+      Palette,
+      {
+        prefixCls: prefixCls,
+      },
+      /*#__PURE__*/ React__default.default.createElement(
+        Transform,
+        {
+          offset: offset,
+          ref: transformRef,
+        },
+        /*#__PURE__*/ React__default.default.createElement(Handler, {
+          size: 'small',
+          color: value,
+          prefixCls: prefixCls,
+        }),
+      ),
+      /*#__PURE__*/ React__default.default.createElement(Gradient, {
+        colors: gradientColors,
+        direction: direction,
+        type: type,
+        prefixCls: prefixCls,
+      }),
+    ),
+  );
+};
+
+function hasValue$1(value) {
+  return value !== undefined;
+}
+var useColorState = function useColorState(defaultStateValue, option) {
+  var defaultValue = option.defaultValue,
+    value = option.value;
+  var _useState = React.useState(function () {
+      var mergeState;
+      if (hasValue$1(value)) {
+        mergeState = value;
+      } else if (hasValue$1(defaultValue)) {
+        mergeState = defaultValue;
+      } else {
+        mergeState = defaultStateValue;
+      }
+      return generateColor(mergeState);
+    }),
+    _useState2 = _slicedToArray(_useState, 2),
+    colorValue = _useState2[0],
+    setColorValue = _useState2[1];
+  React.useEffect(
+    function () {
+      if (value) {
+        setColorValue(generateColor(value));
+      }
+    },
+    [value],
+  );
+  return [colorValue, setColorValue];
+};
+
+var hueColor = [
+  'rgb(255, 0, 0) 0%',
+  'rgb(255, 255, 0) 17%',
+  'rgb(0, 255, 0) 33%',
+  'rgb(0, 255, 255) 50%',
+  'rgb(0, 0, 255) 67%',
+  'rgb(255, 0, 255) 83%',
+  'rgb(255, 0, 0) 100%',
+];
+var ColorPicker = /*#__PURE__*/ React.forwardRef(function (props, ref) {
+  var value = props.value,
+    defaultValue = props.defaultValue,
+    _props$prefixCls = props.prefixCls,
+    prefixCls =
+      _props$prefixCls === void 0 ? ColorPickerPrefixCls : _props$prefixCls,
+    onChange = props.onChange,
+    onChangeComplete = props.onChangeComplete,
+    className = props.className,
+    style = props.style,
+    panelRender = props.panelRender,
+    _props$disabledAlpha = props.disabledAlpha,
+    disabledAlpha =
+      _props$disabledAlpha === void 0 ? false : _props$disabledAlpha,
+    _props$disabled = props.disabled,
+    disabled = _props$disabled === void 0 ? false : _props$disabled;
+  var _useColorState = useColorState(defaultColor, {
+      value: value,
+      defaultValue: defaultValue,
+    }),
+    _useColorState2 = _slicedToArray(_useColorState, 2),
+    colorValue = _useColorState2[0],
+    setColorValue = _useColorState2[1];
+  var alphaColor = React.useMemo(
+    function () {
+      var rgb = generateColor(colorValue.toRgbString());
+      // alpha color need equal 1 for base color
+      rgb.setAlpha(1);
+      return rgb.toRgbString();
+    },
+    [colorValue],
+  );
+  var mergeCls = classNames__default.default(
+    ''.concat(prefixCls, '-panel'),
+    className,
+    _defineProperty({}, ''.concat(prefixCls, '-panel-disabled'), disabled),
+  );
+  var basicProps = {
+    prefixCls: prefixCls,
+    onChangeComplete: onChangeComplete,
+    disabled: disabled,
+  };
+  var handleChange = function handleChange(data, type) {
+    if (!value) {
+      setColorValue(data);
+    }
+    onChange === null || onChange === void 0 ? void 0 : onChange(data, type);
+  };
+  var defaultPanel = /*#__PURE__*/ React__default.default.createElement(
+    React__default.default.Fragment,
+    null,
+    /*#__PURE__*/ React__default.default.createElement(
+      Picker,
+      _extends(
+        {
+          color: colorValue,
+          onChange: handleChange,
+        },
+        basicProps,
+      ),
+    ),
+    /*#__PURE__*/ React__default.default.createElement(
+      'div',
+      {
+        className: ''.concat(prefixCls, '-slider-container'),
+      },
+      /*#__PURE__*/ React__default.default.createElement(
+        'div',
+        {
+          className: classNames__default.default(
+            ''.concat(prefixCls, '-slider-group'),
+            _defineProperty(
+              {},
+              ''.concat(prefixCls, '-slider-group-disabled-alpha'),
+              disabledAlpha,
+            ),
+          ),
+        },
+        /*#__PURE__*/ React__default.default.createElement(
+          Slider,
+          _extends(
+            {
+              gradientColors: hueColor,
+              color: colorValue,
+              value: 'hsl('.concat(colorValue.toHsb().h, ',100%, 50%)'),
+              onChange: function onChange(color) {
+                return handleChange(color, 'hue');
+              },
+            },
+            basicProps,
+          ),
+        ),
+        !disabledAlpha &&
+          /*#__PURE__*/ React__default.default.createElement(
+            Slider,
+            _extends(
+              {
+                type: 'alpha',
+                gradientColors: ['rgba(255, 0, 4, 0) 0%', alphaColor],
+                color: colorValue,
+                value: colorValue.toRgbString(),
+                onChange: function onChange(color) {
+                  return handleChange(color, 'alpha');
+                },
+              },
+              basicProps,
+            ),
+          ),
+      ),
+      /*#__PURE__*/ React__default.default.createElement(ColorBlock, {
+        color: colorValue.toRgbString(),
+        prefixCls: prefixCls,
+      }),
+    ),
+  );
+  return /*#__PURE__*/ React__default.default.createElement(
+    'div',
+    {
+      className: mergeCls,
+      style: style,
+      ref: ref,
+    },
+    typeof panelRender === 'function'
+      ? panelRender(defaultPanel)
+      : defaultPanel,
+  );
+});
+
+var getIntColorValue = function (v) {
+  var isPercent =
+    arguments.length > 1 && arguments[1] !== void 0 ? arguments[1] : false;
+  if (!v) {
+    return v;
+  }
+  if (!isPercent) {
+    return Math.round(v);
+  }
+  return Math.round(v * 100);
+};
+var getColorStringByFormat = function (color, format) {
+  if (!color) return '';
+  if (format === 'hex') {
+    if (color.getAlpha() === 1) return color.toHexString();
+    return color.toHex8String();
+  }
+  if (format === 'rgb') {
+    return color.toRgbString();
+  }
+  return '';
+};
+var hasValue = function (v) {
+  return v !== undefined;
+};
+var getOffset = function (num) {
+  if (num >= 1) num = 1;
+  if (num <= 0) num = 0;
+  return Math.round(num * 100) / 100;
+};
+
+function _define_property(obj, key, value) {
+  if (key in obj) {
+    Object.defineProperty(obj, key, {
+      value: value,
+      enumerable: true,
+      configurable: true,
+      writable: true,
+    });
+  } else obj[key] = value;
+
+  return obj;
+}
+
+function _object_spread(target) {
+  for (var i = 1; i < arguments.length; i++) {
+    var source = arguments[i] != null ? arguments[i] : {};
+    var ownKeys = Object.keys(source);
+
+    if (typeof Object.getOwnPropertySymbols === 'function') {
+      ownKeys = ownKeys.concat(
+        Object.getOwnPropertySymbols(source).filter(function (sym) {
+          return Object.getOwnPropertyDescriptor(source, sym).enumerable;
+        }),
+      );
+    }
+
+    ownKeys.forEach(function (key) {
+      _define_property(target, key, source[key]);
+    });
+  }
+
+  return target;
+}
+
+function ownKeys(object, enumerableOnly) {
+  var keys = Object.keys(object);
+
+  if (Object.getOwnPropertySymbols) {
+    var symbols = Object.getOwnPropertySymbols(object);
+    keys.push.apply(keys, symbols);
+  }
+
+  return keys;
+}
+function _object_spread_props(target, source) {
+  source = source != null ? source : {};
+
+  if (Object.getOwnPropertyDescriptors)
+    Object.defineProperties(target, Object.getOwnPropertyDescriptors(source));
+  else {
+    ownKeys(Object(source)).forEach(function (key) {
+      Object.defineProperty(
+        target,
+        key,
+        Object.getOwnPropertyDescriptor(source, key),
+      );
+    });
+  }
+
+  return target;
+}
+
+var ColorTypeOptions = [
+  {
+    value: 'HEX',
+    label: 'HEX',
+  },
+  {
+    value: 'RGB',
+    label: 'RGB',
+  },
+];
+function ColorTypeSelect(props) {
+  var value = props.value,
+    onChange = props.onChange;
+  var _useState = _sliced_to_array(React.useState(false), 2),
+    open = _useState[0],
+    setOpen = _useState[1];
+  var optionsRef = React.useRef(null);
+  var handleTrigger = function () {
+    setOpen(!open);
+  };
+  var changeType = function (t) {
+    setOpen(false);
+    onChange && onChange(t);
+  };
+  var clickHander = function (e) {
+    if (optionsRef.current && !optionsRef.current.contains(e.target)) {
+      setOpen(false);
+    }
+  };
+  var initClickOutSide = function () {
+    document.addEventListener('click', clickHander);
+    return function () {
+      document.removeEventListener('click', clickHander);
+    };
+  };
+  React.useEffect(function () {
+    initClickOutSide();
+  }, []);
+  return /*#__PURE__*/ jsxs('div', {
+    className: 'rcs-panel-type-select',
+    onClick: handleTrigger,
+    ref: optionsRef,
+    children: [
+      /*#__PURE__*/ jsxs('div', {
+        className: 'rcs-panel-type-select-trigger',
+        children: [
+          /*#__PURE__*/ jsx('span', {
+            className: 'rcs-panel-type-select-item',
+            children: value,
+          }),
+          /*#__PURE__*/ jsx('span', {
+            className: 'rcs-panel-type-select-arrow',
+            children: /*#__PURE__*/ jsx('svg', {
+              viewBox: '64 64 896 896',
+              focusable: 'false',
+              'data-icon': 'down',
+              width: '1em',
+              height: '1em',
+              fill: 'currentColor',
+              'aria-hidden': 'true',
+              children: /*#__PURE__*/ jsx('path', {
+                d: 'M884 256h-75c-5.1 0-9.9 2.5-12.9 6.6L512 654.2 227.9 262.6c-3-4.1-7.8-6.6-12.9-6.6h-75c-6.5 0-10.3 7.4-6.5 12.7l352.6 486.1c12.8 17.6 39 17.6 51.7 0l352.6-486.1c3.9-5.3.1-12.7-6.4-12.7z',
+              }),
+            }),
+          }),
+        ],
+      }),
+      open
+        ? /*#__PURE__*/ jsx('div', {
+            className: 'rcs-panel-type-select-options',
+            children: ColorTypeOptions.map(function (option) {
+              return /*#__PURE__*/ jsx('span', {
+                className: 'rcs-panel-type-select-item',
+                style: {
+                  fontWeight: option.value === value ? 'bold' : 'normal',
+                },
+                onClick: function () {
+                  changeType(option.value);
+                },
+                children: option.label,
+              });
+            }),
+          })
+        : null,
+    ],
+  });
+}
+
+var InputNumber = function (props) {
+  return /*#__PURE__*/ jsx(
+    RcInputNumber__default.default,
+    _object_spread(
+      {
+        prefixCls: 'rc-input-number',
+        controls: false,
+      },
+      props,
+    ),
+  );
+};
+var Input = function (props) {
+  return /*#__PURE__*/ jsx(
+    RcInput__default.default,
+    _object_spread(
+      {
+        prefixCls: 'rc-input',
+      },
+      props,
+    ),
+  );
+};
+
+function ColorInput(props) {
+  var format = props.format,
+    value = props.value,
+    onChange = props.onChange;
+  var _useState = _sliced_to_array(React.useState(format.toUpperCase()), 2),
+    colorType = _useState[0],
+    setColorType = _useState[1];
+  var _useState1 = _sliced_to_array(React.useState(''), 2),
+    hexValue = _useState1[0],
+    setHexValue = _useState1[1];
+  var _useState2 = _sliced_to_array(React.useState(), 2),
+    rgbValue = _useState2[0],
+    setRgbValue = _useState2[1];
+  var _useState3 = _sliced_to_array(React.useState(), 2),
+    hsbValue = _useState3[0],
+    setHsbValue = _useState3[1];
+  var handleColorTypeChange = function (t) {
+    setColorType(t);
+  };
+  var handleHexChange = function (e) {
+    var v = e.target.value;
+    setHexValue(v);
+    if ((v === null || v === void 0 ? void 0 : v.length) === 6) {
+      var color = new Color(v);
+      if (color.isValid) {
+        onChange && onChange(color);
+      }
+    }
+  };
+  var renderHexInput = function () {
+    if (colorType === 'HEX') {
+      return /*#__PURE__*/ jsx('div', {
+        className: 'rcs-panel-input-type rcs-panel-input-hex',
+        children: /*#__PURE__*/ jsx(Input, {
+          value: hexValue,
+          prefix: '#',
+          onChange: handleHexChange,
+        }),
+      });
+    }
+    return null;
+  };
+  var handleRgbChange = function (v, key) {
+    var rgb = _object_spread_props(
+      _object_spread({}, rgbValue),
+      _define_property({}, key, v),
+    );
+    var color = new Color(rgb);
+    if (color.isValid) {
+      onChange === null || onChange === void 0 ? void 0 : onChange(color);
+    }
+  };
+  var renderRGBInput = function () {
+    if (colorType === 'RGB') {
+      return /*#__PURE__*/ jsxs('div', {
+        className: 'rcs-panel-input-type rcs-panel-input-rgb',
+        children: [
+          /*#__PURE__*/ jsx(InputNumber, {
+            value:
+              rgbValue === null || rgbValue === void 0 ? void 0 : rgbValue.r,
+            min: 0,
+            max: 255,
+            onChange: function (v) {
+              handleRgbChange(v, 'r');
+            },
+          }),
+          /*#__PURE__*/ jsx(InputNumber, {
+            value:
+              rgbValue === null || rgbValue === void 0 ? void 0 : rgbValue.g,
+            min: 0,
+            max: 255,
+            onChange: function (v) {
+              handleRgbChange(v, 'g');
+            },
+          }),
+          /*#__PURE__*/ jsx(InputNumber, {
+            value:
+              rgbValue === null || rgbValue === void 0 ? void 0 : rgbValue.b,
+            min: 0,
+            max: 255,
+            onChange: function (v) {
+              handleRgbChange(v, 'b');
+            },
+          }),
+        ],
+      });
+    }
+    return null;
+  };
+  var handleHsbChange = function (v, key) {
+    var hsb = _object_spread_props(
+      _object_spread({}, hsbValue),
+      _define_property({}, key, v),
+    );
+    hsb.b = hsb.b / 100;
+    hsb.s = hsb.s / 100;
+    var color = new Color(hsb);
+    if (color.isValid) {
+      onChange && onChange(color);
+    }
+  };
+  var renderHSBInput = function () {
+    if (colorType === 'HSB') {
+      return /*#__PURE__*/ jsxs('div', {
+        className: 'rcs-panel-input-type rcs-panel-input-hsb',
+        children: [
+          /*#__PURE__*/ jsx(InputNumber, {
+            value: hsbValue.h,
+            min: 0,
+            max: 360,
+            className: 'rc-input-number-affix-wrapper',
+            onChange: function (v) {
+              handleHsbChange(v, 'h');
+            },
+          }),
+          /*#__PURE__*/ jsx(InputNumber, {
+            value: hsbValue.s,
+            min: 0,
+            max: 100,
+            suffix: '%',
+            onChange: function (v) {
+              handleHsbChange(v, 's');
+            },
+          }),
+          /*#__PURE__*/ jsx(InputNumber, {
+            value: hsbValue.b,
+            min: 0,
+            max: 100,
+            suffix: '%',
+            onChange: function (v) {
+              handleHsbChange(v, 'b');
+            },
+          }),
+        ],
+      });
+    }
+    return null;
+  };
+  var renderAlpha = function () {
+    var alpha = value === null || value === void 0 ? void 0 : value.roundA;
+    return /*#__PURE__*/ jsx('div', {
+      className: 'rcs-panel-input-alpha',
+      children: /*#__PURE__*/ jsx(InputNumber, {
+        suffix: '%',
+        style: {
+          width: 48,
+        },
+        min: 0,
+        max: 100,
+        value: alpha * 100,
+      }),
+    });
+  };
+  React.useEffect(
+    function () {
+      if (value) {
+        setHexValue(value.toHexString().replace('#', ''));
+        setRgbValue(value.toRgb());
+        var hsb = value.toHsb();
+        setHsbValue({
+          h: getIntColorValue(hsb.h),
+          s: getIntColorValue(hsb.s, true),
+          b: getIntColorValue(hsb.b, true),
+        });
+      }
+    },
+    [value],
+  );
+  return /*#__PURE__*/ jsxs('div', {
+    className: 'rcs-panel-input',
+    children: [
+      /*#__PURE__*/ jsx(ColorTypeSelect, {
+        value: colorType,
+        onChange: handleColorTypeChange,
+      }),
+      /*#__PURE__*/ jsxs('div', {
+        className: 'rcs-panel-input-types',
+        children: [renderHexInput(), renderRGBInput(), renderHSBInput()],
+      }),
+      renderAlpha(),
+    ],
+  });
+}
+
+var colors = [
+  '#9AC1F0',
+  '#72FA93',
+  '#A0E548',
+  '#E45F2B',
+  '#F6C445',
+  '#93AEC1',
+  '#9DBDBA',
+  '#F8B042',
+  '#EC6A52',
+  '#F3B7AD',
+  '#BD9E84',
+  '#C5DFDF',
+  '#E68815',
+  '#A71666',
+  '#D31638',
+  '#45496A',
+  '#7D8BAE',
+  '#E5857B',
+  '#F1B2B2',
+  '#E8CCC7',
+  '#F8A57F',
+  '#FAD4A6',
+  '#FBE7AB',
+  '#45958E',
+  '#B7BDA0',
+  '#8B86BE',
+  '#86ABBA',
+];
+function PresetColors(props) {
+  var value = props.value,
+    onChange = props.onChange,
+    _props_presetColors = props.presetColors,
+    presetColors =
+      _props_presetColors === void 0 ? colors : _props_presetColors;
+  var c = value ? new Color(value) : null;
+  return /*#__PURE__*/ jsx('div', {
+    className: 'rcs-preset-colors',
+    children: presetColors.map(function (color) {
+      var _c_toHexString, _c_toHexString_call, _c_toHexString_call_toUpperCase;
+      return jsx('div', {
+        className: 'rsc-preset-color',
+        style: {
+          background: color,
+          borderColor:
+            color ===
+            (c === null || c === void 0
+              ? void 0
+              : (_c_toHexString = c.toHexString) === null ||
+                  _c_toHexString === void 0
+                ? void 0
+                : (_c_toHexString_call = _c_toHexString.call(c)) === null ||
+                    _c_toHexString_call === void 0
+                  ? void 0
+                  : (_c_toHexString_call_toUpperCase =
+                        _c_toHexString_call.toUpperCase) === null ||
+                      _c_toHexString_call_toUpperCase === void 0
+                    ? void 0
+                    : _c_toHexString_call_toUpperCase.call(_c_toHexString_call))
+              ? 'rgba(0,0,0,.25)'
+              : 'transparent',
+        },
+        onClick: function () {
+          onChange === null || onChange === void 0 ? void 0 : onChange(color);
+        },
+      });
+    }),
+  });
+}
+
+var handleColor = function (c) {
+  if (typeof c === 'string') return new Color(c);
+  return c;
+};
+function Base(props) {
+  var _props_format = props.format,
+    format = _props_format === void 0 ? 'rgb' : _props_format,
+    value = props.value,
+    onChange = props.onChange,
+    panelRender = props.panelRender;
+  var _useState = _sliced_to_array(React.useState(), 2),
+    color = _useState[0],
+    setColor = _useState[1];
+  var handleChange = function (v) {
+    onChange && onChange(getColorStringByFormat(v, format));
+  };
+  var handlePresetChange = function (v) {
+    var c = new Color(v);
+    onChange && onChange(getColorStringByFormat(c, format));
+  };
+  React.useEffect(
+    function () {
+      if (hasValue(value)) {
+        setColor(handleColor(value));
+      }
+    },
+    [value],
+  );
+  return /*#__PURE__*/ jsx(ColorPicker, {
+    value: color,
+    onChange: handleChange,
+    panelRender: function (innerPanel) {
+      var panel = /*#__PURE__*/ jsxs('div', {
+        className: 'rcs-panel rcs',
+        children: [
+          innerPanel,
+          /*#__PURE__*/ jsx(ColorInput, {
+            format: format,
+            value: color,
+            onChange: handleChange,
+          }),
+          /*#__PURE__*/ jsx(PresetColors, {
+            value: value,
+            onChange: handlePresetChange,
+          }),
+        ],
+      });
+      if (typeof panelRender === 'function') {
+        return panelRender(panel);
+      }
+      return panel;
+    },
+  });
+}
+
+function _array_without_holes(arr) {
+  if (Array.isArray(arr)) return _array_like_to_array(arr);
+}
+
+function _iterable_to_array(iter) {
+  if (
+    (typeof Symbol !== 'undefined' && iter[Symbol.iterator] != null) ||
+    iter['@@iterator'] != null
+  ) {
+    return Array.from(iter);
+  }
+}
+
+function _non_iterable_spread() {
+  throw new TypeError(
+    'Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.',
+  );
+}
+
+function _to_consumable_array(arr) {
+  return (
+    _array_without_holes(arr) ||
+    _iterable_to_array(arr) ||
+    _unsupported_iterable_to_array(arr) ||
+    _non_iterable_spread()
+  );
+}
+
+function ColorStopSlider(props) {
+  var colorStop = props.colorStop,
+    colorStops = props.colorStops,
+    colorStopAdd = props.colorStopAdd,
+    colorStopUpdate = props.colorStopUpdate,
+    onColorStopChange = props.onColorStopChange;
+  var colorStopDragRef = React.useRef({
+    enable: false,
+    lastX: 0,
+  });
+  var calcStopStyle = function (stop) {
+    var style = {
+      left: ''.concat(stop.offset * 100, '%'),
+      backgroundColor: stop.color,
+    };
+    if (stop.offset === 0) {
+      style.transform = 'translate(-1px, -50%)';
+    }
+    if (stop.offset === 1) {
+      style.transform = 'translate(calc(-100% + 1px), -50%)';
+    }
+    if (stop === colorStop) {
+      style.width = '13px';
+      style.height = '13px';
+    }
+    return style;
+  };
+  var handleMainClick = function (e) {
+    if (colorStopDragRef.current.enable) return;
+    var offset = e.nativeEvent.offsetX / e.target.clientWidth;
+    colorStopAdd === null || colorStopAdd === void 0
+      ? void 0
+      : colorStopAdd({
+          color: '#ff2222',
+          offset: getOffset(offset),
+        });
+  };
+  var handleStopMouseDown = function (stop, e) {
+    e.stopPropagation();
+    colorStopDragRef.current.enable = true;
+    colorStopDragRef.current.lastX = e.clientX;
+    onColorStopChange(stop);
+  };
+  var handleStopMouseMove = function (e) {
+    e.preventDefault();
+    e.stopPropagation();
+    if (colorStopDragRef.current.enable) {
+      // @ts-ignore
+      var offset =
+        colorStop.offset +
+        (e.clientX - colorStopDragRef.current.lastX) /
+          e.target.parentNode.clientWidth;
+      colorStopDragRef.current.lastX = e.clientX;
+      colorStopUpdate(
+        _object_spread_props(_object_spread({}, colorStop), {
+          offset: offset,
+        }),
+      );
+    }
+  };
+  var handleStopMouseUp = function () {
+    colorStopDragRef.current.enable = false;
+  };
+  var mainStyle = React.useMemo(
+    function () {
+      return {
+        background: 'linear-gradient(90deg, '.concat(
+          colorStops.map(function (stop) {
+            return ''.concat(stop.color, ' ').concat(stop.offset * 100, '%');
+          }),
+          ')',
+        ),
+      };
+    },
+    [colorStops],
+  );
+  React.useEffect(
+    function () {
+      document.addEventListener('mouseup', handleStopMouseUp);
+      document.addEventListener('mousemove', handleStopMouseMove);
+      return function () {
+        document.removeEventListener('mouseup', handleStopMouseUp);
+        document.removeEventListener('mousemove', handleStopMouseMove);
+      };
+    },
+    [colorStop, colorStops],
+  );
+  return /*#__PURE__*/ jsx('div', {
+    className: 'rcs-slider',
+    children: /*#__PURE__*/ jsx('div', {
+      className: 'rcs-slider-main',
+      style: mainStyle,
+      onClick: handleMainClick,
+      children: colorStops.map(function (stop) {
+        return /*#__PURE__*/ jsx('div', {
+          className: 'rcs-slider-stop',
+          style: calcStopStyle(stop),
+          onClick: function (e) {
+            e.stopPropagation();
+          },
+          onMouseDown: function (e) {
+            handleStopMouseDown(stop, e);
+          },
+        });
+      }),
+    }),
+  });
+}
+
+function GradientAngel(props) {
+  var angle = props.angle,
+    onChange = props.onChange;
+  var rotateAngle = function (newAngle) {
+    onChange === null || onChange === void 0 ? void 0 : onChange(newAngle);
+  };
+  return /*#__PURE__*/ jsx('div', {
+    className: 'rcs-angle',
+    title: '顺时针旋转渐变, 步长为10',
+    children: /*#__PURE__*/ jsx(InputNumber, {
+      min: 0,
+      max: 360,
+      suffix: '\xb0',
+      style: {
+        width: 48,
+      },
+      value: angle,
+      onChange: rotateAngle,
+    }),
+  });
+}
+
+function GradientAngelRotate(props) {
+  var angle = props.angle,
+    onChange = props.onChange,
+    _props_defaultRotation = props.defaultRotation,
+    defaultRotation =
+      _props_defaultRotation === void 0 ? 45 : _props_defaultRotation;
+  var rotateAngle = function () {
+    var newAngle = angle + 45;
+    if (newAngle > 360) newAngle = newAngle % 360;
+    onChange === null || onChange === void 0 ? void 0 : onChange(newAngle);
+  };
+  return /*#__PURE__*/ jsx('div', {
+    className: 'rcs-angle',
+    onClick: rotateAngle,
+    title: '顺时针旋转渐变, 步长为'.concat(defaultRotation),
+    children: /*#__PURE__*/ jsxs('svg', {
+      width: '24',
+      height: '24',
+      viewBox: '0 0 48 48',
+      fill: 'none',
+      xmlns: 'http://www.w3.org/2000/svg',
+      children: [
+        /*#__PURE__*/ jsx('path', {
+          d: 'M10 15C10 22.2989 14.103 28.5832 20 31.4081C22.1347 32.4307 24.5046 33 27 33C36.3888 33 44 24.9411 44 15',
+          stroke: '#ff2222',
+          'stroke-width': '4',
+          'stroke-linecap': 'square',
+          'stroke-linejoin': 'miter',
+        }),
+        /*#__PURE__*/ jsx('path', {
+          d: 'M18 20L10 15L4 23',
+          stroke: '#ff2222',
+          'stroke-width': '4',
+          'stroke-linecap': 'square',
+          'stroke-linejoin': 'miter',
+        }),
+      ],
+    }),
+  });
+}
+
+var getDefaultLinearGradientValue = function (format) {
+  return {
+    colorStops: [
+      {
+        color: format === 'rgb' ? 'rgb(212, 22, 22)' : '#ff0000',
+        offset: 0,
+      },
+      {
+        color: format === 'rgb' ? 'rgb(255, 255, 255)' : '#ffffff',
+        offset: 1,
+      },
+    ],
+    angle: 90,
+  };
+};
+var sortListByOffset = function (list) {
+  list.sort(function (a, b) {
+    if (a.offset > b.offset) {
+      return 1;
+    }
+    if (a.offset < b.offset) {
+      return -1;
+    }
+    return 0;
+  });
+};
+var handleStopOffset = function (offset) {
+  if (offset <= 0) return 0;
+  if (offset >= 1) return 1;
+  return offset;
+};
+function LinearGradient(props) {
+  var _props_angleType = props.angleType,
+    angleType = _props_angleType === void 0 ? 'rotate' : _props_angleType,
+    _props_format = props.format,
+    format = _props_format === void 0 ? 'rgb' : _props_format,
+    value = props.value,
+    _props_type = props.type,
+    type = _props_type === void 0 ? 'linear' : _props_type,
+    onChange = props.onChange,
+    _props_defaultRotation = props.defaultRotation,
+    defaultRotation =
+      _props_defaultRotation === void 0 ? 45 : _props_defaultRotation;
+  var defaultValue = getDefaultLinearGradientValue(format);
+  var _useState = _sliced_to_array(React.useState(defaultValue), 2),
+    gradient = _useState[0],
+    setGradient = _useState[1];
+  var _useState1 = _sliced_to_array(
+      React.useState(defaultValue.colorStops[0]),
+      2,
+    ),
+    activeColorStop = _useState1[0],
+    setActiveColorStop = _useState1[1];
+  var handleColorStopAdd = function (stop) {
+    var colorStops = _to_consumable_array(gradient.colorStops);
+    colorStops.push(stop);
+    sortListByOffset(colorStops);
+    onChange === null || onChange === void 0
+      ? void 0
+      : onChange(
+          _object_spread_props(_object_spread({}, gradient), {
+            colorStops: colorStops,
+          }),
+        );
+    setActiveColorStop(stop);
+  };
+  var handleColorStopUpdate = function (stop) {
+    var _stop = _object_spread_props(_object_spread({}, stop), {
+      offset: handleStopOffset(stop.offset),
+    });
+    var colorStops = _to_consumable_array(gradient.colorStops);
+    var index = gradient.colorStops.findIndex(function (item) {
+      return item === activeColorStop;
+    });
+    if (index !== -1) {
+      colorStops.splice(index, 1, _stop);
+      sortListByOffset(colorStops);
+      onChange === null || onChange === void 0
+        ? void 0
+        : onChange(
+            _object_spread_props(_object_spread({}, gradient), {
+              colorStops: colorStops,
+            }),
+          );
+      setActiveColorStop(_stop);
+    }
+  };
+  var handleColorStopRemove = function () {
+    if (gradient.colorStops.length <= 2) return;
+    var index = gradient.colorStops.findIndex(function (item) {
+      return item === activeColorStop;
+    });
+    if (index !== -1) {
+      var colorStops = _to_consumable_array(gradient.colorStops);
+      colorStops.splice(index, 1);
+      onChange === null || onChange === void 0
+        ? void 0
+        : onChange(
+            _object_spread_props(_object_spread({}, gradient), {
+              colorStops: colorStops,
+            }),
+          );
+    }
+  };
+  var handleColorChange = function (color) {
+    var index = gradient.colorStops.findIndex(function (item) {
+      return item === activeColorStop;
+    });
+    var colorStop = _object_spread_props(_object_spread({}, activeColorStop), {
+      color: color,
+    });
+    if (index !== -1) {
+      var colorStops = _to_consumable_array(gradient.colorStops);
+      colorStops.splice(index, 1, colorStop);
+      onChange === null || onChange === void 0
+        ? void 0
+        : onChange(
+            _object_spread_props(_object_spread({}, gradient), {
+              colorStops: colorStops,
+            }),
+          );
+      setActiveColorStop(colorStop);
+    }
+  };
+  var handleAngleChange = function (angle) {
+    onChange === null || onChange === void 0
+      ? void 0
+      : onChange(
+          _object_spread_props(_object_spread({}, gradient), {
+            angle: angle,
+          }),
+        );
+  };
+  var renderAngleInput = function () {
+    if (angleType === 'input') {
+      return /*#__PURE__*/ jsx(GradientAngel, {
+        angle:
+          gradient === null || gradient === void 0 ? void 0 : gradient.angle,
+        onChange: handleAngleChange,
+      });
+    }
+    if (angleType === 'rotate') {
+      return /*#__PURE__*/ jsx(GradientAngelRotate, {
+        angle:
+          gradient === null || gradient === void 0 ? void 0 : gradient.angle,
+        onChange: handleAngleChange,
+        defaultRotation: defaultRotation,
+      });
+    }
+    return null;
+  };
+  React.useEffect(
+    function () {
+      var active = gradient.colorStops.find(function (item) {
+        return item === activeColorStop;
+      });
+      if (!active) setActiveColorStop(gradient.colorStops[0]);
+    },
+    [gradient],
+  );
+  React.useEffect(
+    function () {
+      if (value) {
+        setGradient(value);
+      } else {
+        setGradient(defaultValue);
+      }
+    },
+    [value],
+  );
+  return /*#__PURE__*/ jsx(Base, {
+    format: format,
+    value:
+      activeColorStop === null || activeColorStop === void 0
+        ? void 0
+        : activeColorStop.color,
+    onChange: handleColorChange,
+    panelRender: function (innerPanel) {
+      return jsxs('div', {
+        className: 'rcs-gradient rcs',
+        children: [
+          /*#__PURE__*/ jsxs('div', {
+            className: 'rcs-gradient-header',
+            children: [
+              /*#__PURE__*/ jsx(ColorStopSlider, {
+                colorStop: activeColorStop,
+                colorStops:
+                  gradient === null || gradient === void 0
+                    ? void 0
+                    : gradient.colorStops,
+                colorStopAdd: handleColorStopAdd,
+                colorStopRemove: handleColorStopRemove,
+                onColorStopChange: setActiveColorStop,
+                colorStopUpdate: handleColorStopUpdate,
+              }),
+              type === 'linear' ? renderAngleInput() : null,
+            ],
+          }),
+          /*#__PURE__*/ jsxs('div', {
+            className: 'rcs-stop-info',
+            children: [
+              /*#__PURE__*/ jsxs('div', {
+                style: {
+                  display: 'flex',
+                  alignItems: 'center',
+                },
+                title: '色标偏移',
+                children: [
+                  /*#__PURE__*/ jsx('span', {
+                    style: {
+                      lineHeight: 0,
+                    },
+                    children: /*#__PURE__*/ jsx('svg', {
+                      viewBox: '0 0 1024 1024',
+                      version: '1.1',
+                      xmlns: 'http://www.w3.org/2000/svg',
+                      'p-id': '3861',
+                      width: '14',
+                      height: '14',
+                      children: /*#__PURE__*/ jsx('path', {
+                        d: 'M866.432 175.232a42.666667 42.666667 0 0 0-60.330667-60.330667l-691.2 691.2a42.666667 42.666667 0 1 0 60.330667 60.330667l691.2-691.2zM878.933333 281.6h-85.333333v85.333333h85.333333v-85.333333zM281.6 793.6h85.333333v85.333333h-85.333333v-85.333333zM878.933333 452.266667h-85.333333v85.333333h85.333333v-85.333333zM793.6 622.933333h85.333333v85.333334h-85.333333v-85.333334zM878.933333 793.6h-85.333333v85.333333h85.333333v-85.333333zM622.933333 793.6h85.333334v85.333333h-85.333334v-85.333333zM537.6 793.6h-85.333333v85.333333h85.333333v-85.333333z',
+                        fill: '#707070',
+                      }),
+                    }),
+                  }),
+                  /*#__PURE__*/ jsxs('span', {
+                    style: {
+                      lineHeight: 0,
+                      marginLeft: 2,
+                    },
+                    children: [
+                      Math.round(
+                        ((activeColorStop === null || activeColorStop === void 0
+                          ? void 0
+                          : activeColorStop.offset) || 0) * 100,
+                      ),
+                      '%',
+                    ],
+                  }),
+                ],
+              }),
+              type === 'linear' && angleType === 'rotate'
+                ? /*#__PURE__*/ jsxs('div', {
+                    style: {
+                      display: 'flex',
+                      alignItems: 'center',
+                    },
+                    title: '渐变角度',
+                    children: [
+                      /*#__PURE__*/ jsx('span', {
+                        style: {
+                          lineHeight: 0,
+                        },
+                        children: /*#__PURE__*/ jsx('svg', {
+                          viewBox: '0 0 1024 1024',
+                          version: '1.1',
+                          xmlns: 'http://www.w3.org/2000/svg',
+                          'p-id': '6894',
+                          width: '14px',
+                          height: '14px',
+                          children: /*#__PURE__*/ jsx('path', {
+                            d: 'M526.048 866.88c2.432-49.92-8.224-91.552-31.552-125.952-24.896-36.704-63.264-63.68-116.224-80.96L203.2 866.88H526.08z m64.064 0h338.56v64H65.344L771.52 96l48.864 41.344-398.08 470.56c54.048 21.792 96 54.144 125.12 97.056 31.008 45.664 45.12 99.936 42.656 161.856z',
+                            fill: '#707070',
+                          }),
+                        }),
+                      }),
+                      /*#__PURE__*/ jsxs('span', {
+                        style: {
+                          lineHeight: 0,
+                          marginLeft: 2,
+                        },
+                        children: [
+                          gradient === null || gradient === void 0
+                            ? void 0
+                            : gradient.angle,
+                          '\xb0',
+                        ],
+                      }),
+                    ],
+                  })
+                : null,
+              /*#__PURE__*/ jsx('span', {
+                className: 'rcs-stop-info-del',
+                onClick: handleColorStopRemove,
+                children: /*#__PURE__*/ jsx('svg', {
+                  viewBox: '64 64 896 896',
+                  focusable: 'false',
+                  width: '14px',
+                  height: '14px',
+                  fill: '#707070',
+                  'aria-hidden': 'true',
+                  children: /*#__PURE__*/ jsx('path', {
+                    d: 'M360 184h-8c4.4 0 8-3.6 8-8v8h304v-8c0 4.4 3.6 8 8 8h-8v72h72v-80c0-35.3-28.7-64-64-64H352c-35.3 0-64 28.7-64 64v80h72v-72zm504 72H160c-17.7 0-32 14.3-32 32v32c0 4.4 3.6 8 8 8h60.4l24.7 523c1.6 34.1 29.8 61 63.9 61h454c34.2 0 62.3-26.8 63.9-61l24.7-523H888c4.4 0 8-3.6 8-8v-32c0-17.7-14.3-32-32-32zM731.3 840H292.7l-24.2-512h487l-24.2 512z',
+                  }),
+                }),
+              }),
+            ],
+          }),
+          innerPanel,
+        ],
+      });
+    },
+  });
+}
+
+var Types = [
+  {
+    label: '纯色',
+    value: 'solid',
+  },
+  {
+    label: '线性渐变',
+    value: 'linear',
+  },
+  {
+    label: '径向渐变',
+    value: 'radial',
+  },
+];
+function Colors(props) {
+  var _props_angleType = props.angleType,
+    angleType = _props_angleType === void 0 ? 'rotate' : _props_angleType,
+    _props_format = props.format,
+    format = _props_format === void 0 ? 'rgb' : _props_format,
+    value = props.value,
+    onChange = props.onChange,
+    defaultRotation = props.defaultRotation;
+  var handleSolidChange = function (color) {
+    var v = {
+      type: 'solid',
+      color: color,
+    };
+    onChange === null || onChange === void 0 ? void 0 : onChange(v);
+  };
+  var handleGradientChange = function (gradient, type) {
+    var v = {
+      type: type,
+      gradient: gradient,
+    };
+    onChange === null || onChange === void 0 ? void 0 : onChange(v);
+  };
+  var handleTypeChange = function (type) {
+    var v = _object_spread_props(_object_spread({}, value), {
+      type: type,
+    });
+    if (type !== 'solid') {
+      if (!v.gradient) v.gradient = getDefaultLinearGradientValue(format);
+    }
+    onChange === null || onChange === void 0 ? void 0 : onChange(v);
+  };
+  return /*#__PURE__*/ jsxs('div', {
+    className: 'rcs-all rcs',
+    children: [
+      /*#__PURE__*/ jsx('div', {
+        className: 'rcs-all-tab',
+        children: Types.map(function (item) {
+          return jsx('div', {
+            className: 'rcs-all-type '
+              .concat(item.value, ' ')
+              .concat(
+                (value === null || value === void 0 ? void 0 : value.type) ===
+                  item.value
+                  ? 'active'
+                  : '',
+              ),
+            title: item.label,
+            onClick: function () {
+              handleTypeChange(item.value);
+            },
+          });
+        }),
+      }),
+      (value === null || value === void 0 ? void 0 : value.type) === 'solid'
+        ? /*#__PURE__*/ jsx(Base, {
+            format: format,
+            value: value === null || value === void 0 ? void 0 : value.color,
+            onChange: handleSolidChange,
+          })
+        : null,
+      (value === null || value === void 0 ? void 0 : value.type) === 'linear'
+        ? /*#__PURE__*/ jsx(LinearGradient, {
+            angleType: angleType,
+            format: format,
+            type: 'linear',
+            value: value === null || value === void 0 ? void 0 : value.gradient,
+            onChange: function (v) {
+              handleGradientChange(v, 'linear');
+            },
+          })
+        : null,
+      (value === null || value === void 0 ? void 0 : value.type) === 'radial'
+        ? /*#__PURE__*/ jsx(LinearGradient, {
+            defaultRotation: defaultRotation,
+            format: format,
+            type: 'radial',
+            value: value === null || value === void 0 ? void 0 : value.gradient,
+            onChange: function (v) {
+              handleGradientChange(v, 'radial');
+            },
+          })
+        : null,
+    ],
+  });
+}
+
 function SolidColorSetter(props) {
   const { value, onChange, trigger } = props;
   const handleChange = v => {
     onChange === null || onChange === void 0 ? void 0 : onChange(v);
   };
   const calcTriggerBg = () => {
-    const c = new reactColorsBeauty.Color(value);
+    const c = new Color(value);
     if (c.toHexString() === '#ffffff') {
       return 'rgba(103,103,103,0.24)';
     }
@@ -2131,7 +5620,7 @@ function SolidColorSetter(props) {
     antd.Popover,
     Object.assign(
       {
-        content: jsxRuntime.jsx(reactColorsBeauty.ColorPicker, {
+        content: jsxRuntime.jsx(Base, {
           value: value,
           onChange: handleChange,
           format: 'hex',
@@ -2179,7 +5668,7 @@ function ColorSetter(props) {
     if (
       (value === null || value === void 0 ? void 0 : value.type) === 'solid'
     ) {
-      const c = new reactColorsBeauty.Color(value.color);
+      const c = new Color(value.color);
       if (c.toHexString() === '#ffffff') {
         return 'rgba(103,103,103,0.24)';
       }
@@ -2238,7 +5727,7 @@ function ColorSetter(props) {
               Object.assign(
                 { className: 'fabritor-color-setter' },
                 {
-                  children: jsxRuntime.jsx(reactColorsBeauty.ColorsPicker, {
+                  children: jsxRuntime.jsx(Colors, {
                     value: value,
                     onChange: handleChange,
                     format: 'hex',
@@ -2361,14 +5850,14 @@ function PathSetterForm(props) {
   const { value, onChange, shouldFireEvent, showPenTip, showFillConfig } =
     props;
   const [form] = antd.Form.useForm();
-  const { editor } = react.useContext(GlobalStateContext);
+  const { editor } = React.useContext(GlobalStateContext);
   const { t } = reactI18next.useTranslation();
   const fireEvent = () => {
     if (shouldFireEvent) {
       editor.fireCustomModifiedEvent();
     }
   };
-  react.useEffect(() => {
+  React.useEffect(() => {
     form.setFieldsValue(value);
   }, [value]);
   return jsxRuntime.jsxs(
@@ -2488,10 +5977,10 @@ function PathSetterForm(props) {
 }
 
 function PaintPanel() {
-  const [activeIndex, setActiveIndex] = react.useState(0);
-  const [isDrawingMode, setIsDrawingMode] = react.useState(true);
-  const { editor } = react.useContext(GlobalStateContext);
-  const [penFormValues, setPenFormValues] = react.useState({});
+  const [activeIndex, setActiveIndex] = React.useState(0);
+  const [isDrawingMode, setIsDrawingMode] = React.useState(true);
+  const { editor } = React.useContext(GlobalStateContext);
+  const [penFormValues, setPenFormValues] = React.useState({});
   const { t } = reactI18next.useTranslation();
   const handleBrushChange = options => {
     if (options.color) {
@@ -2554,7 +6043,7 @@ function PaintPanel() {
       }
     };
   };
-  react.useEffect(() => {
+  React.useEffect(() => {
     return initBrush();
   }, []);
   return jsxRuntime.jsxs(
@@ -3262,8 +6751,8 @@ const ContextMenuItem = props => {
 };
 const ContextMenu = (props, ref) => {
   const { object, noCareOpen } = props;
-  const [open, setOpen] = react.useState(false);
-  const { editor } = react.useContext(GlobalStateContext);
+  const [open, setOpen] = React.useState(false);
+  const { editor } = React.useContext(GlobalStateContext);
   const { t } = reactI18next.useTranslation();
   const renderMenuItems = () => {
     if (!object || object.id === SKETCH_ID) {
@@ -3385,7 +6874,7 @@ const ContextMenu = (props, ref) => {
     }
     setOpen(false);
   };
-  react.useImperativeHandle(ref, () => ({
+  React.useImperativeHandle(ref, () => ({
     show: () => setOpen(true),
     hide: () => setOpen(false),
   }));
@@ -3401,7 +6890,7 @@ const ContextMenu = (props, ref) => {
     ),
   );
 };
-var ContextMenu$1 = react.forwardRef(ContextMenu);
+var ContextMenu$1 = React.forwardRef(ContextMenu);
 
 var version = '5.3.0';
 var objects = [
@@ -3792,8 +7281,8 @@ function Layer() {
     object: activeObject,
     setActiveObject,
     editor,
-  } = react.useContext(GlobalStateContext);
-  const [layers, setLayers] = react.useState([]);
+  } = React.useContext(GlobalStateContext);
+  const [layers, setLayers] = React.useState([]);
   const { t } = reactI18next.useTranslation();
   const getCanvasLayers = objects => {
     const _layers = [];
@@ -3838,7 +7327,7 @@ function Layer() {
     editor.canvas.setActiveObject(item.object);
     editor.canvas.requestRenderAll();
   };
-  react.useEffect(() => {
+  React.useEffect(() => {
     let canvas;
     const initCanvasLayers = () => {
       getCanvasLayers(canvas.getObjects());
@@ -3997,11 +7486,11 @@ function QRCodePanel(props) {
   const { back } = props;
   const [form] = antd.Form.useForm();
   const [form2] = antd.Form.useForm();
-  const [QRCodeConfig, setQRCodeConfig] = react.useState({
+  const [QRCodeConfig, setQRCodeConfig] = React.useState({
     value: 'https://myshell.ai/',
   });
-  const qrRef = react.useRef(null);
-  const { editor } = react.useContext(GlobalStateContext);
+  const qrRef = React.useRef(null);
+  const { editor } = React.useContext(GlobalStateContext);
   const { t } = reactI18next.useTranslation();
   const handleValuesChange = values => {
     setQRCodeConfig(Object.assign(Object.assign({}, QRCodeConfig), values));
@@ -4019,7 +7508,7 @@ function QRCodePanel(props) {
     };
     img.src = canvasEl.toDataURL();
   };
-  react.useEffect(() => {
+  React.useEffect(() => {
     form.setFieldsValue({
       value: 'https://myshell.ai/',
       size: 160,
@@ -4170,9 +7659,9 @@ function QRCodePanel(props) {
 
 function EmojiPanel(props) {
   const { back } = props;
-  const { editor } = react.useContext(GlobalStateContext);
+  const { editor } = React.useContext(GlobalStateContext);
   const lng = 'en-US';
-  const [emojiLocale, setEmojiLocale] = react.useState('en');
+  const [emojiLocale, setEmojiLocale] = React.useState('en');
   const handleEmojiSelect = async emoji => {
     const object = editor.canvas.getActiveObject();
     if (object && object.type === 'textbox') {
@@ -4187,7 +7676,7 @@ function EmojiPanel(props) {
       });
     }
   };
-  react.useEffect(() => {
+  React.useEffect(() => {
     if (lng.indexOf('en') === 0) {
       setEmojiLocale('en');
     } else if (lng.indexOf('zh') === 0) {
@@ -4228,7 +7717,7 @@ const APP_LIST = [
   },
 ];
 function AppPanel() {
-  const [app, setApp] = react.useState('');
+  const [app, setApp] = React.useState('');
   const handleAppClick = item => {
     setApp(item.key);
   };
@@ -4287,6 +7776,10 @@ function AppPanel() {
   });
 }
 
+const MAX_HISTORY_LENGTH = 100;
+const PANEL_WIDTH = 360;
+const SETTER_WIDTH = 280;
+
 const { Sider: Sider$1 } = antd.Layout;
 const siderStyle$1 = {
   position: 'relative',
@@ -4331,7 +7824,7 @@ const OBJECT_TYPES = [
   },
 ];
 function Panel() {
-  const { editor } = react.useContext(GlobalStateContext);
+  const { editor } = React.useContext(GlobalStateContext);
   const renderPanel = value => {
     if (value === 'design') {
       return jsxRuntime.jsx(Layer, {});
@@ -4427,13 +7920,13 @@ const SizeInput = props => {
 function SizeSetter(props) {
   const { t } = reactI18next.useTranslation();
   const { value, onChange } = props;
-  const [innerValue, setInnerValue] = react.useState([]);
+  const [innerValue, setInnerValue] = React.useState([]);
   const handleChange = (v, index) => {
     const _innerValue = [...innerValue];
     _innerValue[index] = v;
     onChange === null || onChange === void 0 ? void 0 : onChange(_innerValue);
   };
-  react.useEffect(() => {
+  React.useEffect(() => {
     setInnerValue(value);
   }, [value]);
   return jsxRuntime.jsxs(
@@ -4470,7 +7963,7 @@ function SizeSetter(props) {
 const { Item: FormItem$b } = antd.Form;
 function SketchSetter() {
   const [form] = antd.Form.useForm();
-  const { editor } = react.useContext(GlobalStateContext);
+  const { editor } = React.useContext(GlobalStateContext);
   const { t } = reactI18next.useTranslation();
   const handleFill = _fill => {
     const { sketch, canvas } = editor;
@@ -4491,7 +7984,7 @@ function SketchSetter() {
     });
     editor.fireCustomModifiedEvent();
   };
-  react.useEffect(() => {
+  React.useEffect(() => {
     if (!editor) return;
     const { sketch } = editor;
     form.setFieldsValue({
@@ -4653,7 +8146,7 @@ function FList(props) {
 function MoreConfigWrapper(props) {
   const { open, setOpen, title = '', children } = props,
     rest = __rest(props, ['open', 'setOpen', 'title', 'children']);
-  react.useEffect(() => {
+  React.useEffect(() => {
     if (open) {
       document.body.style.overflow = 'hidden';
       document.body.scrollTop = 0;
@@ -4712,7 +8205,7 @@ function TextShadow(props) {
   const handleChange = v => {
     onChange && onChange(Object.assign(Object.assign({}, value), v));
   };
-  react.useEffect(() => {
+  React.useEffect(() => {
     if (value) {
       form.setFieldsValue(value);
     }
@@ -4769,7 +8262,7 @@ function TextPath(props) {
   const handleChange = v => {
     onChange && onChange(Object.assign(Object.assign({}, value), v));
   };
-  react.useEffect(() => {
+  React.useEffect(() => {
     if (value) {
       form.setFieldsValue(value);
     }
@@ -4828,7 +8321,7 @@ function TextPath(props) {
 const { Item: FormItem$8 } = antd.Form;
 function TextFx() {
   const [form] = antd.Form.useForm();
-  const { object, editor } = react.useContext(GlobalStateContext);
+  const { object, editor } = React.useContext(GlobalStateContext);
   const { t } = reactI18next.useTranslation();
   const handleTextPattern = async pattern => {
     if (!object) return;
@@ -4923,7 +8416,7 @@ function TextFx() {
       },
     });
   };
-  react.useEffect(() => {
+  React.useEffect(() => {
     if (object && object.type === 'f-text') {
       initObjectFx();
     }
@@ -4989,9 +8482,9 @@ function TextFx() {
 
 const { Item: FormItem$7 } = antd.Form;
 function TextSetter() {
-  const { object, editor } = react.useContext(GlobalStateContext);
+  const { object, editor } = React.useContext(GlobalStateContext);
   const [form] = antd.Form.useForm();
-  const [openFx, setOpenFx] = react.useState(false);
+  const [openFx, setOpenFx] = React.useState(false);
   const { t } = reactI18next.useTranslation();
   const TEXT_ADVANCE_CONFIG = [
     {
@@ -5063,7 +8556,7 @@ function TextSetter() {
     }
     editor.canvas.requestRenderAll();
   };
-  react.useEffect(() => {
+  React.useEffect(() => {
     form.setFieldsValue({
       fontFamily: object.fontFamily,
       fontSize: object.fontSize,
@@ -5301,7 +8794,7 @@ const BORDER_TYPES = [
 ];
 function BorderSetter$1(props) {
   const { value, onChange } = props;
-  const { editor } = react.useContext(GlobalStateContext);
+  const { editor } = React.useContext(GlobalStateContext);
   const { t } = reactI18next.useTranslation();
   const [form] = antd.Form.useForm();
   const handleChange = v => {
@@ -5310,7 +8803,7 @@ function BorderSetter$1(props) {
   const fireEvent = () => {
     editor.fireCustomModifiedEvent();
   };
-  react.useEffect(() => {
+  React.useEffect(() => {
     form.setFieldsValue(value);
   }, [value]);
   return jsxRuntime.jsxs(
@@ -5403,7 +8896,7 @@ function BorderSetter$1(props) {
 
 function BorderSetter(props) {
   const { value, onChange } = props;
-  const [showMore, setShowMore] = react.useState(false);
+  const [showMore, setShowMore] = React.useState(false);
   const { t } = reactI18next.useTranslation();
   return jsxRuntime.jsxs(jsxRuntime.Fragment, {
     children: [
@@ -5447,10 +8940,10 @@ function BorderSetter(props) {
 function ClipSetter(props) {
   const { t } = reactI18next.useTranslation();
   const { object } = props;
-  const imgRef = react.useRef();
-  const cropperRef = react.useRef(null);
-  const [showCrop, setShowCrop] = react.useState(false);
-  const [imgInfo, setImgInfo] = react.useState({});
+  const imgRef = React.useRef();
+  const cropperRef = React.useRef(null);
+  const [showCrop, setShowCrop] = React.useState(false);
+  const [imgInfo, setImgInfo] = React.useState({});
   const startCrop = () => {
     setShowCrop(true);
     const boundingRect = object.getBoundingRect();
@@ -5496,7 +8989,7 @@ function ClipSetter(props) {
     object.set('hasControls', true);
     object.canvas.requestRenderAll();
   };
-  react.useEffect(() => {
+  React.useEffect(() => {
     return () => {
       if (cropperRef.current) {
         cropperRef.current.destroy();
@@ -5835,7 +9328,7 @@ const handleFilterValue = filter => {
   return { type };
 };
 function ImageFx() {
-  const { object, editor } = react.useContext(GlobalStateContext);
+  const { object, editor } = React.useContext(GlobalStateContext);
   const [form] = antd.Form.useForm();
   const handleFxValueChange = values => {
     if (values.filter) {
@@ -5871,7 +9364,7 @@ function ImageFx() {
       filter: handleFilterValue(filter),
     });
   };
-  react.useEffect(() => {
+  React.useEffect(() => {
     if (object && object.type === 'f-image') {
       initImageFx();
     }
@@ -5895,10 +9388,10 @@ function ImageFx() {
 
 const { Item: FormItem$4 } = antd.Form;
 function ImageSetter() {
-  const { object, editor } = react.useContext(GlobalStateContext);
+  const { object, editor } = React.useContext(GlobalStateContext);
   const { t } = reactI18next.useTranslation();
   const [form] = antd.Form.useForm();
-  const [openFx, setOpenFx] = react.useState(false);
+  const [openFx, setOpenFx] = React.useState(false);
   [
     {
       icon: jsxRuntime.jsx(icons.FunctionOutlined, { style: { fontSize: 22 } }),
@@ -5949,7 +9442,7 @@ function ImageSetter() {
       handleBorder(values.border);
     }
   };
-  react.useEffect(() => {
+  React.useEffect(() => {
     if (object) {
       const border = object.getBorder();
       form.setFieldsValue({
@@ -6032,7 +9525,7 @@ function ImageSetter() {
 const { Item: FormItem$3 } = antd.Form;
 const LINE_BORDER_TYPES = BORDER_TYPES.slice(1);
 function LineSetter() {
-  const { object, editor } = react.useContext(GlobalStateContext);
+  const { object, editor } = React.useContext(GlobalStateContext);
   const { t } = reactI18next.useTranslation();
   const [form] = antd.Form.useForm();
   const handleValuesChange = values => {
@@ -6066,7 +9559,7 @@ function LineSetter() {
     object.setCoords();
     editor.canvas.requestRenderAll();
   };
-  react.useEffect(() => {
+  React.useEffect(() => {
     form.setFieldsValue({
       stroke: object.stroke || '#000000',
       type: getObjectBorderType(object),
@@ -6154,7 +9647,7 @@ function LineSetter() {
 
 const { Item: FormItem$2 } = antd.Form;
 function ShapeSetter() {
-  const { object, editor } = react.useContext(GlobalStateContext);
+  const { object, editor } = React.useContext(GlobalStateContext);
   const { t } = reactI18next.useTranslation();
   const [form] = antd.Form.useForm();
   const handleBorder = border => {
@@ -6192,7 +9685,7 @@ function ShapeSetter() {
       handleBorder(values.border);
     }
   };
-  react.useEffect(() => {
+  React.useEffect(() => {
     if (object) {
       form.setFieldsValue({
         border: {
@@ -6316,6 +9809,43 @@ function OpacitySetter(props) {
   );
 }
 
+function ToolbarItem(props) {
+  const { onClick, title, disabled, tooltipProps, children } = props;
+  const handleClick = () => {
+    if (!disabled) {
+      onClick === null || onClick === void 0 ? void 0 : onClick();
+    }
+  };
+  return jsxRuntime.jsx(
+    antd.Tooltip,
+    Object.assign(
+      {
+        placement: 'bottom',
+        title: jsxRuntime.jsx(
+          'span',
+          Object.assign({ style: { fontSize: 12 } }, { children: title }),
+        ),
+      },
+      tooltipProps,
+      {
+        children: jsxRuntime.jsx(
+          'span',
+          Object.assign(
+            {
+              className: 'fabritor-toolbar-item',
+              style: {
+                color: disabled ? '#cccccc' : 'rgba(0, 0, 0, 0.88)',
+              },
+              onClick: handleClick,
+            },
+            { children: children },
+          ),
+        ),
+      },
+    ),
+  );
+}
+
 const items = [
   {
     key: 'flipX',
@@ -6393,8 +9923,8 @@ const { Item: FormItem$1 } = antd.Form;
 const PxInputNumber = props => {
   const { value, onChange } = props,
     rest = __rest(props, ['value', 'onChange']);
-  const [innerValue, setInnerValue] = react.useState(value);
-  react.useEffect(() => {
+  const [innerValue, setInnerValue] = React.useState(value);
+  React.useEffect(() => {
     setInnerValue(value);
   }, [value]);
   return jsxRuntime.jsx(
@@ -6420,10 +9950,10 @@ const PxInputNumber = props => {
 };
 const noScaledSizeTypes = ['textbox', 'f-text', 'rect'];
 function PositionSetter() {
-  const { editor, object } = react.useContext(GlobalStateContext);
+  const { editor, object } = React.useContext(GlobalStateContext);
   const { t } = reactI18next.useTranslation();
-  const [showMore, setShowMore] = react.useState(false);
-  const isNoScaledSizeTypeRef = react.useRef(false);
+  const [showMore, setShowMore] = React.useState(false);
+  const isNoScaledSizeTypeRef = React.useRef(false);
   const [form] = antd.Form.useForm();
   const handleSize = (key, value) => {
     const realValue = value - object.strokeWidth;
@@ -6483,7 +10013,7 @@ function PositionSetter() {
       object.off('modified', handleModified);
     };
   };
-  react.useEffect(() => {
+  React.useEffect(() => {
     if (
       (showMore && object && !object.group) ||
       object.type !== 'activeSelection'
@@ -6761,10 +10291,10 @@ const ALIGH_TYPES = [
   },
 ];
 function CommonSetter() {
-  const { object, editor } = react.useContext(GlobalStateContext);
+  const { object, editor } = React.useContext(GlobalStateContext);
   const { t } = reactI18next.useTranslation();
-  const [lock, setLock] = react.useState(false);
-  const [opacity, setOpacity] = react.useState(1);
+  const [lock, setLock] = React.useState(false);
+  const [opacity, setOpacity] = React.useState(1);
   const handleLock = () => {
     object.set({
       lockMovementX: !lock,
@@ -6815,7 +10345,7 @@ function CommonSetter() {
     editor.canvas.requestRenderAll();
     editor.fireCustomModifiedEvent();
   };
-  react.useEffect(() => {
+  React.useEffect(() => {
     if (object) {
       setLock(object.lockMovementX);
       setOpacity(object.opacity);
@@ -6972,7 +10502,7 @@ function CommonSetter() {
 }
 
 function GroupSetter() {
-  const { object, editor } = react.useContext(GlobalStateContext);
+  const { object, editor } = React.useContext(GlobalStateContext);
   const { t } = reactI18next.useTranslation();
   if (!object || (object.type !== 'group' && object.type !== 'activeSelection'))
     return null;
@@ -7009,8 +10539,8 @@ function GroupSetter() {
 }
 
 function PathSetter() {
-  const { object, editor } = react.useContext(GlobalStateContext);
-  const [value, setValue] = react.useState({});
+  const { object, editor } = React.useContext(GlobalStateContext);
+  const [value, setValue] = React.useState({});
   const handleChange = values => {
     if (values.color) {
       object.set('stroke', values.color);
@@ -7039,7 +10569,7 @@ function PathSetter() {
     }
     editor.canvas.requestRenderAll();
   };
-  react.useEffect(() => {
+  React.useEffect(() => {
     if (object) {
       const shadow = object.shadow;
       setValue({
@@ -7072,7 +10602,7 @@ function PathSetter() {
 const { Item: FormItem } = antd.Form;
 function RoughSetter() {
   const [form] = antd.Form.useForm();
-  const { editor, object } = react.useContext(GlobalStateContext);
+  const { editor, object } = React.useContext(GlobalStateContext);
   const { t } = reactI18next.useTranslation();
   const handleValuesChange = values => {
     Object.keys(values).forEach(key => {
@@ -7090,7 +10620,7 @@ function RoughSetter() {
     editor.canvas.requestRenderAll();
     editor.fireCustomModifiedEvent();
   };
-  react.useEffect(() => {
+  React.useEffect(() => {
     if (object === null || object === void 0 ? void 0 : object.sub_type) {
       if (object.type === 'path') {
         form.setFieldsValue({
@@ -7134,6 +10664,146 @@ function RoughSetter() {
   );
 }
 
+function ToolbarDivider() {
+  return jsxRuntime.jsx(antd.Divider, {
+    type: 'vertical',
+    style: { height: 32 },
+  });
+}
+
+const i18nKeySuffix = 'header.toolbar';
+function Toolbar() {
+  const { setActiveObject, editor } = React.useContext(GlobalStateContext);
+  const [panEnable, setPanEnable] = React.useState(false);
+  const [canUndo, setCanUndo] = React.useState(false);
+  const [canRedo, setCanRedo] = React.useState(false);
+  const clearCanvas = () => {
+    antd.Modal.confirm({
+      title: jsxRuntime.jsx(reactI18next.Trans, {
+        i18nKey: `${i18nKeySuffix}.clear_confirm`,
+      }),
+      icon: jsxRuntime.jsx(icons.ExclamationCircleFilled, {}),
+      async onOk() {
+        await editor.clearCanvas();
+        setActiveObject(editor.sketch);
+        editor.fireCustomModifiedEvent();
+      },
+    });
+  };
+  const enablePan = () => {
+    const enable = editor.switchEnablePan();
+    setPanEnable(enable);
+  };
+  React.useEffect(() => {
+    if (editor) {
+      setCanUndo(editor.fhistory.canUndo());
+      setCanRedo(editor.fhistory.canRedo());
+    }
+  });
+  return jsxRuntime.jsxs(
+    CenterV,
+    Object.assign(
+      {
+        gap: 4,
+        style: {
+          borderBottom: '1px solid #e8e8e8',
+          padding: 12,
+        },
+      },
+      {
+        children: [
+          jsxRuntime.jsx(
+            ToolbarItem,
+            Object.assign(
+              {
+                disabled: !canUndo,
+                title: jsxRuntime.jsx(reactI18next.Trans, {
+                  i18nKey: `${i18nKeySuffix}.undo`,
+                }),
+                onClick: () => {
+                  editor.fhistory.undo();
+                },
+              },
+              {
+                children: jsxRuntime.jsx(icons.UndoOutlined, {
+                  style: { fontSize: 20 },
+                }),
+              },
+            ),
+          ),
+          jsxRuntime.jsx(
+            ToolbarItem,
+            Object.assign(
+              {
+                disabled: !canRedo,
+                title: jsxRuntime.jsx(reactI18next.Trans, {
+                  i18nKey: `${i18nKeySuffix}.redo`,
+                }),
+                onClick: () => {
+                  editor.fhistory.redo();
+                },
+              },
+              {
+                children: jsxRuntime.jsx(icons.RedoOutlined, {
+                  style: { fontSize: 20 },
+                }),
+              },
+            ),
+          ),
+          jsxRuntime.jsx(ToolbarDivider, {}),
+          jsxRuntime.jsx(
+            ToolbarItem,
+            Object.assign(
+              {
+                onClick: enablePan,
+                title: panEnable
+                  ? jsxRuntime.jsx(reactI18next.Trans, {
+                      i18nKey: `${i18nKeySuffix}.select`,
+                    })
+                  : jsxRuntime.jsx(reactI18next.Trans, {
+                      i18nKey: `${i18nKeySuffix}.pan`,
+                    }),
+              },
+              {
+                children: panEnable
+                  ? jsxRuntime.jsx(icons.DragOutlined, {
+                      style: {
+                        fontSize: 22,
+                        color: panEnable ? '#000' : '#ccc',
+                      },
+                    })
+                  : jsxRuntime.jsx('img', {
+                      src: `data:image/svg+xml;charset=utf-8,${encodeURIComponent(DRAG_ICON)}`,
+                      style: {
+                        width: 22,
+                        height: 22,
+                      },
+                    }),
+              },
+            ),
+          ),
+          jsxRuntime.jsx(
+            ToolbarItem,
+            Object.assign(
+              {
+                onClick: clearCanvas,
+                title: jsxRuntime.jsx(reactI18next.Trans, {
+                  i18nKey: `${i18nKeySuffix}.clear`,
+                }),
+              },
+              {
+                children: jsxRuntime.jsx(icons.ClearOutlined, {
+                  style: { fontSize: 20 },
+                }),
+              },
+            ),
+          ),
+        ],
+      },
+    ),
+  );
+}
+
 const { Sider } = antd.Layout;
 const { Title } = antd.Typography;
 const siderStyle = {
@@ -7143,7 +10813,7 @@ const siderStyle = {
 };
 function Setter() {
   var _a;
-  const { object, isReady } = react.useContext(GlobalStateContext);
+  const { object, isReady } = React.useContext(GlobalStateContext);
   const { t } = reactI18next.useTranslation();
   const objectType =
     ((_a = object === null || object === void 0 ? void 0 : object.get) ===
@@ -7257,7 +10927,12 @@ function Setter() {
     return jsxRuntime.jsx(
       CenterV,
       Object.assign(
-        { style: { borderBottom: '1px solid #e8e8e8', paddingLeft: 16 } },
+        {
+          style: {
+            borderBottom: '1px solid #e8e8e8',
+            paddingLeft: 16,
+          },
+        },
         {
           children: jsxRuntime.jsx(
             Title,
@@ -7273,11 +10948,17 @@ function Setter() {
       { style: siderStyle, width: SETTER_WIDTH, className: 'fabritor-sider' },
       {
         children: [
+          jsxRuntime.jsx(Toolbar, {}),
           renderSetterTitle(),
           jsxRuntime.jsxs(
             'div',
             Object.assign(
-              { style: { padding: 16, overflow: 'auto' } },
+              {
+                style: {
+                  padding: 16,
+                  overflow: 'auto',
+                },
+              },
               { children: [renderSetter(), jsxRuntime.jsx(CommonSetter, {})] },
             ),
           ),
@@ -8622,10 +12303,10 @@ class Editor {
 }
 
 function ObjectRotateAngleTip() {
-  const [pos, setPos] = react.useState({ left: 0, top: 0 });
-  const [content, setContent] = react.useState('');
-  const [open, setOpen] = react.useState(false);
-  const { editor } = react.useContext(GlobalStateContext);
+  const [pos, setPos] = React.useState({ left: 0, top: 0 });
+  const [content, setContent] = React.useState('');
+  const [open, setOpen] = React.useState(false);
+  const { editor } = React.useContext(GlobalStateContext);
   const rotateHandler = opt => {
     const { target, e } = opt;
     setPos({
@@ -8638,7 +12319,7 @@ function ObjectRotateAngleTip() {
   const mouseupHandler = () => {
     setOpen(false);
   };
-  react.useEffect(() => {
+  React.useEffect(() => {
     if (editor) {
       editor.canvas.on('object:rotating', rotateHandler);
       editor.canvas.on('mouse:up', mouseupHandler);
@@ -8686,14 +12367,14 @@ const contentStyle = {
   height: '100%',
 };
 function Fabritor() {
-  const canvasEl = react.useRef(null);
-  const workspaceEl = react.useRef(null);
-  const roughSvgEl = react.useRef(null);
-  const [editor, setEditor] = react.useState(null);
-  const [roughSvg, setRoughSvg] = react.useState();
-  const [activeObject, setActiveObject] = react.useState(null);
-  const [isReady, setReady] = react.useState(false);
-  const contextMenuRef = react.useRef(null);
+  const canvasEl = React.useRef(null);
+  const workspaceEl = React.useRef(null);
+  const roughSvgEl = React.useRef(null);
+  const [editor, setEditor] = React.useState(null);
+  const [roughSvg, setRoughSvg] = React.useState();
+  const [activeObject, setActiveObject] = React.useState(null);
+  const [isReady, setReady] = React.useState(false);
+  const contextMenuRef = React.useRef(null);
   const clickHandler = opt => {
     var _a, _b;
     const { target } = opt;
@@ -8767,13 +12448,13 @@ function Fabritor() {
   const initRoughSvg = () => {
     setRoughSvg(rough__default.default.svg(roughSvgEl.current));
   };
-  react.useEffect(() => {
+  React.useEffect(() => {
     if (editor) {
       initEvent();
       initRoughSvg();
     }
   }, [editor]);
-  react.useEffect(() => {
+  React.useEffect(() => {
     initEditor();
     return () => {
       if (editor) {
@@ -8812,7 +12493,6 @@ function Fabritor() {
                   fullscreen: true,
                 }),
                 jsxRuntime.jsx(ObjectRotateAngleTip, {}),
-                jsxRuntime.jsx(Header$1, {}),
                 jsxRuntime.jsxs(antd.Layout, {
                   children: [
                     jsxRuntime.jsx(Panel, {}),

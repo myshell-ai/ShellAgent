@@ -1,8 +1,12 @@
 import { PhotoIcon } from '@heroicons/react/24/outline';
-import { AButton, AModal, Button } from '@shellagent/ui';
+import { AButton, Button } from '@shellagent/ui';
 import { useInjection } from 'inversify-react';
 import { ImageCanvasModel } from '@/components/image-canvas/image-canvas.model';
 import { observer } from 'mobx-react-lite';
+import ImageCanvas from 'image-canvas';
+import 'image-canvas/index.css';
+import 'image-canvas/assets/react-colors-beauty.css';
+import { Modal, theme } from 'antd';
 
 export function OpenImageCanvas() {
   const model = useInjection(ImageCanvasModel);
@@ -21,32 +25,51 @@ export function OpenImageCanvas() {
   );
 }
 
-export function OkButton() {
+function OkButton() {
+  const model = useInjection(ImageCanvasModel);
   return (
     <AButton
       size="large"
       type="primary"
-      style={{ width: '100%' }}
       onClick={() => {
-        console.log('clicked ok button');
+        model.close();
       }}>
-      Run
+      Save
     </AButton>
   );
 }
 
 export const ImageCanvasDialog = observer(() => {
   const model = useInjection(ImageCanvasModel);
+  const { token } = theme.useToken();
   return (
-    <AModal
-      width="80%"
+    <Modal
+      style={{ top: 10 }}
+      width="90%"
       open={model.isOpen}
+      styles={{
+        header: {
+          padding: 16,
+          marginBottom: 0,
+          borderBottom: `1px solid ${token.colorBorder}`,
+        },
+        footer: {
+          marginTop: 0,
+          padding: 16,
+          borderTop: `1px solid ${token.colorBorder}`,
+        },
+        content: {
+          padding: 0,
+        },
+        body: {
+          padding: 0,
+          height: '80vh',
+        },
+      }}
       title="Image Canvas Editor"
-      hideCancelButton
       onCancel={() => model.close()}
-      okDisabled={false}
-      okButton={<OkButton />}>
-      Hello
-    </AModal>
+      footer={[<OkButton />]}>
+      <ImageCanvas />
+    </Modal>
   );
 });
