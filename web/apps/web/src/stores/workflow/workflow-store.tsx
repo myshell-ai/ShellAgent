@@ -72,6 +72,7 @@ export type WorkflowAction = {
   getProConfig: (params: GetProconfigRequest) => void;
   onWorkflowMessage: (params: EventSourceMessage) => void;
   clearRuntimeData: () => void;
+  setRunLoading: (loading: boolean) => void;
   importWorkflow: (params: { workflow: Workflow }) => void;
   updateMetadata: (params: { metadata: Partial<Metadata> }) => void;
   setSchemaModeMap: (params: { id: string; mode: string }) => void;
@@ -363,6 +364,13 @@ export const createWorkflowStore = () => {
               ...state.metadata,
               ...metadata,
             };
+          }),
+        );
+      },
+      setRunLoading(loading) {
+        set(
+          produce(state => {
+            state.loading.workflowRunning = loading;
           }),
         );
       },

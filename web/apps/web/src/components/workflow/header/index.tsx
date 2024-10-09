@@ -83,6 +83,7 @@ export const Header: React.FC<{ container: HTMLElement | null }> = ({
     onWorkflowMessage,
     clearRuntimeData,
     importWorkflow,
+    setRunLoading,
     flowInstance,
     loading,
     updateMetadata,
@@ -96,6 +97,7 @@ export const Header: React.FC<{ container: HTMLElement | null }> = ({
       onWorkflowMessage: state.onWorkflowMessage,
       clearRuntimeData: state.clearRuntimeData,
       importWorkflow: state.importWorkflow,
+      setRunLoading: state.setRunLoading,
       flowInstance: state.flowInstance,
       loading: state.loading,
       updateMetadata: state.updateMetadata,
@@ -296,6 +298,7 @@ export const Header: React.FC<{ container: HTMLElement | null }> = ({
 
     clearRuntimeData();
     setRunSheetOpen(false);
+    setRunLoading(true);
     runWorkflow(
       { workflow, user_input: userInputs },
       {
