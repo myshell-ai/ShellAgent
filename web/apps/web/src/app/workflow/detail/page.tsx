@@ -7,6 +7,7 @@ import { useEffect, useRef } from 'react';
 import { useShallow } from 'zustand/react/shallow';
 import '../../reflect-metadata-client-side';
 
+import FlowHeader from '@/components/workflow/flow-header';
 import { Header } from '@/components/workflow/header';
 import { EndNode, StartNode, WidgetNode } from '@/components/workflow/nodes';
 import { useGlobalStore } from '@/stores/global/global-provider';
@@ -80,7 +81,6 @@ export default function WorkflowPage() {
           ref={flowRef}
           nodeTypes={nodeTypes}
           materialList={widgetList}
-          // TODO 抽出去
           footerExtra={
             <div className="ml-auto flex gap-1">
               <IconButton
@@ -92,6 +92,7 @@ export default function WorkflowPage() {
               <IconButton variant="ghost" className="w-9 h-9" icon={Setting} />
             </div>
           }
+          header={<FlowHeader flowId={flowId} version={version} />}
         />
       </main>
     </div>

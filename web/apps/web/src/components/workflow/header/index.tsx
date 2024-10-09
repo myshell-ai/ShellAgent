@@ -83,6 +83,7 @@ export const Header: React.FC<{ container: HTMLElement | null }> = ({
     onWorkflowMessage,
     clearRuntimeData,
     importWorkflow,
+    setRunLoading,
     flowInstance,
     loading,
     updateMetadata,
@@ -96,6 +97,7 @@ export const Header: React.FC<{ container: HTMLElement | null }> = ({
       onWorkflowMessage: state.onWorkflowMessage,
       clearRuntimeData: state.clearRuntimeData,
       importWorkflow: state.importWorkflow,
+      setRunLoading: state.setRunLoading,
       flowInstance: state.flowInstance,
       loading: state.loading,
       updateMetadata: state.updateMetadata,
@@ -296,6 +298,7 @@ export const Header: React.FC<{ container: HTMLElement | null }> = ({
 
     clearRuntimeData();
     setRunSheetOpen(false);
+    setRunLoading(true);
     runWorkflow(
       { workflow, user_input: userInputs },
       {
@@ -549,18 +552,6 @@ export const Header: React.FC<{ container: HTMLElement | null }> = ({
               </Button>
             </Popover>
           )}
-        </div>
-        <div className="absolute right-3 top-16 z-10 w-full text-right">
-          {version ? (
-            <Text size="sm" color="subtlest">
-              Current preview version: {version}
-            </Text>
-          ) : null}
-          {autoSavedTime && !version ? (
-            <Text size="sm" color="subtlest">
-              Auto Saved {dayjs(autoSavedTime).format('HH:mm:ss')}
-            </Text>
-          ) : null}
         </div>
       </div>
       <RunSheet
