@@ -50,7 +50,7 @@ export const WidgetConfig: React.FC<WidgetConfigProps> = ({
       ...widgetSchema[values?.widget_class_name],
     });
     // Special process ImageTextFuserWidget
-    if (values?.widget_class_name === 'ImageTextFuserWidget') {
+    if (values?.widget_class_name === 'ImageCanvasWidget') {
       if (schema?.properties?.inputs?.properties?.config) {
         schema.properties.inputs.properties.config['x-component'] =
           'OpenImageCanvas';
