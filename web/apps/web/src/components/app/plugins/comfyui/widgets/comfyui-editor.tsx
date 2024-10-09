@@ -5,6 +5,7 @@ import { Modal, Upload } from 'antd';
 import React, { useState, useRef, useEffect } from 'react';
 
 import { saveComfy, uploadComfy } from '../services';
+import emitter, { EventType } from '../emitter';
 
 export const ComfyUIEditor = ({
   value,
@@ -45,6 +46,10 @@ export const ComfyUIEditor = ({
           name: event.data.name,
           comfy_workflow_id,
         });
+
+        emitter.emit(EventType.UPDATE_FORM, {
+          id: comfy_workflow_id,
+        });
       }
     } catch (error) {
       console.error('Invalid URL:', error);
@@ -60,7 +65,6 @@ export const ComfyUIEditor = ({
 
   const handleCancel = () => {
     setIsModalVisible(false);
-    setIsLoading(true);
   };
 
   const { run: saveComfyRequest } = useRequest(saveComfy, {
@@ -68,18 +72,12 @@ export const ComfyUIEditor = ({
     onSuccess: result => {
       console.log('Save successful:', result);
     },
-    onError: error => {
-      console.error('Save failed:', error);
-    },
   });
 
   const { run: uploadComfyRequest } = useRequest(uploadComfy, {
     manual: true,
     onSuccess: result => {
-      console.log('Save successful:', result);
-    },
-    onError: error => {
-      console.error('Save failed:', error);
+      console.log('Upload successful:', result);
     },
   });
 
@@ -153,7 +151,7 @@ export const ComfyUIEditor = ({
                 handleImport(file);
                 return false;
               }}>
-              <Button size="sm">
+              <Button size="sm" disabled={!loaded}>
                 <UploadOutlined className="mr-2" />
                 Import
               </Button>
@@ -176,24 +174,28 @@ export const ComfyUIEditor = ({
               onClick={handleCancel}>
               Cancel
             </Button>
-            <Button key="save" size="sm" onClick={handleSave}>
+            <Button
+              key="save"
+              size="sm"
+              onClick={handleSave}
+              disabled={!loaded}>
               Save
             </Button>
           </div>
         }
         closeIcon={null}>
-        {/* {isLoading && (
+        {isLoading && (
           <div className="flex justify-center items-center h-[600px]">
             <Spinner size="lg" className="text-brand" />
           </div>
-        )} */}
+        )}
         <iframe
           title="comfyui"
           ref={iframeRef}
           src={value}
           height="600px"
-          // className={`w-full ${isLoading ? 'hidden' : ''}`}
-          className="w-full"
+          className={`w-full ${isLoading ? 'hidden' : ''}`}
+          // className="w-full"
           onLoad={handleIframeLoad}
         />
       </Modal>

@@ -6,12 +6,17 @@ import React, { useRef, useEffect, useState } from 'react';
 
 import { WidgetConfigProps } from '@/components/app/config-form/widget-config';
 import NodeForm from '@/components/app/node-form';
+import { useEventEmitter, EventType } from './emitter';
 
 import { getComfyuiSchema, defaultSchema } from './schema';
 import { getFile } from './services';
 import { ComfyUIEditor } from './widgets/comfyui-editor';
 
-const ComfyUIPlugin: React.FC<WidgetConfigProps> = ({ values, onChange }) => {
+const ComfyUIPlugin: React.FC<WidgetConfigProps> = ({
+  values,
+  onChange,
+  ...rest
+}) => {
   const formRef = useRef<FormRef>(null);
   const [schema, setSchema] = useState<ISchema>(defaultSchema);
 
@@ -47,6 +52,15 @@ const ComfyUIPlugin: React.FC<WidgetConfigProps> = ({ values, onChange }) => {
       });
     }
   }, [values?.comfy_workflow_id]);
+
+  useEventEmitter(EventType.UPDATE_FORM, eventData => {
+    if (eventData.id === values?.comfy_workflow_id) {
+      getComfySchema({
+        comfy_workflow_id: values?.comfy_workflow_id,
+        filename: 'workflow.shellagent.json',
+      });
+    }
+  });
 
   if (!values) {
     return null;
