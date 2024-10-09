@@ -32,6 +32,9 @@ class FunctionParameter(BaseModel):
         None, description="The description of the parameter.")
     
 def encode_image(image_path):
+    from proconfig.utils.misc import is_valid_url
+    if is_valid_url(image_path):
+        return image_path
     with open(image_path, "rb") as image_file:
         base64_image = base64.b64encode(image_file.read()).decode("utf-8")
     return f"data:image/png;base64,{base64_image}"

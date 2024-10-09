@@ -226,3 +226,6 @@
 [submodule "proconfig/widgets/imagen_widgets/library/comfy_custom_nodes/ComfyUI-GlifNodes"]
 	path = proconfig/widgets/imagen_widgets/library/comfy_custom_nodes/ComfyUI-GlifNodes
 	url = https://github.com/glifxyz/ComfyUI-GlifNodes
+[submodule "proconfig/widgets/imagen_widgets/library/comfy_custom_nodes/ComfyUI_CatVTON_Wrapper"]
+	path = proconfig/widgets/imagen_widgets/library/comfy_custom_nodes/ComfyUI_CatVTON_Wrapper
+	url = https://github.com/chflame163/ComfyUI_CatVTON_Wrapper
