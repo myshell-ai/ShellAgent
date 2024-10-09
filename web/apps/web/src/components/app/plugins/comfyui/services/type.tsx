@@ -20,7 +20,54 @@ export interface SaveRequest {
 }
 
 export interface SaveResponse {
-  result: any;
+  data: {
+    workflow: any;
+    workflow_api: any;
+    dependencies: {
+      comfyui_version: {
+        name: string;
+        repo: string;
+        commit: string;
+      };
+      custom_nodes: Array<{
+        name: string;
+        repo: string;
+        commit: string;
+      }>;
+      models: Record<
+        string,
+        {
+          filename: string;
+          save_path: string;
+          urls: string[];
+        }
+      >;
+      files: Record<string, any>;
+    };
+    schemas: {
+      inputs: Record<
+        string,
+        {
+          title: string;
+          type: string;
+          default?: any;
+          description: string;
+        }
+      >;
+      outputs: Record<
+        string,
+        {
+          title: string;
+          type: string;
+          items?: {
+            type: string;
+            url_type: string;
+          };
+        }
+      >;
+    };
+  };
+  success: boolean;
 }
 
 export interface GetFileRequest {

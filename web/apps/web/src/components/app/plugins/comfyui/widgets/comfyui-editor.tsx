@@ -46,10 +46,6 @@ export const ComfyUIEditor = ({
           name: event.data.name,
           comfy_workflow_id,
         });
-
-        emitter.emit(EventType.UPDATE_FORM, {
-          id: comfy_workflow_id,
-        });
       }
     } catch (error) {
       console.error('Invalid URL:', error);
@@ -70,7 +66,13 @@ export const ComfyUIEditor = ({
   const { run: saveComfyRequest } = useRequest(saveComfy, {
     manual: true,
     onSuccess: result => {
-      console.log('Save successful:', result);
+      if (result.success) {
+        const comfy_workflow_id = getValues('comfy_workflow_id');
+        emitter.emit(EventType.UPDATE_FORM, {
+          data: result.data.schemas,
+          id: comfy_workflow_id,
+        });
+      }
     },
   });
 
@@ -151,7 +153,10 @@ export const ComfyUIEditor = ({
                 handleImport(file);
                 return false;
               }}>
-              <Button size="sm" disabled={!loaded}>
+              <Button
+                size="sm"
+                // disabled={!loaded}
+              >
                 <UploadOutlined className="mr-2" />
                 Import
               </Button>
@@ -178,7 +183,8 @@ export const ComfyUIEditor = ({
               key="save"
               size="sm"
               onClick={handleSave}
-              disabled={!loaded}>
+              // disabled={!loaded}
+            >
               Save
             </Button>
           </div>

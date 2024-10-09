@@ -55,10 +55,12 @@ const ComfyUIPlugin: React.FC<WidgetConfigProps> = ({
 
   useEventEmitter(EventType.UPDATE_FORM, eventData => {
     if (eventData.id === values?.comfy_workflow_id) {
-      getComfySchema({
-        comfy_workflow_id: values?.comfy_workflow_id,
-        filename: 'workflow.shellagent.json',
-      });
+      setSchema(
+        getComfyuiSchema({
+          inputs: eventData?.data?.inputs || {},
+          outputs: eventData?.data?.outputs || {},
+        }),
+      );
     }
   });
 

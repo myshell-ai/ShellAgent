@@ -7,6 +7,28 @@ export enum EventType {
 
 type Events = {
   [EventType.UPDATE_FORM]: {
+    data: {
+      inputs: Record<
+        string,
+        {
+          title: string;
+          type: string;
+          default?: any;
+          description: string;
+        }
+      >;
+      outputs: Record<
+        string,
+        {
+          title: string;
+          type: string;
+          items?: {
+            type: string;
+            url_type: string;
+          };
+        }
+      >;
+    };
     id: string;
   };
 };
