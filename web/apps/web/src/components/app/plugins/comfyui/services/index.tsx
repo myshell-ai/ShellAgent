@@ -7,6 +7,8 @@ import {
   SaveResponse,
   GetFileRequest,
   GetFileResponse,
+  UpdateDependencyRequest,
+  UpdateDependencyResponse,
 } from './type';
 
 export const uploadComfy = (params: UploadRequest) => {
@@ -25,4 +27,13 @@ export const getFile = (params: GetFileRequest) => {
   return APIFetch.post<GetFileResponse>('/api/comfyui/get_file', {
     body: params,
   });
+};
+
+export const updateDependency = (params: UpdateDependencyRequest) => {
+  return APIFetch.post<UpdateDependencyResponse>(
+    '/api/comfyui/update_dependency',
+    {
+      body: params,
+    },
+  );
 };

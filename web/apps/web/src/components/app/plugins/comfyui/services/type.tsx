@@ -82,3 +82,24 @@ export interface GetFileResponse {
   message: string;
   success: boolean;
 }
+
+export interface UpdateDependencyRequest {
+  comfy_workflow_id: string;
+  missing_custom_nodes: Array<{
+    name: string;
+    repo: string;
+    commit: string;
+  }>;
+  missing_models: Record<
+    string,
+    {
+      filename: string;
+      save_path: string;
+      urls: string[];
+    }
+  >;
+}
+
+export interface UpdateDependencyResponse {
+  success: boolean;
+}
