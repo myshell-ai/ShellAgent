@@ -34,7 +34,7 @@ export function OpenImageCanvas(props: any) {
     <Button
       icon={PhotoIcon}
       onClick={() => {
-        model.open();
+        model.openAndLoad();
       }}
       css={css`
         box-shadow: unset !important;

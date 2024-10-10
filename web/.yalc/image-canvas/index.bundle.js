@@ -8597,6 +8597,14 @@ function ImageCanvas() {
         model.setEditor(_editor);
         setReady(true);
         setActiveObject(_editor.sketch);
+        model.emitter.on('loadFromJSON', async (json) => {
+            setReady(false);
+            await _editor.loadFromJSON(json, true);
+            _editor.fhistory.reset();
+            setReady(true);
+            setActiveObject(null);
+            _editor.fireCustomModifiedEvent();
+        });
     };
     const initRoughSvg = () => {
         setRoughSvg(rough__default.default.svg(roughSvgEl.current));
@@ -8615,14 +8623,6 @@ function ImageCanvas() {
             }
         };
     }, []);
-    model.emitter.on('loadFromJSON', async (json) => {
-        setReady(false);
-        await editor.loadFromJSON(json, true);
-        editor.fhistory.reset();
-        setReady(true);
-        setActiveObject(null);
-        editor.fireCustomModifiedEvent();
-    });
     return (jsxRuntime.jsx(GlobalStateContext.Provider, Object.assign({ value: {
             object: activeObject,
             setActiveObject,
