@@ -47,7 +47,7 @@ function _interopNamespace(e) {
 var classNames__default = /*#__PURE__*/_interopDefault(classNames);
 var React__namespace = /*#__PURE__*/_interopNamespace(React);
 var i18n__default = /*#__PURE__*/_interopDefault(i18n);
-var FontFaceObserver__namespace = /*#__PURE__*/_interopNamespace(FontFaceObserver);
+var FontFaceObserver__default = /*#__PURE__*/_interopDefault(FontFaceObserver);
 var googleFonts__default = /*#__PURE__*/_interopDefault(googleFonts);
 var RcInputNumber__default = /*#__PURE__*/_interopDefault(RcInputNumber);
 var RcInput__default = /*#__PURE__*/_interopDefault(RcInput);
@@ -556,7 +556,7 @@ const loadPresetGoogleFonts = async () => {
     }, {}));
     const observers = [];
     Object.keys(COMPLETE_GOOGLE_FONTS).forEach(function (family) {
-        const obs = new FontFaceObserver__namespace(family);
+        const obs = new FontFaceObserver__default.default(family);
         observers.push(obs.load(null, 1000 * 100));
     });
     Promise.all(observers).catch((e) => {
@@ -569,7 +569,7 @@ const loadFont = async (f) => {
     const item = FONT_PRESET_FAMILY_LIST_GOOGLE_FONT.find(_item => _item.value === f);
     if (!item)
         return Promise.resolve();
-    const font = new FontFaceObserver__namespace(f);
+    const font = new FontFaceObserver__default.default(f);
     return font.load(null, 1000 * 100).catch((e) => {
         console.error(LOG_PREFIX, e);
     });
@@ -5569,7 +5569,7 @@ var objects = [
 		left: 69.79,
 		top: 464.87,
 		width: 1102.41,
-		height: 249.5,
+		height: 207.92,
 		fill: "#45496a",
 		stroke: null,
 		strokeWidth: 1,
@@ -5593,7 +5593,7 @@ var objects = [
 		globalCompositeOperation: "source-over",
 		skewX: 0,
 		skewY: 0,
-		fontFamily: "Indie Flower",
+		fontFamily: "Sedgwick Ave Display",
 		fontWeight: "normal",
 		fontSize: 80,
 		text: "MyShell - Build, Share, and\n Own AI Chat.",
