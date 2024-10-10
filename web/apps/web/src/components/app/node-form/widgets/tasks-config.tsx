@@ -119,7 +119,7 @@ const TasksConfig = ({
   );
 
   return (
-    <DndProvider backend={HTML5Backend}>
+    <DndProvider backend={HTML5Backend} context={window}>
       <div>
         {values?.length > 0 && (
           <div className="flex flex-col gap-2 mb-1.5">

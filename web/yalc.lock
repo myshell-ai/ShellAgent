@@ -1,0 +1,9 @@
+{
+  "version": "v1",
+  "packages": {
+    "image-canvas": {
+      "signature": "bdc3f63adae04be94048179158680d14",
+      "pure": true
+    }
+  }
+}

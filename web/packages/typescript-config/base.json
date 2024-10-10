@@ -18,7 +18,8 @@
     "preserveWatchOutput": true,
     "skipLibCheck": true,
     "strict": true,
-    "strictNullChecks": true
+    "strictNullChecks": true,
+    "resolvePackageJsonExports": true
   },
   "exclude": ["node_modules"]
 }

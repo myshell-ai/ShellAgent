@@ -13,3 +13,4 @@ yarn-error.log
 # Ignore dependency locks
 pnpm-lock.yaml
 packages/chat-engine
+.yalc/

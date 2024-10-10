@@ -8,6 +8,7 @@ export type WidgetItem = {
   children?: WidgetItem[]; // 子widget
   type?: NodeType;
   undraggable?: boolean; // 是否可以拖拽至画布中
+  customRender?: () => JSX.Element;
 };
 
 export type MaterialItem = {

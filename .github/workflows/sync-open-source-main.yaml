@@ -5,6 +5,7 @@ on:
     branches: 
       - main
     paths:
+      - ".yalc/**"
       - "web/apps/web/**"
       - "web/packages/**"
       - ".github/**"
