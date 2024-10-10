@@ -4,7 +4,7 @@ import { useRequest } from 'ahooks';
 import { Modal, Upload } from 'antd';
 import React, { useState, useRef, useEffect } from 'react';
 
-import { saveComfy, uploadComfy } from '../services';
+import { saveComfy, uploadComfy, getFile } from '../services';
 import emitter, { EventType } from '../emitter';
 
 export const ComfyUIEditor = ({
@@ -24,9 +24,25 @@ export const ComfyUIEditor = ({
     setIsModalVisible(true);
   };
 
+  const { run: getComfySchema } = useRequest(getFile, {
+    manual: true,
+    onSuccess: result => {
+      if (result.success) {
+        const {
+          data: { workflow },
+        } = result;
+        iframeRef.current?.contentWindow?.postMessage(
+          { type: 'load', data: workflow },
+          value,
+        );
+      }
+    },
+  });
+
   const handleMessage = (event: MessageEvent) => {
     try {
       const valueUrl = new URL(value);
+      const comfy_workflow_id = getValues('comfy_workflow_id');
 
       if (valueUrl.origin !== event.origin) {
         return;
@@ -34,11 +50,14 @@ export const ComfyUIEditor = ({
       // 处理 'loaded' 消息
       if (event.data.type === 'loaded') {
         setLoaded(true);
+        getComfySchema({
+          comfy_workflow_id,
+          filename: 'workflow.json',
+        });
         console.log('ComfyUI loaded');
       }
       // 保存
       if (event.data.type === 'save') {
-        const comfy_workflow_id = getValues('comfy_workflow_id');
         saveComfyRequest({
           prompt: event.data.prompt,
           comfyui_api: valueUrl.origin,
@@ -46,6 +65,7 @@ export const ComfyUIEditor = ({
           name: event.data.name,
           comfy_workflow_id,
         });
+        setIsModalVisible(false);
       }
     } catch (error) {
       console.error('Invalid URL:', error);
@@ -85,7 +105,6 @@ export const ComfyUIEditor = ({
 
   const handleSave = () => {
     iframeRef.current?.contentWindow?.postMessage({ type: 'save' }, value);
-    setIsModalVisible(false);
   };
 
   const handleImport = (file: File) => {
