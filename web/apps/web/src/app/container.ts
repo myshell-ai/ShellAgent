@@ -16,7 +16,7 @@ import { EmitterModel } from '@/utils/emitter.model';
 import { ModalModel } from '@/utils/modal.model';
 import { RequestModel } from '@/utils/request.model';
 import { OpenImageCanvasModel } from '@/components/image-canvas/open-image-canvas.model';
-import { ImageCanvasModel } from 'image-canvas';
+import { ImageCanvasModel } from 'image-canvas/model';
 
 export const container = new Container();
 

@@ -4,6 +4,8 @@
     "baseUrl": ".",
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true,
+    "moduleResolution": "Bundler",
+    "resolvePackageJsonExports": true,
     "paths": {
       "@/*": ["./src/*"]
     },

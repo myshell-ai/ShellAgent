@@ -3,7 +3,7 @@ import 'image-canvas/assets/react-colors-beauty.css';
 
 import type { Meta, StoryObj } from '@storybook/react';
 
-import ImageCanvas from 'image-canvas';
+import { ImageCanvas } from 'image-canvas';
 
 // More on how to set up stories at: https://storybook.js.org/docs/writing-stories#default-export
 const meta = {

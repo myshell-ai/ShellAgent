@@ -25,6 +25,7 @@
     "inversify": "^6.0.2",
     "inversify-react": "^1.1.1",
     "lodash-es": "^4.17.21",
+    "mitt": "^3.0.1",
     "mobx": "^6.13.1",
     "mobx-react-lite": "^4.0.7",
     "rc-input": "~1.4.2",
@@ -39,7 +40,15 @@
     "universal-env": "^3.3.3",
     "uuid": "^9.0.1"
   },
-  "main": "./index.bundle.js",
-  "types": "./index.bundle.d.ts",
-  "yalcSig": "066b3f03cd7d2a2429b4909884147e66"
+  "exports": {
+    ".": {
+      "types": "./index.bundle.d.ts",
+      "default": "./index.bundle.js"
+    },
+    "./model": {
+      "types": "./model.d.ts",
+      "default": "./model.js"
+    }
+  },
+  "yalcSig": "3e9765c2a069ac5bde6cf76e8a33f85e"
 }

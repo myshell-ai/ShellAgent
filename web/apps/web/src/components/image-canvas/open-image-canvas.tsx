@@ -1,18 +1,35 @@
 /** @jsxImportSource @emotion/react */
 
-import { PhotoIcon } from '@heroicons/react/24/outline';
-import { AButton, Button } from '@shellagent/ui';
-import { useInjection } from 'inversify-react';
-import { OpenImageCanvasModel } from '@/components/image-canvas/open-image-canvas.model';
-import { observer } from 'mobx-react-lite';
-import { ImageCanvas } from 'image-canvas';
+'use client';
+
 import 'image-canvas/index.css';
 import 'image-canvas/assets/react-colors-beauty.css';
-import { Modal, theme } from 'antd';
 import { css } from '@emotion/react';
+import { PhotoIcon } from '@heroicons/react/24/outline';
+import { AButton, Button } from '@shellagent/ui';
+import { Modal, theme } from 'antd';
+import { useInjection } from 'inversify-react';
+import { observer } from 'mobx-react-lite';
+import dynamic from 'next/dynamic';
+import { useEffect } from 'react';
 
-export function OpenImageCanvas() {
+import { useSelectOptions } from '@/components/app/node-form/widgets/variable-select/use-select-options';
+import { OpenImageCanvasModel } from '@/components/image-canvas/open-image-canvas.model';
+
+const ImageCanvas = dynamic(
+  () => import('image-canvas').then(module => module.ImageCanvas),
+  { ssr: false },
+);
+
+export function OpenImageCanvas(props: any) {
   const model = useInjection(OpenImageCanvasModel);
+  // eslint-disable-next-line react/destructuring-assignment
+  const options = useSelectOptions(props.name);
+  useEffect(() => {
+    model.fieldProps = props;
+    model.imageCanvas.setVariables(options);
+    // eslint-disable-next-line react/destructuring-assignment
+  }, [props.id]);
   return (
     <Button
       icon={PhotoIcon}
@@ -38,7 +55,7 @@ function OkButton() {
       size="large"
       type="primary"
       onClick={() => {
-        model.close();
+        model.saveAndClose();
       }}>
       Save
     </AButton>

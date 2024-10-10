@@ -23,7 +23,6 @@ var Cropper = require('cropperjs');
 var lodashEs = require('lodash-es');
 var hotkeys = require('hotkeys-js');
 var rough = require('roughjs');
-var inversify = require('inversify');
 
 function _interopDefault (e) { return e && e.__esModule ? e : { default: e }; }
 
@@ -326,17 +325,6 @@ function __rest(s, e) {
               t[p[i]] = s[p[i]];
       }
   return t;
-}
-
-function __decorate(decorators, target, key, desc) {
-  var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-  if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-  else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-  return c > 3 && r && Object.defineProperty(target, key, r), r;
-}
-
-function __metadata(metadataKey, metadataValue) {
-  if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(metadataKey, metadataValue);
 }
 
 typeof SuppressedError === "function" ? SuppressedError : function (error, suppressed, message) {
@@ -6229,7 +6217,7 @@ function RefSelect(props) {
             },
             selectedKeys: keyPath,
             items: variables
-        }, placement: "bottomRight", overlayStyle: {} }, { children: jsxRuntime.jsx(antd.Select, { options: [], dropdownRender: (originNode) => null, dropdownStyle: { display: 'none' }, value: keyPath.length === 0 ? null : keyPath.join('/'), placeholder: "Please select variable", onClear: () => props.onChange(undefined), allowClear: true }) })));
+        }, placement: "bottomRight", overlayStyle: {} }, { children: jsxRuntime.jsx(antd.Select, { options: [], dropdownRender: (originNode) => null, dropdownStyle: { display: 'none' }, value: model.getRefSelectDisplay(keyPath), placeholder: "Please select variable", onClear: () => props.onChange(undefined), allowClear: true }) })));
 }
 
 function Square3Stack3DIcon({
@@ -8533,6 +8521,7 @@ const contentStyle = {
     height: '100%'
 };
 function ImageCanvas() {
+    const model = inversifyReact.useInjection('ImageCanvasModel');
     const canvasEl = React.useRef(null);
     const workspaceEl = React.useRef(null);
     const roughSvgEl = React.useRef(null);
@@ -8605,6 +8594,7 @@ function ImageCanvas() {
         });
         await _editor.init();
         setEditor(_editor);
+        model.setEditor(_editor);
         setReady(true);
         setActiveObject(_editor.sketch);
     };
@@ -8625,6 +8615,14 @@ function ImageCanvas() {
             }
         };
     }, []);
+    model.emitter.on('loadFromJSON', async (json) => {
+        setReady(false);
+        await editor.loadFromJSON(json, true);
+        editor.fhistory.reset();
+        setReady(true);
+        setActiveObject(null);
+        editor.fireCustomModifiedEvent();
+    });
     return (jsxRuntime.jsx(GlobalStateContext.Provider, Object.assign({ value: {
             object: activeObject,
             setActiveObject,
@@ -8637,56 +8635,5 @@ function ImageCanvas() {
                 overflow: 'hidden'
             }, className: "fabritor-layout" }, { children: [jsxRuntime.jsx(antd.Spin, { spinning: !isReady, fullscreen: true }), jsxRuntime.jsx(ObjectRotateAngleTip, {}), jsxRuntime.jsxs(antd.Layout, { children: [jsxRuntime.jsx(Panel, {}), jsxRuntime.jsx(Content, Object.assign({ style: contentStyle }, { children: jsxRuntime.jsx(ContextMenu$1, Object.assign({ ref: contextMenuRef, object: activeObject }, { children: jsxRuntime.jsx("div", Object.assign({ style: workspaceStyle, ref: workspaceEl, className: "fabritor-workspace" }, { children: jsxRuntime.jsx("canvas", { ref: canvasEl }) })) })) })), jsxRuntime.jsx(Setter, {})] }), jsxRuntime.jsx("svg", { id: "fabritor-rough-svg", ref: roughSvgEl })] })) })));
 }
-
-exports.ImageCanvasModel = class ImageCanvasModel {
-    constructor() {
-        this.variables = [
-            {
-                key: 'current',
-                type: 'group',
-                label: 'current',
-                children: [
-                    {
-                        key: 'Task',
-                        label: 'Task',
-                        children: [
-                            {
-                                key: 'Image Canvas',
-                                label: 'Image Canvas',
-                                children: [
-                                    {
-                                        key: 'url',
-                                        label: 'url'
-                                    }
-                                ]
-                            }
-                        ]
-                    },
-                ],
-            },
-            {
-                key: 'global',
-                type: 'group',
-                label: 'global',
-                children: [
-                    {
-                        key: 'Start Context',
-                        label: 'Start Context',
-                        children: []
-                    },
-                ],
-            },
-        ];
-        mobx.makeObservable(this);
-    }
-};
-__decorate([
-    mobx.observable,
-    __metadata("design:type", Object)
-], exports.ImageCanvasModel.prototype, "variables", void 0);
-exports.ImageCanvasModel = __decorate([
-    inversify.injectable(),
-    __metadata("design:paramtypes", [])
-], exports.ImageCanvasModel);
 
 exports.ImageCanvas = ImageCanvas;

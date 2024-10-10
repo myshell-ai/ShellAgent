@@ -47,12 +47,24 @@ importers:
       '@emoji-mart/react':
         specifier: ^1.1.1
         version: 1.1.1(emoji-mart@5.6.0)(react@18.3.1)
+      '@heroicons/react':
+        specifier: ^2.1.5
+        version: 2.1.5(react@18.3.1)
+      '@ice/jsx-runtime':
+        specifier: ^0.2.0
+        version: 0.2.2(react@18.3.1)
       '@ice/runtime':
         specifier: ^1.2.7
         version: 1.4.11(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      '@swc/helpers':
+        specifier: ^0.5.1
+        version: 0.5.5
       antd:
         specifier: ^5.11.0
         version: 5.20.1(date-fns@2.30.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      classnames:
+        specifier: ^2.5.1
+        version: 2.5.1
       cropperjs:
         specifier: ^1.6.1
         version: 1.6.2
@@ -86,9 +98,30 @@ importers:
       i18next-http-backend:
         specifier: ^2.5.2
         version: 2.6.2(encoding@0.1.13)
+      inversify:
+        specifier: ^6.0.2
+        version: 6.0.2
+      inversify-react:
+        specifier: ^1.1.1
+        version: 1.1.1(inversify@6.0.2)(react@18.3.1)
       lodash-es:
         specifier: ^4.17.21
         version: 4.17.21
+      mitt:
+        specifier: ^3.0.1
+        version: 3.0.1
+      mobx:
+        specifier: ^6.13.1
+        version: 6.13.1
+      mobx-react-lite:
+        specifier: ^4.0.7
+        version: 4.0.7(mobx@6.13.1)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      rc-input:
+        specifier: ~1.4.2
+        version: 1.4.5(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      rc-input-number:
+        specifier: ~8.6.1
+        version: 8.6.1(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       react:
         specifier: ^18.2.0
         version: 18.3.1
@@ -101,9 +134,18 @@ importers:
       react-i18next:
         specifier: ^14.1.1
         version: 14.1.3(i18next@23.15.2)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      react-system:
+        specifier: ^0.20.3
+        version: 0.20.3(@types/react@18.3.3)(react@18.3.1)
+      reflect-metadata:
+        specifier: ^0.2.2
+        version: 0.2.2
       roughjs:
         specifier: ^4.6.6
         version: 4.6.6
+      universal-env:
+        specifier: ^3.3.3
+        version: 3.3.3
       uuid:
         specifier: ^9.0.1
         version: 9.0.1
@@ -9765,6 +9807,9 @@ packages:
 
   reflect-metadata@0.1.14:
     resolution: {integrity: sha512-ZhYeb6nRaXCfhnndflDK8qI6ZQ/YcWZCISRAWICW9XYqMUwjZM9Z0DveWX/ABN01oxSHwVxKQmxeYZSsm0jh5A==}
+
+  reflect-metadata@0.2.2:
+    resolution: {integrity: sha512-urBwgfrvVP/eAyXx4hluJivBKzuEbSQs9rKWCrCkbSxNv8mxPcUZKeuoF3Uy4mJl3Lwprp6yy5/39VWigZ4K6Q==}
 
   reflect.getprototypeof@1.0.6:
     resolution: {integrity: sha512-fmfw4XgoDke3kdI6h4xcUz1dG8uaiv5q9gcEwLS4Pnth2kxT+GZ7YehS1JTMGBQmtV7Y4GFGbs2re2NqhdozUg==}
@@ -22575,6 +22620,8 @@ snapshots:
       '@babel/runtime': 7.25.0
 
   reflect-metadata@0.1.14: {}
+
+  reflect-metadata@0.2.2: {}
 
   reflect.getprototypeof@1.0.6:
     dependencies:
