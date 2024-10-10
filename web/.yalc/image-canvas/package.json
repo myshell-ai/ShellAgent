@@ -48,7 +48,13 @@
     "./model": {
       "types": "./model.d.ts",
       "default": "./model.js"
+    },
+    "./index.css": {
+      "default": "./index.css"
+    },
+    "./assets/react-colors-beauty.css": {
+      "default": "./assets/react-colors-beauty.css"
     }
   },
-  "yalcSig": "3e9765c2a069ac5bde6cf76e8a33f85e"
+  "yalcSig": "428369c880bdb874b8d33ee7eaed3179"
 }
