@@ -16,6 +16,7 @@ export const ComfyUIEditor = ({
 }) => {
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string>('');
 
   const [loaded, setLoaded] = useState(false);
   const iframeRef = useRef<HTMLIFrameElement>(null);
@@ -134,6 +135,11 @@ export const ComfyUIEditor = ({
     setIsLoading(false);
   };
 
+  const handleIframeError = () => {
+    setIsLoading(false);
+    setError('Failed to load ComfyUI. Please ensure the API URL correct.');
+  };
+
   return (
     <div>
       <div className="mb-4 flex items-center">
@@ -164,7 +170,14 @@ export const ComfyUIEditor = ({
       <Modal
         title={
           <div className="flex justify-between items-center">
-            <span>ComfyUI Editor</span>
+            <div className="flex gap-2">
+              <span>ComfyUI Editor</span>
+              {error && (
+                <div className="flex justify-center items-center text-red-500 font-normal">
+                  {error}
+                </div>
+              )}
+            </div>
             <Upload
               accept=".json"
               showUploadList={false}
@@ -220,8 +233,8 @@ export const ComfyUIEditor = ({
           src={value}
           height="600px"
           className={`w-full ${isLoading ? 'hidden' : ''}`}
-          // className="w-full"
           onLoad={handleIframeLoad}
+          onError={handleIframeError}
         />
       </Modal>
     </div>
