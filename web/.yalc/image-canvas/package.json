@@ -5,6 +5,7 @@
     "@ant-design/icons": "^5.2.6",
     "@emoji-mart/data": "^1.1.2",
     "@emoji-mart/react": "^1.1.1",
+    "@heroicons/react": "^2.1.5",
     "@ice/jsx-runtime": "^0.2.0",
     "@ice/runtime": "^1.2.7",
     "@swc/helpers": "^0.5.1",
@@ -21,18 +22,24 @@
     "i18next": "^23.11.5",
     "i18next-browser-languagedetector": "^8.0.0",
     "i18next-http-backend": "^2.5.2",
+    "inversify": "^6.0.2",
+    "inversify-react": "^1.1.1",
     "lodash-es": "^4.17.21",
+    "mobx": "^6.13.1",
+    "mobx-react-lite": "^4.0.7",
     "rc-input": "~1.4.2",
     "rc-input-number": "~8.6.1",
     "react": "^18.2.0",
     "react-colors-beauty": "1.0.3",
     "react-dom": "^18.2.0",
     "react-i18next": "^14.1.1",
+    "react-system": "^0.20.3",
+    "reflect-metadata": "^0.2.2",
     "roughjs": "^4.6.6",
     "universal-env": "^3.3.3",
     "uuid": "^9.0.1"
   },
   "main": "./index.bundle.js",
   "types": "./index.bundle.d.ts",
-  "yalcSig": "7538f2b29ac7e032c8d8b4706485ad94"
+  "yalcSig": "066b3f03cd7d2a2429b4909884147e66"
 }

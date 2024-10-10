@@ -15,7 +15,8 @@ import { SettingsModel } from '@/components/settings/settings.model';
 import { EmitterModel } from '@/utils/emitter.model';
 import { ModalModel } from '@/utils/modal.model';
 import { RequestModel } from '@/utils/request.model';
-import { ImageCanvasModel } from '@/components/image-canvas/image-canvas.model';
+import { OpenImageCanvasModel } from '@/components/image-canvas/open-image-canvas.model';
+import { ImageCanvasModel } from 'image-canvas';
 
 export const container = new Container();
 
@@ -69,4 +70,5 @@ container.bind(AppBuilderChatModel).toSelf().inSingletonScope();
 container.bind(DownloadModel).toSelf().inSingletonScope();
 
 // image canvas
-container.bind(ImageCanvasModel).toSelf().inSingletonScope();
+container.bind('ImageCanvasModel').to(ImageCanvasModel).inSingletonScope();
+container.bind(OpenImageCanvasModel).toSelf().inSingletonScope();

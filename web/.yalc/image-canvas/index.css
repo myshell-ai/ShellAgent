@@ -1,5 +1,11 @@
 @import url('cropperjs/dist/cropper.css');
 
+/* antd hack */
+/* antd dropdown cascade bug, sub menu z-index = 100 */
+.ant-dropdown-menu-submenu {
+  z-index: 1200 !important;
+}
+
 /* @import url(../global.css); */
 html, body {
   height: 100%;

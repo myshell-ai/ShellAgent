@@ -3,7 +3,7 @@ import { EmitterModel } from '@/utils/emitter.model';
 import { action, makeObservable, observable } from 'mobx';
 
 @injectable()
-export class ImageCanvasModel {
+export class OpenImageCanvasModel {
   @observable isOpen = false;
 
   constructor(@inject(EmitterModel) private emitter: EmitterModel) {

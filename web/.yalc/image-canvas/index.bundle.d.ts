@@ -1,5 +1,11 @@
 import * as react_jsx_runtime from 'react/jsx-runtime';
+import { MenuProps } from 'antd';
 
-declare function Fabritor(): react_jsx_runtime.JSX.Element;
+declare function ImageCanvas(): react_jsx_runtime.JSX.Element;
 
-export { Fabritor as default };
+declare class ImageCanvasModel {
+    variables: MenuProps['items'];
+    constructor();
+}
+
+export { ImageCanvas, ImageCanvasModel };

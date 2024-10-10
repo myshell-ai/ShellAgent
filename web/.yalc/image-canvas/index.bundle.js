@@ -16,10 +16,14 @@ var RcInputNumber = require('rc-input-number');
 var RcInput = require('rc-input');
 var data = require('@emoji-mart/data');
 var Picker$1 = require('@emoji-mart/react');
+var inversifyReact = require('inversify-react');
+var mobx = require('mobx');
+var reactSystem = require('react-system');
 var Cropper = require('cropperjs');
 var lodashEs = require('lodash-es');
 var hotkeys = require('hotkeys-js');
 var rough = require('roughjs');
+var inversify = require('inversify');
 
 function _interopDefault (e) { return e && e.__esModule ? e : { default: e }; }
 
@@ -42,7 +46,7 @@ function _interopNamespace(e) {
 }
 
 var classNames__default = /*#__PURE__*/_interopDefault(classNames);
-var React__default = /*#__PURE__*/_interopDefault(React);
+var React__namespace = /*#__PURE__*/_interopNamespace(React);
 var i18n__default = /*#__PURE__*/_interopDefault(i18n);
 var FontFaceObserver__namespace = /*#__PURE__*/_interopNamespace(FontFaceObserver);
 var googleFonts__default = /*#__PURE__*/_interopDefault(googleFonts);
@@ -324,6 +328,17 @@ function __rest(s, e) {
   return t;
 }
 
+function __decorate(decorators, target, key, desc) {
+  var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+  if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+  else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+  return c > 3 && r && Object.defineProperty(target, key, r), r;
+}
+
+function __metadata(metadataKey, metadataValue) {
+  if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(metadataKey, metadataValue);
+}
+
 typeof SuppressedError === "function" ? SuppressedError : function (error, suppressed, message) {
   var e = new Error(message);
   return e.name = "SuppressedError", e.error = error, e.suppressed = suppressed, e;
@@ -435,7 +450,8 @@ const FABRITOR_CUSTOM_PROPS = [
     'sub_type',
     'imageSource',
     'imageBorder',
-    'oldArrowInfo'
+    'oldArrowInfo',
+    'ref',
 ];
 const COMPLETE_GOOGLE_FONTS = [
     'Roboto',
@@ -3090,11 +3106,11 @@ var ColorBlock = function ColorBlock(_ref) {
     style = _ref.style,
     onClick = _ref.onClick;
   var colorBlockCls = "".concat(prefixCls, "-color-block");
-  return /*#__PURE__*/React__default.default.createElement("div", {
+  return /*#__PURE__*/React__namespace.default.createElement("div", {
     className: classNames__default.default(colorBlockCls, className),
     style: style,
     onClick: onClick
-  }, /*#__PURE__*/React__default.default.createElement("div", {
+  }, /*#__PURE__*/React__namespace.default.createElement("div", {
     className: "".concat(colorBlockCls, "-inner"),
     style: {
       background: color
@@ -3218,7 +3234,7 @@ var Handler = function Handler(_ref) {
     size = _ref$size === void 0 ? 'default' : _ref$size,
     color = _ref.color,
     prefixCls = _ref.prefixCls;
-  return /*#__PURE__*/React__default.default.createElement("div", {
+  return /*#__PURE__*/React__namespace.default.createElement("div", {
     className: classNames__default.default("".concat(prefixCls, "-handler"), _defineProperty({}, "".concat(prefixCls, "-handler-sm"), size === 'small')),
     style: {
       backgroundColor: color
@@ -3230,7 +3246,7 @@ var Palette = function Palette(_ref) {
   var children = _ref.children,
     style = _ref.style,
     prefixCls = _ref.prefixCls;
-  return /*#__PURE__*/React__default.default.createElement("div", {
+  return /*#__PURE__*/React__namespace.default.createElement("div", {
     className: "".concat(prefixCls, "-palette"),
     style: _objectSpread2({
       position: 'relative'
@@ -3241,7 +3257,7 @@ var Palette = function Palette(_ref) {
 var Transform = /*#__PURE__*/React.forwardRef(function (props, ref) {
   var children = props.children,
     offset = props.offset;
-  return /*#__PURE__*/React__default.default.createElement("div", {
+  return /*#__PURE__*/React__namespace.default.createElement("div", {
     ref: ref,
     style: {
       position: 'absolute',
@@ -3286,20 +3302,20 @@ var Picker = function Picker(_ref) {
     _useColorDrag2 = _slicedToArray(_useColorDrag, 2),
     offset = _useColorDrag2[0],
     dragStartHandle = _useColorDrag2[1];
-  return /*#__PURE__*/React__default.default.createElement("div", {
+  return /*#__PURE__*/React__namespace.default.createElement("div", {
     ref: pickerRef,
     className: "".concat(prefixCls, "-select"),
     onMouseDown: dragStartHandle,
     onTouchStart: dragStartHandle
-  }, /*#__PURE__*/React__default.default.createElement(Palette, {
+  }, /*#__PURE__*/React__namespace.default.createElement(Palette, {
     prefixCls: prefixCls
-  }, /*#__PURE__*/React__default.default.createElement(Transform, {
+  }, /*#__PURE__*/React__namespace.default.createElement(Transform, {
     offset: offset,
     ref: transformRef
-  }, /*#__PURE__*/React__default.default.createElement(Handler, {
+  }, /*#__PURE__*/React__namespace.default.createElement(Handler, {
     color: color.toRgbString(),
     prefixCls: prefixCls
-  })), /*#__PURE__*/React__default.default.createElement("div", {
+  })), /*#__PURE__*/React__namespace.default.createElement("div", {
     className: "".concat(prefixCls, "-saturation"),
     style: {
       backgroundColor: "hsl(".concat(color.toHsb().h, ",100%, 50%)"),
@@ -3324,7 +3340,7 @@ var Gradient = function Gradient(_ref) {
       return result.toRgbString();
     }).join(',');
   }, [colors, type]);
-  return /*#__PURE__*/React__default.default.createElement("div", {
+  return /*#__PURE__*/React__namespace.default.createElement("div", {
     className: "".concat(prefixCls, "-gradient"),
     style: {
       position: 'absolute',
@@ -3375,21 +3391,21 @@ var Slider = function Slider(_ref) {
     _useColorDrag2 = _slicedToArray(_useColorDrag, 2),
     offset = _useColorDrag2[0],
     dragStartHandle = _useColorDrag2[1];
-  return /*#__PURE__*/React__default.default.createElement("div", {
+  return /*#__PURE__*/React__namespace.default.createElement("div", {
     ref: sliderRef,
     className: classNames__default.default("".concat(prefixCls, "-slider"), "".concat(prefixCls, "-slider-").concat(type)),
     onMouseDown: dragStartHandle,
     onTouchStart: dragStartHandle
-  }, /*#__PURE__*/React__default.default.createElement(Palette, {
+  }, /*#__PURE__*/React__namespace.default.createElement(Palette, {
     prefixCls: prefixCls
-  }, /*#__PURE__*/React__default.default.createElement(Transform, {
+  }, /*#__PURE__*/React__namespace.default.createElement(Transform, {
     offset: offset,
     ref: transformRef
-  }, /*#__PURE__*/React__default.default.createElement(Handler, {
+  }, /*#__PURE__*/React__namespace.default.createElement(Handler, {
     size: "small",
     color: value,
     prefixCls: prefixCls
-  })), /*#__PURE__*/React__default.default.createElement(Gradient, {
+  })), /*#__PURE__*/React__namespace.default.createElement(Gradient, {
     colors: gradientColors,
     direction: direction,
     type: type,
@@ -3465,21 +3481,21 @@ var ColorPicker = /*#__PURE__*/React.forwardRef(function (props, ref) {
     }
     onChange === null || onChange === void 0 ? void 0 : onChange(data, type);
   };
-  var defaultPanel = /*#__PURE__*/React__default.default.createElement(React__default.default.Fragment, null, /*#__PURE__*/React__default.default.createElement(Picker, _extends({
+  var defaultPanel = /*#__PURE__*/React__namespace.default.createElement(React__namespace.default.Fragment, null, /*#__PURE__*/React__namespace.default.createElement(Picker, _extends({
     color: colorValue,
     onChange: handleChange
-  }, basicProps)), /*#__PURE__*/React__default.default.createElement("div", {
+  }, basicProps)), /*#__PURE__*/React__namespace.default.createElement("div", {
     className: "".concat(prefixCls, "-slider-container")
-  }, /*#__PURE__*/React__default.default.createElement("div", {
+  }, /*#__PURE__*/React__namespace.default.createElement("div", {
     className: classNames__default.default("".concat(prefixCls, "-slider-group"), _defineProperty({}, "".concat(prefixCls, "-slider-group-disabled-alpha"), disabledAlpha))
-  }, /*#__PURE__*/React__default.default.createElement(Slider, _extends({
+  }, /*#__PURE__*/React__namespace.default.createElement(Slider, _extends({
     gradientColors: hueColor,
     color: colorValue,
     value: "hsl(".concat(colorValue.toHsb().h, ",100%, 50%)"),
     onChange: function onChange(color) {
       return handleChange(color, 'hue');
     }
-  }, basicProps)), !disabledAlpha && /*#__PURE__*/React__default.default.createElement(Slider, _extends({
+  }, basicProps)), !disabledAlpha && /*#__PURE__*/React__namespace.default.createElement(Slider, _extends({
     type: "alpha",
     gradientColors: ['rgba(255, 0, 4, 0) 0%', alphaColor],
     color: colorValue,
@@ -3487,11 +3503,11 @@ var ColorPicker = /*#__PURE__*/React.forwardRef(function (props, ref) {
     onChange: function onChange(color) {
       return handleChange(color, 'alpha');
     }
-  }, basicProps))), /*#__PURE__*/React__default.default.createElement(ColorBlock, {
+  }, basicProps))), /*#__PURE__*/React__namespace.default.createElement(ColorBlock, {
     color: colorValue.toRgbString(),
     prefixCls: prefixCls
   })));
-  return /*#__PURE__*/React__default.default.createElement("div", {
+  return /*#__PURE__*/React__namespace.default.createElement("div", {
     className: mergeCls,
     style: style,
     ref: ref
@@ -5442,8 +5458,8 @@ var objects = [
 				originY: "center",
 				left: 0,
 				top: 0,
-				width: 400,
-				height: 599,
+				width: 596,
+				height: 892.51,
 				fill: "#00000000",
 				stroke: null,
 				strokeWidth: 1,
@@ -5453,8 +5469,8 @@ var objects = [
 				strokeLineJoin: "miter",
 				strokeUniform: true,
 				strokeMiterLimit: 4,
-				scaleX: 1.49,
-				scaleY: 1.49,
+				scaleX: 1,
+				scaleY: 1,
 				angle: 0,
 				flipX: false,
 				flipY: false,
@@ -5532,7 +5548,7 @@ var objects = [
 		globalCompositeOperation: "source-over",
 		skewX: 0,
 		skewY: 0,
-		fontFamily: "霞鹜文楷",
+		fontFamily: "Open Sans",
 		fontWeight: "bold",
 		fontSize: 120,
 		text: "ShellAgent",
@@ -5562,10 +5578,10 @@ var objects = [
 		version: "5.3.0",
 		originX: "left",
 		originY: "top",
-		left: 69.8,
+		left: 69.79,
 		top: 464.87,
 		width: 1102.41,
-		height: 207.92,
+		height: 249.5,
 		fill: "#45496a",
 		stroke: null,
 		strokeWidth: 1,
@@ -5589,7 +5605,7 @@ var objects = [
 		globalCompositeOperation: "source-over",
 		skewX: 0,
 		skewY: 0,
-		fontFamily: "SourceHanSerif",
+		fontFamily: "Indie Flower",
 		fontWeight: "normal",
 		fontSize: 80,
 		text: "MyShell - Build, Share, and\n Own AI Chat.",
@@ -6201,6 +6217,46 @@ function TextFx() {
     return (jsxRuntime.jsxs(antd.Form, Object.assign({ form: form, onValuesChange: handleFxValueChange, colon: false, style: { marginTop: 24 } }, { children: [jsxRuntime.jsx(FormItem$8, { label: jsxRuntime.jsx("span", Object.assign({ style: { fontSize: 15, fontWeight: 'bold' } }, { children: t('common.stroke') })) }), jsxRuntime.jsx(FormItem$8, Object.assign({ label: t('common.stroke_color'), name: "stroke" }, { children: jsxRuntime.jsx(ColorSetter, {}) })), jsxRuntime.jsx(FormItem$8, Object.assign({ label: t('common.stroke_width'), name: "strokeWidth" }, { children: jsxRuntime.jsx(SliderInputNumber, { min: 0, max: 20 }) })), jsxRuntime.jsx(FormItem$8, Object.assign({ name: "shadow", style: { marginBottom: 0 } }, { children: jsxRuntime.jsx(TextShadow, {}) })), jsxRuntime.jsx(FormItem$8, Object.assign({ name: "path", style: { marginBottom: 0 } }, { children: jsxRuntime.jsx(TextPath, {}) }))] })));
 }
 
+function RefSelect(props) {
+    const model = inversifyReact.useInjection('ImageCanvasModel');
+    const keyPath = (typeof props.value === "string" && props.value.trim() !== '')
+        ? props.value.split('/')
+        : [];
+    const variables = mobx.toJS(model.variables);
+    return (jsxRuntime.jsx(antd.Dropdown, Object.assign({ menu: {
+            onClick: (info) => {
+                props.onChange(info.keyPath.join('/'));
+            },
+            selectedKeys: keyPath,
+            items: variables
+        }, placement: "bottomRight", overlayStyle: {} }, { children: jsxRuntime.jsx(antd.Select, { options: [], dropdownRender: (originNode) => null, dropdownStyle: { display: 'none' }, value: keyPath.length === 0 ? null : keyPath.join('/'), placeholder: "Please select variable", onClear: () => props.onChange(undefined), allowClear: true }) })));
+}
+
+function Square3Stack3DIcon({
+  title,
+  titleId,
+  ...props
+}, svgRef) {
+  return /*#__PURE__*/React__namespace.createElement("svg", Object.assign({
+    xmlns: "http://www.w3.org/2000/svg",
+    fill: "none",
+    viewBox: "0 0 24 24",
+    strokeWidth: 1.5,
+    stroke: "currentColor",
+    "aria-hidden": "true",
+    "data-slot": "icon",
+    ref: svgRef,
+    "aria-labelledby": titleId
+  }, props), title ? /*#__PURE__*/React__namespace.createElement("title", {
+    id: titleId
+  }, title) : null, /*#__PURE__*/React__namespace.createElement("path", {
+    strokeLinecap: "round",
+    strokeLinejoin: "round",
+    d: "M6.429 9.75 2.25 12l4.179 2.25m0-4.5 5.571 3 5.571-3m-11.142 0L2.25 7.5 12 2.25l9.75 5.25-4.179 2.25m0 0L21.75 12l-4.179 2.25m0 0 4.179 2.25L12 21.75 2.25 16.5l4.179-2.25m11.142 0-5.571 3-5.571-3"
+  }));
+}
+const ForwardRef = /*#__PURE__*/ React__namespace.forwardRef(Square3Stack3DIcon);
+
 const { Item: FormItem$7 } = antd.Form;
 function TextSetter() {
     const { object, editor } = React.useContext(GlobalStateContext);
@@ -6212,7 +6268,9 @@ function TextSetter() {
             icon: jsxRuntime.jsx(icons.FunctionOutlined, { style: { fontSize: 22 } }),
             label: t('setter.text.fx.title'),
             key: 'fx',
-            onClick: () => { setOpenFx(true); }
+            onClick: () => {
+                setOpenFx(true);
+            }
         }
     ];
     const handleFontStyles = (styles) => {
@@ -6279,6 +6337,7 @@ function TextSetter() {
     };
     React.useEffect(() => {
         form.setFieldsValue({
+            ref: object.ref,
             fontFamily: object.fontFamily,
             fontSize: object.fontSize,
             fill: transformFill2Colors(object.fill),
@@ -6293,11 +6352,27 @@ function TextSetter() {
             }
         });
     }, [object]);
-    return (jsxRuntime.jsxs(jsxRuntime.Fragment, { children: [jsxRuntime.jsxs(antd.Form, Object.assign({ form: form, onValuesChange: handleValuesChange, colon: false }, { children: [jsxRuntime.jsx(FormItem$7, Object.assign({ name: "fontFamily", label: t('setter.text.font_family') }, { children: jsxRuntime.jsx(antd.Select, { options: FONT_PRESET_FAMILY_LIST_GOOGLE_FONT, onDropdownVisibleChange: open => {
+    return (jsxRuntime.jsxs(jsxRuntime.Fragment, { children: [jsxRuntime.jsxs(antd.Form, Object.assign({ form: form, onValuesChange: handleValuesChange, colon: false }, { children: [jsxRuntime.jsx(antd.Form.Item, Object.assign({ name: "ref", label: jsxRuntime.jsxs(reactSystem.Flex, { children: [jsxRuntime.jsx(ForwardRef, { style: {
+                                        width: 18,
+                                        marginRight: 2
+                                    } }), "Ref"] }) }, { children: jsxRuntime.jsx(RefSelect, { id: 'ref', objId: object['id'], value: form.getFieldValue('ref'), onChange: (val) => {
+                                form.setFieldValue('ref', val);
+                                object.set('ref', val);
+                            } }) })), jsxRuntime.jsx(FormItem$7, Object.assign({ name: "fontFamily", label: t('setter.text.font_family') }, { children: jsxRuntime.jsx(antd.Select, { options: FONT_PRESET_FAMILY_LIST_GOOGLE_FONT, onDropdownVisibleChange: open => {
                                 if (open) {
                                     void loadPresetGoogleFonts();
                                 }
-                            } }) })), jsxRuntime.jsx(FormItem$7, Object.assign({ name: "fontSize", label: t('setter.text.font_size') }, { children: jsxRuntime.jsx(SliderInputNumber, { max: 400, onChangeComplete: () => { editor.fireCustomModifiedEvent(); } }) })), jsxRuntime.jsx(FormItem$7, Object.assign({ name: "fill", label: t('setter.text.fill') }, { children: jsxRuntime.jsx(ColorSetter, { type: "fontColor", defaultColor: "#000000" }) })), jsxRuntime.jsx(FormItem$7, Object.assign({ name: "textAlign", label: t('setter.text.text_align') }, { children: jsxRuntime.jsx(AlignSetter, {}) })), jsxRuntime.jsx(FormItem$7, Object.assign({ name: "fontStyles", label: t('setter.text.font_styles') }, { children: jsxRuntime.jsx(FontStylePanel, {}) })), jsxRuntime.jsx(FormItem$7, Object.assign({ name: "charSpacing", label: t('setter.text.char_spacing') }, { children: jsxRuntime.jsx(SliderInputNumber, { min: -200, max: 800, onChangeComplete: () => { editor.fireCustomModifiedEvent(); } }) })), jsxRuntime.jsx(FormItem$7, Object.assign({ name: "lineHeight", label: t('setter.text.line_height') }, { children: jsxRuntime.jsx(SliderInputNumber, { min: 0.5, max: 2.5, step: 0.01, onChangeComplete: () => { editor.fireCustomModifiedEvent(); } }) }))] })), jsxRuntime.jsx(FList, { dataSource: TEXT_ADVANCE_CONFIG, renderItemChildren: (item) => (jsxRuntime.jsxs(jsxRuntime.Fragment, { children: [item.icon, jsxRuntime.jsx("span", Object.assign({ style: { fontSize: 16, fontWeight: 'bold', margin: '0 6px 0 10px' } }, { children: item.label })), jsxRuntime.jsx(icons.RightOutlined, {})] })) }), jsxRuntime.jsx(MoreConfigWrapper, Object.assign({ open: openFx, setOpen: setOpenFx, title: `${t('panel.text.title')} ${t('setter.text.fx.title')}` }, { children: jsxRuntime.jsx(TextFx, {}) }))] }));
+                            } }) })), jsxRuntime.jsx(FormItem$7, Object.assign({ name: "fontSize", label: t('setter.text.font_size') }, { children: jsxRuntime.jsx(SliderInputNumber, { max: 400, onChangeComplete: () => {
+                                editor.fireCustomModifiedEvent();
+                            } }) })), jsxRuntime.jsx(FormItem$7, Object.assign({ name: "fill", label: t('setter.text.fill') }, { children: jsxRuntime.jsx(ColorSetter, { type: "fontColor", defaultColor: "#000000" }) })), jsxRuntime.jsx(FormItem$7, Object.assign({ name: "textAlign", label: t('setter.text.text_align') }, { children: jsxRuntime.jsx(AlignSetter, {}) })), jsxRuntime.jsx(FormItem$7, Object.assign({ name: "fontStyles", label: t('setter.text.font_styles') }, { children: jsxRuntime.jsx(FontStylePanel, {}) })), jsxRuntime.jsx(FormItem$7, Object.assign({ name: "charSpacing", label: t('setter.text.char_spacing') }, { children: jsxRuntime.jsx(SliderInputNumber, { min: -200, max: 800, onChangeComplete: () => {
+                                editor.fireCustomModifiedEvent();
+                            } }) })), jsxRuntime.jsx(FormItem$7, Object.assign({ name: "lineHeight", label: t('setter.text.line_height') }, { children: jsxRuntime.jsx(SliderInputNumber, { min: 0.5, max: 2.5, step: 0.01, onChangeComplete: () => {
+                                editor.fireCustomModifiedEvent();
+                            } }) }))] })), jsxRuntime.jsx(FList, { dataSource: TEXT_ADVANCE_CONFIG, renderItemChildren: (item) => (jsxRuntime.jsxs(jsxRuntime.Fragment, { children: [item.icon, jsxRuntime.jsx("span", Object.assign({ style: {
+                                fontSize: 16,
+                                fontWeight: 'bold',
+                                margin: '0 6px 0 10px'
+                            } }, { children: item.label })), jsxRuntime.jsx(icons.RightOutlined, {})] })) }), jsxRuntime.jsx(MoreConfigWrapper, Object.assign({ open: openFx, setOpen: setOpenFx, title: `${t('panel.text.title')} ${t('setter.text.fx.title')}` }, { children: jsxRuntime.jsx(TextFx, {}) }))] }));
 }
 
 function ReplaceSetter(props) {
@@ -6603,7 +6678,9 @@ function ImageSetter() {
             icon: jsxRuntime.jsx(icons.FunctionOutlined, { style: { fontSize: 22 } }),
             label: t('setter.image.filter'),
             key: 'fx',
-            onClick: () => { setOpenFx(true); }
+            onClick: () => {
+                setOpenFx(true);
+            }
         }
     ];
     const handleImageReplace = (base64) => {
@@ -6617,7 +6694,10 @@ function ImageSetter() {
     const handleBorder = (border) => {
         const { type, stroke = '#000000', strokeWidth, borderRadius } = border || {};
         if (type === 'none') {
-            object.setBorder({ stroke: null, borderRadius });
+            object.setBorder({
+                stroke: null,
+                borderRadius
+            });
         }
         else {
             object.setBorder({
@@ -6647,11 +6727,18 @@ function ImageSetter() {
             const border = object.getBorder();
             form.setFieldsValue({
                 border: Object.assign(Object.assign({ type: getObjectBorderType(border) }, border), { stroke: border.stroke || '#000000' }),
-                opacity: object.opacity
+                opacity: object.opacity,
+                ref: object.ref,
             });
         }
     }, [object]);
-    return (jsxRuntime.jsxs(jsxRuntime.Fragment, { children: [jsxRuntime.jsxs(antd.Form, Object.assign({ form: form, onValuesChange: handleValuesChange, colon: false }, { children: [jsxRuntime.jsx(FormItem$4, Object.assign({ name: "img" }, { children: jsxRuntime.jsx(ReplaceSetter, {}) })), jsxRuntime.jsxs(antd.Row, Object.assign({ gutter: 8 }, { children: [jsxRuntime.jsx(antd.Col, Object.assign({ span: 12 }, { children: jsxRuntime.jsx(FormItem$4, { children: jsxRuntime.jsx(ClipSetter, { object: object }) }) })), jsxRuntime.jsx(antd.Col, Object.assign({ span: 12 }, { children: jsxRuntime.jsx(FormItem$4, Object.assign({ name: "border" }, { children: jsxRuntime.jsx(BorderSetter, {}) })) }))] }))] })), jsxRuntime.jsx(MoreConfigWrapper, Object.assign({ open: openFx, setOpen: setOpenFx, title: t('setter.image.filter') }, { children: jsxRuntime.jsx(ImageFx, {}) }))] }));
+    return (jsxRuntime.jsxs(jsxRuntime.Fragment, { children: [jsxRuntime.jsxs(antd.Form, Object.assign({ form: form, onValuesChange: handleValuesChange, colon: false }, { children: [jsxRuntime.jsx(antd.Form.Item, Object.assign({ name: "ref", label: jsxRuntime.jsxs(reactSystem.Flex, { children: [jsxRuntime.jsx(ForwardRef, { style: {
+                                        width: 18,
+                                        marginRight: 2
+                                    } }), "Ref"] }) }, { children: jsxRuntime.jsx(RefSelect, { id: 'ref', objId: object['id'], value: form.getFieldValue('ref'), onChange: (val) => {
+                                form.setFieldValue('ref', val);
+                                object.set('ref', val);
+                            } }) })), jsxRuntime.jsx(FormItem$4, Object.assign({ name: "img" }, { children: jsxRuntime.jsx(ReplaceSetter, {}) })), jsxRuntime.jsxs(antd.Row, Object.assign({ gutter: 8 }, { children: [jsxRuntime.jsx(antd.Col, Object.assign({ span: 12 }, { children: jsxRuntime.jsx(FormItem$4, { children: jsxRuntime.jsx(ClipSetter, { object: object }) }) })), jsxRuntime.jsx(antd.Col, Object.assign({ span: 12 }, { children: jsxRuntime.jsx(FormItem$4, Object.assign({ name: "border" }, { children: jsxRuntime.jsx(BorderSetter, {}) })) }))] }))] })), jsxRuntime.jsx(MoreConfigWrapper, Object.assign({ open: openFx, setOpen: setOpenFx, title: t('setter.image.filter') }, { children: jsxRuntime.jsx(ImageFx, {}) }))] }));
 }
 
 const { Item: FormItem$3 } = antd.Form;
@@ -6761,7 +6848,7 @@ function ShapeSetter() {
 
 function OpacitySetter(props) {
     const { value, onChange, onChangeComplete } = props;
-    return (jsxRuntime.jsx(antd.Popover, Object.assign({ content: jsxRuntime.jsx(SliderInputNumber, { style: { width: 200 }, min: 0, max: 1, step: 0.01, value: value, onChange: onChange, onChangeComplete: onChangeComplete }), placement: "bottom", trigger: "click" }, { children: jsxRuntime.jsx("span", { children: jsxRuntime.jsx("svg", Object.assign({ xmlns: "http://www.w3.org/2000/svg", width: "22", height: "22", viewBox: "0 0 24 24" }, { children: jsxRuntime.jsxs("g", Object.assign({ fill: "currentColor", "fill-rule": "evenodd" }, { children: [jsxRuntime.jsx("path", { d: "M3 2h2a1 1 0 0 1 1 1v2a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V3a1 1 0 0 1 1-1zm0 8h2a1 1 0 0 1 1 1v2a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1v-2a1 1 0 0 1 1-1zm0 8h2a1 1 0 0 1 1 1v2a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1v-2a1 1 0 0 1 1-1z" }), jsxRuntime.jsx("path", { d: "M11 2h2a1 1 0 0 1 1 1v2a1 1 0 0 1-1 1h-2a1 1 0 0 1-1-1V3a1 1 0 0 1 1-1zm0 8h2a1 1 0 0 1 1 1v2a1 1 0 0 1-1 1h-2a1 1 0 0 1-1-1v-2a1 1 0 0 1 1-1zm0 8h2a1 1 0 0 1 1 1v2a1 1 0 0 1-1 1h-2a1 1 0 0 1-1-1v-2a1 1 0 0 1 1-1z", opacity: ".45" }), jsxRuntime.jsx("path", { d: "M19 2h2a1 1 0 0 1 1 1v2a1 1 0 0 1-1 1h-2a1 1 0 0 1-1-1V3a1 1 0 0 1 1-1zm0 8h2a1 1 0 0 1 1 1v2a1 1 0 0 1-1 1h-2a1 1 0 0 1-1-1v-2a1 1 0 0 1 1-1zm0 8h2a1 1 0 0 1 1 1v2a1 1 0 0 1-1 1h-2a1 1 0 0 1-1-1v-2a1 1 0 0 1 1-1z", opacity: ".15" }), jsxRuntime.jsx("path", { d: "M7 6h2a1 1 0 0 1 1 1v2a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1zm0 8h2a1 1 0 0 1 1 1v2a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1v-2a1 1 0 0 1 1-1z", opacity: ".7" }), jsxRuntime.jsx("path", { d: "M15 6h2a1 1 0 0 1 1 1v2a1 1 0 0 1-1 1h-2a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1zm0 8h2a1 1 0 0 1 1 1v2a1 1 0 0 1-1 1h-2a1 1 0 0 1-1-1v-2a1 1 0 0 1 1-1z", opacity: ".3" })] })) })) }) })));
+    return (jsxRuntime.jsx(antd.Popover, Object.assign({ content: jsxRuntime.jsx(SliderInputNumber, { style: { width: 200 }, min: 0, max: 1, step: 0.01, value: value, onChange: onChange, onChangeComplete: onChangeComplete }), placement: "bottom", trigger: "click" }, { children: jsxRuntime.jsx("span", { children: jsxRuntime.jsx("svg", Object.assign({ xmlns: "http://www.w3.org/2000/svg", width: "22", height: "22", viewBox: "0 0 24 24" }, { children: jsxRuntime.jsxs("g", Object.assign({ fill: "currentColor", fillRule: "evenodd" }, { children: [jsxRuntime.jsx("path", { d: "M3 2h2a1 1 0 0 1 1 1v2a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V3a1 1 0 0 1 1-1zm0 8h2a1 1 0 0 1 1 1v2a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1v-2a1 1 0 0 1 1-1zm0 8h2a1 1 0 0 1 1 1v2a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1v-2a1 1 0 0 1 1-1z" }), jsxRuntime.jsx("path", { d: "M11 2h2a1 1 0 0 1 1 1v2a1 1 0 0 1-1 1h-2a1 1 0 0 1-1-1V3a1 1 0 0 1 1-1zm0 8h2a1 1 0 0 1 1 1v2a1 1 0 0 1-1 1h-2a1 1 0 0 1-1-1v-2a1 1 0 0 1 1-1zm0 8h2a1 1 0 0 1 1 1v2a1 1 0 0 1-1 1h-2a1 1 0 0 1-1-1v-2a1 1 0 0 1 1-1z", opacity: ".45" }), jsxRuntime.jsx("path", { d: "M19 2h2a1 1 0 0 1 1 1v2a1 1 0 0 1-1 1h-2a1 1 0 0 1-1-1V3a1 1 0 0 1 1-1zm0 8h2a1 1 0 0 1 1 1v2a1 1 0 0 1-1 1h-2a1 1 0 0 1-1-1v-2a1 1 0 0 1 1-1zm0 8h2a1 1 0 0 1 1 1v2a1 1 0 0 1-1 1h-2a1 1 0 0 1-1-1v-2a1 1 0 0 1 1-1z", opacity: ".15" }), jsxRuntime.jsx("path", { d: "M7 6h2a1 1 0 0 1 1 1v2a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1zm0 8h2a1 1 0 0 1 1 1v2a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1v-2a1 1 0 0 1 1-1z", opacity: ".7" }), jsxRuntime.jsx("path", { d: "M15 6h2a1 1 0 0 1 1 1v2a1 1 0 0 1-1 1h-2a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1zm0 8h2a1 1 0 0 1 1 1v2a1 1 0 0 1-1 1h-2a1 1 0 0 1-1-1v-2a1 1 0 0 1 1-1z", opacity: ".3" })] })) })) }) })));
 }
 
 function ToolbarItem(props) {
@@ -7232,7 +7319,6 @@ function Setter() {
     const { object, isReady } = React.useContext(GlobalStateContext);
     const { t } = reactI18next.useTranslation();
     const objectType = ((_a = object === null || object === void 0 ? void 0 : object.get) === null || _a === void 0 ? void 0 : _a.call(object, 'type')) || '';
-    console.log('objectType', objectType, object);
     const getRenderSetter = () => {
         if (!isReady)
             return null;
@@ -8446,7 +8532,7 @@ const contentStyle = {
     flexDirection: 'column',
     height: '100%'
 };
-function Fabritor() {
+function ImageCanvas() {
     const canvasEl = React.useRef(null);
     const workspaceEl = React.useRef(null);
     const roughSvgEl = React.useRef(null);
@@ -8552,4 +8638,55 @@ function Fabritor() {
             }, className: "fabritor-layout" }, { children: [jsxRuntime.jsx(antd.Spin, { spinning: !isReady, fullscreen: true }), jsxRuntime.jsx(ObjectRotateAngleTip, {}), jsxRuntime.jsxs(antd.Layout, { children: [jsxRuntime.jsx(Panel, {}), jsxRuntime.jsx(Content, Object.assign({ style: contentStyle }, { children: jsxRuntime.jsx(ContextMenu$1, Object.assign({ ref: contextMenuRef, object: activeObject }, { children: jsxRuntime.jsx("div", Object.assign({ style: workspaceStyle, ref: workspaceEl, className: "fabritor-workspace" }, { children: jsxRuntime.jsx("canvas", { ref: canvasEl }) })) })) })), jsxRuntime.jsx(Setter, {})] }), jsxRuntime.jsx("svg", { id: "fabritor-rough-svg", ref: roughSvgEl })] })) })));
 }
 
-module.exports = Fabritor;
+exports.ImageCanvasModel = class ImageCanvasModel {
+    constructor() {
+        this.variables = [
+            {
+                key: 'current',
+                type: 'group',
+                label: 'current',
+                children: [
+                    {
+                        key: 'Task',
+                        label: 'Task',
+                        children: [
+                            {
+                                key: 'Image Canvas',
+                                label: 'Image Canvas',
+                                children: [
+                                    {
+                                        key: 'url',
+                                        label: 'url'
+                                    }
+                                ]
+                            }
+                        ]
+                    },
+                ],
+            },
+            {
+                key: 'global',
+                type: 'group',
+                label: 'global',
+                children: [
+                    {
+                        key: 'Start Context',
+                        label: 'Start Context',
+                        children: []
+                    },
+                ],
+            },
+        ];
+        mobx.makeObservable(this);
+    }
+};
+__decorate([
+    mobx.observable,
+    __metadata("design:type", Object)
+], exports.ImageCanvasModel.prototype, "variables", void 0);
+exports.ImageCanvasModel = __decorate([
+    inversify.injectable(),
+    __metadata("design:paramtypes", [])
+], exports.ImageCanvasModel);
+
+exports.ImageCanvas = ImageCanvas;

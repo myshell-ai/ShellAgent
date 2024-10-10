@@ -1,21 +1,27 @@
+/** @jsxImportSource @emotion/react */
+
 import { PhotoIcon } from '@heroicons/react/24/outline';
 import { AButton, Button } from '@shellagent/ui';
 import { useInjection } from 'inversify-react';
-import { ImageCanvasModel } from '@/components/image-canvas/image-canvas.model';
+import { OpenImageCanvasModel } from '@/components/image-canvas/open-image-canvas.model';
 import { observer } from 'mobx-react-lite';
-import ImageCanvas from 'image-canvas';
+import { ImageCanvas } from 'image-canvas';
 import 'image-canvas/index.css';
 import 'image-canvas/assets/react-colors-beauty.css';
 import { Modal, theme } from 'antd';
+import { css } from '@emotion/react';
 
 export function OpenImageCanvas() {
-  const model = useInjection(ImageCanvasModel);
+  const model = useInjection(OpenImageCanvasModel);
   return (
     <Button
       icon={PhotoIcon}
       onClick={() => {
         model.open();
       }}
+      css={css`
+        box-shadow: unset !important;
+      `}
       variant="link"
       size="sm"
       type="button"
@@ -26,7 +32,7 @@ export function OpenImageCanvas() {
 }
 
 function OkButton() {
-  const model = useInjection(ImageCanvasModel);
+  const model = useInjection(OpenImageCanvasModel);
   return (
     <AButton
       size="large"
@@ -40,11 +46,11 @@ function OkButton() {
 }
 
 export const ImageCanvasDialog = observer(() => {
-  const model = useInjection(ImageCanvasModel);
+  const model = useInjection(OpenImageCanvasModel);
   const { token } = theme.useToken();
   return (
     <Modal
-      style={{ top: 10 }}
+      style={{ top: 16 }}
       width="90%"
       open={model.isOpen}
       styles={{
@@ -63,7 +69,7 @@ export const ImageCanvasDialog = observer(() => {
         },
         body: {
           padding: 0,
-          height: '80vh',
+          height: 'calc(100vh - 24px - 16px * 6 - 35px)',
         },
       }}
       title="Image Canvas Editor"
