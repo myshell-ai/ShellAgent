@@ -1,11 +1,11 @@
 import {
-  TValues,
   getDefaultValueBySchema,
   TFieldMode,
   ISchema,
 } from '@shellagent/form-engine';
 import { FormRef } from '@shellagent/ui';
 import { useRequest } from 'ahooks';
+import { useInjection } from 'inversify-react';
 import { merge } from 'lodash-es';
 import { nanoid } from 'nanoid';
 import React, {
@@ -15,12 +15,14 @@ import React, {
   useMemo,
   useCallback,
 } from 'react';
-import { useAppStore } from '@/stores/app/app-provider';
 
 import { WidgetConfigProps } from '@/components/app/config-form/widget-config';
+import { COMFYUI_API } from '@/components/app/constants';
 import NodeForm from '@/components/app/node-form';
-import { useEventEmitter, EventType } from './emitter';
+import { SettingsModel } from '@/components/settings/settings.model';
+import { useAppStore } from '@/stores/app/app-provider';
 
+import { useEventEmitter, EventType } from './emitter';
 import { getComfyuiSchema, defaultSchema } from './schema';
 import { getFile } from './services';
 import { ComfyUIEditor } from './widgets/comfyui-editor';
@@ -39,12 +41,19 @@ const ComfyUIPlugin: React.FC<WidgetConfigProps> = ({
     fieldsModeMap: state.config?.fieldsModeMap,
   }));
 
+  const model = useInjection(SettingsModel);
+
   useEffect(() => {
     const values = formRef.current?.getValues();
     if (!values?.comfy_workflow_id) {
       formRef.current?.setValue('comfy_workflow_id', nanoid());
     }
-  }, []);
+    // 从环境变量中获取参数
+    model.loadSettingsEnv().then(settings => {
+      const api = settings?.envs?.find(env => env.key === COMFYUI_API)?.value;
+      formRef.current?.setValue('api', api);
+    });
+  }, [model]);
 
   const defaultValues = useMemo(
     () => getDefaultValueBySchema(schema, false),
@@ -54,8 +63,6 @@ const ComfyUIPlugin: React.FC<WidgetConfigProps> = ({
   useEffect(() => {
     onChange(merge({}, defaultValues, values));
   }, [defaultValues]);
-
-  console.log('values', values);
 
   const { run: getComfySchema } = useRequest(getFile, {
     manual: true,

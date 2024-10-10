@@ -1,5 +1,6 @@
 import { ISchema, TValues } from '@shellagent/form-engine';
 import { isEmpty } from 'lodash-es';
+
 import { ENABLE_MIME } from '@/utils/file-types';
 
 export const getSchemaByInputs = (inputs: TValues): ISchema => {

@@ -1,11 +1,22 @@
-import { UploadOutlined } from '@ant-design/icons';
-import { Input, Button, useFormContext, Spinner } from '@shellagent/ui';
+import { UploadOutlined, ReloadOutlined } from '@ant-design/icons';
+import { Button, useFormContext, Spinner } from '@shellagent/ui';
 import { useRequest } from 'ahooks';
 import { Modal, Upload } from 'antd';
-import React, { useState, useRef, useEffect, useCallback } from 'react';
+import { useInjection } from 'inversify-react';
+import React, {
+  useState,
+  useRef,
+  useEffect,
+  useCallback,
+  useMemo,
+} from 'react';
 
-import { saveComfy, uploadComfy, getFile } from '../services';
+import { COMFYUI_API } from '@/components/app/constants';
+import { SettingsModel } from '@/components/settings/settings.model';
+
 import emitter, { EventType } from '../emitter';
+import { saveComfy, uploadComfy, getFile } from '../services';
+import { isValidUrl } from '../utils';
 
 export const ComfyUIEditor = ({
   value,
@@ -20,6 +31,7 @@ export const ComfyUIEditor = ({
   const [loaded, setLoaded] = useState(false);
   const iframeRef = useRef<HTMLIFrameElement>(null);
   const { getValues } = useFormContext();
+  const model = useInjection(SettingsModel);
 
   const showModal = () => {
     setIsModalVisible(true);
@@ -69,7 +81,8 @@ export const ComfyUIEditor = ({
               name: event.data.name,
               comfy_workflow_id,
             });
-            setIsModalVisible(false);
+            break;
+          default:
             break;
         }
       } catch (error) {
@@ -90,18 +103,22 @@ export const ComfyUIEditor = ({
     setIsModalVisible(false);
   };
 
-  const { run: saveComfyRequest } = useRequest(saveComfy, {
-    manual: true,
-    onSuccess: result => {
-      if (result.success) {
-        const comfy_workflow_id = getValues('comfy_workflow_id');
-        emitter.emit(EventType.UPDATE_FORM, {
-          data: result.data.schemas,
-          id: comfy_workflow_id,
-        });
-      }
+  const { run: saveComfyRequest, loading: saveLoading } = useRequest(
+    saveComfy,
+    {
+      manual: true,
+      onSuccess: result => {
+        if (result.success) {
+          setIsModalVisible(false);
+          const comfy_workflow_id = getValues('comfy_workflow_id');
+          emitter.emit(EventType.UPDATE_FORM, {
+            data: result.data.schemas,
+            id: comfy_workflow_id,
+          });
+        }
+      },
     },
-  });
+  );
 
   const { run: uploadComfyRequest } = useRequest(uploadComfy, {
     manual: true,
@@ -145,26 +162,35 @@ export const ComfyUIEditor = ({
     setError('Failed to load ComfyUI. Please ensure the API URL correct.');
   };
 
+  const showSettings = () => {
+    model.modal.open();
+  };
+
+  const showSettingButton = useMemo(() => {
+    if (!value) {
+      return true;
+    }
+    return !isValidUrl(value);
+  }, [value]);
+
+  const reloadSettings = () => {
+    model.loadSettingsEnv().then(settings => {
+      const api =
+        settings?.envs?.find(env => env.key === COMFYUI_API)?.value || '';
+      onChange(api);
+      if (api && isValidUrl(api)) {
+        setIsLoading(true);
+      }
+    });
+  };
+
+  const disabled = useMemo(
+    () => showSettingButton || isLoading,
+    [showSettingButton, isLoading],
+  );
+
   return (
     <div>
-      <div className="mb-4 flex items-center">
-        {/* eslint-disable-next-line jsx-a11y/label-has-associated-control */}
-        <label
-          htmlFor="comfyui-api"
-          className="w-12 mr-3 text-sm font-medium peer-disabled:cursor-not-allowed peer-disabled:opacity-30 break-all flex items-center">
-          API
-        </label>
-        <Input
-          id="comfyui-api"
-          size="sm"
-          value={value}
-          onChange={e => {
-            onChange(e.target.value);
-          }}
-          placeholder="Enter ComfyUI API"
-          className="w-full"
-        />
-      </div>
       <Button
         size="sm"
         className="w-full"
@@ -186,7 +212,7 @@ export const ComfyUIEditor = ({
                 handleImport(file);
                 return false;
               }}>
-              <Button size="sm">
+              <Button size="sm" disabled={disabled}>
                 <UploadOutlined className="mr-2" />
                 Import
               </Button>
@@ -195,8 +221,6 @@ export const ComfyUIEditor = ({
         }
         open={isModalVisible}
         onOk={handleSave}
-        okText="保存"
-        cancelText="完成"
         mask={false}
         width="80%"
         className="top-5"
@@ -205,7 +229,11 @@ export const ComfyUIEditor = ({
             <Button size="sm" variant="outline" onClick={handleCancel}>
               Cancel
             </Button>
-            <Button size="sm" onClick={handleSave}>
+            <Button
+              size="sm"
+              onClick={handleSave}
+              disabled={disabled}
+              loading={saveLoading}>
               Save
             </Button>
           </div>
@@ -216,12 +244,33 @@ export const ComfyUIEditor = ({
             <Spinner size="lg" className="text-brand" />
           </div>
         )}
+        {showSettingButton && (
+          <div className="flex flex-col gap-2 justify-center items-center h-[600px]">
+            <div>
+              There is an issue with the ComfyUI API settings, please reset them
+              <Button size="sm" onClick={showSettings} className="ml-2">
+                Settings
+              </Button>
+            </div>
+            <div>
+              After completing the settings, please click
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={reloadSettings}
+                className="ml-2">
+                <ReloadOutlined className="mr-2" />
+                Reload
+              </Button>
+            </div>
+          </div>
+        )}
         <iframe
           title="comfyui"
           ref={iframeRef}
           src={value}
           height="600px"
-          className={`w-full ${isLoading ? 'hidden' : ''}`}
+          className={`w-full ${isLoading || showSettingButton ? 'hidden' : ''}`}
           onLoad={handleIframeLoad}
           onError={handleIframeError}
         />
