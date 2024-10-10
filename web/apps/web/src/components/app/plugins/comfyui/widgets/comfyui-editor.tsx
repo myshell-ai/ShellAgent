@@ -41,11 +41,9 @@ export const ComfyUIEditor = ({
     manual: true,
     onSuccess: result => {
       if (result.success) {
-        const {
-          data: { workflow },
-        } = result;
+        const { data } = result;
         iframeRef.current?.contentWindow?.postMessage(
-          { type: 'load', data: workflow },
+          { type: 'load', data },
           value,
         );
       }
