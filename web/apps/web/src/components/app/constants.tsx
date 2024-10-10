@@ -104,6 +104,12 @@ export const materialList: MaterialListType = [
         type: NodeTypeEnum.widget,
         undraggable: true,
       },
+      {
+        name: 'ImageTextFuserWidget',
+        display_name: 'Image Text Fuser (Deprecated)',
+        type: NodeTypeEnum.widget,
+        undraggable: true,
+      },
     ],
   },
 ];
