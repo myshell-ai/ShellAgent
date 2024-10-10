@@ -31,7 +31,7 @@ import {
   VariableSelect,
   ModeSelect,
   Render,
-  TasksConfig,
+  // TasksConfig,
   MessagePreview,
   ButtonEditor,
   WorkflowSelect,
@@ -39,6 +39,12 @@ import {
   VariableNameInput,
 } from './widgets';
 import { OpenImageCanvas } from '../../image-canvas/open-image-canvas';
+import dynamic from 'next/dynamic';
+
+const TasksConfig = dynamic(
+  () => import('./widgets/tasks-config').then(module => module.TasksConfig),
+  { ssr: false },
+);
 
 interface NodeFormProps {
   values: TValues;
