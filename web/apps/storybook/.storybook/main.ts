@@ -51,6 +51,11 @@ const config: StorybookConfig = {
         react: {
           runtime: 'automatic',
         },
+        legacyDecorator: true,
+      },
+      parser: {
+        syntax: 'typescript',
+        decorators: true,
       },
     },
   }),
