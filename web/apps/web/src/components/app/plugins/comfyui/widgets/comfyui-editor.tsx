@@ -2,7 +2,7 @@ import { UploadOutlined } from '@ant-design/icons';
 import { Input, Button, useFormContext, Spinner } from '@shellagent/ui';
 import { useRequest } from 'ahooks';
 import { Modal, Upload } from 'antd';
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useCallback } from 'react';
 
 import { saveComfy, uploadComfy, getFile } from '../services';
 import emitter, { EventType } from '../emitter';
@@ -17,10 +17,10 @@ export const ComfyUIEditor = ({
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string>('');
-
   const [loaded, setLoaded] = useState(false);
   const iframeRef = useRef<HTMLIFrameElement>(null);
   const { getValues } = useFormContext();
+
   const showModal = () => {
     setIsModalVisible(true);
   };
@@ -40,45 +40,51 @@ export const ComfyUIEditor = ({
     },
   });
 
-  const handleMessage = (event: MessageEvent) => {
-    try {
-      const valueUrl = new URL(value);
-      const comfy_workflow_id = getValues('comfy_workflow_id');
-
-      if (valueUrl.origin !== event.origin) {
+  const handleMessage = useCallback(
+    (event: MessageEvent) => {
+      if (!value) {
         return;
       }
-      // 处理 'loaded' 消息
-      if (event.data.type === 'loaded') {
-        setLoaded(true);
-        getComfySchema({
-          comfy_workflow_id,
-          filename: 'workflow.json',
-        });
-        console.log('ComfyUI loaded');
+
+      try {
+        const valueUrl = new URL(value);
+        if (valueUrl.origin !== event.origin) return;
+
+        const comfy_workflow_id = getValues('comfy_workflow_id');
+
+        switch (event.data.type) {
+          case 'loaded':
+            setLoaded(true);
+            getComfySchema({
+              comfy_workflow_id,
+              filename: 'workflow.json',
+            });
+            console.log('ComfyUI loaded');
+            break;
+          case 'save':
+            saveComfyRequest({
+              prompt: event.data.prompt,
+              comfyui_api: valueUrl.origin,
+              workflow: event.data.workflow,
+              name: event.data.name,
+              comfy_workflow_id,
+            });
+            setIsModalVisible(false);
+            break;
+        }
+      } catch (error) {
+        console.error('Invalid URL:', error);
       }
-      // 保存
-      if (event.data.type === 'save') {
-        saveComfyRequest({
-          prompt: event.data.prompt,
-          comfyui_api: valueUrl.origin,
-          workflow: event.data.workflow,
-          name: event.data.name,
-          comfy_workflow_id,
-        });
-        setIsModalVisible(false);
-      }
-    } catch (error) {
-      console.error('Invalid URL:', error);
-    }
-  };
+    },
+    [value, getValues],
+  );
 
   useEffect(() => {
     window.addEventListener('message', handleMessage);
     return () => {
       window.removeEventListener('message', handleMessage);
     };
-  }, []);
+  }, [handleMessage]);
 
   const handleCancel = () => {
     setIsModalVisible(false);
@@ -118,7 +124,6 @@ export const ComfyUIEditor = ({
           workflow: json,
           comfy_workflow_id,
         });
-        // TODO
         iframeRef.current?.contentWindow?.postMessage(
           { type: 'load', data: json },
           value,
@@ -172,11 +177,7 @@ export const ComfyUIEditor = ({
           <div className="flex justify-between items-center">
             <div className="flex gap-2">
               <span>ComfyUI Editor</span>
-              {error && (
-                <div className="flex justify-center items-center text-red-500 font-normal">
-                  {error}
-                </div>
-              )}
+              {error && <div className="text-red-500 font-normal">{error}</div>}
             </div>
             <Upload
               accept=".json"
@@ -185,10 +186,7 @@ export const ComfyUIEditor = ({
                 handleImport(file);
                 return false;
               }}>
-              <Button
-                size="sm"
-                // disabled={!loaded}
-              >
+              <Button size="sm">
                 <UploadOutlined className="mr-2" />
                 Import
               </Button>
@@ -197,26 +195,17 @@ export const ComfyUIEditor = ({
         }
         open={isModalVisible}
         onOk={handleSave}
-        okText="Save"
-        cancelText="Done"
+        okText="保存"
+        cancelText="完成"
         mask={false}
         width="80%"
         className="top-5"
         footer={
           <div className="flex justify-end gap-2">
-            <Button
-              key="cancel"
-              size="sm"
-              variant="outline"
-              onClick={handleCancel}>
+            <Button size="sm" variant="outline" onClick={handleCancel}>
               Cancel
             </Button>
-            <Button
-              key="save"
-              size="sm"
-              onClick={handleSave}
-              // disabled={!loaded}
-            >
+            <Button size="sm" onClick={handleSave}>
               Save
             </Button>
           </div>

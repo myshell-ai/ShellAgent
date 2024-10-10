@@ -1,8 +1,21 @@
-import { ISchema } from '@shellagent/form-engine';
+import {
+  TValues,
+  getDefaultValueBySchema,
+  TFieldMode,
+  ISchema,
+} from '@shellagent/form-engine';
 import { FormRef } from '@shellagent/ui';
 import { useRequest } from 'ahooks';
+import { merge } from 'lodash-es';
 import { nanoid } from 'nanoid';
-import React, { useRef, useEffect, useState } from 'react';
+import React, {
+  useRef,
+  useEffect,
+  useState,
+  useMemo,
+  useCallback,
+} from 'react';
+import { useAppStore } from '@/stores/app/app-provider';
 
 import { WidgetConfigProps } from '@/components/app/config-form/widget-config';
 import NodeForm from '@/components/app/node-form';
@@ -15,10 +28,16 @@ import { ComfyUIEditor } from './widgets/comfyui-editor';
 const ComfyUIPlugin: React.FC<WidgetConfigProps> = ({
   values,
   onChange,
-  ...rest
+  id,
+  parent,
 }) => {
   const formRef = useRef<FormRef>(null);
   const [schema, setSchema] = useState<ISchema>(defaultSchema);
+
+  const { setFieldsModeMap, fieldsModeMap } = useAppStore(state => ({
+    setFieldsModeMap: state.setFieldsModeMap,
+    fieldsModeMap: state.config?.fieldsModeMap,
+  }));
 
   useEffect(() => {
     const values = formRef.current?.getValues();
@@ -26,6 +45,17 @@ const ComfyUIPlugin: React.FC<WidgetConfigProps> = ({
       formRef.current?.setValue('comfy_workflow_id', nanoid());
     }
   }, []);
+
+  const defaultValues = useMemo(
+    () => getDefaultValueBySchema(schema, false),
+    [schema],
+  );
+
+  useEffect(() => {
+    onChange(merge({}, defaultValues, values));
+  }, [defaultValues]);
+
+  console.log('values', values);
 
   const { run: getComfySchema } = useRequest(getFile, {
     manual: true,
@@ -64,6 +94,13 @@ const ComfyUIPlugin: React.FC<WidgetConfigProps> = ({
     }
   });
 
+  const onModeChange = useCallback(
+    (name: string, mode: TFieldMode) => {
+      setFieldsModeMap({ id: `${id}.${parent}`, name, mode });
+    },
+    [id, setFieldsModeMap, parent],
+  );
+
   if (!values) {
     return null;
   }
@@ -76,6 +113,8 @@ const ComfyUIPlugin: React.FC<WidgetConfigProps> = ({
         schema={schema}
         values={values}
         onChange={onChange}
+        onModeChange={onModeChange}
+        modeMap={fieldsModeMap?.[`${id}.${parent}`] || {}}
         components={{
           ComfyUIEditor,
         }}
