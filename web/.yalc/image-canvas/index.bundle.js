@@ -6205,21 +6205,6 @@ function TextFx() {
     return (jsxRuntime.jsxs(antd.Form, Object.assign({ form: form, onValuesChange: handleFxValueChange, colon: false, style: { marginTop: 24 } }, { children: [jsxRuntime.jsx(FormItem$8, { label: jsxRuntime.jsx("span", Object.assign({ style: { fontSize: 15, fontWeight: 'bold' } }, { children: t('common.stroke') })) }), jsxRuntime.jsx(FormItem$8, Object.assign({ label: t('common.stroke_color'), name: "stroke" }, { children: jsxRuntime.jsx(ColorSetter, {}) })), jsxRuntime.jsx(FormItem$8, Object.assign({ label: t('common.stroke_width'), name: "strokeWidth" }, { children: jsxRuntime.jsx(SliderInputNumber, { min: 0, max: 20 }) })), jsxRuntime.jsx(FormItem$8, Object.assign({ name: "shadow", style: { marginBottom: 0 } }, { children: jsxRuntime.jsx(TextShadow, {}) })), jsxRuntime.jsx(FormItem$8, Object.assign({ name: "path", style: { marginBottom: 0 } }, { children: jsxRuntime.jsx(TextPath, {}) }))] })));
 }
 
-function RefSelect(props) {
-    const model = inversifyReact.useInjection('ImageCanvasModel');
-    const keyPath = (typeof props.value === "string" && props.value.trim() !== '')
-        ? props.value.split('/')
-        : [];
-    const variables = mobx.toJS(model.variables);
-    return (jsxRuntime.jsx(antd.Dropdown, Object.assign({ menu: {
-            onClick: (info) => {
-                props.onChange(info.keyPath.join('/'));
-            },
-            selectedKeys: keyPath,
-            items: variables
-        }, placement: "bottomRight", overlayStyle: {} }, { children: jsxRuntime.jsx(antd.Select, { options: [], dropdownRender: (originNode) => null, dropdownStyle: { display: 'none' }, value: model.getRefSelectDisplay(keyPath), placeholder: "Please select variable", onClear: () => props.onChange(undefined), allowClear: true }) })));
-}
-
 function Square3Stack3DIcon({
   title,
   titleId,
@@ -6244,6 +6229,28 @@ function Square3Stack3DIcon({
   }));
 }
 const ForwardRef = /*#__PURE__*/ React__namespace.forwardRef(Square3Stack3DIcon);
+
+const RefHelp = 'Will be replaced in runtime';
+function RefLabel() {
+    return (jsxRuntime.jsx(antd.Tooltip, Object.assign({ title: "In edit status, the canvas show your uploaded image and edited text. If you click Run, these will be replaced with the referenced variables" }, { children: jsxRuntime.jsxs(reactSystem.Flex, { children: [jsxRuntime.jsx(ForwardRef, { style: {
+                        width: 18,
+                        marginRight: 2
+                    } }), "Ref"] }) })));
+}
+function RefSelect(props) {
+    const model = inversifyReact.useInjection('ImageCanvasModel');
+    const keyPath = (typeof props.value === "string" && props.value.trim() !== '')
+        ? props.value.split('.')
+        : [];
+    const variables = mobx.toJS(model.variables);
+    return (jsxRuntime.jsx(antd.Dropdown, Object.assign({ menu: {
+            onClick: (info) => {
+                props.onChange(model.specialProcessWorkflowRunnerOutput(info.keyPath));
+            },
+            selectedKeys: keyPath,
+            items: variables
+        }, placement: "bottomRight", overlayStyle: {} }, { children: jsxRuntime.jsx(antd.Select, { options: [], dropdownRender: (originNode) => null, dropdownStyle: { display: 'none' }, value: model.getRefSelectDisplay(keyPath), placeholder: "Please select variable", onClear: () => props.onChange(undefined), allowClear: true }) })));
+}
 
 const { Item: FormItem$7 } = antd.Form;
 function TextSetter() {
@@ -6340,10 +6347,7 @@ function TextSetter() {
             }
         });
     }, [object]);
-    return (jsxRuntime.jsxs(jsxRuntime.Fragment, { children: [jsxRuntime.jsxs(antd.Form, Object.assign({ form: form, onValuesChange: handleValuesChange, colon: false }, { children: [jsxRuntime.jsx(antd.Form.Item, Object.assign({ name: "ref", label: jsxRuntime.jsxs(reactSystem.Flex, { children: [jsxRuntime.jsx(ForwardRef, { style: {
-                                        width: 18,
-                                        marginRight: 2
-                                    } }), "Ref"] }) }, { children: jsxRuntime.jsx(RefSelect, { id: 'ref', objId: object['id'], value: form.getFieldValue('ref'), onChange: (val) => {
+    return (jsxRuntime.jsxs(jsxRuntime.Fragment, { children: [jsxRuntime.jsxs(antd.Form, Object.assign({ form: form, onValuesChange: handleValuesChange, colon: false }, { children: [jsxRuntime.jsx(antd.Form.Item, Object.assign({ name: "ref", help: RefHelp, label: jsxRuntime.jsx(RefLabel, {}) }, { children: jsxRuntime.jsx(RefSelect, { id: 'ref', objId: object['id'], value: form.getFieldValue('ref'), onChange: (val) => {
                                 form.setFieldValue('ref', val);
                                 object.set('ref', val);
                             } }) })), jsxRuntime.jsx(FormItem$7, Object.assign({ name: "fontFamily", label: t('setter.text.font_family') }, { children: jsxRuntime.jsx(antd.Select, { options: FONT_PRESET_FAMILY_LIST_GOOGLE_FONT, onDropdownVisibleChange: open => {
@@ -6720,10 +6724,7 @@ function ImageSetter() {
             });
         }
     }, [object]);
-    return (jsxRuntime.jsxs(jsxRuntime.Fragment, { children: [jsxRuntime.jsxs(antd.Form, Object.assign({ form: form, onValuesChange: handleValuesChange, colon: false }, { children: [jsxRuntime.jsx(antd.Form.Item, Object.assign({ name: "ref", label: jsxRuntime.jsxs(reactSystem.Flex, { children: [jsxRuntime.jsx(ForwardRef, { style: {
-                                        width: 18,
-                                        marginRight: 2
-                                    } }), "Ref"] }) }, { children: jsxRuntime.jsx(RefSelect, { id: 'ref', objId: object['id'], value: form.getFieldValue('ref'), onChange: (val) => {
+    return (jsxRuntime.jsxs(jsxRuntime.Fragment, { children: [jsxRuntime.jsxs(antd.Form, Object.assign({ form: form, onValuesChange: handleValuesChange, colon: false }, { children: [jsxRuntime.jsx(antd.Form.Item, Object.assign({ name: "ref", help: RefHelp, label: jsxRuntime.jsx(RefLabel, {}) }, { children: jsxRuntime.jsx(RefSelect, { id: 'ref', objId: object['id'], value: form.getFieldValue('ref'), onChange: (val) => {
                                 form.setFieldValue('ref', val);
                                 object.set('ref', val);
                             } }) })), jsxRuntime.jsx(FormItem$4, Object.assign({ name: "img" }, { children: jsxRuntime.jsx(ReplaceSetter, {}) })), jsxRuntime.jsxs(antd.Row, Object.assign({ gutter: 8 }, { children: [jsxRuntime.jsx(antd.Col, Object.assign({ span: 12 }, { children: jsxRuntime.jsx(FormItem$4, { children: jsxRuntime.jsx(ClipSetter, { object: object }) }) })), jsxRuntime.jsx(antd.Col, Object.assign({ span: 12 }, { children: jsxRuntime.jsx(FormItem$4, Object.assign({ name: "border" }, { children: jsxRuntime.jsx(BorderSetter, {}) })) }))] }))] })), jsxRuntime.jsx(MoreConfigWrapper, Object.assign({ open: openFx, setOpen: setOpenFx, title: t('setter.image.filter') }, { children: jsxRuntime.jsx(ImageFx, {}) }))] }));

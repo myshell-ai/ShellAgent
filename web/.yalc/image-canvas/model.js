@@ -41,6 +41,7 @@ typeof SuppressedError === "function" ? SuppressedError : function (error, suppr
   return e.name = "SuppressedError", e.error = error, e.suppressed = suppressed, e;
 };
 
+const WORKFLOW_RUNNER = 'Workflow Runner';
 exports.ImageCanvasModel = class ImageCanvasModel {
     constructor() {
         this.emitter = mitt__default.default();
@@ -71,10 +72,16 @@ exports.ImageCanvasModel = class ImageCanvasModel {
     getRefSelectDisplay(keyPath) {
         if (keyPath.length === 0)
             return undefined;
-        const value = findLabelByValue(this.variables, keyPath[0]);
-        const keyPath2 = keyPath.slice(0);
-        keyPath2.splice(0, 1, value);
-        return keyPath2.reverse().join('/');
+        const path = findPathByValue(this.variables, keyPath[0]);
+        path.shift();
+        return path.join('/');
+    }
+    specialProcessWorkflowRunnerOutput(keyPath) {
+        keyPath = keyPath.slice(0);
+        if (keyPath[keyPath.length - 1] === WORKFLOW_RUNNER) {
+            return keyPath[0] + '.[0]';
+        }
+        return keyPath[0];
     }
 };
 __decorate([
@@ -105,17 +112,17 @@ function transformVariables(source) {
         children: item.children ? transformVariables(item.children) : undefined,
     }));
 }
-function findLabelByValue(variables, targetValue) {
+function findPathByValue(variables, targetValue) {
     for (const item of variables) {
-        if (item.key === targetValue && !item.children) {
-            return item.label;
+        if (item.key === targetValue) {
+            return [item.label];
         }
         if (item.children) {
-            const foundLabel = findLabelByValue(item.children, targetValue);
-            if (foundLabel) {
-                return foundLabel;
+            const foundPath = findPathByValue(item.children, targetValue);
+            if (foundPath) {
+                return [item.label, ...foundPath];
             }
         }
     }
-    return undefined;
+    return null;
 }

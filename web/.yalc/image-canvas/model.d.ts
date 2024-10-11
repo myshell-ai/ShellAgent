@@ -51,7 +51,8 @@ declare class ImageCanvasModel {
     canvas2Json(): Promise<unknown>;
     loadFromJSON(json: unknown): Promise<void>;
     setVariables(variables: any[]): void;
-    getRefSelectDisplay(keyPath: string[]): string;
+    getRefSelectDisplay(keyPath: string[]): any;
+    specialProcessWorkflowRunnerOutput(keyPath: string[]): string;
 }
 
 export { ImageCanvasModel };

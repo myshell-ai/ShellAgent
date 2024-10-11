@@ -27,18 +27,18 @@ export class OpenImageCanvasModel {
   }
 
   @action.bound
-  openAndLoad() {
+  async openAndLoad() {
     this.open();
     const json = this.fieldProps.value;
     console.log('openAndLoad', json);
-    this.imageCanvas.loadFromJSON(json);
+    await this.imageCanvas.loadFromJSON(json);
   }
 
   @action.bound
   async saveAndClose() {
     const json = await this.imageCanvas.canvas2Json();
-    // set form field(config)
     console.log('saveAndClose', json);
+    // set form field(config)
     this.fieldProps.onChange(json);
     this.close();
   }
