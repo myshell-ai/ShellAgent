@@ -89,8 +89,13 @@ exports.ImageCanvasModel = class ImageCanvasModel {
             if (object.type === 'f-image') {
                 object.objects.forEach(o => {
                     if (o.type === 'image') {
-                        object.ref = object._src;
-                        object.src = object.ref;
+                        if (o._src) {
+                            object.ref = object._src;
+                            object.src = object.ref;
+                        }
+                        if (o.src.indexOf('{{') > -1) {
+                            o.src = 'https://framerusercontent.com/images/S8LzTBsTv7aFWaPYWqvxt86vOHk.png';
+                        }
                     }
                 });
             }

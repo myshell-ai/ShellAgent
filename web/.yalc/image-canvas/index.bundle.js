@@ -361,71 +361,122 @@ const TEXTBOX_DEFAULT_CONFIG = {
 };
 [
     {
-        label: jsxRuntime.jsx("span", Object.assign({ style: { fontFamily: 'SmileySans', fontSize: 16 } }, { children: "\u5F97\u610F\u9ED1" })),
+        label: jsxRuntime.jsx("span", Object.assign({ style: {
+                fontFamily: 'SmileySans',
+                fontSize: 16
+            } }, { children: "\u5F97\u610F\u9ED1" })),
         value: 'SmileySans'
     },
     {
-        label: jsxRuntime.jsx("span", Object.assign({ style: { fontFamily: '霞鹜新晰黑', fontSize: 16 } }, { children: "\u971E\u9E5C\u65B0\u6670\u9ED1" })),
+        label: jsxRuntime.jsx("span", Object.assign({ style: {
+                fontFamily: '霞鹜新晰黑',
+                fontSize: 16
+            } }, { children: "\u971E\u9E5C\u65B0\u6670\u9ED1" })),
         value: '霞鹜新晰黑'
     },
     {
-        label: jsxRuntime.jsx("span", Object.assign({ style: { fontFamily: '霞鹜文楷', fontSize: 16 } }, { children: "\u971E\u9E5C\u6587\u6977" })),
+        label: jsxRuntime.jsx("span", Object.assign({ style: {
+                fontFamily: '霞鹜文楷',
+                fontSize: 16
+            } }, { children: "\u971E\u9E5C\u6587\u6977" })),
         value: '霞鹜文楷'
     },
     {
-        label: jsxRuntime.jsx("span", Object.assign({ style: { fontFamily: '小赖字体', fontSize: 16 } }, { children: "\u5C0F\u8D56\u5B57\u4F53" })),
+        label: jsxRuntime.jsx("span", Object.assign({ style: {
+                fontFamily: '小赖字体',
+                fontSize: 16
+            } }, { children: "\u5C0F\u8D56\u5B57\u4F53" })),
         value: '小赖字体'
     },
     {
-        label: jsxRuntime.jsx("span", Object.assign({ style: { fontFamily: '悠哉字体', fontSize: 16 } }, { children: "\u60A0\u54C9\u5B57\u4F53" })),
+        label: jsxRuntime.jsx("span", Object.assign({ style: {
+                fontFamily: '悠哉字体',
+                fontSize: 16
+            } }, { children: "\u60A0\u54C9\u5B57\u4F53" })),
         value: '悠哉字体'
     },
     {
-        label: jsxRuntime.jsx("span", Object.assign({ style: { fontFamily: 'AlibabaPuHuiTi', fontSize: 16 } }, { children: "\u963F\u91CC\u5DF4\u5DF4\u666E\u60E0\u4F53" })),
+        label: jsxRuntime.jsx("span", Object.assign({ style: {
+                fontFamily: 'AlibabaPuHuiTi',
+                fontSize: 16
+            } }, { children: "\u963F\u91CC\u5DF4\u5DF4\u666E\u60E0\u4F53" })),
         value: 'AlibabaPuHuiTi'
     },
     {
-        label: jsxRuntime.jsx("span", Object.assign({ style: { fontFamily: '霞鹜尚智黑', fontSize: 16 } }, { children: "\u971E\u9E5C\u5C1A\u667A\u9ED1" })),
+        label: jsxRuntime.jsx("span", Object.assign({ style: {
+                fontFamily: '霞鹜尚智黑',
+                fontSize: 16
+            } }, { children: "\u971E\u9E5C\u5C1A\u667A\u9ED1" })),
         value: '霞鹜尚智黑'
     },
     {
-        label: jsxRuntime.jsx("span", Object.assign({ style: { fontFamily: 'SourceHanSans', fontSize: 16 } }, { children: "\u601D\u6E90\u9ED1\u4F53" })),
+        label: jsxRuntime.jsx("span", Object.assign({ style: {
+                fontFamily: 'SourceHanSans',
+                fontSize: 16
+            } }, { children: "\u601D\u6E90\u9ED1\u4F53" })),
         value: 'SourceHanSans'
     },
     {
-        label: jsxRuntime.jsx("span", Object.assign({ style: { fontFamily: 'SourceHanSerif', fontSize: 16 } }, { children: "\u601D\u6E90\u5B8B\u4F53" })),
+        label: jsxRuntime.jsx("span", Object.assign({ style: {
+                fontFamily: 'SourceHanSerif',
+                fontSize: 16
+            } }, { children: "\u601D\u6E90\u5B8B\u4F53" })),
         value: 'SourceHanSerif'
     },
     {
-        label: jsxRuntime.jsx("span", Object.assign({ style: { fontFamily: '方正楷体', fontSize: 16 } }, { children: "\u65B9\u6B63\u6977\u4F53" })),
+        label: jsxRuntime.jsx("span", Object.assign({ style: {
+                fontFamily: '方正楷体',
+                fontSize: 16
+            } }, { children: "\u65B9\u6B63\u6977\u4F53" })),
         value: '方正楷体'
     },
     {
-        label: jsxRuntime.jsx("span", Object.assign({ style: { fontFamily: '包图小白体', fontSize: 16 } }, { children: "\u5305\u56FE\u5C0F\u767D\u4F53" })),
+        label: jsxRuntime.jsx("span", Object.assign({ style: {
+                fontFamily: '包图小白体',
+                fontSize: 16
+            } }, { children: "\u5305\u56FE\u5C0F\u767D\u4F53" })),
         value: '包图小白体'
     },
     {
-        label: jsxRuntime.jsx("span", Object.assign({ style: { fontFamily: '手写杂字体', fontSize: 16 } }, { children: "\u624B\u5199\u6742\u5B57\u4F53" })),
+        label: jsxRuntime.jsx("span", Object.assign({ style: {
+                fontFamily: '手写杂字体',
+                fontSize: 16
+            } }, { children: "\u624B\u5199\u6742\u5B57\u4F53" })),
         value: '手写杂字体'
     },
     {
-        label: jsxRuntime.jsx("span", Object.assign({ style: { fontFamily: '胡晓波男神体', fontSize: 16 } }, { children: "\u80E1\u6653\u6CE2\u7537\u795E\u4F53" })),
+        label: jsxRuntime.jsx("span", Object.assign({ style: {
+                fontFamily: '胡晓波男神体',
+                fontSize: 16
+            } }, { children: "\u80E1\u6653\u6CE2\u7537\u795E\u4F53" })),
         value: '胡晓波男神体'
     },
     {
-        label: jsxRuntime.jsx("span", Object.assign({ style: { fontFamily: '胡晓波骚包体', fontSize: 16 } }, { children: "\u80E1\u6653\u6CE2\u9A9A\u5305\u4F53" })),
+        label: jsxRuntime.jsx("span", Object.assign({ style: {
+                fontFamily: '胡晓波骚包体',
+                fontSize: 16
+            } }, { children: "\u80E1\u6653\u6CE2\u9A9A\u5305\u4F53" })),
         value: '胡晓波骚包体'
     },
     {
-        label: jsxRuntime.jsx("span", Object.assign({ style: { fontFamily: '站酷快乐体', fontSize: 16 } }, { children: "\u7AD9\u9177\u5FEB\u4E50\u4F53" })),
+        label: jsxRuntime.jsx("span", Object.assign({ style: {
+                fontFamily: '站酷快乐体',
+                fontSize: 16
+            } }, { children: "\u7AD9\u9177\u5FEB\u4E50\u4F53" })),
         value: '站酷快乐体'
     },
     {
-        label: jsxRuntime.jsx("span", Object.assign({ style: { fontFamily: '站酷文艺体', fontSize: 16 } }, { children: "\u7AD9\u9177\u6587\u827A\u4F53" })),
+        label: jsxRuntime.jsx("span", Object.assign({ style: {
+                fontFamily: '站酷文艺体',
+                fontSize: 16
+            } }, { children: "\u7AD9\u9177\u6587\u827A\u4F53" })),
         value: '站酷文艺体'
     },
     {
-        label: jsxRuntime.jsx("span", Object.assign({ style: { fontFamily: '站酷小薇LOGO体', fontSize: 16 } }, { children: "\u7AD9\u9177\u5C0F\u8587LOGO\u4F53" })),
+        label: jsxRuntime.jsx("span", Object.assign({ style: {
+                fontFamily: '站酷小薇LOGO体',
+                fontSize: 16
+            } }, { children: "\u7AD9\u9177\u5C0F\u8587LOGO\u4F53" })),
         value: '站酷小薇LOGO体'
     }
 ];
@@ -440,6 +491,8 @@ const FABRITOR_CUSTOM_PROPS = [
     'imageBorder',
     'oldArrowInfo',
     'ref',
+    '_text',
+    '_src'
 ];
 const COMPLETE_GOOGLE_FONTS = [
     'Roboto',
@@ -545,7 +598,10 @@ const COMPLETE_GOOGLE_FONTS = [
     'Source Code Pro',
 ];
 const FONT_PRESET_FAMILY_LIST_GOOGLE_FONT = COMPLETE_GOOGLE_FONTS.map(f => ({
-    label: jsxRuntime.jsx("span", Object.assign({ style: { fontFamily: f, fontSize: 16 } }, { children: f })),
+    label: jsxRuntime.jsx("span", Object.assign({ style: {
+            fontFamily: f,
+            fontSize: 16
+        } }, { children: f })),
     value: f
 }));
 
