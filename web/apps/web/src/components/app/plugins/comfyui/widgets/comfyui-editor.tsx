@@ -11,12 +11,14 @@ import React, {
   useMemo,
 } from 'react';
 
-import { COMFYUI_API } from '@/components/app/constants';
 import { SettingsModel } from '@/components/settings/settings.model';
 
+import { CheckDialog } from '../check-dialog';
+import { COMFYUI_API, DEFAULT_COMFYUI_API } from '../constant';
 import emitter, { EventType } from '../emitter';
 import { saveComfy, uploadComfy, getFile } from '../services';
-import { isValidUrl } from '../utils';
+import type { GetFileResponse } from '../services/type';
+import { isValidUrl, checkDependency } from '../utils';
 
 export const ComfyUIEditor = ({
   value,
@@ -26,9 +28,13 @@ export const ComfyUIEditor = ({
   onChange: (value: string) => void;
 }) => {
   const [isModalVisible, setIsModalVisible] = useState(false);
+  const [checkDialogOpen, setCheckDialogOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string>('');
   const [loaded, setLoaded] = useState(false);
+  const [dependencies, setDependencies] = useState<
+    GetFileResponse['data']['dependencies'] | null
+  >(null);
   const iframeRef = useRef<HTMLIFrameElement>(null);
   const { getValues } = useFormContext();
   const model = useInjection(SettingsModel);
@@ -107,12 +113,21 @@ export const ComfyUIEditor = ({
       manual: true,
       onSuccess: result => {
         if (result.success) {
-          setIsModalVisible(false);
-          const comfy_workflow_id = getValues('comfy_workflow_id');
-          emitter.emit(EventType.UPDATE_FORM, {
-            data: result.data.schemas,
-            id: comfy_workflow_id,
-          });
+          const { data } = result;
+          const { hasMissingCustomNodes, hasMissingModels } = checkDependency(
+            data.dependencies,
+          );
+          if (hasMissingCustomNodes || hasMissingModels) {
+            setCheckDialogOpen(true);
+            setDependencies(data.dependencies);
+          } else {
+            setIsModalVisible(false);
+            const comfy_workflow_id = getValues('comfy_workflow_id');
+            emitter.emit(EventType.UPDATE_FORM, {
+              data: result.data.schemas,
+              id: comfy_workflow_id,
+            });
+          }
         }
       },
     },
@@ -171,15 +186,15 @@ export const ComfyUIEditor = ({
     return !isValidUrl(value);
   }, [value]);
 
-  const reloadSettings = () => {
-    model.loadSettingsEnv().then(settings => {
-      const api =
-        settings?.envs?.find(env => env.key === COMFYUI_API)?.value || '';
-      onChange(api);
-      if (api && isValidUrl(api)) {
-        setIsLoading(true);
-      }
-    });
+  const reloadSettings = async () => {
+    const settings = await model.loadSettingsEnv();
+    const api =
+      settings?.envs?.find(env => env.key === COMFYUI_API)?.value ||
+      DEFAULT_COMFYUI_API;
+    onChange(api);
+    if (api && isValidUrl(api)) {
+      setIsLoading(true);
+    }
   };
 
   const disabled = useMemo(
@@ -234,6 +249,9 @@ export const ComfyUIEditor = ({
               loading={saveLoading}>
               Save
             </Button>
+            <Button size="sm" onClick={() => setCheckDialogOpen(true)}>
+              Check
+            </Button>
           </div>
         }
         closeIcon={null}>
@@ -273,6 +291,12 @@ export const ComfyUIEditor = ({
           onError={handleIframeError}
         />
       </Modal>
+      <CheckDialog
+        open={checkDialogOpen}
+        setOpen={setCheckDialogOpen}
+        dependencies={dependencies}
+        comfy_workflow_id={getValues('comfy_workflow_id')}
+      />
     </div>
   );
 };

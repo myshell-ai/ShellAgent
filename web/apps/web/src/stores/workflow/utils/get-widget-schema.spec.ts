@@ -99,7 +99,6 @@ describe('get widget schema', () => {
       type: 'object',
     };
     const res = getTypesFromSchema(input);
-    console.log(res);
     expect(res).toEqual({
       image_path: [
         {

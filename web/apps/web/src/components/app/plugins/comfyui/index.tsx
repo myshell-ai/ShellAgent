@@ -17,11 +17,11 @@ import React, {
 } from 'react';
 
 import { WidgetConfigProps } from '@/components/app/config-form/widget-config';
-import { COMFYUI_API } from '@/components/app/constants';
 import NodeForm from '@/components/app/node-form';
 import { SettingsModel } from '@/components/settings/settings.model';
 import { useAppStore } from '@/stores/app/app-provider';
 
+import { COMFYUI_API, DEFAULT_COMFYUI_API } from './constant';
 import { useEventEmitter, EventType } from './emitter';
 import { getComfyuiSchema, defaultSchema } from './schema';
 import { getFile } from './services';
@@ -44,15 +44,20 @@ const ComfyUIPlugin: React.FC<WidgetConfigProps> = ({
   const model = useInjection(SettingsModel);
 
   useEffect(() => {
-    const values = formRef.current?.getValues();
-    if (!values?.comfy_workflow_id) {
-      formRef.current?.setValue('comfy_workflow_id', nanoid());
-    }
-    // 从环境变量中获取参数
-    model.loadSettingsEnv().then(settings => {
-      const api = settings?.envs?.find(env => env.key === COMFYUI_API)?.value;
+    const initializeForm = async () => {
+      const values = formRef.current?.getValues();
+      if (!values?.comfy_workflow_id) {
+        formRef.current?.setValue('comfy_workflow_id', nanoid());
+      }
+      // 从环境变量中获取参数
+      const settings = await model.loadSettingsEnv();
+      const api =
+        settings?.envs?.find(env => env.key === COMFYUI_API)?.value ||
+        DEFAULT_COMFYUI_API;
       formRef.current?.setValue('api', api);
-    });
+    };
+
+    initializeForm();
   }, [model]);
 
   const defaultValues = useMemo(

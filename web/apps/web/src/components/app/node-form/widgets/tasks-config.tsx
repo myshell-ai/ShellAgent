@@ -43,6 +43,100 @@ export interface IWidgetTask {
   };
 }
 
+const TaskItem = ({
+  name,
+  onDelete,
+  onClick,
+  index,
+  moveTask,
+  draggable, // 新增参数
+}: {
+  name: string;
+  onDelete: () => void;
+  onClick: (e: React.MouseEvent<HTMLDivElement>) => void;
+  index: number;
+  moveTask: (dragIndex: number, hoverIndex: number) => void;
+  draggable?: boolean; // 新增参数类型
+}) => {
+  const dragRef = useRef<HTMLDivElement>(null);
+  const previewRef = useRef<HTMLDivElement>(null);
+
+  const [, drop] = useDrop<DragItem, void>({
+    accept: 'TASK',
+    hover: (item: DragItem, monitor) => {
+      if (!dragRef.current || !draggable) {
+        // 添加draggable判断
+        return;
+      }
+      const dragIndex = item.index;
+      const hoverIndex = index;
+
+      const hoverBoundingRect = dragRef.current?.getBoundingClientRect();
+      const hoverMiddleY =
+        (hoverBoundingRect.bottom - hoverBoundingRect.top) / 2;
+      const clientOffset = monitor.getClientOffset() || { x: 0, y: 0 };
+      // eslint-disable-next-line no-unsafe-optional-chaining
+      const hoverClientY = clientOffset?.y - hoverBoundingRect.top;
+
+      if (
+        dragIndex === hoverIndex ||
+        (hoverClientY < hoverMiddleY && dragIndex < hoverIndex) ||
+        (hoverClientY > hoverMiddleY && dragIndex > hoverIndex)
+      ) {
+        return;
+      }
+
+      moveTask(dragIndex, hoverIndex);
+      item.index = hoverIndex;
+    },
+  });
+
+  const [{ isDragging }, drag, preview] = useDrag({
+    type: 'TASK',
+    item: { index },
+    collect: monitor => ({
+      isDragging: monitor.isDragging(),
+    }),
+    canDrag: draggable,
+  });
+
+  if (draggable) {
+    drag(drop(dragRef));
+    preview(drop(previewRef));
+  }
+
+  return (
+    <div
+      ref={previewRef}
+      onClick={e => {
+        e.stopPropagation();
+        onClick(e);
+      }}
+      className={`relative group h-8 flex items-center bg-surface-container-default rounded-lg p-2 text-default font-medium cursor-pointer ${isDragging ? 'opacity-50' : ''}`}>
+      {draggable && (
+        <div
+          ref={dragRef}
+          className="w-6 h-6 flex items-center justify-center cursor-grab">
+          <Drag size="md" color="subtle" />
+        </div>
+      )}
+      {name}
+      <XMarkIcon
+        className="w-4 h-4 hidden group-hover:block ml-auto"
+        onClick={e => {
+          e.preventDefault();
+          e.stopPropagation();
+          onDelete();
+        }}
+      />
+      <div
+        className="absolute top-0 left-0 w-full h-1 bg-blue-500"
+        style={{ display: isDragging ? 'block' : 'none' }}
+      />
+    </div>
+  );
+};
+
 const TasksConfig = ({
   name,
   onChange,
@@ -176,100 +270,6 @@ const TasksConfig = ({
 
 type DragItem = {
   index: number;
-};
-
-const TaskItem = ({
-  name,
-  onDelete,
-  onClick,
-  index,
-  moveTask,
-  draggable, // 新增参数
-}: {
-  name: string;
-  onDelete: () => void;
-  onClick: (e: React.MouseEvent<HTMLDivElement>) => void;
-  index: number;
-  moveTask: (dragIndex: number, hoverIndex: number) => void;
-  draggable?: boolean; // 新增参数类型
-}) => {
-  const dragRef = useRef<HTMLDivElement>(null);
-  const previewRef = useRef<HTMLDivElement>(null);
-
-  const [, drop] = useDrop<DragItem, void>({
-    accept: 'TASK',
-    hover: (item: DragItem, monitor) => {
-      if (!dragRef.current || !draggable) {
-        // 添加draggable判断
-        return;
-      }
-      const dragIndex = item.index;
-      const hoverIndex = index;
-
-      const hoverBoundingRect = dragRef.current?.getBoundingClientRect();
-      const hoverMiddleY =
-        (hoverBoundingRect.bottom - hoverBoundingRect.top) / 2;
-      const clientOffset = monitor.getClientOffset() || { x: 0, y: 0 };
-      // eslint-disable-next-line no-unsafe-optional-chaining
-      const hoverClientY = clientOffset?.y - hoverBoundingRect.top;
-
-      if (
-        dragIndex === hoverIndex ||
-        (hoverClientY < hoverMiddleY && dragIndex < hoverIndex) ||
-        (hoverClientY > hoverMiddleY && dragIndex > hoverIndex)
-      ) {
-        return;
-      }
-
-      moveTask(dragIndex, hoverIndex);
-      item.index = hoverIndex;
-    },
-  });
-
-  const [{ isDragging }, drag, preview] = useDrag({
-    type: 'TASK',
-    item: { index },
-    collect: monitor => ({
-      isDragging: monitor.isDragging(),
-    }),
-    canDrag: draggable,
-  });
-
-  if (draggable) {
-    drag(drop(dragRef));
-    preview(drop(previewRef));
-  }
-
-  return (
-    <div
-      ref={previewRef}
-      onClick={e => {
-        e.stopPropagation();
-        onClick(e);
-      }}
-      className={`relative group h-8 flex items-center bg-surface-container-default rounded-lg p-2 text-default font-medium cursor-pointer ${isDragging ? 'opacity-50' : ''}`}>
-      {draggable && (
-        <div
-          ref={dragRef}
-          className="w-6 h-6 flex items-center justify-center cursor-grab">
-          <Drag size="md" color="subtle" />
-        </div>
-      )}
-      {name}
-      <XMarkIcon
-        className="w-4 h-4 hidden group-hover:block ml-auto"
-        onClick={e => {
-          e.preventDefault();
-          e.stopPropagation();
-          onDelete();
-        }}
-      />
-      <div
-        className="absolute top-0 left-0 w-full h-1 bg-blue-500"
-        style={{ display: isDragging ? 'block' : 'none' }}
-      />
-    </div>
-  );
 };
 
 TasksConfig.displayName = 'TasksConfig';

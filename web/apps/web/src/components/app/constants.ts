@@ -125,5 +125,3 @@ export const materialList: MaterialListType = [
 export const inputSourceHandle = 'custom_message-input-source-handle';
 
 export const buttonSourceHandle = 'custom_button-source-handle';
-
-export const COMFYUI_API = 'COMFYUI_API';
