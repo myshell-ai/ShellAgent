@@ -49,7 +49,7 @@ declare class ImageCanvasModel {
     myPreDestroyMethod(): void;
     setEditor(editor: Editor): void;
     canvas2Json(): Promise<unknown>;
-    loadFromJSON(json: unknown): Promise<void>;
+    loadFromJSON(json: any): Promise<void>;
     setVariables(variables: any[]): void;
     getRefSelectDisplay(keyPath: string[]): any;
     specialProcessWorkflowRunnerOutput(keyPath: string[]): string;

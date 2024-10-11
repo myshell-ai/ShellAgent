@@ -60,10 +60,23 @@ exports.ImageCanvasModel = class ImageCanvasModel {
     }
     async canvas2Json() {
         await this.isEditorReadyPromise;
-        return this.editor.canvas2Json();
+        const rawJson = this.editor.canvas2Json();
+        rawJson.objects.forEach((object) => {
+            if (object.ref) {
+                object._text = object.text;
+                object.text = object.ref;
+            }
+        });
+        return rawJson;
     }
     async loadFromJSON(json) {
         await this.isEditorReadyPromise;
+        json.objects.forEach((object) => {
+            if (object._text) {
+                object.ref = object.text;
+                object.text = object._text;
+            }
+        });
         this.emitter.emit("loadFromJSON", json);
     }
     setVariables(variables) {
@@ -79,7 +92,7 @@ exports.ImageCanvasModel = class ImageCanvasModel {
     specialProcessWorkflowRunnerOutput(keyPath) {
         keyPath = keyPath.slice(0);
         if (keyPath[keyPath.length - 1] === WORKFLOW_RUNNER) {
-            return keyPath[0] + '.[0]';
+            return keyPath[0] + '[0]';
         }
         return keyPath[0];
     }
