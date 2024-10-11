@@ -14,7 +14,7 @@ import React, {
 import { SettingsModel } from '@/components/settings/settings.model';
 
 import { CheckDialog } from '../check-dialog';
-import { COMFYUI_API, DEFAULT_COMFYUI_API } from '../constant';
+import { COMFYUI_API, DEFAULT_COMFYUI_API, MessageType } from '../constant';
 import emitter, { EventType } from '../emitter';
 import { saveComfy, uploadComfy, getFile } from '../services';
 import type { GetFileResponse } from '../services/type';
@@ -49,10 +49,21 @@ export const ComfyUIEditor = ({
       if (result.success) {
         const { data } = result;
         iframeRef.current?.contentWindow?.postMessage(
-          { type: 'load', data },
+          { type: MessageType.LOAD, data },
+          value,
+        );
+      } else {
+        iframeRef.current?.contentWindow?.postMessage(
+          { type: MessageType.LOAD_DEFAULT },
           value,
         );
       }
+    },
+    onError: () => {
+      iframeRef.current?.contentWindow?.postMessage(
+        { type: MessageType.LOAD_DEFAULT },
+        value,
+      );
     },
   });
 
@@ -69,7 +80,7 @@ export const ComfyUIEditor = ({
         const comfy_workflow_id = getValues('comfy_workflow_id');
 
         switch (event.data.type) {
-          case 'loaded':
+          case MessageType.LOADED:
             setLoaded(true);
             getComfySchema({
               comfy_workflow_id,
@@ -77,7 +88,7 @@ export const ComfyUIEditor = ({
             });
             console.log('ComfyUI loaded');
             break;
-          case 'save':
+          case MessageType.SAVE:
             saveComfyRequest({
               prompt: event.data.prompt,
               comfyui_api: valueUrl.origin,
@@ -141,7 +152,10 @@ export const ComfyUIEditor = ({
   });
 
   const handleSave = () => {
-    iframeRef.current?.contentWindow?.postMessage({ type: 'save' }, value);
+    iframeRef.current?.contentWindow?.postMessage(
+      { type: MessageType.SAVE },
+      value,
+    );
   };
 
   const handleImport = (file: File) => {
@@ -155,7 +169,7 @@ export const ComfyUIEditor = ({
           comfy_workflow_id,
         });
         iframeRef.current?.contentWindow?.postMessage(
-          { type: 'load', data: json },
+          { type: MessageType.LOAD, data: json },
           value,
         );
         // 处理导入的 JSON 数据
