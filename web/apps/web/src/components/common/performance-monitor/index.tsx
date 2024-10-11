@@ -37,9 +37,9 @@ const MemoryBar = ({ percentage }: { percentage: string }) => {
 };
 
 export default function PerformanceMonitor() {
-  const isDev = process.env.NEXT_DEVELOPMENT === 'yes';
+  const isDev = process.env.NEXT_PUBLIC_DEVELOPMENT === 'yes';
   const { data } = useRequest(fetchMonitorData, {
-    pollingInterval: isDev ? 30 * 1000 : 3000,
+    pollingInterval: isDev ? 120 * 1000 : 3000,
     pollingWhenHidden: false,
   });
 

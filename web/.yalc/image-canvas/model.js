@@ -96,7 +96,7 @@ exports.ImageCanvasModel = class ImageCanvasModel {
         if (value == null) {
             keyPath = [];
         }
-        else if (typeof value === 'string' && value.endsWith('[0]')) {
+        else if (typeof value === 'string' && value.indexOf('[0]') > -1) {
             keyPath = [value.replace('[0]', '')];
         }
         else {
@@ -109,7 +109,7 @@ exports.ImageCanvasModel = class ImageCanvasModel {
             return undefined;
         if (this.variables.length === 0)
             return undefined;
-        const path = findPathByValue(this.variables, keyPath[0]);
+        const path = findPathByValue(this.variables, keyPath[0].replace('[0]', ''));
         if (!Array.isArray(path) || path.length === 0)
             return undefined;
         path.shift();
@@ -118,7 +118,7 @@ exports.ImageCanvasModel = class ImageCanvasModel {
     processWorkflowRunnerOutput(keyPath) {
         keyPath = keyPath.slice(0);
         if (keyPath.indexOf(WORKFLOW_RUNNER) > -1) {
-            return keyPath[0] + '[0]';
+            return keyPath[0].replace('}}', '[0]}}');
         }
         return keyPath[0];
     }

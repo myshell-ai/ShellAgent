@@ -2,12 +2,12 @@
 
 import { NodeIdEnum } from '@shellagent/flow-engine';
 import {
-  TValues,
   getDefaultValueBySchema,
   TFieldMode,
+  TValues,
 } from '@shellagent/form-engine';
 import { merge } from 'lodash-es';
-import { useEffect, useMemo, useCallback } from 'react';
+import { useCallback, useEffect, useMemo } from 'react';
 
 import NodeForm from '@/components/app/node-form';
 import { useAppStore } from '@/stores/app/app-provider';
@@ -71,6 +71,10 @@ export const WorkflowConfig: React.FC<WorkflowConfigProps> = ({
     () => getDefaultValueBySchema(schema, false),
     [schema],
   );
+
+  useEffect(() => {
+    onChange(merge({}, defaultValues, values));
+  }, [schema]);
 
   useEffect(() => {
     if (values?.workflow_id) {
