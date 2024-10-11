@@ -6,7 +6,7 @@ import 'image-canvas/index.css';
 import 'image-canvas/assets/react-colors-beauty.css';
 import { css } from '@emotion/react';
 import { PhotoIcon } from '@heroicons/react/24/outline';
-import { AButton, Button } from '@shellagent/ui';
+import { AButton, Button, useFormContext } from '@shellagent/ui';
 import { Modal, theme } from 'antd';
 import { useInjection } from 'inversify-react';
 import { observer } from 'mobx-react-lite';
@@ -25,8 +25,10 @@ export function OpenImageCanvas(props: any) {
   const model = useInjection(OpenImageCanvasModel);
   // eslint-disable-next-line react/destructuring-assignment
   const options = useSelectOptions(props.name);
+  const { getValues } = useFormContext();
   useEffect(() => {
     model.fieldProps = props;
+    model.getValues = getValues;
     model.imageCanvas.setVariables(options);
     // eslint-disable-next-line react/destructuring-assignment
   }, [props.id]);

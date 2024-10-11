@@ -8,6 +8,7 @@ import { EmitterModel } from '@/utils/emitter.model';
 export class OpenImageCanvasModel {
   @observable isOpen = false;
   fieldProps: any;
+  getValues: any;
 
   constructor(
     @inject(EmitterModel) private emitter: EmitterModel,
@@ -29,13 +30,18 @@ export class OpenImageCanvasModel {
   @action.bound
   async openAndLoad() {
     this.open();
-    const jsonStr = this.fieldProps.value;
-    try {
-      const json = JSON.parse(jsonStr);
-      console.log('openAndLoad', json);
-      await this.imageCanvas.loadFromJSON(json);
-    } catch (e: any) {
-      this.emitter.emitter.emit('message.error', e.message);
+    const values = this.getValues();
+    const jsonStr = values.inputs?.config;
+    if (jsonStr === undefined) {
+      // await this.imageCanvas.loadFromJSON(null);
+    } else {
+      try {
+        const json = JSON.parse(jsonStr);
+        console.log('openAndLoad', json);
+        await this.imageCanvas.loadFromJSON(json);
+      } catch (e: any) {
+        this.emitter.emitter.emit('message.error', e.message);
+      }
     }
   }
 

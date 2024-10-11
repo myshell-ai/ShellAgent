@@ -49,7 +49,7 @@ export const WidgetConfig: React.FC<WidgetConfigProps> = ({
       mode: 'basic',
       ...widgetSchema[values?.widget_class_name],
     });
-    // Special process ImageTextFuserWidget
+    // Special process ImageCanvasWidget
     if (values?.widget_class_name === 'ImageCanvasWidget') {
       if (schema?.properties?.inputs?.properties?.config) {
         schema.properties.inputs.properties.config['x-component'] =
