@@ -565,6 +565,9 @@ const loadFont = async (f) => {
     if (!f)
         return Promise.resolve();
     const item = FONT_PRESET_FAMILY_LIST_GOOGLE_FONT.find(_item => _item.value === f);
+    googleFonts__default.default.add({
+        [item.value]: true
+    });
     if (!item)
         return Promise.resolve();
     const font = new FontFaceObserver__default.default(f);
@@ -8374,6 +8377,14 @@ class Editor {
         if (json[SCHEMA_VERSION_KEY] !== SCHEMA_VERSION) {
             console.warn('此模板已经无法与当前版本兼容，请更换模板');
             return false;
+        }
+        {
+            const { objects } = json;
+            for (let item of objects) {
+                if (item.type === 'f-text') {
+                    await loadFont(item.fontFamily);
+                }
+            }
         }
         const lastActiveObject = this.canvas.getActiveObject();
         let nowActiveObject;
