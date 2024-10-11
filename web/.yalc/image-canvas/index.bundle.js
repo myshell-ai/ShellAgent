@@ -491,8 +491,6 @@ const FABRITOR_CUSTOM_PROPS = [
     'imageBorder',
     'oldArrowInfo',
     'ref',
-    '_text',
-    '_src'
 ];
 const COMPLETE_GOOGLE_FONTS = [
     'Roboto',
@@ -7234,6 +7232,7 @@ const items = ['jpg', 'png', 'svg', 'json', 'divider', 'clipboard']
     label: jsxRuntime.jsx(reactI18next.Trans, { i18nKey: `${i18nKeySuffix$1}.${item}` })
 }));
 function ExportModify() {
+    const model = inversifyReact.useInjection('ImageCanvasModel');
     const { editor, setReady, setActiveObject } = React.useContext(GlobalStateContext);
     const localFileSelectorRef = React.useRef();
     const { t } = reactI18next.useTranslation();
@@ -7289,7 +7288,8 @@ function ExportModify() {
                 downloadFile(svg, 'svg', name);
                 break;
             case 'json':
-                const json = editor.canvas2Json();
+                const rawJson = editor.canvas2Json();
+                const json = model.convertExportedJson(rawJson);
                 downloadFile(`data:text/json;charset=utf-8,${encodeURIComponent(JSON.stringify(json, null, 2))}`, 'json', name);
                 break;
             case 'clipboard':

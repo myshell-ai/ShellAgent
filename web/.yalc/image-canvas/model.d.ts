@@ -54,6 +54,8 @@ declare class ImageCanvasModel {
     specialProcessKeyPath(value: string): string[];
     getRefSelectDisplay(keyPath: string[]): any;
     specialProcessWorkflowRunnerOutput(keyPath: string[]): string;
+    convertExportedJson(rawJson: any): any;
 }
+declare function convertExportedJson(rawJson: any): any;
 
-export { ImageCanvasModel };
+export { ImageCanvasModel, convertExportedJson };

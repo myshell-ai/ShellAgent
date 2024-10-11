@@ -61,23 +61,8 @@ exports.ImageCanvasModel = class ImageCanvasModel {
     async canvas2Json() {
         await this.isEditorReadyPromise;
         const rawJson = this.editor.canvas2Json();
-        rawJson.objects.forEach((object) => {
-            if (object.ref) {
-                if (object.type === 'f-image') {
-                    object.objects.forEach(o => {
-                        if (o.type === 'image') {
-                            o._src = object.src;
-                            o.src = object.ref;
-                        }
-                    });
-                }
-                if (object.type === 'f-text') {
-                    object._text = object.text;
-                    object.text = object.ref;
-                }
-            }
-        });
-        return rawJson;
+        const json = convertExportedJson(rawJson);
+        return json;
     }
     async loadFromJSON(json) {
         await this.isEditorReadyPromise;
@@ -90,10 +75,10 @@ exports.ImageCanvasModel = class ImageCanvasModel {
                 object.objects.forEach(o => {
                     if (o.type === 'image') {
                         if (o._src) {
-                            object.ref = object._src;
-                            object.src = object.ref;
+                            object.ref = o.src;
+                            o.src = o._src;
                         }
-                        if (o.src.indexOf('{{') > -1) {
+                        if (o.src.indexOf('{{') > -1 && o.src.indexOf('}}') > -1) {
                             o.src = 'https://framerusercontent.com/images/S8LzTBsTv7aFWaPYWqvxt86vOHk.png';
                         }
                     }
@@ -131,6 +116,9 @@ exports.ImageCanvasModel = class ImageCanvasModel {
             return keyPath[0] + '[0]';
         }
         return keyPath[0];
+    }
+    convertExportedJson(rawJson) {
+        return convertExportedJson(rawJson);
     }
 };
 __decorate([
@@ -175,3 +163,25 @@ function findPathByValue(variables, targetValue) {
     }
     return null;
 }
+function convertExportedJson(rawJson) {
+    const json = JSON.parse(JSON.stringify(rawJson));
+    json.objects.forEach((object) => {
+        if (object.ref) {
+            if (object.type === 'f-image') {
+                object.objects.forEach(o => {
+                    if (o.type === 'image') {
+                        o._src = o.src;
+                        o.src = object.ref;
+                    }
+                });
+            }
+            if (object.type === 'f-text') {
+                object._text = object.text;
+                object.text = object.ref;
+            }
+        }
+    });
+    return json;
+}
+
+exports.convertExportedJson = convertExportedJson;
