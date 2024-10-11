@@ -19,7 +19,6 @@ var Picker$1 = require('@emoji-mart/react');
 var inversifyReact = require('inversify-react');
 var mobx = require('mobx');
 var reactSystem = require('react-system');
-var Cropper = require('cropperjs');
 var lodashEs = require('lodash-es');
 var hotkeys = require('hotkeys-js');
 var rough = require('roughjs');
@@ -53,7 +52,6 @@ var RcInputNumber__default = /*#__PURE__*/_interopDefault(RcInputNumber);
 var RcInput__default = /*#__PURE__*/_interopDefault(RcInput);
 var data__default = /*#__PURE__*/_interopDefault(data);
 var Picker__default = /*#__PURE__*/_interopDefault(Picker$1);
-var Cropper__default = /*#__PURE__*/_interopDefault(Cropper);
 var hotkeys__default = /*#__PURE__*/_interopDefault(hotkeys);
 var rough__default = /*#__PURE__*/_interopDefault(rough);
 
@@ -6417,7 +6415,7 @@ const BORDER_TYPES = [
         svg: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><line x1="1" x2="23" y1="50%" y2="50%" stroke="currentColor" stroke-dasharray="2 2" stroke-width="2" shape-rendering="crispEdges"></line></svg>'
     }
 ];
-function BorderSetter$1(props) {
+function BorderSetter(props) {
     const { value, onChange } = props;
     const { editor } = React.useContext(GlobalStateContext);
     const { t } = reactI18next.useTranslation();
@@ -6436,97 +6434,6 @@ function BorderSetter$1(props) {
                                 alignItems: 'center',
                                 marginTop: 6
                             } }) }), item.key))) })) })), jsxRuntime.jsx(FormItem$6, Object.assign({ name: "stroke", label: t('common.stroke_color') }, { children: jsxRuntime.jsx(SolidColorSetter, { onChange: fireEvent }) })), jsxRuntime.jsx(FormItem$6, Object.assign({ name: "strokeWidth", label: t('common.stroke_width') }, { children: jsxRuntime.jsx(SliderInputNumber, { min: 1, max: 100, onChangeComplete: fireEvent }) })), jsxRuntime.jsx(FormItem$6, Object.assign({ name: "borderRadius", label: t('common.round') }, { children: jsxRuntime.jsx(SliderInputNumber, { min: 0, max: 200, onChangeComplete: fireEvent }) }))] })));
-}
-
-function BorderSetter(props) {
-    const { value, onChange } = props;
-    const [showMore, setShowMore] = React.useState(false);
-    const { t } = reactI18next.useTranslation();
-    return (jsxRuntime.jsxs(jsxRuntime.Fragment, { children: [jsxRuntime.jsx(antd.Button, Object.assign({ block: true, icon: jsxRuntime.jsx(icons.BorderOutlined, {}), onClick: () => { setShowMore(true); } }, { children: t('common.border') })), jsxRuntime.jsx(MoreConfigWrapper, Object.assign({ open: showMore, setOpen: setShowMore, title: t('common.border') }, { children: jsxRuntime.jsx("div", Object.assign({ style: { marginTop: 24 } }, { children: jsxRuntime.jsx(BorderSetter$1, { value: value, onChange: onChange }) })) }))] }));
-}
-
-function ClipSetter(props) {
-    const { t } = reactI18next.useTranslation();
-    const { object } = props;
-    const imgRef = React.useRef();
-    const cropperRef = React.useRef(null);
-    const [showCrop, setShowCrop] = React.useState(false);
-    const [imgInfo, setImgInfo] = React.useState({});
-    const startCrop = () => {
-        setShowCrop(true);
-        const boundingRect = object.getBoundingRect();
-        setImgInfo({
-            src: object.getSrc(),
-            width: boundingRect.width,
-            height: boundingRect.height,
-            left: boundingRect.left + PANEL_WIDTH,
-            top: boundingRect.top + 50
-        });
-        setTimeout(() => {
-            cropperRef.current = new Cropper__default.default(imgRef.current, {
-                scalable: false,
-                autoCropArea: 1,
-                viewMode: 3,
-                toggleDragModeOnDblclick: false
-            });
-            object.set('hasControls', false);
-            object.canvas.requestRenderAll();
-        }, 66);
-    };
-    const handleCrop = () => {
-        if (cropperRef.current) {
-            const newImage = cropperRef.current.getCroppedCanvas().toDataURL();
-            object.setSrc(newImage, () => {
-                object.set('hasControls', true);
-                if (object.group) {
-                    object.group.addWithUpdate();
-                }
-                object.canvas.requestRenderAll();
-                object.setCoords();
-            });
-            setShowCrop(false);
-        }
-    };
-    const changeRatio = (r) => {
-        if (cropperRef.current) {
-            cropperRef.current.setAspectRatio(r);
-        }
-    };
-    const cancel = () => {
-        setShowCrop(false);
-        object.set('hasControls', true);
-        object.canvas.requestRenderAll();
-    };
-    React.useEffect(() => {
-        return () => {
-            if (cropperRef.current) {
-                cropperRef.current.destroy();
-                cropperRef.current = null;
-            }
-        };
-    }, []);
-    return (jsxRuntime.jsxs("div", { children: [jsxRuntime.jsx(antd.Button, Object.assign({ block: true, icon: jsxRuntime.jsx(icons.ExpandOutlined, {}), onClick: startCrop }, { children: t('setter.image.crop') })), showCrop ?
-                jsxRuntime.jsxs("div", Object.assign({ style: {
-                        position: 'fixed',
-                        left: 0,
-                        top: 0,
-                        right: 0,
-                        bottom: 0,
-                        backgroundColor: 'rgba(0,0,0,.65)',
-                        zIndex: 1000
-                    }, className: "fabritor-crop-wrapper" }, { children: [jsxRuntime.jsx("div", Object.assign({ style: {
-                                position: 'absolute',
-                                zIndex: 1001,
-                                left: imgInfo.left,
-                                top: imgInfo.top - 38
-                            } }, { children: jsxRuntime.jsxs(antd.Space.Compact, Object.assign({ block: true }, { children: [jsxRuntime.jsx(antd.Button, Object.assign({ onClick: () => { changeRatio(1 / 1); } }, { children: "1:1" })), jsxRuntime.jsx(antd.Button, Object.assign({ onClick: () => { changeRatio(4 / 3); } }, { children: "4:3" })), jsxRuntime.jsx(antd.Button, Object.assign({ onClick: () => { changeRatio(3 / 4); } }, { children: "3:4" })), jsxRuntime.jsx(antd.Button, Object.assign({ onClick: () => { changeRatio(16 / 9); } }, { children: "16:9" })), jsxRuntime.jsx(antd.Button, Object.assign({ onClick: () => { changeRatio(9 / 16); } }, { children: "9:16" })), jsxRuntime.jsx(antd.Button, { icon: jsxRuntime.jsx(icons.CloseOutlined, {}), onClick: cancel }), jsxRuntime.jsx(antd.Button, { icon: jsxRuntime.jsx(icons.CheckOutlined, {}), onClick: handleCrop })] })) })), jsxRuntime.jsx("div", Object.assign({ style: {
-                                width: imgInfo.width,
-                                height: imgInfo.height,
-                                position: 'absolute',
-                                zIndex: 1001,
-                                left: imgInfo.left,
-                                top: imgInfo.top
-                            }, onDoubleClick: handleCrop }, { children: jsxRuntime.jsx("img", { ref: imgRef, src: imgInfo.src, style: { display: 'block', maxWidth: '100%' } }) }))] })) : null] }));
 }
 
 const COLOR_FILTER_LIST = [
@@ -6725,7 +6632,7 @@ function ImageSetter() {
     return (jsxRuntime.jsxs(jsxRuntime.Fragment, { children: [jsxRuntime.jsxs(antd.Form, Object.assign({ form: form, onValuesChange: handleValuesChange, colon: false }, { children: [jsxRuntime.jsx(antd.Form.Item, Object.assign({ name: "ref", help: RefHelp, label: jsxRuntime.jsx(RefLabel, {}) }, { children: jsxRuntime.jsx(RefSelect, { id: 'ref', objId: object['id'], value: form.getFieldValue('ref'), onChange: (val) => {
                                 form.setFieldValue('ref', val);
                                 object.set('ref', val);
-                            } }) })), jsxRuntime.jsx(FormItem$4, Object.assign({ name: "img" }, { children: jsxRuntime.jsx(ReplaceSetter, {}) })), jsxRuntime.jsxs(antd.Row, Object.assign({ gutter: 8 }, { children: [jsxRuntime.jsx(antd.Col, Object.assign({ span: 12 }, { children: jsxRuntime.jsx(FormItem$4, { children: jsxRuntime.jsx(ClipSetter, { object: object }) }) })), jsxRuntime.jsx(antd.Col, Object.assign({ span: 12 }, { children: jsxRuntime.jsx(FormItem$4, Object.assign({ name: "border" }, { children: jsxRuntime.jsx(BorderSetter, {}) })) }))] }))] })), jsxRuntime.jsx(FList, { dataSource: IMAGE_ADVANCE_CONFIG, renderItemChildren: (item) => (jsxRuntime.jsxs(jsxRuntime.Fragment, { children: [item.icon, jsxRuntime.jsx("span", Object.assign({ style: {
+                            } }) })), jsxRuntime.jsx(FormItem$4, Object.assign({ name: "img" }, { children: jsxRuntime.jsx(ReplaceSetter, {}) }))] })), jsxRuntime.jsx(FList, { dataSource: IMAGE_ADVANCE_CONFIG, renderItemChildren: (item) => (jsxRuntime.jsxs(jsxRuntime.Fragment, { children: [item.icon, jsxRuntime.jsx("span", Object.assign({ style: {
                                 fontSize: 16,
                                 fontWeight: 'bold',
                                 margin: '0 6px 0 10px'
@@ -6834,7 +6741,7 @@ function ShapeSetter() {
             });
         }
     }, [object]);
-    return (jsxRuntime.jsxs(antd.Form, Object.assign({ form: form, onValuesChange: handleValuesChange, colon: false }, { children: [jsxRuntime.jsx(FormItem$2, Object.assign({ name: "fill", label: t('common.color') }, { children: jsxRuntime.jsx(ColorSetter, { defaultColor: "#000000" }) })), jsxRuntime.jsx(FormItem$2, Object.assign({ name: "border", label: jsxRuntime.jsx("span", Object.assign({ style: { fontWeight: 'bold', fontSize: 15 } }, { children: t('common.border') })), labelCol: { span: 24 } }, { children: jsxRuntime.jsx(BorderSetter$1, {}) }))] })));
+    return (jsxRuntime.jsxs(antd.Form, Object.assign({ form: form, onValuesChange: handleValuesChange, colon: false }, { children: [jsxRuntime.jsx(FormItem$2, Object.assign({ name: "fill", label: t('common.color') }, { children: jsxRuntime.jsx(ColorSetter, { defaultColor: "#000000" }) })), jsxRuntime.jsx(FormItem$2, Object.assign({ name: "border", label: jsxRuntime.jsx("span", Object.assign({ style: { fontWeight: 'bold', fontSize: 15 } }, { children: t('common.border') })), labelCol: { span: 24 } }, { children: jsxRuntime.jsx(BorderSetter, {}) }))] })));
 }
 
 function OpacitySetter(props) {
