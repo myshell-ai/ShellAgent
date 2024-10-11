@@ -80,6 +80,7 @@ exports.ImageCanvasModel = class ImageCanvasModel {
                         }
                         if (o.src.indexOf('{{') > -1 && o.src.indexOf('}}') > -1) {
                             o.src = 'https://framerusercontent.com/images/S8LzTBsTv7aFWaPYWqvxt86vOHk.png';
+                            o.crossOrigin = 'anonymous';
                         }
                     }
                 });
@@ -116,7 +117,7 @@ exports.ImageCanvasModel = class ImageCanvasModel {
     }
     processWorkflowRunnerOutput(keyPath) {
         keyPath = keyPath.slice(0);
-        if (keyPath[keyPath.length - 1] === WORKFLOW_RUNNER) {
+        if (keyPath.indexOf(WORKFLOW_RUNNER) > -1) {
             return keyPath[0] + '[0]';
         }
         return keyPath[0];
