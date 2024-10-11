@@ -90,7 +90,7 @@ exports.ImageCanvasModel = class ImageCanvasModel {
     setVariables(variables) {
         this.variables = transformVariables(variables);
     }
-    specialProcessKeyPath(value) {
+    convertValueFieldToRef(value) {
         let keyPath = [];
         if (value == null) {
             keyPath = [];
@@ -106,19 +106,20 @@ exports.ImageCanvasModel = class ImageCanvasModel {
     getRefSelectDisplay(keyPath) {
         if (keyPath.length === 0)
             return undefined;
+        if (this.variables.length === 0)
+            return undefined;
         const path = findPathByValue(this.variables, keyPath[0]);
+        if (!Array.isArray(path) || path.length === 0)
+            return undefined;
         path.shift();
         return path.join('/');
     }
-    specialProcessWorkflowRunnerOutput(keyPath) {
+    processWorkflowRunnerOutput(keyPath) {
         keyPath = keyPath.slice(0);
         if (keyPath[keyPath.length - 1] === WORKFLOW_RUNNER) {
             return keyPath[0] + '[0]';
         }
         return keyPath[0];
-    }
-    convertExportedJson(rawJson) {
-        return convertExportedJson(rawJson);
     }
 };
 __decorate([

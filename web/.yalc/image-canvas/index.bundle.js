@@ -361,122 +361,71 @@ const TEXTBOX_DEFAULT_CONFIG = {
 };
 [
     {
-        label: jsxRuntime.jsx("span", Object.assign({ style: {
-                fontFamily: 'SmileySans',
-                fontSize: 16
-            } }, { children: "\u5F97\u610F\u9ED1" })),
+        label: jsxRuntime.jsx("span", Object.assign({ style: { fontFamily: 'SmileySans', fontSize: 16 } }, { children: "\u5F97\u610F\u9ED1" })),
         value: 'SmileySans'
     },
     {
-        label: jsxRuntime.jsx("span", Object.assign({ style: {
-                fontFamily: '霞鹜新晰黑',
-                fontSize: 16
-            } }, { children: "\u971E\u9E5C\u65B0\u6670\u9ED1" })),
+        label: jsxRuntime.jsx("span", Object.assign({ style: { fontFamily: '霞鹜新晰黑', fontSize: 16 } }, { children: "\u971E\u9E5C\u65B0\u6670\u9ED1" })),
         value: '霞鹜新晰黑'
     },
     {
-        label: jsxRuntime.jsx("span", Object.assign({ style: {
-                fontFamily: '霞鹜文楷',
-                fontSize: 16
-            } }, { children: "\u971E\u9E5C\u6587\u6977" })),
+        label: jsxRuntime.jsx("span", Object.assign({ style: { fontFamily: '霞鹜文楷', fontSize: 16 } }, { children: "\u971E\u9E5C\u6587\u6977" })),
         value: '霞鹜文楷'
     },
     {
-        label: jsxRuntime.jsx("span", Object.assign({ style: {
-                fontFamily: '小赖字体',
-                fontSize: 16
-            } }, { children: "\u5C0F\u8D56\u5B57\u4F53" })),
+        label: jsxRuntime.jsx("span", Object.assign({ style: { fontFamily: '小赖字体', fontSize: 16 } }, { children: "\u5C0F\u8D56\u5B57\u4F53" })),
         value: '小赖字体'
     },
     {
-        label: jsxRuntime.jsx("span", Object.assign({ style: {
-                fontFamily: '悠哉字体',
-                fontSize: 16
-            } }, { children: "\u60A0\u54C9\u5B57\u4F53" })),
+        label: jsxRuntime.jsx("span", Object.assign({ style: { fontFamily: '悠哉字体', fontSize: 16 } }, { children: "\u60A0\u54C9\u5B57\u4F53" })),
         value: '悠哉字体'
     },
     {
-        label: jsxRuntime.jsx("span", Object.assign({ style: {
-                fontFamily: 'AlibabaPuHuiTi',
-                fontSize: 16
-            } }, { children: "\u963F\u91CC\u5DF4\u5DF4\u666E\u60E0\u4F53" })),
+        label: jsxRuntime.jsx("span", Object.assign({ style: { fontFamily: 'AlibabaPuHuiTi', fontSize: 16 } }, { children: "\u963F\u91CC\u5DF4\u5DF4\u666E\u60E0\u4F53" })),
         value: 'AlibabaPuHuiTi'
     },
     {
-        label: jsxRuntime.jsx("span", Object.assign({ style: {
-                fontFamily: '霞鹜尚智黑',
-                fontSize: 16
-            } }, { children: "\u971E\u9E5C\u5C1A\u667A\u9ED1" })),
+        label: jsxRuntime.jsx("span", Object.assign({ style: { fontFamily: '霞鹜尚智黑', fontSize: 16 } }, { children: "\u971E\u9E5C\u5C1A\u667A\u9ED1" })),
         value: '霞鹜尚智黑'
     },
     {
-        label: jsxRuntime.jsx("span", Object.assign({ style: {
-                fontFamily: 'SourceHanSans',
-                fontSize: 16
-            } }, { children: "\u601D\u6E90\u9ED1\u4F53" })),
+        label: jsxRuntime.jsx("span", Object.assign({ style: { fontFamily: 'SourceHanSans', fontSize: 16 } }, { children: "\u601D\u6E90\u9ED1\u4F53" })),
         value: 'SourceHanSans'
     },
     {
-        label: jsxRuntime.jsx("span", Object.assign({ style: {
-                fontFamily: 'SourceHanSerif',
-                fontSize: 16
-            } }, { children: "\u601D\u6E90\u5B8B\u4F53" })),
+        label: jsxRuntime.jsx("span", Object.assign({ style: { fontFamily: 'SourceHanSerif', fontSize: 16 } }, { children: "\u601D\u6E90\u5B8B\u4F53" })),
         value: 'SourceHanSerif'
     },
     {
-        label: jsxRuntime.jsx("span", Object.assign({ style: {
-                fontFamily: '方正楷体',
-                fontSize: 16
-            } }, { children: "\u65B9\u6B63\u6977\u4F53" })),
+        label: jsxRuntime.jsx("span", Object.assign({ style: { fontFamily: '方正楷体', fontSize: 16 } }, { children: "\u65B9\u6B63\u6977\u4F53" })),
         value: '方正楷体'
     },
     {
-        label: jsxRuntime.jsx("span", Object.assign({ style: {
-                fontFamily: '包图小白体',
-                fontSize: 16
-            } }, { children: "\u5305\u56FE\u5C0F\u767D\u4F53" })),
+        label: jsxRuntime.jsx("span", Object.assign({ style: { fontFamily: '包图小白体', fontSize: 16 } }, { children: "\u5305\u56FE\u5C0F\u767D\u4F53" })),
         value: '包图小白体'
     },
     {
-        label: jsxRuntime.jsx("span", Object.assign({ style: {
-                fontFamily: '手写杂字体',
-                fontSize: 16
-            } }, { children: "\u624B\u5199\u6742\u5B57\u4F53" })),
+        label: jsxRuntime.jsx("span", Object.assign({ style: { fontFamily: '手写杂字体', fontSize: 16 } }, { children: "\u624B\u5199\u6742\u5B57\u4F53" })),
         value: '手写杂字体'
     },
     {
-        label: jsxRuntime.jsx("span", Object.assign({ style: {
-                fontFamily: '胡晓波男神体',
-                fontSize: 16
-            } }, { children: "\u80E1\u6653\u6CE2\u7537\u795E\u4F53" })),
+        label: jsxRuntime.jsx("span", Object.assign({ style: { fontFamily: '胡晓波男神体', fontSize: 16 } }, { children: "\u80E1\u6653\u6CE2\u7537\u795E\u4F53" })),
         value: '胡晓波男神体'
     },
     {
-        label: jsxRuntime.jsx("span", Object.assign({ style: {
-                fontFamily: '胡晓波骚包体',
-                fontSize: 16
-            } }, { children: "\u80E1\u6653\u6CE2\u9A9A\u5305\u4F53" })),
+        label: jsxRuntime.jsx("span", Object.assign({ style: { fontFamily: '胡晓波骚包体', fontSize: 16 } }, { children: "\u80E1\u6653\u6CE2\u9A9A\u5305\u4F53" })),
         value: '胡晓波骚包体'
     },
     {
-        label: jsxRuntime.jsx("span", Object.assign({ style: {
-                fontFamily: '站酷快乐体',
-                fontSize: 16
-            } }, { children: "\u7AD9\u9177\u5FEB\u4E50\u4F53" })),
+        label: jsxRuntime.jsx("span", Object.assign({ style: { fontFamily: '站酷快乐体', fontSize: 16 } }, { children: "\u7AD9\u9177\u5FEB\u4E50\u4F53" })),
         value: '站酷快乐体'
     },
     {
-        label: jsxRuntime.jsx("span", Object.assign({ style: {
-                fontFamily: '站酷文艺体',
-                fontSize: 16
-            } }, { children: "\u7AD9\u9177\u6587\u827A\u4F53" })),
+        label: jsxRuntime.jsx("span", Object.assign({ style: { fontFamily: '站酷文艺体', fontSize: 16 } }, { children: "\u7AD9\u9177\u6587\u827A\u4F53" })),
         value: '站酷文艺体'
     },
     {
-        label: jsxRuntime.jsx("span", Object.assign({ style: {
-                fontFamily: '站酷小薇LOGO体',
-                fontSize: 16
-            } }, { children: "\u7AD9\u9177\u5C0F\u8587LOGO\u4F53" })),
+        label: jsxRuntime.jsx("span", Object.assign({ style: { fontFamily: '站酷小薇LOGO体', fontSize: 16 } }, { children: "\u7AD9\u9177\u5C0F\u8587LOGO\u4F53" })),
         value: '站酷小薇LOGO体'
     }
 ];
@@ -596,10 +545,7 @@ const COMPLETE_GOOGLE_FONTS = [
     'Source Code Pro',
 ];
 const FONT_PRESET_FAMILY_LIST_GOOGLE_FONT = COMPLETE_GOOGLE_FONTS.map(f => ({
-    label: jsxRuntime.jsx("span", Object.assign({ style: {
-            fontFamily: f,
-            fontSize: 16
-        } }, { children: f })),
+    label: jsxRuntime.jsx("span", Object.assign({ style: { fontFamily: f, fontSize: 16 } }, { children: f })),
     value: f
 }));
 
@@ -6293,11 +6239,11 @@ function RefLabel() {
 }
 function RefSelect(props) {
     const model = inversifyReact.useInjection('ImageCanvasModel');
-    const keyPath = model.specialProcessKeyPath(props.value);
+    const keyPath = model.convertValueFieldToRef(props.value);
     const variables = mobx.toJS(model.variables);
     return (jsxRuntime.jsx(antd.Dropdown, Object.assign({ menu: {
             onClick: (info) => {
-                props.onChange(model.specialProcessWorkflowRunnerOutput(info.keyPath));
+                props.onChange(model.processWorkflowRunnerOutput(info.keyPath));
             },
             selectedKeys: keyPath,
             items: variables
@@ -6717,7 +6663,7 @@ function ImageSetter() {
     const { t } = reactI18next.useTranslation();
     const [form] = antd.Form.useForm();
     const [openFx, setOpenFx] = React.useState(false);
-    [
+    const IMAGE_ADVANCE_CONFIG = [
         {
             icon: jsxRuntime.jsx(icons.FunctionOutlined, { style: { fontSize: 22 } }),
             label: t('setter.image.filter'),
@@ -6779,7 +6725,11 @@ function ImageSetter() {
     return (jsxRuntime.jsxs(jsxRuntime.Fragment, { children: [jsxRuntime.jsxs(antd.Form, Object.assign({ form: form, onValuesChange: handleValuesChange, colon: false }, { children: [jsxRuntime.jsx(antd.Form.Item, Object.assign({ name: "ref", help: RefHelp, label: jsxRuntime.jsx(RefLabel, {}) }, { children: jsxRuntime.jsx(RefSelect, { id: 'ref', objId: object['id'], value: form.getFieldValue('ref'), onChange: (val) => {
                                 form.setFieldValue('ref', val);
                                 object.set('ref', val);
-                            } }) })), jsxRuntime.jsx(FormItem$4, Object.assign({ name: "img" }, { children: jsxRuntime.jsx(ReplaceSetter, {}) })), jsxRuntime.jsxs(antd.Row, Object.assign({ gutter: 8 }, { children: [jsxRuntime.jsx(antd.Col, Object.assign({ span: 12 }, { children: jsxRuntime.jsx(FormItem$4, { children: jsxRuntime.jsx(ClipSetter, { object: object }) }) })), jsxRuntime.jsx(antd.Col, Object.assign({ span: 12 }, { children: jsxRuntime.jsx(FormItem$4, Object.assign({ name: "border" }, { children: jsxRuntime.jsx(BorderSetter, {}) })) }))] }))] })), jsxRuntime.jsx(MoreConfigWrapper, Object.assign({ open: openFx, setOpen: setOpenFx, title: t('setter.image.filter') }, { children: jsxRuntime.jsx(ImageFx, {}) }))] }));
+                            } }) })), jsxRuntime.jsx(FormItem$4, Object.assign({ name: "img" }, { children: jsxRuntime.jsx(ReplaceSetter, {}) })), jsxRuntime.jsxs(antd.Row, Object.assign({ gutter: 8 }, { children: [jsxRuntime.jsx(antd.Col, Object.assign({ span: 12 }, { children: jsxRuntime.jsx(FormItem$4, { children: jsxRuntime.jsx(ClipSetter, { object: object }) }) })), jsxRuntime.jsx(antd.Col, Object.assign({ span: 12 }, { children: jsxRuntime.jsx(FormItem$4, Object.assign({ name: "border" }, { children: jsxRuntime.jsx(BorderSetter, {}) })) }))] }))] })), jsxRuntime.jsx(FList, { dataSource: IMAGE_ADVANCE_CONFIG, renderItemChildren: (item) => (jsxRuntime.jsxs(jsxRuntime.Fragment, { children: [item.icon, jsxRuntime.jsx("span", Object.assign({ style: {
+                                fontSize: 16,
+                                fontWeight: 'bold',
+                                margin: '0 6px 0 10px'
+                            } }, { children: item.label })), jsxRuntime.jsx(icons.RightOutlined, {})] })) }), jsxRuntime.jsx(MoreConfigWrapper, Object.assign({ open: openFx, setOpen: setOpenFx, title: t('setter.image.filter') }, { children: jsxRuntime.jsx(ImageFx, {}) }))] }));
 }
 
 const { Item: FormItem$3 } = antd.Form;
@@ -7232,7 +7182,7 @@ const items = ['jpg', 'png', 'svg', 'json', 'divider', 'clipboard']
     label: jsxRuntime.jsx(reactI18next.Trans, { i18nKey: `${i18nKeySuffix$1}.${item}` })
 }));
 function ExportModify() {
-    const model = inversifyReact.useInjection('ImageCanvasModel');
+    inversifyReact.useInjection('ImageCanvasModel');
     const { editor, setReady, setActiveObject } = React.useContext(GlobalStateContext);
     const localFileSelectorRef = React.useRef();
     const { t } = reactI18next.useTranslation();
@@ -7288,8 +7238,7 @@ function ExportModify() {
                 downloadFile(svg, 'svg', name);
                 break;
             case 'json':
-                const rawJson = editor.canvas2Json();
-                const json = model.convertExportedJson(rawJson);
+                const json = editor.canvas2Json();
                 downloadFile(`data:text/json;charset=utf-8,${encodeURIComponent(JSON.stringify(json, null, 2))}`, 'json', name);
                 break;
             case 'clipboard':

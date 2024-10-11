@@ -2,7 +2,7 @@
   "version": "v1",
   "packages": {
     "image-canvas": {
-      "signature": "0b439fe00091f07716539b4f51216780",
+      "signature": "1f39d8a90b2795a494abe672a94f69b1",
       "pure": true
     }
   }

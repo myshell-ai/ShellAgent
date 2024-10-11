@@ -51,10 +51,9 @@ declare class ImageCanvasModel {
     canvas2Json(): Promise<unknown>;
     loadFromJSON(json: any): Promise<void>;
     setVariables(variables: any[]): void;
-    specialProcessKeyPath(value: string): string[];
-    getRefSelectDisplay(keyPath: string[]): any;
-    specialProcessWorkflowRunnerOutput(keyPath: string[]): string;
-    convertExportedJson(rawJson: any): any;
+    convertValueFieldToRef(value: string): string[];
+    getRefSelectDisplay(keyPath: string[]): string;
+    processWorkflowRunnerOutput(keyPath: string[]): string;
 }
 declare function convertExportedJson(rawJson: any): any;
 
