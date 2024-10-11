@@ -183,8 +183,8 @@ export const ComfyUIEditor = ({
   };
 
   const disabled = useMemo(
-    () => showSettingButton || isLoading,
-    [showSettingButton, isLoading],
+    () => showSettingButton || isLoading || !loaded,
+    [showSettingButton, isLoading, loaded],
   );
 
   return (
