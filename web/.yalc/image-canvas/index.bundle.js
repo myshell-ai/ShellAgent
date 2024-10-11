@@ -6230,18 +6230,16 @@ function Square3Stack3DIcon({
 }
 const ForwardRef = /*#__PURE__*/ React__namespace.forwardRef(Square3Stack3DIcon);
 
-const RefHelp = 'Will be replaced in runtime';
+const RefHelp = 'Will be replaced in Chat';
 function RefLabel() {
-    return (jsxRuntime.jsx(antd.Tooltip, Object.assign({ title: "In edit status, the canvas show your uploaded image and edited text. If you click Run, these will be replaced with the referenced variables" }, { children: jsxRuntime.jsxs(reactSystem.Flex, { children: [jsxRuntime.jsx(ForwardRef, { style: {
+    return (jsxRuntime.jsx(antd.Tooltip, Object.assign({ title: "In edit status, the canvas show your uploaded image and edited text. If you click Run, these will be replaced with the referenced variables in Chat." }, { children: jsxRuntime.jsxs(reactSystem.Flex, { children: [jsxRuntime.jsx(ForwardRef, { style: {
                         width: 18,
                         marginRight: 2
                     } }), "Ref"] }) })));
 }
 function RefSelect(props) {
     const model = inversifyReact.useInjection('ImageCanvasModel');
-    const keyPath = (typeof props.value === "string" && props.value.trim() !== '')
-        ? props.value.split('.')
-        : [];
+    const keyPath = model.specialProcessKeyPath(props.value);
     const variables = mobx.toJS(model.variables);
     return (jsxRuntime.jsx(antd.Dropdown, Object.assign({ menu: {
             onClick: (info) => {

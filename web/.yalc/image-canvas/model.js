@@ -63,8 +63,18 @@ exports.ImageCanvasModel = class ImageCanvasModel {
         const rawJson = this.editor.canvas2Json();
         rawJson.objects.forEach((object) => {
             if (object.ref) {
-                object._text = object.text;
-                object.text = object.ref;
+                if (object.type === 'f-image') {
+                    object.objects.forEach(o => {
+                        if (o.type === 'image') {
+                            o._src = object.src;
+                            o.src = object.ref;
+                        }
+                    });
+                }
+                if (object.type === 'f-text') {
+                    object._text = object.text;
+                    object.text = object.ref;
+                }
             }
         });
         return rawJson;
@@ -72,15 +82,36 @@ exports.ImageCanvasModel = class ImageCanvasModel {
     async loadFromJSON(json) {
         await this.isEditorReadyPromise;
         json.objects.forEach((object) => {
-            if (object._text) {
+            if (object.type === 'f-text' && object._text) {
                 object.ref = object.text;
                 object.text = object._text;
+            }
+            if (object.type === 'f-image') {
+                object.objects.forEach(o => {
+                    if (o.type === 'image') {
+                        object.ref = object._src;
+                        object.src = object.ref;
+                    }
+                });
             }
         });
         this.emitter.emit("loadFromJSON", json);
     }
     setVariables(variables) {
         this.variables = transformVariables(variables);
+    }
+    specialProcessKeyPath(value) {
+        let keyPath = [];
+        if (value == null) {
+            keyPath = [];
+        }
+        else if (typeof value === 'string' && value.endsWith('[0]')) {
+            keyPath = [value.replace('[0]', '')];
+        }
+        else {
+            keyPath = [value];
+        }
+        return keyPath;
     }
     getRefSelectDisplay(keyPath) {
         if (keyPath.length === 0)
