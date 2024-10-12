@@ -101,11 +101,16 @@ const CustomNodeForm: React.FC = () => (
             <div
               key={field.key}
               className="mb-6 p-4 border border-gray-200 rounded-md bg-surface-subtle">
-              <Form.Item {...field} name={[field.name, 'name']} label="Name">
+              <Form.Item
+                {...field}
+                required
+                name={[field.name, 'name']}
+                label="Name">
                 <Input readOnly placeholder="Enter custom node name" />
               </Form.Item>
               <Form.Item
                 {...field}
+                required
                 name={[field.name, 'repo']}
                 label="Repository"
                 rules={[
@@ -147,12 +152,14 @@ const ModelForm: React.FC = () => (
               </Form.Item>
               <Form.Item
                 {...field}
+                required
                 name={[field.name, 'filename']}
                 label="Filename">
                 <Input readOnly placeholder="Filename" />
               </Form.Item>
               <Form.Item
                 {...field}
+                required
                 name={[field.name, 'save_path']}
                 label="Save Path">
                 <Input readOnly placeholder="Save path" />

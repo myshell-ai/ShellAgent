@@ -10,6 +10,7 @@ import React, {
   useCallback,
   useMemo,
 } from 'react';
+import { toast } from 'react-toastify';
 
 import { SettingsModel } from '@/components/settings/settings.model';
 
@@ -129,6 +130,16 @@ export const ComfyUIEditor = ({
             data.dependencies,
           );
           if (hasMissingCustomNodes || hasMissingModels) {
+            toast.error(
+              'Dependencies missing, please check and submit the required dependencies',
+              {
+                position: 'top-center',
+                autoClose: 3000,
+                hideProgressBar: true,
+                pauseOnHover: true,
+                closeButton: false,
+              },
+            );
             setCheckDialogOpen(true);
             setDependencies(data.dependencies);
           } else {
@@ -262,9 +273,6 @@ export const ComfyUIEditor = ({
               disabled={disabled}
               loading={saveLoading}>
               Save
-            </Button>
-            <Button size="sm" onClick={() => setCheckDialogOpen(true)}>
-              Check
             </Button>
           </div>
         }

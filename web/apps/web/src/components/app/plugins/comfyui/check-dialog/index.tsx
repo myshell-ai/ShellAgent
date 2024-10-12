@@ -49,6 +49,7 @@ export const CheckDialog: React.FC<CheckDialogProps> = ({
 
   return (
     <AModal
+      mask={false}
       open={open}
       width={720}
       zIndex={9999}
