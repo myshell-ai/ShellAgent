@@ -17,6 +17,12 @@ export class OpenImageCanvasModel {
     makeObservable(this);
   }
 
+  onEffect(fieldProps: any, getValues: any, options: any[]) {
+    this.fieldProps = fieldProps;
+    this.getValues = getValues;
+    this.imageCanvas.setVariables(options);
+  }
+
   @action.bound
   open() {
     this.isOpen = true;

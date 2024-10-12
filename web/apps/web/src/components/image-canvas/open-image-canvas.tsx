@@ -27,9 +27,7 @@ export function OpenImageCanvas(props: any) {
   const options = useSelectOptions(props.name);
   const { getValues } = useFormContext();
   useEffect(() => {
-    model.fieldProps = props;
-    model.getValues = getValues;
-    model.imageCanvas.setVariables(options);
+    model.onEffect(props, getValues, options);
     // eslint-disable-next-line react/destructuring-assignment
   }, [props.id]);
   return (
