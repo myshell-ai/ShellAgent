@@ -5817,22 +5817,12 @@ function EmojiPanel(props) {
             editor.canvas.requestRenderAll();
         }
         else {
-            const canvas = new fabric$1.fabric.Canvas('canvas');
-            const text = new fabric$1.fabric.Text(emoji.native, {
-                fontFamily: 'Arial',
-                fontSize: 100
+            await createTextbox({
+                text: emoji.native,
+                fontSize: 80,
+                width: 100,
+                canvas: editor.canvas
             });
-            canvas.add(text);
-            canvas.setWidth(100);
-            canvas.setHeight(100);
-            const img = new Image();
-            img.onload = () => {
-                createImage({
-                    imageSource: img,
-                    canvas: editor.canvas
-                });
-            };
-            img.src = canvas.toDataURL();
         }
     };
     React.useEffect(() => {
