@@ -13,8 +13,9 @@ import { COMFYUI_API, DEFAULT_COMFYUI_API } from './constant';
 import { useEventEmitter, EventType } from './emitter';
 import { getComfyuiSchema, defaultSchema } from './schema';
 import { getFile } from './services';
-import { ComfyUIEditor } from './widgets/comfyui-editor';
 import { generateHash } from './utils';
+import { ComfyUIEditor } from './widgets/comfyui-editor';
+
 const settingsDisabled = process.env.NEXT_PUBLIC_DISABLE_SETTING === 'yes';
 
 const ComfyUIPlugin: React.FC<CommonWidgetConfigProps> = ({
