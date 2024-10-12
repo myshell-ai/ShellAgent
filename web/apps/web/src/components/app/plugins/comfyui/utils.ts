@@ -71,3 +71,7 @@ export function formatFormData2Dependency(
     ),
   };
 }
+
+export function generateHash() {
+  return crypto.randomUUID().replace(/-/g, '');
+}

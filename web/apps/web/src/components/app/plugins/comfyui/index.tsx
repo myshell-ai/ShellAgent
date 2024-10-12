@@ -3,7 +3,6 @@ import { FormRef } from '@shellagent/ui';
 import { useRequest } from 'ahooks';
 import { useInjection } from 'inversify-react';
 import { merge } from 'lodash-es';
-import { nanoid } from 'nanoid';
 import React, { useRef, useEffect, useState, useMemo } from 'react';
 
 import { CommonWidgetConfigProps } from '@/components/app/config-form/widget-config';
@@ -15,6 +14,7 @@ import { useEventEmitter, EventType } from './emitter';
 import { getComfyuiSchema, defaultSchema } from './schema';
 import { getFile } from './services';
 import { ComfyUIEditor } from './widgets/comfyui-editor';
+import { generateHash } from './utils';
 const settingsDisabled = process.env.NEXT_PUBLIC_DISABLE_SETTING === 'yes';
 
 const ComfyUIPlugin: React.FC<CommonWidgetConfigProps> = ({
@@ -33,7 +33,7 @@ const ComfyUIPlugin: React.FC<CommonWidgetConfigProps> = ({
     const initializeForm = async () => {
       const values = formRef.current?.getValues();
       if (!values?.comfy_workflow_id) {
-        formRef.current?.setValue('comfy_workflow_id', nanoid());
+        formRef.current?.setValue('comfy_workflow_id', generateHash());
       }
 
       if (!settingsDisabled) {
