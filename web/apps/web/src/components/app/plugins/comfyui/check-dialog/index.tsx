@@ -1,9 +1,9 @@
 'use client';
 
-import React, { useRef, useCallback } from 'react';
 import { AModal, Button } from '@shellagent/ui';
 import { useRequest } from 'ahooks';
 import { FormInstance } from 'antd';
+import React, { useRef, useCallback } from 'react';
 
 import { CheckerContent } from './content';
 import { updateDependency } from '../services';
