@@ -565,11 +565,11 @@ const loadFont = async (f) => {
     if (!f)
         return Promise.resolve();
     const item = FONT_PRESET_FAMILY_LIST_GOOGLE_FONT.find(_item => _item.value === f);
+    if (!item)
+        return Promise.resolve();
     googleFonts__default.default.add({
         [item.value]: true
     });
-    if (!item)
-        return Promise.resolve();
     const font = new FontFaceObserver__default.default(f);
     return font.load(null, 1000 * 100).catch((e) => {
         console.error(LOG_PREFIX, e);
@@ -5817,12 +5817,22 @@ function EmojiPanel(props) {
             editor.canvas.requestRenderAll();
         }
         else {
-            await createTextbox({
-                text: emoji.native,
-                fontSize: 80,
-                width: 100,
-                canvas: editor.canvas
+            const canvas = new fabric$1.fabric.Canvas('canvas');
+            const text = new fabric$1.fabric.Text(emoji.native, {
+                fontFamily: 'Arial',
+                fontSize: 100
             });
+            canvas.add(text);
+            canvas.setWidth(100);
+            canvas.setHeight(100);
+            const img = new Image();
+            img.onload = () => {
+                createImage({
+                    imageSource: img,
+                    canvas: editor.canvas
+                });
+            };
+            img.src = canvas.toDataURL();
         }
     };
     React.useEffect(() => {
