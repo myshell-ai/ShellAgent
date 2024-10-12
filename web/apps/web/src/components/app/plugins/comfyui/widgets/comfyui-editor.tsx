@@ -229,11 +229,7 @@ export const ComfyUIEditor = ({
 
   return (
     <div>
-      <Button
-        size="sm"
-        className="w-full"
-        onClick={showModal}
-        disabled={!value}>
+      <Button size="sm" className="w-full" onClick={showModal}>
         Edit in ComfyUI
       </Button>
       <Modal

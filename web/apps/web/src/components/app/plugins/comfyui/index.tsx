@@ -1,45 +1,31 @@
-import {
-  getDefaultValueBySchema,
-  TFieldMode,
-  ISchema,
-} from '@shellagent/form-engine';
-import { FormRef, Spinner } from '@shellagent/ui';
+import { getDefaultValueBySchema, ISchema } from '@shellagent/form-engine';
+import { FormRef } from '@shellagent/ui';
 import { useRequest } from 'ahooks';
 import { useInjection } from 'inversify-react';
 import { merge } from 'lodash-es';
 import { nanoid } from 'nanoid';
-import React, {
-  useRef,
-  useEffect,
-  useState,
-  useMemo,
-  useCallback,
-} from 'react';
+import React, { useRef, useEffect, useState, useMemo } from 'react';
 
-import { WidgetConfigProps } from '@/components/app/config-form/widget-config';
+import { CommonWidgetConfigProps } from '@/components/app/config-form/widget-config';
 import NodeForm from '@/components/app/node-form';
 import { SettingsModel } from '@/components/settings/settings.model';
-import { useAppStore } from '@/stores/app/app-provider';
 
 import { COMFYUI_API, DEFAULT_COMFYUI_API } from './constant';
 import { useEventEmitter, EventType } from './emitter';
 import { getComfyuiSchema, defaultSchema } from './schema';
 import { getFile } from './services';
 import { ComfyUIEditor } from './widgets/comfyui-editor';
+const settingsDisabled = process.env.NEXT_PUBLIC_DISABLE_SETTING === 'yes';
 
-const ComfyUIPlugin: React.FC<WidgetConfigProps> = ({
+const ComfyUIPlugin: React.FC<CommonWidgetConfigProps> = ({
   values,
   onChange,
-  id,
+  modeMap,
+  onModeChange,
   parent,
 }) => {
   const formRef = useRef<FormRef>(null);
   const [schema, setSchema] = useState<ISchema>(defaultSchema);
-
-  const { setFieldsModeMap, fieldsModeMap } = useAppStore(state => ({
-    setFieldsModeMap: state.setFieldsModeMap,
-    fieldsModeMap: state.config?.fieldsModeMap,
-  }));
 
   const model = useInjection(SettingsModel);
 
@@ -49,12 +35,16 @@ const ComfyUIPlugin: React.FC<WidgetConfigProps> = ({
       if (!values?.comfy_workflow_id) {
         formRef.current?.setValue('comfy_workflow_id', nanoid());
       }
-      // 从环境变量中获取参数
-      const settings = await model.loadSettingsEnv();
-      const api =
-        settings?.envs?.find(env => env.key === COMFYUI_API)?.value ||
-        DEFAULT_COMFYUI_API;
-      formRef.current?.setValue('api', api);
+
+      if (!settingsDisabled) {
+        // 本地版
+        const settings = await model.loadSettingsEnv();
+        const api = settings?.envs?.find(env => env.key === COMFYUI_API)?.value;
+        formRef.current?.setValue('api', api);
+      } else {
+        // 线上版
+        formRef.current?.setValue('api', DEFAULT_COMFYUI_API);
+      }
     };
 
     initializeForm();
@@ -106,13 +96,6 @@ const ComfyUIPlugin: React.FC<WidgetConfigProps> = ({
     }
   });
 
-  const onModeChange = useCallback(
-    (name: string, mode: TFieldMode) => {
-      setFieldsModeMap({ id: `${id}.${parent}`, name, mode });
-    },
-    [id, setFieldsModeMap, parent],
-  );
-
   if (!values) {
     return null;
   }
@@ -120,22 +103,19 @@ const ComfyUIPlugin: React.FC<WidgetConfigProps> = ({
   return (
     <div className="comfyui-widget flex flex-col">
       <NodeForm
+        parent={parent}
         ref={formRef}
         key={JSON.stringify(schema)}
         schema={schema}
         values={values}
         onChange={onChange}
         onModeChange={onModeChange}
-        modeMap={fieldsModeMap?.[`${id}.${parent}`] || {}}
+        loading={isLoading}
+        modeMap={modeMap}
         components={{
           ComfyUIEditor,
         }}
       />
-      {isLoading && (
-        <div className="h-[100px] flex justify-center items-center">
-          <Spinner size="lg" className="text-brand" />
-        </div>
-      )}
     </div>
   );
 };

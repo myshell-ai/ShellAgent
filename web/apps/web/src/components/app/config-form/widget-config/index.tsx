@@ -23,7 +23,12 @@ export interface WidgetConfigProps {
   onChange: (values: TValues) => void;
 }
 
-const CustomWidgetConfig: React.FC<WidgetConfigProps> = props => {
+export interface CommonWidgetConfigProps extends WidgetConfigProps {
+  onModeChange: (name: string, mode: TFieldMode) => void;
+  modeMap: Record<string, TFieldMode>;
+}
+
+const CustomWidgetConfig: React.FC<CommonWidgetConfigProps> = props => {
   const { values } = props;
   if (!values) {
     return null;
@@ -37,16 +42,13 @@ const CustomWidgetConfig: React.FC<WidgetConfigProps> = props => {
   return null;
 };
 
-const StandardWidgetConfig: React.FC<WidgetConfigProps> = ({
+const StandardWidgetConfig: React.FC<CommonWidgetConfigProps> = ({
   values,
   parent,
-  id,
   onChange,
+  onModeChange,
+  modeMap,
 }) => {
-  const { setFieldsModeMap, fieldsModeMap } = useAppStore(state => ({
-    setFieldsModeMap: state.setFieldsModeMap,
-    fieldsModeMap: state.config?.fieldsModeMap,
-  }));
   const { loading, getWidgetSchema, widgetSchema } = useWorkflowStore(
     state => ({
       loading: state.loading.getWidgetSchema,
@@ -102,13 +104,6 @@ const StandardWidgetConfig: React.FC<WidgetConfigProps> = ({
     values,
   ]);
 
-  const onModeChange = useCallback(
-    (name: string, mode: TFieldMode) => {
-      setFieldsModeMap({ id: `${id}.${parent}`, name, mode });
-    },
-    [id, setFieldsModeMap, parent],
-  );
-
   if (!values) {
     return null;
   }
@@ -121,14 +116,40 @@ const StandardWidgetConfig: React.FC<WidgetConfigProps> = ({
       onChange={handleOnChange}
       loading={loading?.[values.widget_class_name]}
       onModeChange={onModeChange}
-      modeMap={fieldsModeMap?.[`${id}.${parent}`] || {}}
+      modeMap={modeMap}
     />
   );
 };
 
 export const WidgetConfig: React.FC<WidgetConfigProps> = props => {
+  const { id, parent } = props;
+  const { setFieldsModeMap, fieldsModeMap } = useAppStore(state => ({
+    setFieldsModeMap: state.setFieldsModeMap,
+    fieldsModeMap: state.config?.fieldsModeMap,
+  }));
+
+  const onModeChange = useCallback(
+    (name: string, mode: TFieldMode) => {
+      setFieldsModeMap({ id: `${id}.${parent}`, name, mode });
+    },
+    [id, setFieldsModeMap, parent],
+  );
+
+  const modeMap = fieldsModeMap?.[`${id}.${parent}`] || {};
   if (props.values?.custom) {
-    return <CustomWidgetConfig {...props} />;
+    return (
+      <CustomWidgetConfig
+        {...props}
+        onModeChange={onModeChange}
+        modeMap={modeMap}
+      />
+    );
   }
-  return <StandardWidgetConfig {...props} />;
+  return (
+    <StandardWidgetConfig
+      {...props}
+      onModeChange={onModeChange}
+      modeMap={modeMap}
+    />
+  );
 };
