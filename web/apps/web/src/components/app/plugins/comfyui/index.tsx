@@ -3,7 +3,7 @@ import {
   TFieldMode,
   ISchema,
 } from '@shellagent/form-engine';
-import { FormRef } from '@shellagent/ui';
+import { FormRef, Spinner } from '@shellagent/ui';
 import { useRequest } from 'ahooks';
 import { useInjection } from 'inversify-react';
 import { merge } from 'lodash-es';
@@ -69,7 +69,7 @@ const ComfyUIPlugin: React.FC<WidgetConfigProps> = ({
     onChange(merge({}, defaultValues, values));
   }, [defaultValues]);
 
-  const { run: getComfySchema } = useRequest(getFile, {
+  const { run: getComfySchema, loading: isLoading } = useRequest(getFile, {
     manual: true,
     onSuccess: result => {
       if (result.success) {
@@ -131,6 +131,11 @@ const ComfyUIPlugin: React.FC<WidgetConfigProps> = ({
           ComfyUIEditor,
         }}
       />
+      {isLoading && (
+        <div className="h-[100px] flex justify-center items-center">
+          <Spinner size="lg" className="text-brand" />
+        </div>
+      )}
     </div>
   );
 };

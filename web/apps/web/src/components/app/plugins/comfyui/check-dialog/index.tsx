@@ -1,16 +1,14 @@
 'use client';
 
+import React, { useRef, useCallback } from 'react';
 import { AModal, Button } from '@shellagent/ui';
 import { useRequest } from 'ahooks';
 import { FormInstance } from 'antd';
-import React, { useRef } from 'react';
 
 import { CheckerContent } from './content';
 import { updateDependency } from '../services';
-import type {
-  UpdateDependencyRequest,
-  GetFileResponse,
-} from '../services/type';
+import type { GetFileResponse } from '../services/type';
+import { formatFormData2Dependency } from '../utils';
 
 interface CheckDialogProps {
   open: boolean;
@@ -31,19 +29,23 @@ export const CheckDialog: React.FC<CheckDialogProps> = ({
     manual: true,
   });
 
-  const handleSubmit = async () => {
+  const handleSubmit = useCallback(async () => {
     try {
       await formRef.current?.validateFields();
-      setOpen(false);
       const values = formRef.current?.getFieldsValue();
+      const formattedValues = formatFormData2Dependency(values);
+
+      setOpen(false);
       updateDependencyRequest({
-        ...values,
+        ...formattedValues,
         comfy_workflow_id,
-      } as UpdateDependencyRequest);
+      });
     } catch (error) {
       console.error('Form validation failed:', error);
     }
-  };
+  }, [comfy_workflow_id, setOpen, updateDependencyRequest]);
+
+  const handleCancel = useCallback(() => setOpen(false), [setOpen]);
 
   return (
     <AModal
@@ -51,7 +53,7 @@ export const CheckDialog: React.FC<CheckDialogProps> = ({
       width={720}
       zIndex={9999}
       bodyPadding={0}
-      onCancel={() => setOpen(false)}
+      onCancel={handleCancel}
       footer={[
         <Button size="lg" key="submit" type="submit" onClick={handleSubmit}>
           Submit

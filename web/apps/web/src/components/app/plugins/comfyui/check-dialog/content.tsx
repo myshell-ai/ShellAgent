@@ -3,7 +3,7 @@ import { Form, Input, Button, FormInstance, Tabs } from 'antd';
 import React, { useState, useMemo, useEffect } from 'react';
 
 import type { GetFileResponse } from '../services/type';
-import { checkDependency } from '../utils';
+import { checkDependency, formatDependencyData2Form } from '../utils';
 
 interface CheckerContentProps {
   formRef: React.RefObject<FormInstance>;
@@ -49,7 +49,7 @@ export const CheckerContent: React.FC<CheckerContentProps> = ({
               additional details to ensure proper import for users.
             </p>
             <Form.List name="missing_custom_nodes">
-              {fields => (
+              {(fields, { add, remove }) => (
                 <>
                   {fields.map(field => (
                     <div
@@ -99,13 +99,16 @@ export const CheckerContent: React.FC<CheckerContentProps> = ({
               Please provide URLs for the missing models to ensure proper
               import.
             </p>
-            <Form.List name="missing_models">
+            <Form.List name="missing_models" initialValue={[]}>
               {fields => (
                 <>
                   {fields.map(field => (
                     <div
                       key={field.key}
                       className="mb-6 p-4 border border-gray-200 rounded-md bg-surface-subtle">
+                      <Form.Item hidden {...field} name={[field.name, 'id']}>
+                        <Input hidden />
+                      </Form.Item>
                       <Form.Item
                         {...field}
                         name={[field.name, 'filename']}
@@ -170,7 +173,7 @@ export const CheckerContent: React.FC<CheckerContentProps> = ({
                                 type="link"
                                 onClick={() => addUrl()}
                                 className="p-0">
-                                + 添加URL
+                                + Add URL
                               </Button>
                             </Form.Item>
                           </>
@@ -187,19 +190,27 @@ export const CheckerContent: React.FC<CheckerContentProps> = ({
     }
 
     return items;
-  }, [form, dependencies]);
+  }, [hasMissingCustomNodes, hasMissingModels]);
 
   const handleTabChange = (activeKey: string) => {
     setType(activeKey as CheckTypeEnum);
     form.resetFields();
   };
 
+  const initialValues = useMemo(() => {
+    return formatDependencyData2Form({
+      missing_custom_nodes: missingCustomNodes,
+      missing_models: missingModels,
+    });
+  }, [missingCustomNodes, missingModels]);
+
   return (
     <Form
       form={form}
       layout="vertical"
       ref={formRef}
-      disabled={type === CheckTypeEnum.customNode}>
+      disabled={type === CheckTypeEnum.customNode}
+      initialValues={initialValues}>
       <Tabs
         activeKey={type}
         onChange={handleTabChange}

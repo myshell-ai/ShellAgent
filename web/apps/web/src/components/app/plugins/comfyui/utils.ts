@@ -38,3 +38,36 @@ export function checkDependency(
     hasMissingModels: Object.keys(missingModels).length > 0,
   };
 }
+
+export function formatDependencyData2Form(
+  data: Pick<
+    UpdateDependencyRequest,
+    'missing_custom_nodes' | 'missing_models'
+  >,
+) {
+  return {
+    ...data,
+    missing_models: Object.entries(data.missing_models).map(([key, value]) => ({
+      id: key,
+      filename: value.filename,
+      save_path: value.save_path,
+      urls: value.urls,
+    })),
+  };
+}
+
+export function formatFormData2Dependency(
+  data: ReturnType<typeof formatDependencyData2Form>,
+) {
+  return {
+    ...data,
+    missing_models: data.missing_models.reduce(
+      (acc, curr) => {
+        const { id, ...rest } = curr;
+        acc[id] = rest;
+        return acc;
+      },
+      {} as Record<string, UpdateDependencyRequest['missing_models'][string]>,
+    ),
+  };
+}
