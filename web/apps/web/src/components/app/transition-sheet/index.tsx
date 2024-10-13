@@ -69,7 +69,7 @@ const TransitionSheet: React.FC<{}> = () => {
             data: {
               id: generateUUID(),
               custom: true,
-              event_key: generateUUID(),
+              event_key: currentEdegData.event_key,
               type: currentEdegData.type,
               source: newEdge.source,
               target: newEdge.target,

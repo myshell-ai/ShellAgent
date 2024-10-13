@@ -189,7 +189,6 @@ const StateNode: React.FC<NodeProps<StateNodeType>> = ({
           data: {
             id,
             custom: true,
-            event_key: generateUUID(),
             type: EdgeDataTypeEnum.ALWAYS,
             source: connection.source,
             target: connection.target,

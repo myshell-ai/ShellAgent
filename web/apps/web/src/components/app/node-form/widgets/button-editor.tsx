@@ -65,12 +65,13 @@ const ButtonEditor = ({ name, onChange }: VariableNodeProps) => {
 
   const handleAddButton = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.stopPropagation();
+    const id = generateUUID() as Lowercase<string>;
     onChange([
       ...(value || []),
       {
         content: 'Untitled',
-        on_click: { event: '', payload: {} },
-        id: generateUUID(),
+        on_click: { event: id, payload: {} },
+        id,
         description: '',
       },
     ]);
