@@ -7,6 +7,7 @@ var antd = require('antd');
 var icons = require('@ant-design/icons');
 var i18n = require('i18next');
 var reactI18next = require('react-i18next');
+var inversifyReact = require('inversify-react');
 var fabric$1 = require('fabric');
 var FontFaceObserver = require('fontfaceobserver');
 var uuid$1 = require('uuid');
@@ -16,9 +17,10 @@ var RcInputNumber = require('rc-input-number');
 var RcInput = require('rc-input');
 var data = require('@emoji-mart/data');
 var Picker$1 = require('@emoji-mart/react');
-var inversifyReact = require('inversify-react');
 var mobx = require('mobx');
 var reactSystem = require('react-system');
+var mobxReactLite = require('mobx-react-lite');
+var ahooks = require('ahooks');
 var lodashEs = require('lodash-es');
 var hotkeys = require('hotkeys-js');
 var rough = require('roughjs');
@@ -119,7 +121,7 @@ var panel = {
 	},
 	image: {
 		title: "Image",
-		local: "Local Image",
+		local: "Image Box",
 		remote: "Remote Image",
 		remote_placeholder: "Remote Image Url"
 	},
@@ -241,10 +243,14 @@ const translate = (key) => {
 
 const PRESET_FONT_LIST = [
     {
-        label: jsxRuntime.jsx("div", Object.assign({ style: { fontSize: 30, fontFamily: 'SmileySans', fontWeight: 'bold' } }, { children: jsxRuntime.jsx(reactI18next.Trans, { i18nKey: "panel.text.add_title" }) })),
+        label: jsxRuntime.jsx("div", Object.assign({ style: {
+                fontSize: 30,
+                fontFamily: 'Roboto',
+                fontWeight: 'bold'
+            } }, { children: jsxRuntime.jsx(reactI18next.Trans, { i18nKey: "panel.text.add_title" }) })),
         key: 'title',
         config: {
-            fontFamily: 'SmileySans',
+            fontFamily: 'Roboto',
             fontWeight: 'bold',
             fontSize: 120,
             text: () => translate('panel.text.add_title'),
@@ -252,10 +258,13 @@ const PRESET_FONT_LIST = [
         }
     },
     {
-        label: jsxRuntime.jsx("div", Object.assign({ style: { fontSize: 24, fontFamily: 'AlibabaPuHuiTi' } }, { children: jsxRuntime.jsx(reactI18next.Trans, { i18nKey: "panel.text.add_subtitle" }) })),
+        label: jsxRuntime.jsx("div", Object.assign({ style: {
+                fontSize: 24,
+                fontFamily: 'Open Sans'
+            } }, { children: jsxRuntime.jsx(reactI18next.Trans, { i18nKey: "panel.text.add_subtitle" }) })),
         key: 'sub-title',
         config: {
-            fontFamily: 'AlibabaPuHuiTi',
+            fontFamily: 'Open Sans',
             fontWeight: 'bold',
             fontSize: 100,
             text: () => translate('panel.text.add_subtitle'),
@@ -263,34 +272,61 @@ const PRESET_FONT_LIST = [
         }
     },
     {
-        label: jsxRuntime.jsx("div", Object.assign({ style: { fontSize: 16, fontFamily: 'SourceHanSerif' } }, { children: jsxRuntime.jsx(reactI18next.Trans, { i18nKey: "panel.text.add_body_text" }) })),
+        label: jsxRuntime.jsx("div", Object.assign({ style: {
+                fontSize: 16,
+                fontFamily: 'Open Sans'
+            } }, { children: jsxRuntime.jsx(reactI18next.Trans, { i18nKey: "panel.text.add_body_text" }) })),
         key: 'content',
         config: {
-            fontFamily: 'SourceHanSerif',
-            fontSize: 80,
+            fontFamily: 'Open Sans',
+            fontSize: 75,
             text: () => translate('panel.text.add_body_text'),
         }
     },
     {
-        label: jsxRuntime.jsx("div", Object.assign({ style: { fontSize: 26, fontFamily: '霞鹜文楷', color: '#ffffff', WebkitTextStroke: '1px rgb(255, 87, 87)' } }, { children: jsxRuntime.jsx(reactI18next.Trans, { i18nKey: "panel.text.add_text_border" }) })),
-        key: 'content',
+        label: jsxRuntime.jsx("div", Object.assign({ style: {
+                fontSize: 26,
+                fontFamily: 'Open Sans',
+                color: '#ffffff',
+                WebkitTextStroke: '1px rgb(255, 87, 87)'
+            } }, { children: jsxRuntime.jsx(reactI18next.Trans, { i18nKey: "panel.text.add_text_border" }) })),
+        key: 'content_border',
         config: {
-            fontFamily: '霞鹜文楷',
-            fontSize: 100,
+            fontFamily: 'Open Sans',
+            fontSize: 90,
             text: () => translate('panel.text.add_text_border'),
-            fill: '#ffffff',
+            fill: '#fdf5f5',
             stroke: '#ff5757',
-            strokeWidth: 12
+            strokeWidth: 10
         }
     }
 ];
 function PresetFontPanel(props) {
+    const model = inversifyReact.useInjection('ImageCanvasModel');
     const { addTextBox } = props;
     const { t } = reactI18next.useTranslation();
     const handleClick = (item) => {
         addTextBox === null || addTextBox === void 0 ? void 0 : addTextBox(item.config);
     };
-    return (jsxRuntime.jsxs(antd.Flex, Object.assign({ vertical: true, gap: 8, style: { marginTop: 16 } }, { children: [jsxRuntime.jsx(Title$1, { children: t('panel.text.presets') }), PRESET_FONT_LIST.map(item => (jsxRuntime.jsx(antd.Card, Object.assign({ hoverable: true, onClick: () => { handleClick(item); }, bodyStyle: {
+    return (jsxRuntime.jsxs(antd.Flex, Object.assign({ vertical: true, gap: 8, style: { marginTop: 16 } }, { children: [jsxRuntime.jsx(Title$1, { children: t('panel.text.presets') }), jsxRuntime.jsx(antd.Badge.Ribbon, Object.assign({ text: "Ref", color: "red" }, { children: jsxRuntime.jsx(antd.Card, Object.assign({ hoverable: true, onClick: () => {
+                        handleClick({
+                            config: {
+                                fontFamily: 'Open Sans',
+                                fontSize: 75,
+                                text: 'Text placeholder',
+                                width: 600,
+                                opacity: 0.5,
+                                color: "#6D7175"
+                            }
+                        });
+                        setTimeout(() => model.openRefSelect(), 300);
+                    }, bodyStyle: {
+                        padding: '12px 30px',
+                        userSelect: 'none',
+                        color: "#6D7175"
+                    } }, { children: "Text Placeholder" })) })), PRESET_FONT_LIST.map(item => (jsxRuntime.jsx(antd.Card, Object.assign({ hoverable: true, onClick: () => {
+                    handleClick(item);
+                }, bodyStyle: {
                     padding: '12px 30px',
                     userSelect: 'none'
                 } }, { children: item.label }), item.key)))] })));
@@ -359,71 +395,122 @@ const TEXTBOX_DEFAULT_CONFIG = {
 };
 [
     {
-        label: jsxRuntime.jsx("span", Object.assign({ style: { fontFamily: 'SmileySans', fontSize: 16 } }, { children: "\u5F97\u610F\u9ED1" })),
+        label: jsxRuntime.jsx("span", Object.assign({ style: {
+                fontFamily: 'SmileySans',
+                fontSize: 16
+            } }, { children: "\u5F97\u610F\u9ED1" })),
         value: 'SmileySans'
     },
     {
-        label: jsxRuntime.jsx("span", Object.assign({ style: { fontFamily: '霞鹜新晰黑', fontSize: 16 } }, { children: "\u971E\u9E5C\u65B0\u6670\u9ED1" })),
+        label: jsxRuntime.jsx("span", Object.assign({ style: {
+                fontFamily: '霞鹜新晰黑',
+                fontSize: 16
+            } }, { children: "\u971E\u9E5C\u65B0\u6670\u9ED1" })),
         value: '霞鹜新晰黑'
     },
     {
-        label: jsxRuntime.jsx("span", Object.assign({ style: { fontFamily: '霞鹜文楷', fontSize: 16 } }, { children: "\u971E\u9E5C\u6587\u6977" })),
+        label: jsxRuntime.jsx("span", Object.assign({ style: {
+                fontFamily: '霞鹜文楷',
+                fontSize: 16
+            } }, { children: "\u971E\u9E5C\u6587\u6977" })),
         value: '霞鹜文楷'
     },
     {
-        label: jsxRuntime.jsx("span", Object.assign({ style: { fontFamily: '小赖字体', fontSize: 16 } }, { children: "\u5C0F\u8D56\u5B57\u4F53" })),
+        label: jsxRuntime.jsx("span", Object.assign({ style: {
+                fontFamily: '小赖字体',
+                fontSize: 16
+            } }, { children: "\u5C0F\u8D56\u5B57\u4F53" })),
         value: '小赖字体'
     },
     {
-        label: jsxRuntime.jsx("span", Object.assign({ style: { fontFamily: '悠哉字体', fontSize: 16 } }, { children: "\u60A0\u54C9\u5B57\u4F53" })),
+        label: jsxRuntime.jsx("span", Object.assign({ style: {
+                fontFamily: '悠哉字体',
+                fontSize: 16
+            } }, { children: "\u60A0\u54C9\u5B57\u4F53" })),
         value: '悠哉字体'
     },
     {
-        label: jsxRuntime.jsx("span", Object.assign({ style: { fontFamily: 'AlibabaPuHuiTi', fontSize: 16 } }, { children: "\u963F\u91CC\u5DF4\u5DF4\u666E\u60E0\u4F53" })),
+        label: jsxRuntime.jsx("span", Object.assign({ style: {
+                fontFamily: 'AlibabaPuHuiTi',
+                fontSize: 16
+            } }, { children: "\u963F\u91CC\u5DF4\u5DF4\u666E\u60E0\u4F53" })),
         value: 'AlibabaPuHuiTi'
     },
     {
-        label: jsxRuntime.jsx("span", Object.assign({ style: { fontFamily: '霞鹜尚智黑', fontSize: 16 } }, { children: "\u971E\u9E5C\u5C1A\u667A\u9ED1" })),
+        label: jsxRuntime.jsx("span", Object.assign({ style: {
+                fontFamily: '霞鹜尚智黑',
+                fontSize: 16
+            } }, { children: "\u971E\u9E5C\u5C1A\u667A\u9ED1" })),
         value: '霞鹜尚智黑'
     },
     {
-        label: jsxRuntime.jsx("span", Object.assign({ style: { fontFamily: 'SourceHanSans', fontSize: 16 } }, { children: "\u601D\u6E90\u9ED1\u4F53" })),
+        label: jsxRuntime.jsx("span", Object.assign({ style: {
+                fontFamily: 'SourceHanSans',
+                fontSize: 16
+            } }, { children: "\u601D\u6E90\u9ED1\u4F53" })),
         value: 'SourceHanSans'
     },
     {
-        label: jsxRuntime.jsx("span", Object.assign({ style: { fontFamily: 'SourceHanSerif', fontSize: 16 } }, { children: "\u601D\u6E90\u5B8B\u4F53" })),
+        label: jsxRuntime.jsx("span", Object.assign({ style: {
+                fontFamily: 'SourceHanSerif',
+                fontSize: 16
+            } }, { children: "\u601D\u6E90\u5B8B\u4F53" })),
         value: 'SourceHanSerif'
     },
     {
-        label: jsxRuntime.jsx("span", Object.assign({ style: { fontFamily: '方正楷体', fontSize: 16 } }, { children: "\u65B9\u6B63\u6977\u4F53" })),
+        label: jsxRuntime.jsx("span", Object.assign({ style: {
+                fontFamily: '方正楷体',
+                fontSize: 16
+            } }, { children: "\u65B9\u6B63\u6977\u4F53" })),
         value: '方正楷体'
     },
     {
-        label: jsxRuntime.jsx("span", Object.assign({ style: { fontFamily: '包图小白体', fontSize: 16 } }, { children: "\u5305\u56FE\u5C0F\u767D\u4F53" })),
+        label: jsxRuntime.jsx("span", Object.assign({ style: {
+                fontFamily: '包图小白体',
+                fontSize: 16
+            } }, { children: "\u5305\u56FE\u5C0F\u767D\u4F53" })),
         value: '包图小白体'
     },
     {
-        label: jsxRuntime.jsx("span", Object.assign({ style: { fontFamily: '手写杂字体', fontSize: 16 } }, { children: "\u624B\u5199\u6742\u5B57\u4F53" })),
+        label: jsxRuntime.jsx("span", Object.assign({ style: {
+                fontFamily: '手写杂字体',
+                fontSize: 16
+            } }, { children: "\u624B\u5199\u6742\u5B57\u4F53" })),
         value: '手写杂字体'
     },
     {
-        label: jsxRuntime.jsx("span", Object.assign({ style: { fontFamily: '胡晓波男神体', fontSize: 16 } }, { children: "\u80E1\u6653\u6CE2\u7537\u795E\u4F53" })),
+        label: jsxRuntime.jsx("span", Object.assign({ style: {
+                fontFamily: '胡晓波男神体',
+                fontSize: 16
+            } }, { children: "\u80E1\u6653\u6CE2\u7537\u795E\u4F53" })),
         value: '胡晓波男神体'
     },
     {
-        label: jsxRuntime.jsx("span", Object.assign({ style: { fontFamily: '胡晓波骚包体', fontSize: 16 } }, { children: "\u80E1\u6653\u6CE2\u9A9A\u5305\u4F53" })),
+        label: jsxRuntime.jsx("span", Object.assign({ style: {
+                fontFamily: '胡晓波骚包体',
+                fontSize: 16
+            } }, { children: "\u80E1\u6653\u6CE2\u9A9A\u5305\u4F53" })),
         value: '胡晓波骚包体'
     },
     {
-        label: jsxRuntime.jsx("span", Object.assign({ style: { fontFamily: '站酷快乐体', fontSize: 16 } }, { children: "\u7AD9\u9177\u5FEB\u4E50\u4F53" })),
+        label: jsxRuntime.jsx("span", Object.assign({ style: {
+                fontFamily: '站酷快乐体',
+                fontSize: 16
+            } }, { children: "\u7AD9\u9177\u5FEB\u4E50\u4F53" })),
         value: '站酷快乐体'
     },
     {
-        label: jsxRuntime.jsx("span", Object.assign({ style: { fontFamily: '站酷文艺体', fontSize: 16 } }, { children: "\u7AD9\u9177\u6587\u827A\u4F53" })),
+        label: jsxRuntime.jsx("span", Object.assign({ style: {
+                fontFamily: '站酷文艺体',
+                fontSize: 16
+            } }, { children: "\u7AD9\u9177\u6587\u827A\u4F53" })),
         value: '站酷文艺体'
     },
     {
-        label: jsxRuntime.jsx("span", Object.assign({ style: { fontFamily: '站酷小薇LOGO体', fontSize: 16 } }, { children: "\u7AD9\u9177\u5C0F\u8587LOGO\u4F53" })),
+        label: jsxRuntime.jsx("span", Object.assign({ style: {
+                fontFamily: '站酷小薇LOGO体',
+                fontSize: 16
+            } }, { children: "\u7AD9\u9177\u5C0F\u8587LOGO\u4F53" })),
         value: '站酷小薇LOGO体'
     }
 ];
@@ -543,9 +630,13 @@ const COMPLETE_GOOGLE_FONTS = [
     'Source Code Pro',
 ];
 const FONT_PRESET_FAMILY_LIST_GOOGLE_FONT = COMPLETE_GOOGLE_FONTS.map(f => ({
-    label: jsxRuntime.jsx("span", Object.assign({ style: { fontFamily: f, fontSize: 16 } }, { children: f })),
+    label: jsxRuntime.jsx("span", Object.assign({ style: {
+            fontFamily: f,
+            fontSize: 16
+        } }, { children: f })),
     value: f
 }));
+const IMAGE_PLACEHOLDER = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAyAAAAMgCAYAAADbcAZoAAAlWklEQVR4Ae3dX2id553g8afdLCPdSb6yvOyuJd9E9v6Jpdw4Ti+sxBdpSCFJydA/ZNhkIGzI0FJmoDB7sZeFHUrLhpaUNEOzaQpJk0Azqdm1Y18kti8mtntRW94dLJndHStXPoItkQYK3fOc+E0dO44tnef9nfd9z+cD4tRyrCO7OvB8z/PvCx99tPGHBAAAEOCLCQAAIIgAAQAAwggQAAAgjAABAADCCBAAACCMAAEAAMIIEAAAIIwAAQAAwggQAAAgjAABAADCCBAAACCMAAEAAMIIEAAAIIwAAQAAwggQAAAgjAABAADCCBAAACCMAAEAAMIIEAAAIIwAAQAAwggQAAAgjAABAADCCBAAACCMAAEAAMIIEAAAIIwAAQAAwggQAAAgjAABAADCCBAAACCMAAEAAMIIEAAAIIwAAQAAwggQAAAgjAABAADCCBAAACCMAAEAAMIIEAAAIIwAAQAAwggQAAAgjAABAADCCBAAACCMAAEAAMIIEAAAIIwAAQAAwggQAAAgjAABAADCCBAAACCMAAEAAMIIEAAAIIwAAQAAwggQAAAgjAABAADCCBAAACCMAAEAAMIIEAAAIIwAAQAAwggQAAAgjAABAADCCBAAACCMAAEAAMIIEAAAIIwAAQAAwggQAAAgjAABAADCCBAAACCMAAEAAMIIEAAAIIwAAQAAwggQAAAgjAABAADCCBAAACCMAAEAAMIIEAAAIIwAAQAAwggQAAAgjAABAADCCBAAACCMAAEAAMIIEAAAIIwAAQAAwggQAAAgjAABAADCCBAAACCMAAEAAMIIEAAAIIwAAQAAwggQAAAgjAABAADCCBAAACCMAAEAAMIIEAAAIIwAAQAAwggQAAAgjAABAADCCBAAACCMAAEAAMIIEAAAIIwAAQAAwggQAAAgjAABAADCCBAAACCMAAEAAMIIEAAAIIwAAQAAwggQAAAgjAABAADCCBAAACCMAAEAAMIIEAAAIIwAAQAAwggQAAAgjAABAADCCBAAACCMAAEAAMIIEAAAIIwAAQAAwggQAAAgjAABAADCCBAAACCMAAEAAMIIEAAAIIwAAQAAwggQAAAgjAABAADCCBAAACCMAAEAAMIIEAAAIIwAAQAAwggQAAAgjAABAADCCBAAACCMAAEAAMIIEAAAIIwAAQAAwggQAAAgjAABAADCCBAAACCMAAEAAMIIEAAAIIwAAQAAwggQAAAgjAABAADCCBAAACCMAAEAAMIIEAAAIIwAAQAAwggQAAAgjAABAADCCBAAACCMAAEAAMIIEAAAIIwAAQAAwggQAAAgjAABAADCCBAAACCMAAEAAMIIEAAAIIwAAQAAwggQAAAgjAABAADCCBAAACCMAAEAAMIIEAAAIIwAAQAAwggQAAAgjAABAADCCBAAACCMAAEAAMIIEAAAIIwAAQAAwggQAAAgjAABAADCCBAAACCMAAEAAMIIEAAAIIwAAQAAwggQAAAgjAABAADCCBAAACCMAAEAAMIIEAAAIIwAAQAAwggQAAAgjAABAADCCBAAACCMAAEAAMIIEAAAIIwAAQAAwggQAAAgjAABAADCCBAAACCMAAEAAMIIEAAAIIwAAQAAwggQAAAgjAABAADCCBAAACCMAAEAAMIIEAAAIIwAAQAAwggQAAAgjAABAADCCBAAACCMAAEAAMIIEAAAIIwAAQAAwggQAAAgjAABAADCCBAAACCMAAEAAMIIEAAAIIwAAQAAwggQAAAgjAABAADCCBAAACCMAAEAAMIIEAAAIIwAAQAAwggQAAAgjAABAADCCBAAACCMAAEAAMIIEAAAIIwAAQAAwggQAAAgjAABAADCCBAAACCMAAEAAMIIEAAAIIwAAQAAwggQAAAgjAABAADCCBAAACCMAAEAAMIIEAAAIIwAAQAAwggQAAAgjAABAADCCBAAACCMAAEAAMIIEAAAIIwAAQAAwggQAAAgjAABAADCCBAAACCMAAEAAMIIEAAAIIwAAQAAwggQAAAgjAABAADCCBAAACCMAAEAAMIIEAAAIIwAAQAAwggQAAAgjAABAADCCBAAACCMAAEAAMIIEAAAIIwAAQAAwggQAAAgjAABAADCCBAAACCMAAEAAMIIEAAAIIwAAQAAwggQAAAgjAABAADCCBAAACCMAAEAAMIIEAAAIIwAAQAAwggQAAAgjAABAADCCBAAACCMAAEAAMIIEAAAIIwAAQAAwggQAAAgjAABAADCCBAAACCMAAEAAMIIEAAAIIwAAQAAwggQAAAgjAABAADCCBAAACDMXQmg43q99XR1fX3w+PGve2lzczNtbG586r+53uD3NzYTbNf09NRNn5ucmEgTkxMf//7U9OBxov+5HTumP36cmvrMPwfQJV/46KONPySADsgRcWn1clpbWxtExpW1D1NvfT1B20xfC5FdMzNpZmbn4HFX/xGgCwQI0Fp5luLvz5xLq6urg/DIv4auyjMke2Z3p7175/uPs2ZKgNYSIEDr5Ng49u7xtNJ/hHG1b/7uQYzcu7A/AbSJAAFaIc9uvHfydHr/1GkzHXCdPBPy4NIhIQK0hgABGu+Ds+f6Mx4n7OeAzyFEgLYQIEBjXVlbS2+/c8RSK9iCHCLPPP2UPSJAYwkQoJGO9mc8jh0/kYDtybMhhx84lACaRoAAjZKP0n35568OjtAFhmM2BGgiAQI0xvnl5fTaL9+yyRwKyvHxyMMPpX3z8wmgCQQI0Ah5k/lRS66gNpZkAU3xxQQwYuID6pf3VOW9VQCjJkCAkRIfEEeEAE0gQICRER8QT4QAoyZAgJEQHzA6IgQYJQEChHv/5GnxASOWIyS/FgGi3ZUAAuV7Pt7+9ZHUZBMTE2my/wHD2tjcbPSx0vm1uGdud5qZmUkAURzDC4TJ8fHCiy+l3vp6ijI9NdUfXO1Mk5MTadfOmTQxOTn43/nzVWTkX08IDoLk18Hg8drr4Gr/171ebxAqV9bWBpdwRkZLvifk28896zUAhBEgQJjX3ngrnTl7LtUpD6LuXdif5uZm057Z3QZVtFIOkEurl9P5C8tpZWW19mjfN393evKbX08AEQQIEOKDfni83g+QuszN7k6HH1gaPELX5HDPm8brDJEnv/k1t6UDIQQIULs6l17l5SNPPP6Y8GAs1BkieUnid//qO2YNgdoJEKB2dS29uv/ggXR46ZABE2Mlb2yv6wSrg/cdSF95+KEEUCfH8AK1yrMfpeMjB8cTjz+aHvnyQ+KDsZNnKvLPfn4NlP75P3nq9Ceb5AHqIkCAWpW+7yMvuXrmz/9DWlzYn2Cc5ddAPr0qn+hW0mtvvJkA6iRAgNqUnv0YxMfTT6Vd7iyAgY+D/KmiEbKyejldWl1NAHURIEBtSs5+VPGRH4E/qiKk5HKsCxcuJoC6CBCgFnmjbMnZjye/8TXxAbeQXxt/9s2vpVLya7fJN7gD7SZAgFrkC9RKefCBQ5ZdwW3Mzc4WO8Eqv4HwwZl6Lw0FxpcAAWpRavZjcMHg0qEE3F4+RrfUnTjnl8u9iQBwPQECFJffPc0bWUvIlwwCdy6/ZkrsB8mvYcuwgDoIEKC4lUIn6Cwu3GPfB2xRfs18qT8TUsKllcsJoDQBAhS3UmjQcnhpKQFbd/DggUKzII7jBcoTIEBxV9bW0rDMfsD25dvS7y1wWWeJ1zLAjQQIUFyJ/R+LCwsJ2L59e+9Ow1pb+zABlCZAgKJKDFjyu7d7ZncnYPvysbzDLsPKB0r0eusJoCQBAhR1db2XhpUHTsDwSoT8FbMgQGECBCiqd3X4d0tnZnYmYHglYr7XG/5NBYDrCRCgqN768AHi1nMoY3rH8Ac5lHhNA1xPgABFlXi3dIfTr6CIXTuHj3l7QIDSBAhQ1EaBm5MtwYIyJiaHvwukxL4ugOsJEKCoYd8tnSxweRrwsfx6mp4abkZxs8CbCgDXEyBAUcOuF5+y/AoaZXNDgABlCRCgUcyAQFnTQ0b9hhkQoDABAhRTYqAyOTGZgHKmp6bTsGxEB0oSIEAxJZZqTEz+SQIAukuAAI1iBgQAuu2uBFBIiQvLJjq6B+TK2oeDj7W1tbSxuTFY0nL9spbJyYnB331watH0dJqbmx2cXrTLkcQMabrAwQ5OwgJKEiAANcgDtr8/cy5dWF4ehMftBnA3LrF//9TpwWOOkj2zu9PevfP9x9kig0nYqo8ECFCQAAEo6NLq5XTs3eNppf9YQg6X88sXBx/Zvvm708GD9w2iBADaSIAAFFA6PG6lipE8E/Lg0qF078L+BABtIkCARmnbEqMra2vp7XeO1B4eN8r7R15/463BUq0/+8bXLc3ilvKeIoAmcQoWUEzeXD1Ocnj88Pkfh8fH9dbWPkzf+5vvp6PvnkhQl16vlwBKMQMCFLOx8U9pHOTZh5d//upgc3lTHDt+Ip05dy498/RTZkMAaDQzIABbkPd6/OD5HzUqPio5jF746UuDo34BoKkECMAdOnP2XPrJiy81+k6EHCE/eP7Hg+8VAJpIgADcgTygf+2Nt1Jb5O9VhADQRAIE4DbOLy+3Kj4qIgSAJhIgAJ8jL2l67Zfti49KPqnLnhAAmkSAANzCYFN3w/d83M5G/3v/2c9/0eq/AwDdIkAAbuHo8ROpt76e2u7jWZw3EwA0gQAB+AwfnD3Xqf0T55cvDv5OADBqAgTgBnnG4FgHbxb/u3eOWIoFwMgJEIAbvH/qdMjSq4mJiTQ9NTX4yP+7bnk/yHsnTycAGKW7EgCfyLMfOUDqkCPj3oX9ad/e+bRrZudN0ZFnJ/IN63mp1MrKai0RdLL/d/vSwQMhwQMAn0WAAFwnbzwvbXp6Kh1eOjQIj88b+Offm5vdPfjI8h6Uo++W3QhfzYIcfuBQAoBRECAA1+TBeZ55KOn+/mxDjo/tzDgs9mdL9vaj5Vg/it4vuHTKLAgAo2QPCMA15y8sF51teOLxR9MjX35oqIH+ZP/P5q/xlYcfSqXk0PrgjBOxABgNAQJwTcljd3N85BmMUg7ed2DwNUs5v7ycAGAUBAhAurb8avVyKuHBBw4VjY9K/pqlZkLy39WRvACMggABSHlAXmbvR95Anvd81CXPhFSb1If12wtmQQCIJ0AA+lZWLqcSnnj8sVS3Us+xtvZhAoBoAgSg78raWhrW4sI9gyN365afY9/83WlYl1bLnvgFAHdCgACkNLgAcFiLCwspSj7ed1jrvfpveweAGwkQYOzl28+H3ZCdZyX2zO5OUeZmZ4e+xyNvvO+JEACCCRBg7JW4+2PXzpkUbd/8fBqWk7AAiCZAAAqYmdmZopXYb3LVDAgAwQQIMPZKDMIjNp/f/JzTaVgbmxsJACIJEAAAIIwAAQAAwggQYOxNTv5JGtYoTpPq9XppWCWWcQHAVggQYOztmBp+EN5bHz4GtmqtwOWJABBNgABjb9j7NLILFy6maCUuT9wxFb95HoDxJkCAsZdPsCpxqd+l1dUUZWX18tD3l0z2/86jOL0LgPEmQABSmWN0T548naJ8cPZcGtYo7i4BAAEC0LdndjYN6/zyxZDN6Pk5zhQIkF0z8be3A4AAAUh5NqDMYPy1N95MdSv1HHMFogsAtkqAAPTt23t3KiHvzXi/xqVYx949MXiOEvbM7U4AEE2AAKSPN2TPze5OJbz96yNFlkjdKH/No8dPpBLy37XE6V8AsFUCBOCaffPzqZTX3nir6ExIjo/8NUu5d2F/AoBRECAA1ywu7i86K5BnQn71zpG0ubmZtiv/2bf7X6NkfOQTv/btLRdbALAVdyUABvIyrC/dd6DYMqfs5KnT6cLycnpw6dCWZh1yePz2wvJgz8ew933cyPIrAEZJgABc5+DBA+m9fjQMM2txo3xs7uv9GYxj/bDJg//FhYX0L2Z23hQB+Tn/ce3DdKEfHvmej5Lfw/UOLy0lABgVAQJwnTpmQSqD+zt6v0lnzv5m8OscIJPXIiTfpF5XcFzv/n5guf0cgFGyBwTgBnkWJGKJUg6OvLwqf0TERw6P+w8cSAAwSgIE4AZ5VuIrDz+Uuubw0iGzHwCMnAAB+AyLC/vT3vkylxM2weLCPYO/EwCMmgABuIUnvvpYmp5q/4xBnvWw8bxeg+V0vfXBBwCfzyZ0gFvIS7Ge/ObX0gsv/m3IHo065L0szzz9lKVXBeWfhUurl9PKympaWV1NV3s37+HJ/+67Znb2P2bS3Nxs2jPr6GOAigAB+Bx5AJn3g5S8CDDSn371UfFRSJ7deP/U6Ts6Ijn//kqOlP5H/jNZXgaXZ6L8/wGMOwECcBvV3om2RcgTjz+a9s678XxYOSaOvnvik5DYrnz8cv4QIsC4EyAAd6BtEZLjw6bz4eWlVq//8s2it9HnCMkzI4/0Z9b2CURgDNmEDnCH8oD+W8/9x0ZvTB/s+fjzp8RHAcf6sx4/efGlovFRycu5Xn7lF4OZFYBxI0AAtiDvCckD/CZGSN70/O3nnk1zs7sTw8kzXUeP1x8Hx/rP8at3jiSAcSJAALYor93/7l99Jx1+4FBqivsPHujPzjxrX8GQ8n6Pn73yajpz9lyKcvLU6f5syKutPWkNYKsECMA2Pbh0KH33L7+TZvozD6OSZzvysrBHvty9m9uj5QB44cWX0oXliyna+f5z5ucWIcA4ECAAQ8gzDnnZU970HbksK4dHXgqWP/KyMIZTxceVtQ/TqOTnFiHAOHAKFkABedN3/sinG7138lRt76Ln8Dj8wJJ9HgU1IT4qVYTksHRxIdBVAgSgoBwG+SOfcpRvyf7theVBlGz3Xe3qRu18XOu9i/sNSgtrUnxURAjQdQIEoAZ5adbi9P5PjsPNg8p8nOvKymq62usNBr4b/Y/Njc1P/Zn8MTkxmWZmZgbhsWuE+0u6ronxUREhQJcJEIAAVUzsm787MXpNjo+KCAG6yiZ0AMZKG+KjYmM60EUCBICx0ab4qIgQoGsECABjoY3xUREhQJcIEAA6r+74yHs0FhfuSXtr3OMjQoCusAkdgE6rOz7yyWXPPP3U4DHLRzDn58unnpVmYzrQBWZAAOis6Pj45HP9QJiemkp1MBMCtJ0AAaCT6o6PfKzyt5979lPxUcmf+9ZfPJtmarrHRYQAbSZAAOiciPi43TKoyf7v5f9GhAB8mgABoFOaEB8VEQJwMwECwJbkwW7eaJ0/mqZJ8VERIQCf5hQsAG4pD2ovrV5OKyuraWV1NV3tR8eNA908GM8D810zM2lubjbtmd09khOamhgflSpC8ve3VsP353QsoE0ECAA3ybMb7586nT44e+6276zn31/JkdL/yH8my3diHF5a+swN2nVocnxURAjAxyzBAuATeSD/9jtH0vf+5vuDmNjusp4zZ38z+BqvvfFm7Uu12hAfFcuxAAQIANfkpVY/+K8/+mQWo4QcIi/89KV0fnk51aFN8VERIcC4EyAApGPvnkg/qen27jwD8vIrv0hH+89RUhvjoyJCgHEmQADG3GtvvJWOHi8bB5/lWP85fvXOkVRCm+OjEhYhGxsJoEkECMCYyoP4n73yajpz9lyKcvLU6f5syKtDvTPfhfioRETI278uE30ApQgQgDFUDeIvLF9M0c73n3O7y4O6FB+VuiMEoGkECMCYqXsQfye2s0ehi/FRESHAOBEgAGOkCfFR2UqEdDk+KiIEGBcCBGBMNCk+KncSIeMQHxURAowDAQIwBpoYH5XPi5Bxio+KCAG6ToAAdFyT46PyWREyjvFRESFAlwkQgA5rQ3xUro+QcY6PiggBukqAAHRUm+KjUkXIuMdHRYQAXSRAADqojfFRyd+z+PgjEQJ0jQAB6Ji64yMP3hcX7kl75+9ObdLG+KiIEKBL7koAdEbd8TE9PZWeefqpwWPW660Pnq+3vp6arM3xUakiJP97r7VwZgugYgYEoCOi4+OTz/UHxdNTU6mpuhAfFTMhQBcIEIAOiDg16tvPPfup+Kjkz33rL55t5KC4S/FRESFA2wkQgJZrwpG1TRwUdzE+KiIEaDMBAtBiTbovo0mD4i7HR0WEAG0lQABaqomX9TVhUDwO8VERIUAbCRCAFmryTeGjHBSPU3xURAjQNgIEoGWaHB+VUQyKxzE+KiIEaBMBAtAibYiPSuSgeJzjoyJCgLYQIAAt0ab4qEQNip/8xtfHOj4qIgRoAwEC0AJtjI9KxKD45Z+/Ovg3QoQAzSdAABquzfFRqXtQnP9t8r+RCPmYCAGaTIAANFgX4qMiQmKJEKCpBAhAQ3UpPioiJFb+977/vvsSQJMIEIAG6mJ8VEQIwHgTIAAN0+X4qIgQgPElQAAaZBzioyJCAMaTAAFoiHGKj4oIARg/AgSgAcYxPioiBGC8CBCAERvn+KiIEIDxIUAARkh8/JEIARgPAgRgRMTHzUQIQPcJEIAREB+3JkIAuk2AAAQTH7cnQgC6S4AABBIfd06EAHSTAAEIIj62ToQAdI8AAQggPrZPhAB0iwABqJn4GJ4IAegOAQJQI/FRjggB6AYBAlAT8VGeCAFoPwECUAPxUR8RAtBuAgSgMPFRPxEC0F4CBKAg8RFHhAC0kwABKER8xBMhAO0jQAAKEB+jI0IA2kWAAAxJfIyeCKnX5MRkAihFgADF7JieSuNGfDSHCKnPxKSfP6AcAQI0Sq+3ntpCfDSPCLlZr9dLAE0iQAC2QXw0lwgBaDYBArBF4qP5RAhAcwkQoJjJMRgwi4/2ECEAzSRAgGJKDJp7681dry4+2keEpCLf246p8TtgAqiPAAG4A+KjvcY9QjY2zNAAzSJAAG5DfLTfOEfI5uZGGtakY3iBggQIUMx0gXtAmnYMr/jojnGNkI0C34+fT6AkAQIUNexApbfenAARH90zjhGy0eD9KcB4EiBAUV05CUt8dNe4Rciws4olZjYBridAgKImhlwrngdLox64iY/uG6cIGfZ7mHYCFlCYAAGKKnFc5yhP7REf42McImStwM/x5MRkAihJgABFTU9Pp2HVNfi/HfExfroeIVcL3KtjCRZQmgABiiqxXKPXi7+MUHyMry5HyJUrw/88W4IFlCZAgKKmdww/WFlZvZwiiQ+6GiFra2tpWCVmNQGuJ0CAonbtnEnDWlldTVHEB5UuRsilAjG/wxIsoDABAhSV14sPO9jO9xZcCogQ8cGNuhQheSaxxPPU9W8BjC8BAhS3q8CA5cKFi6lO4oNb6UqEfHD2XBrW3OzuBFCaAAGK2zUz/DKsM/3BU10DNPHB7bQ9QvJ9OmcKBEiJ1zLAjQQIUNzc3O40rLwM672Tp1Np4oM71eYIOXr8RCphbnY2AZQmQIDiSg1aTp46PXgntxTxwVa1MUJKzX5kewq8mQBwIwECFJcHbSXWjudZkNfeeDOVID7YrrZFSKnXTH4N+3kG6iBAgFrsm59PJeSTfN4fcimW+GBYbYmQY++eKHaPzr0L+xNAHQQIUIvFxf3FBuRv//rIto/lFR+U0vQIubK2VmzvR7Zvb5k3EQBuJECAWuTBWsl3UP/bK7/Y8n4Q8UFpTY2Q/Np4uf8aKWVx4R4/10BtBAhQm317706l5P0gL/z0pTuOEPFBXZoWIfk1kf/73nq5AxsOLy0lgLoIEKA2+TSskheZDQZadxAh4oO6NSVC8rKr0vGRZz+mp6cSQF0ECFCrJx5/LJWU4+OHz//olrc8iw+ijDpC8lG7L7z4t0XjIzP7AdTtn/31X/+n/5wAajI5OZE2/2kz/e//839TKb///e/TheWLg2VZ//pf/ct01113DT4vPoj2z/s/e//+3/3b9D//4R/S7373u1Ta/+t/zf/V/9r39J/j+p/zI//9aDryP44OXgsl5dkPp18BdfvCRx9t/CEB1CiHwvf+y/drufE5LxV5cOlQ+jd758UHI7NxLX7Xav75+8f+13/9l28Wn/XI8mvpmaefsvwKqJ0AAUKcX14uekpPJPHBnag7QvLPXx0RX3ni8Uf7MyBmP4D62QMChMgXE+6dL3cqVhTxwZ2qe09InfGRl16JDyCKAAHCPPHVx9L0VHuWd4gPtqruCKlDXnJl4zkQyRIsIFQ+NvSHz/84tUEOj0nxwTbVsU+jDt/9y+/Y9wGEEiBAuJOnTqdfvXMkAaP1yMMPpfvvO5AAIlmCBYQ72B/wHH7gUAJG58H+a1B8AKMgQICRyEfnihAYjRwfh5e8/oDRECDAyIgQiCc+gFETIMBIiRCIIz6AJhAgwMiJEKif+ACawilYQGPk29Lf/rsjrTm+FNogHyf9p199NO2dn08ATSBAgEbp9dbTCy++JEKggHyZ5pPf+Lp7PoBGESBAIx07fiIdffdEArYnL2t80JIroIEECNBYZkNg6+Zmdw8uGNw1M5MAmkiAAI135uy5wWyIEIFby8us8ibzxYX9CaDJBAjQGkIEbpY3mX/p4IHBreb5fwM0nQABWieHyG8vLKcLyxcTjKu81OrwA0uDR4A2ESBAa+U9Iiurq4MYWVm9nDY3NxN0VZ7dyLGxZ3Y23bu432wH0FoCBOiMK2sfprW1tcHjlf5jDhTLtWij6ampNDOzM+2Ynu4/zvSjY7ejdIHOECBA51UhstGfIeld7Q0eB59f7w0eNzY2P3P2JP852K6JyYk0ecMsxfURMTkxOZjFmO5HRraj/3s5PIQG0HUCBAAACPPFBAAAEESAAAAAYQQIAAAQRoAAAABhBAgAABBGgAAAAGEECAAAEEaAAAAAYQQIAAAQRoAAAABhBAgAABBGgAAAAGEECAAAEEaAAAAAYQQIAAAQRoAAAABhBAgAABBGgAAAAGEECAAAEEaAAAAAYQQIAAAQRoAAAABhBAgAABBGgAAAAGEECAAAEEaAAAAAYQQIAAAQRoAAAABhBAgAABBGgAAAAGEECAAAEEaAAAAAYQQIAAAQRoAAAABhBAgAABBGgAAAAGEECAAAEEaAAAAAYQQIAAAQRoAAAABhBAgAABBGgAAAAGEECAAAEEaAAAAAYQQIAAAQRoAAAABhBAgAABBGgAAAAGEECAAAEEaAAAAAYQQIAAAQRoAAAABhBAgAABBGgAAAAGEECAAAEEaAAAAAYQQIAAAQRoAAAABhBAgAABBGgAAAAGEECAAAEEaAAAAAYQQIAAAQRoAAAABhBAgAABBGgAAAAGEECAAAEEaAAAAAYQQIAAAQRoAAAABhBAgAABBGgAAAAGEECAAAEEaAAAAAYQQIAAAQRoAAAABhBAgAABBGgAAAAGEECAAAEEaAAAAAYQQIAAAQRoAAAABhBAgAABBGgAAAAGEECAAAEEaAAAAAYQQIAAAQRoAAAABhBAgAABBGgAAAAGEECAAAEEaAAAAAYQQIAAAQRoAAAABhBAgAABBGgAAAAGEECAAAEEaAAAAAYQQIAAAQRoAAAABhBAgAABBGgAAAAGEECAAAEEaAAAAAYQQIAAAQRoAAAABhBAgAABBGgAAAAGEECAAAEEaAAAAAYQQIAAAQRoAAAABhBAgAABBGgAAAAGEECAAAEEaAAAAAYQQIAAAQRoAAAABhBAgAABBGgAAAAGEECAAAEEaAAAAAYQQIAAAQRoAAAABhBAgAABBGgAAAAGEECAAAEEaAAAAAYQQIAAAQRoAAAABhBAgAABBGgAAAAGEECAAAEEaAAAAAYQQIAAAQRoAAAABhBAgAABBGgAAAAGEECAAAEEaAAAAAYQQIAAAQRoAAAABhBAgAABBGgAAAAGEECAAAEEaAAAAAYQQIAAAQRoAAAABhBAgAABBGgAAAAGEECAAAEEaAAAAAYQQIAAAQRoAAAABhBAgAABBGgAAAAGEECAAAEEaAAAAAYQQIAAAQRoAAAABhBAgAABBGgAAAAGEECAAAEEaAAAAAYQQIAAAQRoAAAABhBAgAABBGgAAAAGEECAAAEEaAAAAAYQQIAAAQRoAAAABhBAgAABBGgAAAAGEECAAAEEaAAAAAYQQIAAAQRoAAAABhBAgAABBGgAAAAGEECAAAEEaAAAAAYQQIAAAQRoAAAABhBAgAABBGgAAAAGEECAAAEEaAAAAAYQQIAAAQRoAAAABhBAgAABBGgAAAAGEECAAAEEaAAAAAYQQIAAAQRoAAAABhBAgAABBGgAAAAGEECAAAEEaAAAAAYQQIAAAQRoAAAABhBAgAABBGgAAAAGEECAAAEEaAAAAAYQQIAAAQRoAAAABhBAgAABBGgAAAAGEECAAAEEaAAAAAYQQIAAAQRoAAAABhBAgAABBGgAAAAGEECAAAEEaAAAAAYQQIAAAQRoAAAABhBAgAABBGgAAAAGEECAAAEEaAAAAAYQQIAAAQRoAAAABhBAgAABBGgAAAAGEECAAAEEaAAAAAYQQIAAAQRoAAAABhBAgAABBGgAAAAGEECAAAEEaAAAAAYQQIAAAQRoAAAABhBAgAABBGgAAAAGEECAAAEEaAAAAAYQQIAAAQRoAAAABhBAgAABBGgAAAAGEECAAAEEaAAAAAYQQIAAAQRoAAAABhBAgAABBGgAAAAGEECAAAEEaAAAAAYQQIAAAQRoAAAABhBAgAABBGgAAAAGEECAAAEEaAAAAAYQQIAAAQRoAAAABhBAgAABBGgAAAAGEECAAAEEaAAAAAYQQIAAAQRoAAAABhBAgAABBGgAAAAGEECAAAEEaAAAAAYQQIAAAQRoAAAABhBAgAABBGgAAAAGEECAAAEEaAAAAAYQQIAAAQRoAAAABhBAgAABBGgAAAAGEECAAAEEaAAAAAYQQIAAAQRoAAAABhBAgAABDm/wPEkoFZju8uKwAAAABJRU5ErkJggg==";
 
 const loadPresetGoogleFonts = async () => {
     googleFonts__default.default.add(COMPLETE_GOOGLE_FONTS.reduce((acc, f) => {
@@ -800,7 +891,9 @@ function TextPanel() {
     const handleAddText = async (options) => {
         await createTextbox(Object.assign(Object.assign({}, options), { canvas: editor.canvas }));
     };
-    return (jsxRuntime.jsxs("div", Object.assign({ className: "fabritor-panel-wrapper" }, { children: [jsxRuntime.jsx(antd.Button, Object.assign({ type: "primary", block: true, onClick: () => { handleAddText({}); }, size: "large" }, { children: t('panel.text.add') })), jsxRuntime.jsx(PresetFontPanel, { addTextBox: handleAddText })] })));
+    return (jsxRuntime.jsxs("div", Object.assign({ className: "fabritor-panel-wrapper" }, { children: [jsxRuntime.jsx(antd.Button, Object.assign({ type: "primary", block: true, onClick: () => {
+                    handleAddText({});
+                }, size: "large" }, { children: t('panel.text.add') })), jsxRuntime.jsx(PresetFontPanel, { addTextBox: handleAddText })] })));
 }
 
 const loadImageDom = async (url) => {
@@ -897,7 +990,7 @@ function LocalFileSelector(props, ref) {
 var LocalFileSelector$1 = React.forwardRef(LocalFileSelector);
 
 function LocalImageSelector(props) {
-    const { onChange } = props, rest = __rest(props, ["onChange"]);
+    const { title, onChange } = props, rest = __rest(props, ["title", "onChange"]);
     const localFileSelectorRef = React.useRef();
     const { t } = reactI18next.useTranslation();
     const handleClick = () => {
@@ -914,24 +1007,24 @@ function LocalImageSelector(props) {
         };
         reader.readAsDataURL(file);
     };
-    return (jsxRuntime.jsxs("div", { children: [jsxRuntime.jsx(antd.Button, Object.assign({ type: "primary", size: "large", onClick: handleClick }, rest, { children: t('panel.image.local') })), jsxRuntime.jsx(LocalFileSelector$1, { accept: "image/*", ref: localFileSelectorRef, onChange: handleFileChange })] }));
-}
-
-function RemoteImageSelector(props) {
-    const { onChange } = props, rest = __rest(props, ["onChange"]);
-    const [url, setUrl] = React.useState('');
-    const { t } = reactI18next.useTranslation();
-    const handleClick = () => {
-        if (url) {
-            onChange === null || onChange === void 0 ? void 0 : onChange(url);
-        }
-    };
-    return (jsxRuntime.jsx(antd.Popover, Object.assign({ content: jsxRuntime.jsxs(antd.Space.Compact, { children: [jsxRuntime.jsx(antd.Input, { value: url, onChange: (e) => { setUrl(e.target.value); }, style: { width: 260 } }), jsxRuntime.jsx(antd.Button, Object.assign({ onClick: handleClick }, { children: t('common.ok') }))] }), title: t('panel.image.remote_placeholder'), trigger: "click" }, { children: jsxRuntime.jsx(antd.Button, Object.assign({ type: "primary", size: "large" }, rest, { children: t('panel.image.remote') })) })));
+    return (jsxRuntime.jsxs("div", { children: [jsxRuntime.jsx(antd.Button, Object.assign({ type: "primary", size: "large", block: true, onClick: handleClick }, rest, { children: title || t('panel.image.local') })), jsxRuntime.jsx(LocalFileSelector$1, { accept: "image/*", ref: localFileSelectorRef, onChange: handleFileChange })] }));
 }
 
 function ImageSelector(props) {
     const { onChange } = props, rest = __rest(props, ["onChange"]);
-    return (jsxRuntime.jsxs(antd.Flex, Object.assign({ gap: 10, justify: "space-around" }, { children: [jsxRuntime.jsx(LocalImageSelector, Object.assign({}, rest, { onChange: onChange })), jsxRuntime.jsx(RemoteImageSelector, Object.assign({}, rest, { onChange: onChange }))] })));
+    return (jsxRuntime.jsx(LocalImageSelector, Object.assign({}, rest, { onChange: onChange })));
+}
+
+function PresetImagePanel(props) {
+    const model = inversifyReact.useInjection('ImageCanvasModel');
+    const { onChange } = props;
+    return (jsxRuntime.jsxs(antd.Flex, Object.assign({ vertical: true, gap: 8, style: { marginTop: 16 } }, { children: [jsxRuntime.jsx(Title$1, { children: "Presets" }), jsxRuntime.jsx(antd.Badge.Ribbon, Object.assign({ text: "Ref", color: "red" }, { children: jsxRuntime.jsx(antd.Card, Object.assign({ hoverable: true, onClick: () => {
+                        onChange === null || onChange === void 0 ? void 0 : onChange(IMAGE_PLACEHOLDER);
+                        setTimeout(() => model.openRefSelect(), 300);
+                    }, bodyStyle: {
+                        padding: '12px 30px',
+                        userSelect: 'none'
+                    } }, { children: jsxRuntime.jsx(antd.Image, { preview: false, src: IMAGE_PLACEHOLDER }) })) }))] })));
 }
 
 function ImagePanel() {
@@ -942,7 +1035,7 @@ function ImagePanel() {
             canvas: editor.canvas
         });
     };
-    return (jsxRuntime.jsx("div", Object.assign({ className: "fabritor-panel-wrapper" }, { children: jsxRuntime.jsx(ImageSelector, { onChange: addImage }) })));
+    return (jsxRuntime.jsxs("div", Object.assign({ className: "fabritor-panel-wrapper" }, { children: [jsxRuntime.jsx(ImageSelector, { onChange: addImage }), jsxRuntime.jsx(PresetImagePanel, { onChange: addImage })] })));
 }
 
 var LineTypeList = [
@@ -4519,7 +4612,7 @@ function SliderInputNumber(props) {
     return (jsxRuntime.jsxs(antd.Flex, Object.assign({ gap: 6, style: style }, { children: [jsxRuntime.jsx(antd.Slider, Object.assign({ style: { flex: 1 }, min: min, max: max, step: step, onChange: onChange, onAfterChange: onChangeComplete, value: value }, sliderProps)), jsxRuntime.jsx(antd.InputNumber, Object.assign({ min: min, max: max, step: step, onChange: onChange, value: value, style: { width: 56 }, controls: false }, inputProps))] })));
 }
 
-const { Item: FormItem$d } = antd.Form;
+const { Item: FormItem$e } = antd.Form;
 function PathSetterForm(props) {
     const { value, onChange, shouldFireEvent, showPenTip, showFillConfig } = props;
     const [form] = antd.Form.useForm();
@@ -4533,8 +4626,8 @@ function PathSetterForm(props) {
     React.useEffect(() => {
         form.setFieldsValue(value);
     }, [value]);
-    return (jsxRuntime.jsxs(antd.Form, Object.assign({ form: form, onValuesChange: onChange, style: { marginBottom: 0, marginTop: 16 }, colon: false }, { children: [showPenTip ? jsxRuntime.jsx(FormItem$d, { label: jsxRuntime.jsx("span", Object.assign({ style: { fontSize: 15, fontWeight: 'bold' } }, { children: t('panel.paint.title') })) }) : null, jsxRuntime.jsx(FormItem$d, Object.assign({ label: showFillConfig ? t('common.stroke') : t('common.stroke_color'), name: "color" }, { children: jsxRuntime.jsx(SolidColorSetter, { onChange: fireEvent }) })), jsxRuntime.jsx(FormItem$d, Object.assign({ label: t('common.line_width'), name: "width" }, { children: jsxRuntime.jsx(SliderInputNumber, { min: 1, max: 100, onChangeComplete: fireEvent }) })), showFillConfig ?
-                jsxRuntime.jsx(FormItem$d, Object.assign({ label: t('common.fill'), name: "fill" }, { children: jsxRuntime.jsx(ColorSetter, { onChange: fireEvent }) })) : null, jsxRuntime.jsx(FormItem$d, { label: jsxRuntime.jsx("span", Object.assign({ style: { fontSize: 15, fontWeight: 'bold' } }, { children: t('common.shadow') })) }), jsxRuntime.jsx(FormItem$d, Object.assign({ label: t('common.color'), name: ['shadow', 'color'] }, { children: jsxRuntime.jsx(SolidColorSetter, { onChange: fireEvent }) })), jsxRuntime.jsx(FormItem$d, Object.assign({ label: t('common.width'), name: ['shadow', 'width'] }, { children: jsxRuntime.jsx(SliderInputNumber, { min: 0, max: 50, onChangeComplete: fireEvent }) })), jsxRuntime.jsx(FormItem$d, Object.assign({ label: t('common.offset'), name: ['shadow', 'offset'] }, { children: jsxRuntime.jsx(SliderInputNumber, { min: 0, max: 20, onChangeComplete: fireEvent }) }))] })));
+    return (jsxRuntime.jsxs(antd.Form, Object.assign({ form: form, onValuesChange: onChange, style: { marginBottom: 0, marginTop: 16 }, colon: false }, { children: [showPenTip ? jsxRuntime.jsx(FormItem$e, { label: jsxRuntime.jsx("span", Object.assign({ style: { fontSize: 15, fontWeight: 'bold' } }, { children: t('panel.paint.title') })) }) : null, jsxRuntime.jsx(FormItem$e, Object.assign({ label: showFillConfig ? t('common.stroke') : t('common.stroke_color'), name: "color" }, { children: jsxRuntime.jsx(SolidColorSetter, { onChange: fireEvent }) })), jsxRuntime.jsx(FormItem$e, Object.assign({ label: t('common.line_width'), name: "width" }, { children: jsxRuntime.jsx(SliderInputNumber, { min: 1, max: 100, onChangeComplete: fireEvent }) })), showFillConfig ?
+                jsxRuntime.jsx(FormItem$e, Object.assign({ label: t('common.fill'), name: "fill" }, { children: jsxRuntime.jsx(ColorSetter, { onChange: fireEvent }) })) : null, jsxRuntime.jsx(FormItem$e, { label: jsxRuntime.jsx("span", Object.assign({ style: { fontSize: 15, fontWeight: 'bold' } }, { children: t('common.shadow') })) }), jsxRuntime.jsx(FormItem$e, Object.assign({ label: t('common.color'), name: ['shadow', 'color'] }, { children: jsxRuntime.jsx(SolidColorSetter, { onChange: fireEvent }) })), jsxRuntime.jsx(FormItem$e, Object.assign({ label: t('common.width'), name: ['shadow', 'width'] }, { children: jsxRuntime.jsx(SliderInputNumber, { min: 0, max: 50, onChangeComplete: fireEvent }) })), jsxRuntime.jsx(FormItem$e, Object.assign({ label: t('common.offset'), name: ['shadow', 'offset'] }, { children: jsxRuntime.jsx(SliderInputNumber, { min: 0, max: 20, onChangeComplete: fireEvent }) }))] })));
 }
 
 function PaintPanel() {
@@ -5756,7 +5849,7 @@ function AppSubPanel(props) {
     return (jsxRuntime.jsx(antd.Card, Object.assign({ bordered: false, style: { marginLeft: -24, boxShadow: 'none' }, bodyStyle: { padding: 12 }, title: jsxRuntime.jsxs(antd.Flex, Object.assign({ justify: "space-between" }, { children: [jsxRuntime.jsx(icons.LeftOutlined, { onClick: back2AppList }), jsxRuntime.jsx("p", { children: title })] })) }, { children: children })));
 }
 
-const { Item: FormItem$c } = antd.Form;
+const { Item: FormItem$d } = antd.Form;
 function QRCodePanel(props) {
     const { back } = props;
     const [form] = antd.Form.useForm();
@@ -5795,11 +5888,11 @@ function QRCodePanel(props) {
             errorLevel: 'M'
         });
     }, []);
-    return (jsxRuntime.jsxs(AppSubPanel, Object.assign({ title: t('panel.app.qrcode'), back: back }, { children: [jsxRuntime.jsxs(antd.Form, Object.assign({ form: form, onValuesChange: handleValuesChange }, { children: [jsxRuntime.jsx(FormItem$c, Object.assign({ name: "value", label: t('common.text') }, { children: jsxRuntime.jsx(antd.Input, {}) })), jsxRuntime.jsx(FormItem$c, Object.assign({ name: "size", label: t('common.size') }, { children: jsxRuntime.jsx(antd.InputNumber, {}) }))] })), jsxRuntime.jsx(antd.Collapse, { items: [
+    return (jsxRuntime.jsxs(AppSubPanel, Object.assign({ title: t('panel.app.qrcode'), back: back }, { children: [jsxRuntime.jsxs(antd.Form, Object.assign({ form: form, onValuesChange: handleValuesChange }, { children: [jsxRuntime.jsx(FormItem$d, Object.assign({ name: "value", label: t('common.text') }, { children: jsxRuntime.jsx(antd.Input, {}) })), jsxRuntime.jsx(FormItem$d, Object.assign({ name: "size", label: t('common.size') }, { children: jsxRuntime.jsx(antd.InputNumber, {}) }))] })), jsxRuntime.jsx(antd.Collapse, { items: [
                     {
                         key: '1',
                         label: t('panel.app.more'),
-                        children: (jsxRuntime.jsxs(antd.Form, Object.assign({ form: form2, onValuesChange: handleValuesChange }, { children: [jsxRuntime.jsx(FormItem$c, Object.assign({ name: "color", label: t('common.color') }, { children: jsxRuntime.jsx(SolidColorSetter, {}) })), jsxRuntime.jsx(FormItem$c, Object.assign({ name: "bgColor", label: t('common.background_color') }, { children: jsxRuntime.jsx(SolidColorSetter, {}) })), jsxRuntime.jsx(FormItem$c, Object.assign({ name: "errorLevel", label: t('panel.app.error_level') }, { children: jsxRuntime.jsx(antd.Radio.Group, { options: ['L', 'M', 'Q', 'H'] }) })), jsxRuntime.jsx(FormItem$c, Object.assign({ name: "icon", label: t('panel.app.image') }, { children: jsxRuntime.jsx(antd.Input, { placeholder: t('panel.app.only_image_url') }) })), jsxRuntime.jsx(FormItem$c, Object.assign({ name: "iconSize", label: t('panel.app.image_size') }, { children: jsxRuntime.jsx(antd.InputNumber, {}) }))] })))
+                        children: (jsxRuntime.jsxs(antd.Form, Object.assign({ form: form2, onValuesChange: handleValuesChange }, { children: [jsxRuntime.jsx(FormItem$d, Object.assign({ name: "color", label: t('common.color') }, { children: jsxRuntime.jsx(SolidColorSetter, {}) })), jsxRuntime.jsx(FormItem$d, Object.assign({ name: "bgColor", label: t('common.background_color') }, { children: jsxRuntime.jsx(SolidColorSetter, {}) })), jsxRuntime.jsx(FormItem$d, Object.assign({ name: "errorLevel", label: t('panel.app.error_level') }, { children: jsxRuntime.jsx(antd.Radio.Group, { options: ['L', 'M', 'Q', 'H'] }) })), jsxRuntime.jsx(FormItem$d, Object.assign({ name: "icon", label: t('panel.app.image') }, { children: jsxRuntime.jsx(antd.Input, { placeholder: t('panel.app.only_image_url') }) })), jsxRuntime.jsx(FormItem$d, Object.assign({ name: "iconSize", label: t('panel.app.image_size') }, { children: jsxRuntime.jsx(antd.InputNumber, {}) }))] })))
                     }
                 ] }), QRCodeConfig.value ?
                 jsxRuntime.jsxs(antd.Flex, Object.assign({ vertical: true, align: "center", gap: 10, style: { marginTop: 16 }, ref: qrRef }, { children: [jsxRuntime.jsx(antd.QRCode, Object.assign({ type: "canvas" }, QRCodeConfig, { style: { maxWidth: 200 } })), jsxRuntime.jsx(antd.Button, Object.assign({ type: "primary", onClick: add2Canvas }, { children: t('panel.app.add') }))] })) : null] })));
@@ -5874,7 +5967,7 @@ function AppPanel() {
 
 const MAX_HISTORY_LENGTH = 100;
 const PANEL_WIDTH = 360;
-const SETTER_WIDTH = 280;
+const SETTER_WIDTH = 290;
 
 const { Sider: Sider$1 } = antd.Layout;
 const siderStyle$1 = {
@@ -5980,7 +6073,7 @@ function SizeSetter(props) {
     return (jsxRuntime.jsxs(antd.Flex, Object.assign({ gap: 8 }, { children: [jsxRuntime.jsx(SizeInput, { value: innerValue === null || innerValue === void 0 ? void 0 : innerValue[0], onChange: (v) => { handleChange(v, 0); } }), jsxRuntime.jsx(SizeInput, { prefixText: t('setter.size.height'), value: innerValue === null || innerValue === void 0 ? void 0 : innerValue[1], onChange: (v) => { handleChange(v, 1); } })] })));
 }
 
-const { Item: FormItem$b } = antd.Form;
+const { Item: FormItem$c } = antd.Form;
 function SketchSetter() {
     const [form] = antd.Form.useForm();
     const { editor } = React.useContext(GlobalStateContext);
@@ -6014,7 +6107,7 @@ function SketchSetter() {
             fill: transformFill2Colors(sketch.fill)
         });
     }, [editor]);
-    return (jsxRuntime.jsxs(antd.Form, Object.assign({ layout: "vertical", colon: false, form: form, onValuesChange: handleValuesChange }, { children: [jsxRuntime.jsx(FormItem$b, Object.assign({ label: t('setter.sketch.size'), name: "size" }, { children: jsxRuntime.jsx(SizeSetter, {}) })), jsxRuntime.jsx(FormItem$b, Object.assign({ label: t('setter.sketch.fill'), name: "fill" }, { children: jsxRuntime.jsx(ColorSetter, { type: "sketch" }) }))] })));
+    return (jsxRuntime.jsxs(antd.Form, Object.assign({ layout: "vertical", colon: false, form: form, onValuesChange: handleValuesChange }, { children: [jsxRuntime.jsx(FormItem$c, Object.assign({ label: t('setter.sketch.size'), name: "size" }, { children: jsxRuntime.jsx(SizeSetter, {}) })), jsxRuntime.jsx(FormItem$c, Object.assign({ label: t('setter.sketch.fill'), name: "fill" }, { children: jsxRuntime.jsx(ColorSetter, { type: "sketch" }) }))] })));
 }
 
 const FONT_STYLES = [
@@ -6077,7 +6170,7 @@ function MoreConfigWrapper(props) {
     return (jsxRuntime.jsx(antd.Drawer, Object.assign({ title: null, placement: "right", open: open, mask: false, maskClosable: false, width: SETTER_WIDTH, rootStyle: { top: 50, outline: 'none', }, contentWrapperStyle: { boxShadow: 'none' }, bodyStyle: { padding: 16 }, closeIcon: null }, rest, { children: jsxRuntime.jsxs("div", { children: [jsxRuntime.jsx(antd.Button, Object.assign({ type: "link", href: "javascript:void(0);", size: "small", onClick: () => { setOpen(false); }, icon: jsxRuntime.jsx(icons.LeftOutlined, {}), style: { marginLeft: -10 } }, { children: title })), children] }) })));
 }
 
-const { Item: FormItem$a } = antd.Form;
+const { Item: FormItem$b } = antd.Form;
 function TextShadow(props) {
     const [form] = antd.Form.useForm();
     const { value, onChange } = props;
@@ -6090,10 +6183,10 @@ function TextShadow(props) {
             form.setFieldsValue(value);
         }
     }, [value]);
-    return (jsxRuntime.jsxs(antd.Form, Object.assign({ form: form, onValuesChange: handleChange, colon: false }, { children: [jsxRuntime.jsx(FormItem$a, { label: jsxRuntime.jsx("span", Object.assign({ style: { fontSize: 15, fontWeight: 'bold' } }, { children: t('common.shadow') })) }), jsxRuntime.jsx(FormItem$a, Object.assign({ label: t('common.color'), name: "color" }, { children: jsxRuntime.jsx(SolidColorSetter, {}) })), jsxRuntime.jsx(FormItem$a, Object.assign({ label: t('common.blur'), name: "blur" }, { children: jsxRuntime.jsx(antd.Slider, { min: 0, max: 20 }) })), jsxRuntime.jsx(FormItem$a, Object.assign({ label: t('common.offset'), name: "offset" }, { children: jsxRuntime.jsx(antd.Slider, { min: -180, max: 180 }) }))] })));
+    return (jsxRuntime.jsxs(antd.Form, Object.assign({ form: form, onValuesChange: handleChange, colon: false }, { children: [jsxRuntime.jsx(FormItem$b, { label: jsxRuntime.jsx("span", Object.assign({ style: { fontSize: 15, fontWeight: 'bold' } }, { children: t('common.shadow') })) }), jsxRuntime.jsx(FormItem$b, Object.assign({ label: t('common.color'), name: "color" }, { children: jsxRuntime.jsx(SolidColorSetter, {}) })), jsxRuntime.jsx(FormItem$b, Object.assign({ label: t('common.blur'), name: "blur" }, { children: jsxRuntime.jsx(antd.Slider, { min: 0, max: 20 }) })), jsxRuntime.jsx(FormItem$b, Object.assign({ label: t('common.offset'), name: "offset" }, { children: jsxRuntime.jsx(antd.Slider, { min: -180, max: 180 }) }))] })));
 }
 
-const { Item: FormItem$9 } = antd.Form;
+const { Item: FormItem$a } = antd.Form;
 function TextPath(props) {
     const [form] = antd.Form.useForm();
     const { value, onChange } = props;
@@ -6106,7 +6199,23 @@ function TextPath(props) {
             form.setFieldsValue(value);
         }
     }, [value]);
-    return (jsxRuntime.jsxs(antd.Form, Object.assign({ form: form, onValuesChange: handleChange, colon: false }, { children: [jsxRuntime.jsxs(antd.Row, Object.assign({ gutter: 16 }, { children: [jsxRuntime.jsx(antd.Col, { children: jsxRuntime.jsx(FormItem$9, { label: jsxRuntime.jsx("span", Object.assign({ style: { fontSize: 15, fontWeight: 'bold' } }, { children: t('setter.text.fx.text_path') })) }) }), jsxRuntime.jsx(antd.Col, { children: jsxRuntime.jsx(FormItem$9, Object.assign({ name: "enable", valuePropName: "checked" }, { children: jsxRuntime.jsx(antd.Switch, {}) })) })] })), jsxRuntime.jsx(FormItem$9, Object.assign({ label: t('common.offset'), name: "offset" }, { children: jsxRuntime.jsx(antd.Slider, { min: -100, max: 100 }) }))] })));
+    return (jsxRuntime.jsxs(antd.Form, Object.assign({ form: form, onValuesChange: handleChange, colon: false }, { children: [jsxRuntime.jsxs(antd.Row, Object.assign({ gutter: 16 }, { children: [jsxRuntime.jsx(antd.Col, { children: jsxRuntime.jsx(FormItem$a, { label: jsxRuntime.jsx("span", Object.assign({ style: { fontSize: 15, fontWeight: 'bold' } }, { children: t('setter.text.fx.text_path') })) }) }), jsxRuntime.jsx(antd.Col, { children: jsxRuntime.jsx(FormItem$a, Object.assign({ name: "enable", valuePropName: "checked" }, { children: jsxRuntime.jsx(antd.Switch, {}) })) })] })), jsxRuntime.jsx(FormItem$a, Object.assign({ label: t('common.offset'), name: "offset" }, { children: jsxRuntime.jsx(antd.Slider, { min: -100, max: 100 }) }))] })));
+}
+
+const { Item: FormItem$9 } = antd.Form;
+function TextPattern(props) {
+    const [form] = antd.Form.useForm();
+    const { value, onChange } = props;
+    const { t } = reactI18next.useTranslation();
+    const handleChange = (v) => {
+        onChange && onChange(Object.assign(Object.assign({}, value), v));
+    };
+    React.useEffect(() => {
+        if (value) {
+            form.setFieldsValue(value);
+        }
+    }, [value]);
+    return (jsxRuntime.jsxs(antd.Form, Object.assign({ form: form, onValuesChange: handleChange, colon: false }, { children: [jsxRuntime.jsxs(antd.Row, Object.assign({ gutter: 16 }, { children: [jsxRuntime.jsx(antd.Col, { children: jsxRuntime.jsx(FormItem$9, { label: jsxRuntime.jsx("span", Object.assign({ style: { fontSize: 15, fontWeight: 'bold' } }, { children: t('setter.text.fx.fill_image') })) }) }), jsxRuntime.jsx(antd.Col, { children: jsxRuntime.jsx(FormItem$9, Object.assign({ name: "enable", valuePropName: "checked" }, { children: jsxRuntime.jsx(antd.Switch, {}) })) })] })), jsxRuntime.jsx(FormItem$9, Object.assign({ name: "url" }, { children: jsxRuntime.jsx(ImageSelector, { size: "middle", type: "default", title: "Local Image" }) }))] })));
 }
 
 const { Item: FormItem$8 } = antd.Form;
@@ -6203,7 +6312,7 @@ function TextFx() {
             initObjectFx();
         }
     }, [object]);
-    return (jsxRuntime.jsxs(antd.Form, Object.assign({ form: form, onValuesChange: handleFxValueChange, colon: false, style: { marginTop: 24 } }, { children: [jsxRuntime.jsx(FormItem$8, { label: jsxRuntime.jsx("span", Object.assign({ style: { fontSize: 15, fontWeight: 'bold' } }, { children: t('common.stroke') })) }), jsxRuntime.jsx(FormItem$8, Object.assign({ label: t('common.stroke_color'), name: "stroke" }, { children: jsxRuntime.jsx(ColorSetter, {}) })), jsxRuntime.jsx(FormItem$8, Object.assign({ label: t('common.stroke_width'), name: "strokeWidth" }, { children: jsxRuntime.jsx(SliderInputNumber, { min: 0, max: 20 }) })), jsxRuntime.jsx(FormItem$8, Object.assign({ name: "shadow", style: { marginBottom: 0 } }, { children: jsxRuntime.jsx(TextShadow, {}) })), jsxRuntime.jsx(FormItem$8, Object.assign({ name: "path", style: { marginBottom: 0 } }, { children: jsxRuntime.jsx(TextPath, {}) }))] })));
+    return (jsxRuntime.jsxs(antd.Form, Object.assign({ form: form, onValuesChange: handleFxValueChange, colon: false, style: { marginTop: 24 } }, { children: [jsxRuntime.jsx(FormItem$8, { label: jsxRuntime.jsx("span", Object.assign({ style: { fontSize: 15, fontWeight: 'bold' } }, { children: t('common.stroke') })) }), jsxRuntime.jsx(FormItem$8, Object.assign({ label: t('common.stroke_color'), name: "stroke" }, { children: jsxRuntime.jsx(ColorSetter, {}) })), jsxRuntime.jsx(FormItem$8, Object.assign({ label: t('common.stroke_width'), name: "strokeWidth" }, { children: jsxRuntime.jsx(SliderInputNumber, { min: 0, max: 20 }) })), jsxRuntime.jsx(FormItem$8, Object.assign({ name: "shadow", style: { marginBottom: 0 } }, { children: jsxRuntime.jsx(TextShadow, {}) })), jsxRuntime.jsx(FormItem$8, Object.assign({ name: "path", style: { marginBottom: 0 } }, { children: jsxRuntime.jsx(TextPath, {}) })), jsxRuntime.jsx(FormItem$8, Object.assign({ name: "pattern" }, { children: jsxRuntime.jsx(TextPattern, {}) }))] })));
 }
 
 function Square3Stack3DIcon({
@@ -6238,24 +6347,32 @@ function RefLabel() {
                         marginRight: 2
                     } }), "Ref"] }) })));
 }
-function RefSelect(props) {
+const RefSelect = mobxReactLite.observer((props) => {
     const model = inversifyReact.useInjection('ImageCanvasModel');
     const keyPath = model.convertValueFieldToRef(props.value);
     const variables = mobx.toJS(model.variables);
-    return (jsxRuntime.jsx(antd.Dropdown, Object.assign({ menu: {
+    const ref = React.useRef(null);
+    ahooks.useClickAway(() => {
+        if (model.isRefSelectOpen) {
+            model.closeRefSelect();
+        }
+    }, ref);
+    return (jsxRuntime.jsx(antd.Dropdown, Object.assign({ open: model.isRefSelectOpen, menu: {
             onClick: (info) => {
                 props.onChange(model.processWorkflowRunnerOutput(info.keyPath));
+                model.closeRefSelect();
             },
             selectedKeys: keyPath,
             items: variables
-        }, placement: "bottomRight", overlayStyle: {} }, { children: jsxRuntime.jsx(antd.Select, { options: [], dropdownRender: (originNode) => null, dropdownStyle: { display: 'none' }, value: model.getRefSelectDisplay(keyPath), placeholder: "Please select variable", onClear: () => props.onChange(undefined), allowClear: true }) })));
-}
+        }, placement: "bottomRight", overlayStyle: {} }, { children: jsxRuntime.jsx("div", Object.assign({ ref: ref, className: 'x-ref-select' }, { children: jsxRuntime.jsx(antd.Select, { onClick: () => model.toggleRefSelect(), options: [], dropdownRender: (originNode) => null, dropdownStyle: { display: 'none' }, value: model.getRefSelectDisplay(keyPath), placeholder: "Please select variable", onClear: () => props.onChange(undefined), allowClear: true }) })) })));
+});
 
 const { Item: FormItem$7 } = antd.Form;
 function TextSetter() {
     const { object, editor } = React.useContext(GlobalStateContext);
     const [form] = antd.Form.useForm();
     const [openFx, setOpenFx] = React.useState(false);
+    const [hasRef, setHasRef] = React.useState(false);
     const { t } = reactI18next.useTranslation();
     const TEXT_ADVANCE_CONFIG = [
         {
@@ -6299,6 +6416,9 @@ function TextSetter() {
         if (!(keys === null || keys === void 0 ? void 0 : keys.length))
             return;
         for (let key of keys) {
+            if (key === 'ref') {
+                setHasRef(values[key] != null);
+            }
             if (key === 'fontStyles') {
                 handleFontStyles(values[key]);
             }
@@ -6330,8 +6450,10 @@ function TextSetter() {
         editor.canvas.requestRenderAll();
     };
     React.useEffect(() => {
+        setHasRef(object.ref != null);
         form.setFieldsValue({
             ref: object.ref,
+            text: object.text,
             fontFamily: object.fontFamily,
             fontSize: object.fontSize,
             fill: transformFill2Colors(object.fill),
@@ -6349,7 +6471,14 @@ function TextSetter() {
     return (jsxRuntime.jsxs(jsxRuntime.Fragment, { children: [jsxRuntime.jsxs(antd.Form, Object.assign({ form: form, onValuesChange: handleValuesChange, colon: false }, { children: [jsxRuntime.jsx(antd.Form.Item, Object.assign({ name: "ref", help: RefHelp, label: jsxRuntime.jsx(RefLabel, {}) }, { children: jsxRuntime.jsx(RefSelect, { id: 'ref', objId: object['id'], value: form.getFieldValue('ref'), onChange: (val) => {
                                 form.setFieldValue('ref', val);
                                 object.set('ref', val);
-                            } }) })), jsxRuntime.jsx(FormItem$7, Object.assign({ name: "fontFamily", label: t('setter.text.font_family') }, { children: jsxRuntime.jsx(antd.Select, { options: FONT_PRESET_FAMILY_LIST_GOOGLE_FONT, onDropdownVisibleChange: open => {
+                            } }) })), hasRef ? jsxRuntime.jsx(antd.Form.Item, Object.assign({ label: jsxRuntime.jsx("span", { style: {
+                                display: 'inline-block',
+                                width: 42,
+                            } }), name: "text" }, { children: jsxRuntime.jsx(antd.Input, { placeholder: 'ref placeholder', onChange: e => {
+                                form.setFieldValue('text', e.target.value);
+                                object.set('text', e.target.value);
+                            } }) }))
+                        : null, jsxRuntime.jsx(FormItem$7, Object.assign({ name: "fontFamily", label: t('setter.text.font_family') }, { children: jsxRuntime.jsx(antd.Select, { options: FONT_PRESET_FAMILY_LIST_GOOGLE_FONT, onDropdownVisibleChange: open => {
                                 if (open) {
                                     void loadPresetGoogleFonts();
                                 }
@@ -6368,8 +6497,8 @@ function TextSetter() {
 
 function ReplaceSetter(props) {
     const { t } = reactI18next.useTranslation();
-    const { onChange } = props;
-    return (jsxRuntime.jsx(antd.Popover, Object.assign({ content: jsxRuntime.jsx(ImageSelector, { size: "middle", type: "default", onChange: onChange }), placement: "top", trigger: "click" }, { children: jsxRuntime.jsx(antd.Button, Object.assign({ type: "primary", block: true, icon: jsxRuntime.jsx(icons.FileImageOutlined, {}) }, { children: t('setter.image.replace') })) })));
+    const { onChange } = props, rest = __rest(props, ["onChange"]);
+    return (jsxRuntime.jsx(ImageSelector, Object.assign({ size: "middle", onChange: onChange, title: t('setter.image.replace') }, rest)));
 }
 
 const { Item: FormItem$6 } = antd.Form;
@@ -6573,6 +6702,7 @@ function ImageSetter() {
     const { t } = reactI18next.useTranslation();
     const [form] = antd.Form.useForm();
     const [openFx, setOpenFx] = React.useState(false);
+    const [hasRef, setHasRef] = React.useState(false);
     const IMAGE_ADVANCE_CONFIG = [
         {
             icon: jsxRuntime.jsx(icons.FunctionOutlined, { style: { fontSize: 22 } }),
@@ -6610,6 +6740,14 @@ function ImageSetter() {
         editor.canvas.requestRenderAll();
     };
     const handleValuesChange = (values) => {
+        const keys = Object.keys(values);
+        if (!(keys === null || keys === void 0 ? void 0 : keys.length))
+            return;
+        for (let key of keys) {
+            if (key === 'ref') {
+                setHasRef(values[key] != null);
+            }
+        }
         if (values.img) {
             handleImageReplace(values.img);
         }
@@ -6624,6 +6762,7 @@ function ImageSetter() {
     };
     React.useEffect(() => {
         if (object) {
+            setHasRef(object.ref != null);
             const border = object.getBorder();
             form.setFieldsValue({
                 border: Object.assign(Object.assign({ type: getObjectBorderType(border) }, border), { stroke: border.stroke || '#000000' }),
@@ -6635,7 +6774,11 @@ function ImageSetter() {
     return (jsxRuntime.jsxs(jsxRuntime.Fragment, { children: [jsxRuntime.jsxs(antd.Form, Object.assign({ form: form, onValuesChange: handleValuesChange, colon: false }, { children: [jsxRuntime.jsx(antd.Form.Item, Object.assign({ name: "ref", help: RefHelp, label: jsxRuntime.jsx(RefLabel, {}) }, { children: jsxRuntime.jsx(RefSelect, { id: 'ref', objId: object['id'], value: form.getFieldValue('ref'), onChange: (val) => {
                                 form.setFieldValue('ref', val);
                                 object.set('ref', val);
-                            } }) })), jsxRuntime.jsx(FormItem$4, Object.assign({ name: "img" }, { children: jsxRuntime.jsx(ReplaceSetter, {}) }))] })), jsxRuntime.jsx(FList, { dataSource: IMAGE_ADVANCE_CONFIG, renderItemChildren: (item) => (jsxRuntime.jsxs(jsxRuntime.Fragment, { children: [item.icon, jsxRuntime.jsx("span", Object.assign({ style: {
+                            } }) })), hasRef ? jsxRuntime.jsx(antd.Form.Item, Object.assign({ label: jsxRuntime.jsx("span", { style: {
+                                display: 'inline-block',
+                                width: 42,
+                            } }), name: "img" }, { children: jsxRuntime.jsx(ReplaceSetter, { title: "Replace placeholder image" }) }))
+                        : jsxRuntime.jsx(FormItem$4, Object.assign({ name: "img" }, { children: jsxRuntime.jsx(ReplaceSetter, {}) }))] })), jsxRuntime.jsx(FList, { dataSource: IMAGE_ADVANCE_CONFIG, renderItemChildren: (item) => (jsxRuntime.jsxs(jsxRuntime.Fragment, { children: [item.icon, jsxRuntime.jsx("span", Object.assign({ style: {
                                 fontSize: 16,
                                 fontWeight: 'bold',
                                 margin: '0 6px 0 10px'
@@ -6779,7 +6922,7 @@ function FlipSetter(props) {
     const onClick = ({ key }) => {
         onChange === null || onChange === void 0 ? void 0 : onChange(key);
     };
-    return (jsxRuntime.jsx(antd.Dropdown, Object.assign({ placement: "bottom", trigger: ["click"], menu: { items: items$1, onClick }, arrow: true }, { children: jsxRuntime.jsx("span", { children: jsxRuntime.jsxs("svg", Object.assign({ width: "22", height: "22", viewBox: "0 0 48 48", fill: "none", xmlns: "http://www.w3.org/2000/svg" }, { children: [jsxRuntime.jsx("path", { d: "M30 10H40C41.8856 10 42.8284 10 43.4142 10.5858C44 11.1716 44 12.1144 44 14V34C44 35.8856 44 36.8284 43.4142 37.4142C42.8284 38 41.8856 38 40 38H30", stroke: "currentColor", "stroke-width": "4", "stroke-linecap": "square", "stroke-linejoin": "miter" }), jsxRuntime.jsx("path", { d: "M18 10H8C6.11438 10 5.17157 10 4.58579 10.5858C4 11.1716 4 12.1144 4 14V34C4 35.8856 4 36.8284 4.58579 37.4142C5.17157 38 6.11438 38 8 38H18", stroke: "currentColor", "stroke-width": "4", "stroke-linecap": "square", "stroke-linejoin": "miter" }), jsxRuntime.jsx("path", { d: "M24 6V42", stroke: "currentColor", "stroke-width": "4", "stroke-linecap": "square", "stroke-linejoin": "miter" })] })) }) })));
+    return (jsxRuntime.jsx(antd.Dropdown, Object.assign({ placement: "bottom", trigger: ["click"], menu: { items: items$1, onClick }, arrow: true }, { children: jsxRuntime.jsx("span", { children: jsxRuntime.jsxs("svg", Object.assign({ width: "22", height: "22", viewBox: "0 0 48 48", fill: "none", xmlns: "http://www.w3.org/2000/svg" }, { children: [jsxRuntime.jsx("path", { d: "M30 10H40C41.8856 10 42.8284 10 43.4142 10.5858C44 11.1716 44 12.1144 44 14V34C44 35.8856 44 36.8284 43.4142 37.4142C42.8284 38 41.8856 38 40 38H30", stroke: "currentColor", "stroke-width": "4", "stroke-linecap": "square", strokeLinejoin: "miter" }), jsxRuntime.jsx("path", { d: "M18 10H8C6.11438 10 5.17157 10 4.58579 10.5858C4 11.1716 4 12.1144 4 14V34C4 35.8856 4 36.8284 4.58579 37.4142C5.17157 38 6.11438 38 8 38H18", stroke: "currentColor", "stroke-width": "4", "stroke-linecap": "square", "stroke-linejoin": "miter" }), jsxRuntime.jsx("path", { d: "M24 6V42", stroke: "currentColor", "stroke-width": "4", "stroke-linecap": "square", "stroke-linejoin": "miter" })] })) }) })));
 }
 
 const { Item: FormItem$1 } = antd.Form;

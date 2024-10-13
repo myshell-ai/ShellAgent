@@ -46,6 +46,7 @@ exports.ImageCanvasModel = class ImageCanvasModel {
     constructor() {
         this.emitter = mitt__default.default();
         this.variables = [];
+        this.isRefSelectOpen = false;
         mobx.makeObservable(this);
         this.isEditorReadyPromise = new Promise((resolve) => {
             this.isEditorReadyPromiseResolve = resolve;
@@ -122,11 +123,24 @@ exports.ImageCanvasModel = class ImageCanvasModel {
         }
         return keyPath[0];
     }
+    openRefSelect() {
+        this.isRefSelectOpen = true;
+    }
+    closeRefSelect() {
+        this.isRefSelectOpen = false;
+    }
+    toggleRefSelect() {
+        this.isRefSelectOpen = !this.isRefSelectOpen;
+    }
 };
 __decorate([
     mobx.observable,
     __metadata("design:type", Object)
 ], exports.ImageCanvasModel.prototype, "variables", void 0);
+__decorate([
+    mobx.observable,
+    __metadata("design:type", Object)
+], exports.ImageCanvasModel.prototype, "isRefSelectOpen", void 0);
 __decorate([
     inversify.preDestroy(),
     __metadata("design:type", Function),
@@ -139,6 +153,24 @@ __decorate([
     __metadata("design:paramtypes", [Array]),
     __metadata("design:returntype", void 0)
 ], exports.ImageCanvasModel.prototype, "setVariables", null);
+__decorate([
+    mobx.action.bound,
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", void 0)
+], exports.ImageCanvasModel.prototype, "openRefSelect", null);
+__decorate([
+    mobx.action.bound,
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", void 0)
+], exports.ImageCanvasModel.prototype, "closeRefSelect", null);
+__decorate([
+    mobx.action.bound,
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", void 0)
+], exports.ImageCanvasModel.prototype, "toggleRefSelect", null);
 exports.ImageCanvasModel = __decorate([
     inversify.injectable(),
     __metadata("design:paramtypes", [])
@@ -185,5 +217,3 @@ function convertExportedJson(rawJson) {
     });
     return json;
 }
-
-exports.convertExportedJson = convertExportedJson;

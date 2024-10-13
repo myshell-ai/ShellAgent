@@ -6,6 +6,14 @@
   z-index: 1200 !important;
 }
 
+.x-ref-select {
+  .ant-select-selection-item {
+    direction: rtl;
+    padding-inline-start: 18px !important;
+    padding-inline-end: 0 !important;
+  }
+}
+
 /* @import url(../global.css); */
 html, body {
   height: 100%;

@@ -59,6 +59,9 @@ importers:
       '@swc/helpers':
         specifier: ^0.5.1
         version: 0.5.5
+      ahooks:
+        specifier: ^3.8.1
+        version: 3.8.1(react@18.3.1)
       antd:
         specifier: ^5.11.0
         version: 5.20.1(date-fns@2.30.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)

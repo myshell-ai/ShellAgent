@@ -58,7 +58,7 @@
     },
     "image": {
       "title": "Image",
-      "local": "Local Image",
+      "local": "Image Box",
       "remote": "Remote Image",
       "remote_placeholder": "Remote Image Url"
     },

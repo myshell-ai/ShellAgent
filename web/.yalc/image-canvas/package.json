@@ -9,6 +9,7 @@
     "@ice/jsx-runtime": "^0.2.0",
     "@ice/runtime": "^1.2.7",
     "@swc/helpers": "^0.5.1",
+    "ahooks": "^3.8.1",
     "antd": "^5.11.0",
     "classnames": "^2.5.1",
     "cropperjs": "^1.6.1",
@@ -59,5 +60,5 @@
       "default": "./assets/react-colors-beauty.css"
     }
   },
-  "yalcSig": "ef2eddc6f46a0f19cbc43810ce3913f1"
+  "yalcSig": "4bdecb40898303fab9d54caebd92f1d1"
 }

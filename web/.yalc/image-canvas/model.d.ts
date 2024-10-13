@@ -42,6 +42,7 @@ declare class ImageCanvasModel {
         loadFromJSON: unknown;
     }>;
     variables: MenuProps["items"];
+    isRefSelectOpen: boolean;
     private isEditorReadyPromiseResolve;
     private isEditorReadyPromise;
     private editor;
@@ -54,7 +55,9 @@ declare class ImageCanvasModel {
     convertValueFieldToRef(value: string): string[];
     getRefSelectDisplay(keyPath: string[]): string;
     processWorkflowRunnerOutput(keyPath: string[]): string;
+    openRefSelect(): void;
+    closeRefSelect(): void;
+    toggleRefSelect(): void;
 }
-declare function convertExportedJson(rawJson: any): any;
 
-export { ImageCanvasModel, convertExportedJson };
+export { ImageCanvasModel };
