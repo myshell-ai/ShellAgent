@@ -25,7 +25,16 @@ from proconfig.core.variables import Variable
 from proconfig.core.constant import return_breakpoint_cache_dir
 from proconfig.runners.utils import empty_callback_fn, _max_input_len_helper, _get_config_by_index_helper
 
+import comfy
 
+import psutil
+from pympler.tracker import SummaryTracker
+
+process = psutil.Process(os.getpid())
+
+def print_memory():
+    cpu_memory_usage = process.memory_info().rss
+    print("CPU usage", cpu_memory_usage / (1024 * 1024 * 1024))
 
 class Runner(BaseModel):
     callback: Callable = empty_callback_fn
@@ -196,11 +205,24 @@ class Runner(BaseModel):
         else:
             raise NotImplementedError()
         local_vars[task.name] = outputs
+        
+    def process_comfy_extra_inputs(self, task):
+
+        comfy_extra_inputs = {
+            "api": task.api,
+            "comfy_workflow_id": task.comfy_workflow_id,
+        }
+        task.inputs["comfy_extra_inputs"] = comfy_extra_inputs
             
     def run_task(self, container, task, environ, local_vars):
+        
         # block names: names of the (task) blocks of the same level
+        if hasattr(task, "comfy_workflow_id"):
+            self.process_comfy_extra_inputs(task)
+            
         if task.mode == "widget":
-            return self.run_widget_task(container, task, environ, local_vars)
+            with torch.inference_mode():
+                return self.run_widget_task(container, task, environ, local_vars)
         elif task.mode == "workflow":
             return self.run_workflow_task(task, environ, local_vars)
         elif task.mode == "block":
@@ -343,6 +365,8 @@ class Runner(BaseModel):
     
 
     def run_workflow(self, workflow: Workflow, environ, payload, run_from_breakpoint=False):
+        print_memory()
+        tracker = SummaryTracker()
         gc.disable()
         if run_from_breakpoint: 
             local_vars = {}
@@ -361,6 +385,8 @@ class Runner(BaseModel):
             self.callback(event_type="task_start", inputs=local_vars, create_time=inputs_start_time, task_status='start', task_name="@@@start")
             # add user_input_false inputs
             for k, v in workflow.inputs.items():
+                if v.user_input and k not in payload:
+                    raise NotImplementedError(f"{k} requires user_input=True but no input is provided!")
                 if not v.user_input and not k in payload:
                     if getattr(v, "default_value"):
                         local_vars[k] = calc_expression(v.default_value, local_vars)
@@ -395,13 +421,22 @@ class Runner(BaseModel):
             
             self.callback(event_type="workflow_end", outputs=outputs, create_time=workflow_start_time, finish_time=time.time(), task_status='succeeded')
         del local_vars
-        for i, current_model in enumerate(model_management.current_loaded_models):
-            current_model.model_unload()
-            model_management.current_loaded_models.pop(i)
-            current_model.model.model = None
+        # for i, current_model in enumerate(model_management.current_loaded_models):
+        #     current_model.model_unload()
+        #     model_management.current_loaded_models.pop(i)
+        #     current_model.model.model = None
+        # print("tracker 1")
+        # tracker.print_diff()
+        # tracker2 = SummaryTracker()
+        comfy.model_management.unload_all_models()
         gc.enable()
         gc.collect()
         torch.cuda.empty_cache()
+        comfy.model_management.cleanup_models()
+        gc.collect()
+        comfy.model_management.soft_empty_cache()
+        # print("tracker 2")
+        # tracker2.print_diff()
         return outputs
     
     def run_state(self, state: State, context: dict, environ: dict, payload: dict = {}):
@@ -413,6 +448,8 @@ class Runner(BaseModel):
         
         # add user_input_false inputs
         for k, v in state.inputs.items():
+            if v.user_input and k not in payload:
+                raise NotImplementedError(f"{k} requires user_input=True but no input is provided!")
             # for user_input = True, provide the v.default_value
             # for user_input = False, provide the v.value
             if not v.user_input and not k in payload:
