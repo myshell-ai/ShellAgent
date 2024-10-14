@@ -102,7 +102,7 @@ class ImageCanvasWidget(BaseWidget):
         config: str
     
     class OutputsSchema(BaseWidget.OutputsSchema):
-        url: str
+        image: str
         
     @torch.no_grad()
     def execute(self, environ, config):
@@ -140,8 +140,8 @@ class ImageCanvasWidget(BaseWidget):
         automate_fabritor(temp_json_path, temp_png_path)
 
         # Upload the image to myshell
-        return_dict['url'] = upload_file_to_myshell(temp_png_path)
-        print(return_dict['url'])
+        return_dict['image'] = upload_file_to_myshell(temp_png_path)
+        print(return_dict['image'])
 
         # Clean up temporary files
         os.unlink(temp_json_path)
