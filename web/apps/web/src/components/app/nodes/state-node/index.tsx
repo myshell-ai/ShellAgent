@@ -13,11 +13,17 @@ import {
   DRAGGABLE_NODE_ID,
   uuid,
 } from '@shellagent/flow-engine';
-import { TValues, TFieldMode } from '@shellagent/form-engine';
+import { TValues } from '@shellagent/form-engine';
 import { FormRef } from '@shellagent/ui';
 import { useKeyPress } from 'ahooks';
 import { isEqual } from 'lodash-es';
-import React, { useCallback, useRef, useEffect, useState } from 'react';
+import React, {
+  useCallback,
+  useRef,
+  useEffect,
+  useState,
+  useMemo,
+} from 'react';
 
 import { EdgeTypeEnum, EdgeDataTypeEnum } from '@/components/app/edges';
 import NodeCard from '@/components/app/node-card';
@@ -25,7 +31,6 @@ import NodeForm from '@/components/app/node-form';
 import { useAppStore } from '@/stores/app/app-provider';
 import { useAppState } from '@/stores/app/use-app-state';
 import {
-  generateUUID,
   getKeyboardKeyCodeBySystem,
   isEventTargetInputArea,
 } from '@/utils/common-helper';
@@ -79,18 +84,18 @@ const StateNode: React.FC<NodeProps<StateNodeType>> = ({
 
   const [formKey, setFormKey] = useState(currentStateId);
 
-  useEffect(() => {
-    // 只能选一个，长度为1
-    const selectedNode = selectedNodes[0];
-    setSelectedNode(selectedNode);
+  // 优化: 使用 useMemo 缓存 selectedNode
+  const selectedNode = useMemo(() => selectedNodes[0], [selectedNodes]);
 
+  useEffect(() => {
     if (selectedNode && selectedNode.type === NodeTypeEnum.state) {
       setStateConfigSheetOpen(selectedNode.id, true);
       selectedNodeRef.current = selectedNode;
     } else {
       setStateConfigSheetOpen(selectedNodeRef.current?.id || '', false);
     }
-  }, [selectedNodes]);
+    setSelectedNode(selectedNode);
+  }, [selectedNode, setStateConfigSheetOpen, setSelectedNode]);
 
   const nodeRef = useRef<HTMLElement | null>(null);
 
@@ -148,13 +153,6 @@ const StateNode: React.FC<NodeProps<StateNodeType>> = ({
     },
   );
 
-  const onModeChange = useCallback(
-    (name: string, mode: TFieldMode) => {
-      setFieldsModeMap({ id, name, mode });
-    },
-    [id, setFieldsModeMap],
-  );
-
   const onChange = useCallback(
     (values: TValues) => {
       const newData = { id: data.id as NodeId, data: values };
@@ -180,28 +178,31 @@ const StateNode: React.FC<NodeProps<StateNodeType>> = ({
     }
   });
 
-  const handleConnect = (connection: Connection) => {
-    if (connection.source && connection.target) {
-      onConnect({
-        connect: connection,
-        edge: {
-          type: EdgeTypeEnum.custom,
-          data: {
-            id,
-            custom: true,
-            type: EdgeDataTypeEnum.ALWAYS,
-            source: connection.source,
-            target: connection.target,
-            conditions: [],
+  const handleConnect = useCallback(
+    (connection: Connection) => {
+      if (connection.source && connection.target) {
+        onConnect({
+          connect: connection,
+          edge: {
+            type: EdgeTypeEnum.custom,
+            data: {
+              id,
+              custom: true,
+              type: EdgeDataTypeEnum.ALWAYS,
+              source: connection.source,
+              target: connection.target,
+              conditions: [],
+            },
+            style: {
+              stroke: '#B6BABF',
+              strokeWidth: selected ? 4 : 2,
+            },
           },
-          style: {
-            stroke: '#B6BABF',
-            strokeWidth: selected ? 4 : 2,
-          },
-        },
-      });
-    }
-  };
+        });
+      }
+    },
+    [id, onConnect, selected],
+  );
 
   const [, drop] = useDrop<DraggableNodeType>(
     () => ({
@@ -212,8 +213,7 @@ const StateNode: React.FC<NodeProps<StateNodeType>> = ({
           display_name: item.display_name,
           name: uuid(),
           mode: item.nodeType === 'workflow' ? 'workflow' : 'widget',
-          workflow_id:
-            item.nodeType === 'workflow' ? generateUUID() : undefined,
+          workflow_id: undefined,
           widget_name: item.nodeType === 'widget' ? item.name : undefined,
           widget_class_name: item.nodeType === 'widget' ? item.name : undefined,
           inputs: {},
@@ -250,8 +250,6 @@ const StateNode: React.FC<NodeProps<StateNodeType>> = ({
           loading={loading}
           values={nodeData[data.id]}
           onChange={onChange}
-          onModeChange={onModeChange}
-          modeMap={fieldsModeMap?.[data.id] || {}}
         />
       </NodeCard>
       <SourceHandle onConnect={handleConnect} id={`custom_${id}`} />
@@ -260,4 +258,4 @@ const StateNode: React.FC<NodeProps<StateNodeType>> = ({
   );
 };
 
-export default StateNode;
+export default React.memo(StateNode);

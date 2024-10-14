@@ -9,7 +9,6 @@ import { getStateSchema } from '@/stores/app/utils/get-state-schema';
 import { getSchemaByWidget } from '@/stores/app/utils/get-widget-schema';
 import { useWorkflowStore } from '@/stores/workflow/workflow-provider';
 import { generateUUID } from '@/utils/common-helper';
-// import { useVariableContext } from './variable-provider';
 
 import { startSchema } from './utils/schema';
 
