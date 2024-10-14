@@ -12,13 +12,13 @@ var fabric$1 = require('fabric');
 var FontFaceObserver = require('fontfaceobserver');
 var uuid$1 = require('uuid');
 var googleFonts = require('google-fonts');
+var reactSystem = require('react-system');
 var universalEnv = require('universal-env');
 var RcInputNumber = require('rc-input-number');
 var RcInput = require('rc-input');
 var data = require('@emoji-mart/data');
 var Picker$1 = require('@emoji-mart/react');
 var mobx = require('mobx');
-var reactSystem = require('react-system');
 var mobxReactLite = require('mobx-react-lite');
 var ahooks = require('ahooks');
 var lodashEs = require('lodash-es');
@@ -302,29 +302,13 @@ const PRESET_FONT_LIST = [
     }
 ];
 function PresetFontPanel(props) {
-    const model = inversifyReact.useInjection('ImageCanvasModel');
+    inversifyReact.useInjection('ImageCanvasModel');
     const { addTextBox } = props;
     const { t } = reactI18next.useTranslation();
     const handleClick = (item) => {
         addTextBox === null || addTextBox === void 0 ? void 0 : addTextBox(item.config);
     };
-    return (jsxRuntime.jsxs(antd.Flex, Object.assign({ vertical: true, gap: 8, style: { marginTop: 16 } }, { children: [jsxRuntime.jsx(Title$1, { children: t('panel.text.presets') }), jsxRuntime.jsx(antd.Badge.Ribbon, Object.assign({ text: "Ref", color: "red" }, { children: jsxRuntime.jsx(antd.Card, Object.assign({ hoverable: true, onClick: () => {
-                        handleClick({
-                            config: {
-                                fontFamily: 'Open Sans',
-                                fontSize: 75,
-                                text: 'Text placeholder',
-                                width: 600,
-                                opacity: 0.5,
-                                color: "#6D7175"
-                            }
-                        });
-                        setTimeout(() => model.openRefSelect(), 300);
-                    }, bodyStyle: {
-                        padding: '12px 30px',
-                        userSelect: 'none',
-                        color: "#6D7175"
-                    } }, { children: "Text Placeholder" })) })), PRESET_FONT_LIST.map(item => (jsxRuntime.jsx(antd.Card, Object.assign({ hoverable: true, onClick: () => {
+    return (jsxRuntime.jsxs(antd.Flex, Object.assign({ vertical: true, gap: 8, style: { marginTop: 16 } }, { children: [jsxRuntime.jsx(Title$1, { children: t('panel.text.presets') }), PRESET_FONT_LIST.map(item => (jsxRuntime.jsx(antd.Card, Object.assign({ hoverable: true, onClick: () => {
                     handleClick(item);
                 }, bodyStyle: {
                     padding: '12px 30px',
@@ -389,7 +373,7 @@ const TEXTBOX_DEFAULT_CONFIG = {
     fontSize: 50,
     lineHeight: 1.30,
     textAlign: 'center',
-    fontFamily: 'AlibabaPuHuiTi',
+    fontFamily: 'Roboto',
     width: 500,
     splitByGrapheme: true
 };
@@ -886,14 +870,27 @@ const createTextbox = async (options) => {
 const GlobalStateContext = React.createContext(null);
 
 function TextPanel() {
+    const model = inversifyReact.useInjection('ImageCanvasModel');
     const { editor } = React.useContext(GlobalStateContext);
     const { t } = reactI18next.useTranslation();
     const handleAddText = async (options) => {
         await createTextbox(Object.assign(Object.assign({}, options), { canvas: editor.canvas }));
     };
-    return (jsxRuntime.jsxs("div", Object.assign({ className: "fabritor-panel-wrapper" }, { children: [jsxRuntime.jsx(antd.Button, Object.assign({ type: "primary", block: true, onClick: () => {
-                    handleAddText({});
-                }, size: "large" }, { children: t('panel.text.add') })), jsxRuntime.jsx(PresetFontPanel, { addTextBox: handleAddText })] })));
+    return (jsxRuntime.jsxs("div", Object.assign({ className: "fabritor-panel-wrapper" }, { children: [jsxRuntime.jsx(reactSystem.Box, Object.assign({ mb: 2 }, { children: jsxRuntime.jsx(antd.Button, Object.assign({ type: "primary", block: true, onClick: () => {
+                        handleAddText({});
+                    }, size: "large" }, { children: t('panel.text.add') })) })), jsxRuntime.jsx(antd.Button, Object.assign({ type: "primary", block: true, onClick: () => {
+                    handleAddText({
+                        ref: null,
+                        fontFamily: 'Roboto',
+                        fontSize: 50,
+                        text: 'Text ref placeholder',
+                        width: 600,
+                        opacity: 0.5,
+                        color: "#6D7175",
+                        top: 400
+                    });
+                    setTimeout(() => model.openRefSelect(), 300);
+                }, size: "large" }, { children: "Text Ref Box" })), jsxRuntime.jsx(PresetFontPanel, { addTextBox: handleAddText })] })));
 }
 
 const loadImageDom = async (url) => {
@@ -943,7 +940,7 @@ const createImage = async (options) => {
     return img;
 };
 const createFImage = async (options) => {
-    const { imageSource, canvas } = options || {};
+    const { imageSource, canvas, hasRef } = options || {};
     let img;
     try {
         img = await loadImage(imageSource);
@@ -955,7 +952,8 @@ const createFImage = async (options) => {
         return;
     const fimg = new fabric$1.fabric.FImage({
         image: img,
-        id: uuid()
+        id: uuid(),
+        hasRef,
     });
     canvas.viewportCenterObject(fimg);
     canvas.add(fimg);
@@ -1015,19 +1013,8 @@ function ImageSelector(props) {
     return (jsxRuntime.jsx(LocalImageSelector, Object.assign({}, rest, { onChange: onChange })));
 }
 
-function PresetImagePanel(props) {
-    const model = inversifyReact.useInjection('ImageCanvasModel');
-    const { onChange } = props;
-    return (jsxRuntime.jsxs(antd.Flex, Object.assign({ vertical: true, gap: 8, style: { marginTop: 16 } }, { children: [jsxRuntime.jsx(Title$1, { children: "Presets" }), jsxRuntime.jsx(antd.Badge.Ribbon, Object.assign({ text: "Ref", color: "red" }, { children: jsxRuntime.jsx(antd.Card, Object.assign({ hoverable: true, onClick: () => {
-                        onChange === null || onChange === void 0 ? void 0 : onChange(IMAGE_PLACEHOLDER);
-                        setTimeout(() => model.openRefSelect(), 300);
-                    }, bodyStyle: {
-                        padding: '12px 30px',
-                        userSelect: 'none'
-                    } }, { children: jsxRuntime.jsx(antd.Image, { preview: false, src: IMAGE_PLACEHOLDER }) })) }))] })));
-}
-
 function ImagePanel() {
+    const model = inversifyReact.useInjection('ImageCanvasModel');
     const { editor } = React.useContext(GlobalStateContext);
     const addImage = async (url) => {
         await createFImage({
@@ -1035,7 +1022,17 @@ function ImagePanel() {
             canvas: editor.canvas
         });
     };
-    return (jsxRuntime.jsxs("div", Object.assign({ className: "fabritor-panel-wrapper" }, { children: [jsxRuntime.jsx(ImageSelector, { onChange: addImage }), jsxRuntime.jsx(PresetImagePanel, { onChange: addImage })] })));
+    const addRefImage = async (url) => {
+        await createFImage({
+            imageSource: url,
+            canvas: editor.canvas,
+            hasRef: true
+        });
+    };
+    return (jsxRuntime.jsxs("div", Object.assign({ className: "fabritor-panel-wrapper" }, { children: [jsxRuntime.jsx(reactSystem.Box, Object.assign({ mb: 2 }, { children: jsxRuntime.jsx(ImageSelector, { onChange: addImage }) })), jsxRuntime.jsx(antd.Button, Object.assign({ size: "large", block: true, type: "primary", onClick: () => {
+                    addRefImage === null || addRefImage === void 0 ? void 0 : addRefImage(IMAGE_PLACEHOLDER);
+                    setTimeout(() => model.openRefSelect(), 300);
+                } }, { children: "Image Ref Box" }))] })));
 }
 
 var LineTypeList = [
@@ -5934,11 +5931,6 @@ function EmojiPanel(props) {
 
 const APP_LIST = [
     {
-        title: jsxRuntime.jsx(reactI18next.Trans, { i18nKey: "panel.app.qrcode" }),
-        key: 'qrcode',
-        icon: jsxRuntime.jsx(icons.QrcodeOutlined, { style: { fontSize: 30 } })
-    },
-    {
         title: jsxRuntime.jsx(reactI18next.Trans, { i18nKey: "panel.app.emoji" }),
         key: 'emoji',
         icon: jsxRuntime.jsx(icons.SmileOutlined, { style: { fontSize: 30 } })
@@ -5951,7 +5943,7 @@ function AppPanel() {
     };
     const back2List = () => { setApp(''); };
     const renderAppList = () => {
-        return (jsxRuntime.jsx(antd.Flex, Object.assign({ wrap: "wrap", gap: 12, justify: "space-around", style: { padding: '16px 16px 16px 0', marginLeft: -8 } }, { children: APP_LIST.map(item => (jsxRuntime.jsx(antd.Card, Object.assign({ hoverable: true, style: { width: 120, paddingTop: 12 }, cover: item.icon, bodyStyle: { padding: 12 }, onClick: () => { handleAppClick(item); } }, { children: jsxRuntime.jsx(antd.Card.Meta, { description: item.title, style: { textAlign: 'center' } }) }), item.key))) })));
+        return (jsxRuntime.jsx(antd.Flex, Object.assign({ wrap: "wrap", gap: 12, justify: "flex-start", style: { padding: '16px 16px 16px 0', marginLeft: -8 } }, { children: APP_LIST.map(item => (jsxRuntime.jsx(antd.Card, Object.assign({ hoverable: true, style: { width: 120, paddingTop: 12 }, cover: item.icon, bodyStyle: { padding: 12 }, onClick: () => { handleAppClick(item); } }, { children: jsxRuntime.jsx(antd.Card.Meta, { description: item.title, style: { textAlign: 'center' } }) }), item.key))) })));
     };
     const renderApp = () => {
         if (app === 'qrcode') {
@@ -6372,7 +6364,6 @@ function TextSetter() {
     const { object, editor } = React.useContext(GlobalStateContext);
     const [form] = antd.Form.useForm();
     const [openFx, setOpenFx] = React.useState(false);
-    const [hasRef, setHasRef] = React.useState(false);
     const { t } = reactI18next.useTranslation();
     const TEXT_ADVANCE_CONFIG = [
         {
@@ -6416,9 +6407,6 @@ function TextSetter() {
         if (!(keys === null || keys === void 0 ? void 0 : keys.length))
             return;
         for (let key of keys) {
-            if (key === 'ref') {
-                setHasRef(values[key] != null);
-            }
             if (key === 'fontStyles') {
                 handleFontStyles(values[key]);
             }
@@ -6450,7 +6438,6 @@ function TextSetter() {
         editor.canvas.requestRenderAll();
     };
     React.useEffect(() => {
-        setHasRef(object.ref != null);
         form.setFieldsValue({
             ref: object.ref,
             text: object.text,
@@ -6468,17 +6455,13 @@ function TextSetter() {
             }
         });
     }, [object]);
-    return (jsxRuntime.jsxs(jsxRuntime.Fragment, { children: [jsxRuntime.jsxs(antd.Form, Object.assign({ form: form, onValuesChange: handleValuesChange, colon: false }, { children: [jsxRuntime.jsx(antd.Form.Item, Object.assign({ name: "ref", help: RefHelp, label: jsxRuntime.jsx(RefLabel, {}) }, { children: jsxRuntime.jsx(RefSelect, { id: 'ref', objId: object['id'], value: form.getFieldValue('ref'), onChange: (val) => {
-                                form.setFieldValue('ref', val);
-                                object.set('ref', val);
-                            } }) })), hasRef ? jsxRuntime.jsx(antd.Form.Item, Object.assign({ label: jsxRuntime.jsx("span", { style: {
-                                display: 'inline-block',
-                                width: 42,
-                            } }), name: "text" }, { children: jsxRuntime.jsx(antd.Input, { placeholder: 'ref placeholder', onChange: e => {
-                                form.setFieldValue('text', e.target.value);
-                                object.set('text', e.target.value);
-                            } }) }))
-                        : null, jsxRuntime.jsx(FormItem$6, Object.assign({ name: "fontFamily", label: t('setter.text.font_family') }, { children: jsxRuntime.jsx(antd.Select, { options: FONT_PRESET_FAMILY_LIST_GOOGLE_FONT, onDropdownVisibleChange: open => {
+    return (jsxRuntime.jsxs(jsxRuntime.Fragment, { children: [jsxRuntime.jsxs(antd.Form, Object.assign({ form: form, onValuesChange: handleValuesChange, colon: false }, { children: [object.ref !== undefined ? jsxRuntime.jsxs(jsxRuntime.Fragment, { children: [jsxRuntime.jsx(antd.Form.Item, Object.assign({ name: "ref", help: RefHelp, label: jsxRuntime.jsx(RefLabel, {}) }, { children: jsxRuntime.jsx(RefSelect, { id: 'ref', objId: object['id'], value: form.getFieldValue('ref'), onChange: (val) => {
+                                        form.setFieldValue('ref', val);
+                                        object.set('ref', val);
+                                    } }) })), jsxRuntime.jsx(antd.Form.Item, Object.assign({ label: "Placeholder", name: "text" }, { children: jsxRuntime.jsx(antd.Input.TextArea, { placeholder: 'ref placeholder', onChange: e => {
+                                        form.setFieldValue('text', e.target.value);
+                                        object.set('text', e.target.value);
+                                    } }) }))] }) : null, jsxRuntime.jsx(FormItem$6, Object.assign({ name: "fontFamily", label: t('setter.text.font_family') }, { children: jsxRuntime.jsx(antd.Select, { options: FONT_PRESET_FAMILY_LIST_GOOGLE_FONT, onDropdownVisibleChange: open => {
                                 if (open) {
                                     void loadPresetGoogleFonts();
                                 }
@@ -6574,7 +6557,6 @@ function ImageSetter() {
     const { t } = reactI18next.useTranslation();
     const [form] = antd.Form.useForm();
     const [openFx, setOpenFx] = React.useState(false);
-    const [hasRef, setHasRef] = React.useState(false);
     [
         {
             icon: jsxRuntime.jsx(icons.FunctionOutlined, { style: { fontSize: 22 } }),
@@ -6615,11 +6597,6 @@ function ImageSetter() {
         const keys = Object.keys(values);
         if (!(keys === null || keys === void 0 ? void 0 : keys.length))
             return;
-        for (let key of keys) {
-            if (key === 'ref') {
-                setHasRef(values[key] != null);
-            }
-        }
         if (values.img) {
             handleImageReplace(values.img);
         }
@@ -6634,7 +6611,6 @@ function ImageSetter() {
     };
     React.useEffect(() => {
         if (object) {
-            setHasRef(object.ref != null);
             const border = object.getBorder();
             form.setFieldsValue({
                 border: Object.assign(Object.assign({ type: getObjectBorderType(border) }, border), { stroke: border.stroke || '#000000' }),
@@ -6643,14 +6619,10 @@ function ImageSetter() {
             });
         }
     }, [object]);
-    return (jsxRuntime.jsx(jsxRuntime.Fragment, { children: jsxRuntime.jsxs(antd.Form, Object.assign({ form: form, onValuesChange: handleValuesChange, colon: false }, { children: [jsxRuntime.jsx(antd.Form.Item, Object.assign({ name: "ref", help: RefHelp, label: jsxRuntime.jsx(RefLabel, {}) }, { children: jsxRuntime.jsx(RefSelect, { id: 'ref', objId: object['id'], value: form.getFieldValue('ref'), onChange: (val) => {
+    return (jsxRuntime.jsx(jsxRuntime.Fragment, { children: jsxRuntime.jsxs(antd.Form, Object.assign({ form: form, onValuesChange: handleValuesChange, colon: false }, { children: [object.hasRef ? jsxRuntime.jsx(antd.Form.Item, Object.assign({ name: "ref", help: RefHelp, label: jsxRuntime.jsx(RefLabel, {}) }, { children: jsxRuntime.jsx(RefSelect, { id: 'ref', objId: object['id'], value: form.getFieldValue('ref'), onChange: (val) => {
                             form.setFieldValue('ref', val);
                             object.set('ref', val);
-                        } }) })), hasRef ? jsxRuntime.jsx(antd.Form.Item, Object.assign({ label: jsxRuntime.jsx("span", { style: {
-                            display: 'inline-block',
-                            width: 42,
-                        } }), name: "img" }, { children: jsxRuntime.jsx(ReplaceSetter, { title: "Replace placeholder image" }) }))
-                    : jsxRuntime.jsx(FormItem$4, Object.assign({ name: "img" }, { children: jsxRuntime.jsx(ReplaceSetter, {}) }))] })) }));
+                        } }) })) : null, jsxRuntime.jsx(FormItem$4, Object.assign({ name: "img" }, { children: jsxRuntime.jsx(ReplaceSetter, {}) }))] })) }));
 }
 
 const { Item: FormItem$3 } = antd.Form;
