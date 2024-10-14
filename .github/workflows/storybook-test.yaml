@@ -3,6 +3,7 @@ name: "Storybook Tests"
 on:
   push:
     paths:
+      - ".yalc/**"
       - "web/apps/web/**"
       - "web/packages/**"
       - ".github/**"

@@ -1,25 +1,25 @@
 import {
-  NodeProps,
-  StateNode as StateNodeType,
-  useReactFlowStore,
-  NodeTypeEnum,
+  Connection,
+  DRAGGABLE_NODE_ID,
+  DraggableNodeType,
   Node,
   NodeId,
+  NodeProps,
+  NodeTypeEnum,
   SourceHandle,
+  StateNode as StateNodeType,
   TargetHandle,
-  Connection,
   useDrop,
-  DraggableNodeType,
-  DRAGGABLE_NODE_ID,
+  useReactFlowStore,
   uuid,
 } from '@shellagent/flow-engine';
-import { TValues, TFieldMode } from '@shellagent/form-engine';
+import { TFieldMode, TValues } from '@shellagent/form-engine';
 import { FormRef } from '@shellagent/ui';
 import { useKeyPress } from 'ahooks';
 import { isEqual } from 'lodash-es';
-import React, { useCallback, useRef, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 
-import { EdgeTypeEnum, EdgeDataTypeEnum } from '@/components/app/edges';
+import { EdgeDataTypeEnum, EdgeTypeEnum } from '@/components/app/edges';
 import NodeCard from '@/components/app/node-card';
 import NodeForm from '@/components/app/node-form';
 import { useAppStore } from '@/stores/app/app-provider';
@@ -213,8 +213,8 @@ const StateNode: React.FC<NodeProps<StateNodeType>> = ({
           display_name: item.display_name,
           name: uuid(),
           mode: item.nodeType === 'workflow' ? 'workflow' : 'widget',
-          workflow_id:
-            item.nodeType === 'workflow' ? generateUUID() : undefined,
+          workflow_id: undefined,
+          // item.nodeType === 'workflow' ? generateUUID() : undefined,
           widget_name: item.nodeType === 'widget' ? item.name : undefined,
           widget_class_name: item.nodeType === 'widget' ? item.name : undefined,
           inputs: {},
