@@ -3,11 +3,13 @@ name: Build Web App
 on:
   push:
     paths:
+      - ".yalc/**"
       - "web/apps/web/**"
       - "web/packages/**"
       - ".github/workflows/build-web.yaml"
   pull_request:
     paths:
+      - ".yalc/**"
       - "web/apps/web/**"
       - "web/packages/**"
       - ".github/workflows/build-web.yaml"

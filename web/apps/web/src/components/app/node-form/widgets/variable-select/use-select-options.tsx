@@ -72,12 +72,15 @@ export const useSelectOptions = (name?: string) => {
       memo.push({
         label: current.label,
         value: `{{${current.value}}}`,
+        field_type: current.field_type,
         children: current.children?.map((child: any) => ({
           label: child.label,
           value: `{{${child.value}}}`,
+          field_type: child.field_type,
           children: child.children?.map((grandchild: any) => ({
             label: grandchild.label,
             value: `{{${grandchild.value}}}`,
+            field_type: grandchild.field_type,
           })),
         })),
       });

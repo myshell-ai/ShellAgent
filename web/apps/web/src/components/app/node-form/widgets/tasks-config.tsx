@@ -93,7 +93,8 @@ const TasksConfig = ({
         display_name: task.display_name,
         name: uuid(), // 需要是key_xxx，作为ref引用
         mode: task.type === 'workflow' ? 'workflow' : 'widget',
-        workflow_id: task.type === 'workflow' ? generateUUID() : undefined,
+        // workflow_id: task.type === 'workflow' ? generateUUID() : undefined,
+        workflow_id: undefined,
         widget_name: task.type === 'widget' ? task.name : undefined,
         widget_class_name: task.type === 'widget' ? task.name : undefined,
         inputs: {},
@@ -119,7 +120,7 @@ const TasksConfig = ({
   );
 
   return (
-    <DndProvider backend={HTML5Backend}>
+    <DndProvider backend={HTML5Backend} context={window}>
       <div>
         {values?.length > 0 && (
           <div className="flex flex-col gap-2 mb-1.5">
