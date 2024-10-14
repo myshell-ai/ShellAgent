@@ -4612,7 +4612,7 @@ function SliderInputNumber(props) {
     return (jsxRuntime.jsxs(antd.Flex, Object.assign({ gap: 6, style: style }, { children: [jsxRuntime.jsx(antd.Slider, Object.assign({ style: { flex: 1 }, min: min, max: max, step: step, onChange: onChange, onAfterChange: onChangeComplete, value: value }, sliderProps)), jsxRuntime.jsx(antd.InputNumber, Object.assign({ min: min, max: max, step: step, onChange: onChange, value: value, style: { width: 56 }, controls: false }, inputProps))] })));
 }
 
-const { Item: FormItem$e } = antd.Form;
+const { Item: FormItem$d } = antd.Form;
 function PathSetterForm(props) {
     const { value, onChange, shouldFireEvent, showPenTip, showFillConfig } = props;
     const [form] = antd.Form.useForm();
@@ -4626,8 +4626,8 @@ function PathSetterForm(props) {
     React.useEffect(() => {
         form.setFieldsValue(value);
     }, [value]);
-    return (jsxRuntime.jsxs(antd.Form, Object.assign({ form: form, onValuesChange: onChange, style: { marginBottom: 0, marginTop: 16 }, colon: false }, { children: [showPenTip ? jsxRuntime.jsx(FormItem$e, { label: jsxRuntime.jsx("span", Object.assign({ style: { fontSize: 15, fontWeight: 'bold' } }, { children: t('panel.paint.title') })) }) : null, jsxRuntime.jsx(FormItem$e, Object.assign({ label: showFillConfig ? t('common.stroke') : t('common.stroke_color'), name: "color" }, { children: jsxRuntime.jsx(SolidColorSetter, { onChange: fireEvent }) })), jsxRuntime.jsx(FormItem$e, Object.assign({ label: t('common.line_width'), name: "width" }, { children: jsxRuntime.jsx(SliderInputNumber, { min: 1, max: 100, onChangeComplete: fireEvent }) })), showFillConfig ?
-                jsxRuntime.jsx(FormItem$e, Object.assign({ label: t('common.fill'), name: "fill" }, { children: jsxRuntime.jsx(ColorSetter, { onChange: fireEvent }) })) : null, jsxRuntime.jsx(FormItem$e, { label: jsxRuntime.jsx("span", Object.assign({ style: { fontSize: 15, fontWeight: 'bold' } }, { children: t('common.shadow') })) }), jsxRuntime.jsx(FormItem$e, Object.assign({ label: t('common.color'), name: ['shadow', 'color'] }, { children: jsxRuntime.jsx(SolidColorSetter, { onChange: fireEvent }) })), jsxRuntime.jsx(FormItem$e, Object.assign({ label: t('common.width'), name: ['shadow', 'width'] }, { children: jsxRuntime.jsx(SliderInputNumber, { min: 0, max: 50, onChangeComplete: fireEvent }) })), jsxRuntime.jsx(FormItem$e, Object.assign({ label: t('common.offset'), name: ['shadow', 'offset'] }, { children: jsxRuntime.jsx(SliderInputNumber, { min: 0, max: 20, onChangeComplete: fireEvent }) }))] })));
+    return (jsxRuntime.jsxs(antd.Form, Object.assign({ form: form, onValuesChange: onChange, style: { marginBottom: 0, marginTop: 16 }, colon: false }, { children: [showPenTip ? jsxRuntime.jsx(FormItem$d, { label: jsxRuntime.jsx("span", Object.assign({ style: { fontSize: 15, fontWeight: 'bold' } }, { children: t('panel.paint.title') })) }) : null, jsxRuntime.jsx(FormItem$d, Object.assign({ label: showFillConfig ? t('common.stroke') : t('common.stroke_color'), name: "color" }, { children: jsxRuntime.jsx(SolidColorSetter, { onChange: fireEvent }) })), jsxRuntime.jsx(FormItem$d, Object.assign({ label: t('common.line_width'), name: "width" }, { children: jsxRuntime.jsx(SliderInputNumber, { min: 1, max: 100, onChangeComplete: fireEvent }) })), showFillConfig ?
+                jsxRuntime.jsx(FormItem$d, Object.assign({ label: t('common.fill'), name: "fill" }, { children: jsxRuntime.jsx(ColorSetter, { onChange: fireEvent }) })) : null, jsxRuntime.jsx(FormItem$d, { label: jsxRuntime.jsx("span", Object.assign({ style: { fontSize: 15, fontWeight: 'bold' } }, { children: t('common.shadow') })) }), jsxRuntime.jsx(FormItem$d, Object.assign({ label: t('common.color'), name: ['shadow', 'color'] }, { children: jsxRuntime.jsx(SolidColorSetter, { onChange: fireEvent }) })), jsxRuntime.jsx(FormItem$d, Object.assign({ label: t('common.width'), name: ['shadow', 'width'] }, { children: jsxRuntime.jsx(SliderInputNumber, { min: 0, max: 50, onChangeComplete: fireEvent }) })), jsxRuntime.jsx(FormItem$d, Object.assign({ label: t('common.offset'), name: ['shadow', 'offset'] }, { children: jsxRuntime.jsx(SliderInputNumber, { min: 0, max: 20, onChangeComplete: fireEvent }) }))] })));
 }
 
 function PaintPanel() {
@@ -5663,7 +5663,7 @@ var objects = [
 		left: 69.79,
 		top: 464.87,
 		width: 1102.41,
-		height: 207.92,
+		height: 169.5,
 		fill: "#45496a",
 		stroke: null,
 		strokeWidth: 1,
@@ -5687,10 +5687,10 @@ var objects = [
 		globalCompositeOperation: "source-over",
 		skewX: 0,
 		skewY: 0,
-		fontFamily: "Sedgwick Ave Display",
+		fontFamily: "Zilla Slab Highlight",
 		fontWeight: "normal",
-		fontSize: 80,
-		text: "MyShell - Build, Share, and\n Own AI Chat.",
+		fontSize: 150,
+		text: "Own AI Agents",
 		underline: false,
 		overline: false,
 		linethrough: false,
@@ -5849,7 +5849,7 @@ function AppSubPanel(props) {
     return (jsxRuntime.jsx(antd.Card, Object.assign({ bordered: false, style: { marginLeft: -24, boxShadow: 'none' }, bodyStyle: { padding: 12 }, title: jsxRuntime.jsxs(antd.Flex, Object.assign({ justify: "space-between" }, { children: [jsxRuntime.jsx(icons.LeftOutlined, { onClick: back2AppList }), jsxRuntime.jsx("p", { children: title })] })) }, { children: children })));
 }
 
-const { Item: FormItem$d } = antd.Form;
+const { Item: FormItem$c } = antd.Form;
 function QRCodePanel(props) {
     const { back } = props;
     const [form] = antd.Form.useForm();
@@ -5888,11 +5888,11 @@ function QRCodePanel(props) {
             errorLevel: 'M'
         });
     }, []);
-    return (jsxRuntime.jsxs(AppSubPanel, Object.assign({ title: t('panel.app.qrcode'), back: back }, { children: [jsxRuntime.jsxs(antd.Form, Object.assign({ form: form, onValuesChange: handleValuesChange }, { children: [jsxRuntime.jsx(FormItem$d, Object.assign({ name: "value", label: t('common.text') }, { children: jsxRuntime.jsx(antd.Input, {}) })), jsxRuntime.jsx(FormItem$d, Object.assign({ name: "size", label: t('common.size') }, { children: jsxRuntime.jsx(antd.InputNumber, {}) }))] })), jsxRuntime.jsx(antd.Collapse, { items: [
+    return (jsxRuntime.jsxs(AppSubPanel, Object.assign({ title: t('panel.app.qrcode'), back: back }, { children: [jsxRuntime.jsxs(antd.Form, Object.assign({ form: form, onValuesChange: handleValuesChange }, { children: [jsxRuntime.jsx(FormItem$c, Object.assign({ name: "value", label: t('common.text') }, { children: jsxRuntime.jsx(antd.Input, {}) })), jsxRuntime.jsx(FormItem$c, Object.assign({ name: "size", label: t('common.size') }, { children: jsxRuntime.jsx(antd.InputNumber, {}) }))] })), jsxRuntime.jsx(antd.Collapse, { items: [
                     {
                         key: '1',
                         label: t('panel.app.more'),
-                        children: (jsxRuntime.jsxs(antd.Form, Object.assign({ form: form2, onValuesChange: handleValuesChange }, { children: [jsxRuntime.jsx(FormItem$d, Object.assign({ name: "color", label: t('common.color') }, { children: jsxRuntime.jsx(SolidColorSetter, {}) })), jsxRuntime.jsx(FormItem$d, Object.assign({ name: "bgColor", label: t('common.background_color') }, { children: jsxRuntime.jsx(SolidColorSetter, {}) })), jsxRuntime.jsx(FormItem$d, Object.assign({ name: "errorLevel", label: t('panel.app.error_level') }, { children: jsxRuntime.jsx(antd.Radio.Group, { options: ['L', 'M', 'Q', 'H'] }) })), jsxRuntime.jsx(FormItem$d, Object.assign({ name: "icon", label: t('panel.app.image') }, { children: jsxRuntime.jsx(antd.Input, { placeholder: t('panel.app.only_image_url') }) })), jsxRuntime.jsx(FormItem$d, Object.assign({ name: "iconSize", label: t('panel.app.image_size') }, { children: jsxRuntime.jsx(antd.InputNumber, {}) }))] })))
+                        children: (jsxRuntime.jsxs(antd.Form, Object.assign({ form: form2, onValuesChange: handleValuesChange }, { children: [jsxRuntime.jsx(FormItem$c, Object.assign({ name: "color", label: t('common.color') }, { children: jsxRuntime.jsx(SolidColorSetter, {}) })), jsxRuntime.jsx(FormItem$c, Object.assign({ name: "bgColor", label: t('common.background_color') }, { children: jsxRuntime.jsx(SolidColorSetter, {}) })), jsxRuntime.jsx(FormItem$c, Object.assign({ name: "errorLevel", label: t('panel.app.error_level') }, { children: jsxRuntime.jsx(antd.Radio.Group, { options: ['L', 'M', 'Q', 'H'] }) })), jsxRuntime.jsx(FormItem$c, Object.assign({ name: "icon", label: t('panel.app.image') }, { children: jsxRuntime.jsx(antd.Input, { placeholder: t('panel.app.only_image_url') }) })), jsxRuntime.jsx(FormItem$c, Object.assign({ name: "iconSize", label: t('panel.app.image_size') }, { children: jsxRuntime.jsx(antd.InputNumber, {}) }))] })))
                     }
                 ] }), QRCodeConfig.value ?
                 jsxRuntime.jsxs(antd.Flex, Object.assign({ vertical: true, align: "center", gap: 10, style: { marginTop: 16 }, ref: qrRef }, { children: [jsxRuntime.jsx(antd.QRCode, Object.assign({ type: "canvas" }, QRCodeConfig, { style: { maxWidth: 200 } })), jsxRuntime.jsx(antd.Button, Object.assign({ type: "primary", onClick: add2Canvas }, { children: t('panel.app.add') }))] })) : null] })));
@@ -6073,7 +6073,7 @@ function SizeSetter(props) {
     return (jsxRuntime.jsxs(antd.Flex, Object.assign({ gap: 8 }, { children: [jsxRuntime.jsx(SizeInput, { value: innerValue === null || innerValue === void 0 ? void 0 : innerValue[0], onChange: (v) => { handleChange(v, 0); } }), jsxRuntime.jsx(SizeInput, { prefixText: t('setter.size.height'), value: innerValue === null || innerValue === void 0 ? void 0 : innerValue[1], onChange: (v) => { handleChange(v, 1); } })] })));
 }
 
-const { Item: FormItem$c } = antd.Form;
+const { Item: FormItem$b } = antd.Form;
 function SketchSetter() {
     const [form] = antd.Form.useForm();
     const { editor } = React.useContext(GlobalStateContext);
@@ -6107,7 +6107,7 @@ function SketchSetter() {
             fill: transformFill2Colors(sketch.fill)
         });
     }, [editor]);
-    return (jsxRuntime.jsxs(antd.Form, Object.assign({ layout: "vertical", colon: false, form: form, onValuesChange: handleValuesChange }, { children: [jsxRuntime.jsx(FormItem$c, Object.assign({ label: t('setter.sketch.size'), name: "size" }, { children: jsxRuntime.jsx(SizeSetter, {}) })), jsxRuntime.jsx(FormItem$c, Object.assign({ label: t('setter.sketch.fill'), name: "fill" }, { children: jsxRuntime.jsx(ColorSetter, { type: "sketch" }) }))] })));
+    return (jsxRuntime.jsxs(antd.Form, Object.assign({ layout: "vertical", colon: false, form: form, onValuesChange: handleValuesChange }, { children: [jsxRuntime.jsx(FormItem$b, Object.assign({ label: t('setter.sketch.size'), name: "size" }, { children: jsxRuntime.jsx(SizeSetter, {}) })), jsxRuntime.jsx(FormItem$b, Object.assign({ label: t('setter.sketch.fill'), name: "fill" }, { children: jsxRuntime.jsx(ColorSetter, { type: "sketch" }) }))] })));
 }
 
 const FONT_STYLES = [
@@ -6170,7 +6170,7 @@ function MoreConfigWrapper(props) {
     return (jsxRuntime.jsx(antd.Drawer, Object.assign({ title: null, placement: "right", open: open, mask: false, maskClosable: false, width: SETTER_WIDTH, rootStyle: { top: 50, outline: 'none', }, contentWrapperStyle: { boxShadow: 'none' }, bodyStyle: { padding: 16 }, closeIcon: null }, rest, { children: jsxRuntime.jsxs("div", { children: [jsxRuntime.jsx(antd.Button, Object.assign({ type: "link", href: "javascript:void(0);", size: "small", onClick: () => { setOpen(false); }, icon: jsxRuntime.jsx(icons.LeftOutlined, {}), style: { marginLeft: -10 } }, { children: title })), children] }) })));
 }
 
-const { Item: FormItem$b } = antd.Form;
+const { Item: FormItem$a } = antd.Form;
 function TextShadow(props) {
     const [form] = antd.Form.useForm();
     const { value, onChange } = props;
@@ -6183,10 +6183,10 @@ function TextShadow(props) {
             form.setFieldsValue(value);
         }
     }, [value]);
-    return (jsxRuntime.jsxs(antd.Form, Object.assign({ form: form, onValuesChange: handleChange, colon: false }, { children: [jsxRuntime.jsx(FormItem$b, { label: jsxRuntime.jsx("span", Object.assign({ style: { fontSize: 15, fontWeight: 'bold' } }, { children: t('common.shadow') })) }), jsxRuntime.jsx(FormItem$b, Object.assign({ label: t('common.color'), name: "color" }, { children: jsxRuntime.jsx(SolidColorSetter, {}) })), jsxRuntime.jsx(FormItem$b, Object.assign({ label: t('common.blur'), name: "blur" }, { children: jsxRuntime.jsx(antd.Slider, { min: 0, max: 20 }) })), jsxRuntime.jsx(FormItem$b, Object.assign({ label: t('common.offset'), name: "offset" }, { children: jsxRuntime.jsx(antd.Slider, { min: -180, max: 180 }) }))] })));
+    return (jsxRuntime.jsxs(antd.Form, Object.assign({ form: form, onValuesChange: handleChange, colon: false }, { children: [jsxRuntime.jsx(FormItem$a, { label: jsxRuntime.jsx("span", Object.assign({ style: { fontSize: 15, fontWeight: 'bold' } }, { children: t('common.shadow') })) }), jsxRuntime.jsx(FormItem$a, Object.assign({ label: t('common.color'), name: "color" }, { children: jsxRuntime.jsx(SolidColorSetter, {}) })), jsxRuntime.jsx(FormItem$a, Object.assign({ label: t('common.blur'), name: "blur" }, { children: jsxRuntime.jsx(antd.Slider, { min: 0, max: 20 }) })), jsxRuntime.jsx(FormItem$a, Object.assign({ label: t('common.offset'), name: "offset" }, { children: jsxRuntime.jsx(antd.Slider, { min: -180, max: 180 }) }))] })));
 }
 
-const { Item: FormItem$a } = antd.Form;
+const { Item: FormItem$9 } = antd.Form;
 function TextPath(props) {
     const [form] = antd.Form.useForm();
     const { value, onChange } = props;
@@ -6199,10 +6199,10 @@ function TextPath(props) {
             form.setFieldsValue(value);
         }
     }, [value]);
-    return (jsxRuntime.jsxs(antd.Form, Object.assign({ form: form, onValuesChange: handleChange, colon: false }, { children: [jsxRuntime.jsxs(antd.Row, Object.assign({ gutter: 16 }, { children: [jsxRuntime.jsx(antd.Col, { children: jsxRuntime.jsx(FormItem$a, { label: jsxRuntime.jsx("span", Object.assign({ style: { fontSize: 15, fontWeight: 'bold' } }, { children: t('setter.text.fx.text_path') })) }) }), jsxRuntime.jsx(antd.Col, { children: jsxRuntime.jsx(FormItem$a, Object.assign({ name: "enable", valuePropName: "checked" }, { children: jsxRuntime.jsx(antd.Switch, {}) })) })] })), jsxRuntime.jsx(FormItem$a, Object.assign({ label: t('common.offset'), name: "offset" }, { children: jsxRuntime.jsx(antd.Slider, { min: -100, max: 100 }) }))] })));
+    return (jsxRuntime.jsxs(antd.Form, Object.assign({ form: form, onValuesChange: handleChange, colon: false }, { children: [jsxRuntime.jsxs(antd.Row, Object.assign({ gutter: 16 }, { children: [jsxRuntime.jsx(antd.Col, { children: jsxRuntime.jsx(FormItem$9, { label: jsxRuntime.jsx("span", Object.assign({ style: { fontSize: 15, fontWeight: 'bold' } }, { children: t('setter.text.fx.text_path') })) }) }), jsxRuntime.jsx(antd.Col, { children: jsxRuntime.jsx(FormItem$9, Object.assign({ name: "enable", valuePropName: "checked" }, { children: jsxRuntime.jsx(antd.Switch, {}) })) })] })), jsxRuntime.jsx(FormItem$9, Object.assign({ label: t('common.offset'), name: "offset" }, { children: jsxRuntime.jsx(antd.Slider, { min: -100, max: 100 }) }))] })));
 }
 
-const { Item: FormItem$9 } = antd.Form;
+const { Item: FormItem$8 } = antd.Form;
 function TextPattern(props) {
     const [form] = antd.Form.useForm();
     const { value, onChange } = props;
@@ -6215,10 +6215,10 @@ function TextPattern(props) {
             form.setFieldsValue(value);
         }
     }, [value]);
-    return (jsxRuntime.jsxs(antd.Form, Object.assign({ form: form, onValuesChange: handleChange, colon: false }, { children: [jsxRuntime.jsxs(antd.Row, Object.assign({ gutter: 16 }, { children: [jsxRuntime.jsx(antd.Col, { children: jsxRuntime.jsx(FormItem$9, { label: jsxRuntime.jsx("span", Object.assign({ style: { fontSize: 15, fontWeight: 'bold' } }, { children: t('setter.text.fx.fill_image') })) }) }), jsxRuntime.jsx(antd.Col, { children: jsxRuntime.jsx(FormItem$9, Object.assign({ name: "enable", valuePropName: "checked" }, { children: jsxRuntime.jsx(antd.Switch, {}) })) })] })), jsxRuntime.jsx(FormItem$9, Object.assign({ name: "url" }, { children: jsxRuntime.jsx(ImageSelector, { size: "middle", type: "default", title: "Local Image" }) }))] })));
+    return (jsxRuntime.jsxs(antd.Form, Object.assign({ form: form, onValuesChange: handleChange, colon: false }, { children: [jsxRuntime.jsxs(antd.Row, Object.assign({ gutter: 16 }, { children: [jsxRuntime.jsx(antd.Col, { children: jsxRuntime.jsx(FormItem$8, { label: jsxRuntime.jsx("span", Object.assign({ style: { fontSize: 15, fontWeight: 'bold' } }, { children: t('setter.text.fx.fill_image') })) }) }), jsxRuntime.jsx(antd.Col, { children: jsxRuntime.jsx(FormItem$8, Object.assign({ name: "enable", valuePropName: "checked" }, { children: jsxRuntime.jsx(antd.Switch, {}) })) })] })), jsxRuntime.jsx(FormItem$8, Object.assign({ name: "url" }, { children: jsxRuntime.jsx(ImageSelector, { size: "middle", type: "default", title: "Local Image" }) }))] })));
 }
 
-const { Item: FormItem$8 } = antd.Form;
+const { Item: FormItem$7 } = antd.Form;
 function TextFx() {
     const [form] = antd.Form.useForm();
     const { object, editor } = React.useContext(GlobalStateContext);
@@ -6312,7 +6312,7 @@ function TextFx() {
             initObjectFx();
         }
     }, [object]);
-    return (jsxRuntime.jsxs(antd.Form, Object.assign({ form: form, onValuesChange: handleFxValueChange, colon: false, style: { marginTop: 24 } }, { children: [jsxRuntime.jsx(FormItem$8, { label: jsxRuntime.jsx("span", Object.assign({ style: { fontSize: 15, fontWeight: 'bold' } }, { children: t('common.stroke') })) }), jsxRuntime.jsx(FormItem$8, Object.assign({ label: t('common.stroke_color'), name: "stroke" }, { children: jsxRuntime.jsx(ColorSetter, {}) })), jsxRuntime.jsx(FormItem$8, Object.assign({ label: t('common.stroke_width'), name: "strokeWidth" }, { children: jsxRuntime.jsx(SliderInputNumber, { min: 0, max: 20 }) })), jsxRuntime.jsx(FormItem$8, Object.assign({ name: "shadow", style: { marginBottom: 0 } }, { children: jsxRuntime.jsx(TextShadow, {}) })), jsxRuntime.jsx(FormItem$8, Object.assign({ name: "path", style: { marginBottom: 0 } }, { children: jsxRuntime.jsx(TextPath, {}) })), jsxRuntime.jsx(FormItem$8, Object.assign({ name: "pattern" }, { children: jsxRuntime.jsx(TextPattern, {}) }))] })));
+    return (jsxRuntime.jsxs(antd.Form, Object.assign({ form: form, onValuesChange: handleFxValueChange, colon: false, style: { marginTop: 24 } }, { children: [jsxRuntime.jsx(FormItem$7, { label: jsxRuntime.jsx("span", Object.assign({ style: { fontSize: 15, fontWeight: 'bold' } }, { children: t('common.stroke') })) }), jsxRuntime.jsx(FormItem$7, Object.assign({ label: t('common.stroke_color'), name: "stroke" }, { children: jsxRuntime.jsx(ColorSetter, {}) })), jsxRuntime.jsx(FormItem$7, Object.assign({ label: t('common.stroke_width'), name: "strokeWidth" }, { children: jsxRuntime.jsx(SliderInputNumber, { min: 0, max: 20 }) })), jsxRuntime.jsx(FormItem$7, Object.assign({ name: "shadow", style: { marginBottom: 0 } }, { children: jsxRuntime.jsx(TextShadow, {}) })), jsxRuntime.jsx(FormItem$7, Object.assign({ name: "path", style: { marginBottom: 0 } }, { children: jsxRuntime.jsx(TextPath, {}) })), jsxRuntime.jsx(FormItem$7, Object.assign({ name: "pattern" }, { children: jsxRuntime.jsx(TextPattern, {}) }))] })));
 }
 
 function Square3Stack3DIcon({
@@ -6367,7 +6367,7 @@ const RefSelect = mobxReactLite.observer((props) => {
         }, placement: "bottomRight", overlayStyle: {} }, { children: jsxRuntime.jsx("div", Object.assign({ ref: ref, className: 'x-ref-select' }, { children: jsxRuntime.jsx(antd.Select, { onClick: () => model.toggleRefSelect(), options: [], dropdownRender: (originNode) => null, dropdownStyle: { display: 'none' }, value: model.getRefSelectDisplay(keyPath), placeholder: "Please select variable", onClear: () => props.onChange(undefined), allowClear: true }) })) })));
 });
 
-const { Item: FormItem$7 } = antd.Form;
+const { Item: FormItem$6 } = antd.Form;
 function TextSetter() {
     const { object, editor } = React.useContext(GlobalStateContext);
     const [form] = antd.Form.useForm();
@@ -6478,15 +6478,15 @@ function TextSetter() {
                                 form.setFieldValue('text', e.target.value);
                                 object.set('text', e.target.value);
                             } }) }))
-                        : null, jsxRuntime.jsx(FormItem$7, Object.assign({ name: "fontFamily", label: t('setter.text.font_family') }, { children: jsxRuntime.jsx(antd.Select, { options: FONT_PRESET_FAMILY_LIST_GOOGLE_FONT, onDropdownVisibleChange: open => {
+                        : null, jsxRuntime.jsx(FormItem$6, Object.assign({ name: "fontFamily", label: t('setter.text.font_family') }, { children: jsxRuntime.jsx(antd.Select, { options: FONT_PRESET_FAMILY_LIST_GOOGLE_FONT, onDropdownVisibleChange: open => {
                                 if (open) {
                                     void loadPresetGoogleFonts();
                                 }
-                            } }) })), jsxRuntime.jsx(FormItem$7, Object.assign({ name: "fontSize", label: t('setter.text.font_size') }, { children: jsxRuntime.jsx(SliderInputNumber, { max: 400, onChangeComplete: () => {
+                            } }) })), jsxRuntime.jsx(FormItem$6, Object.assign({ name: "fontSize", label: t('setter.text.font_size') }, { children: jsxRuntime.jsx(SliderInputNumber, { max: 400, onChangeComplete: () => {
                                 editor.fireCustomModifiedEvent();
-                            } }) })), jsxRuntime.jsx(FormItem$7, Object.assign({ name: "fill", label: t('setter.text.fill') }, { children: jsxRuntime.jsx(ColorSetter, { type: "fontColor", defaultColor: "#000000" }) })), jsxRuntime.jsx(FormItem$7, Object.assign({ name: "textAlign", label: t('setter.text.text_align') }, { children: jsxRuntime.jsx(AlignSetter, {}) })), jsxRuntime.jsx(FormItem$7, Object.assign({ name: "fontStyles", label: t('setter.text.font_styles') }, { children: jsxRuntime.jsx(FontStylePanel, {}) })), jsxRuntime.jsx(FormItem$7, Object.assign({ name: "charSpacing", label: t('setter.text.char_spacing') }, { children: jsxRuntime.jsx(SliderInputNumber, { min: -200, max: 800, onChangeComplete: () => {
+                            } }) })), jsxRuntime.jsx(FormItem$6, Object.assign({ name: "fill", label: t('setter.text.fill') }, { children: jsxRuntime.jsx(ColorSetter, { type: "fontColor", defaultColor: "#000000" }) })), jsxRuntime.jsx(FormItem$6, Object.assign({ name: "textAlign", label: t('setter.text.text_align') }, { children: jsxRuntime.jsx(AlignSetter, {}) })), jsxRuntime.jsx(FormItem$6, Object.assign({ name: "fontStyles", label: t('setter.text.font_styles') }, { children: jsxRuntime.jsx(FontStylePanel, {}) })), jsxRuntime.jsx(FormItem$6, Object.assign({ name: "charSpacing", label: t('setter.text.char_spacing') }, { children: jsxRuntime.jsx(SliderInputNumber, { min: -200, max: 800, onChangeComplete: () => {
                                 editor.fireCustomModifiedEvent();
-                            } }) })), jsxRuntime.jsx(FormItem$7, Object.assign({ name: "lineHeight", label: t('setter.text.line_height') }, { children: jsxRuntime.jsx(SliderInputNumber, { min: 0.5, max: 2.5, step: 0.01, onChangeComplete: () => {
+                            } }) })), jsxRuntime.jsx(FormItem$6, Object.assign({ name: "lineHeight", label: t('setter.text.line_height') }, { children: jsxRuntime.jsx(SliderInputNumber, { min: 0.5, max: 2.5, step: 0.01, onChangeComplete: () => {
                                 editor.fireCustomModifiedEvent();
                             } }) }))] })), jsxRuntime.jsx(FList, { dataSource: TEXT_ADVANCE_CONFIG, renderItemChildren: (item) => (jsxRuntime.jsxs(jsxRuntime.Fragment, { children: [item.icon, jsxRuntime.jsx("span", Object.assign({ style: {
                                 fontSize: 16,
@@ -6501,7 +6501,7 @@ function ReplaceSetter(props) {
     return (jsxRuntime.jsx(ImageSelector, Object.assign({ size: "middle", onChange: onChange, title: t('setter.image.replace') }, rest)));
 }
 
-const { Item: FormItem$6 } = antd.Form;
+const { Item: FormItem$5 } = antd.Form;
 const getObjectBorderType = ({ stroke, strokeWidth, strokeDashArray }) => {
     if (!stroke) {
         return 'none';
@@ -6561,139 +6561,11 @@ function BorderSetter(props) {
     React.useEffect(() => {
         form.setFieldsValue(value);
     }, [value]);
-    return (jsxRuntime.jsxs(antd.Form, Object.assign({ form: form, onValuesChange: handleChange, colon: false }, { children: [jsxRuntime.jsx(FormItem$6, Object.assign({ name: "type", label: t('common.style'), labelCol: { span: 24 } }, { children: jsxRuntime.jsx(antd.Radio.Group, Object.assign({ onChange: fireEvent }, { children: BORDER_TYPES.map(item => (jsxRuntime.jsx(antd.Radio.Button, Object.assign({ value: item.key }, { children: jsxRuntime.jsx("span", { dangerouslySetInnerHTML: { __html: item.svg }, style: {
+    return (jsxRuntime.jsxs(antd.Form, Object.assign({ form: form, onValuesChange: handleChange, colon: false }, { children: [jsxRuntime.jsx(FormItem$5, Object.assign({ name: "type", label: t('common.style'), labelCol: { span: 24 } }, { children: jsxRuntime.jsx(antd.Radio.Group, Object.assign({ onChange: fireEvent }, { children: BORDER_TYPES.map(item => (jsxRuntime.jsx(antd.Radio.Button, Object.assign({ value: item.key }, { children: jsxRuntime.jsx("span", { dangerouslySetInnerHTML: { __html: item.svg }, style: {
                                 display: 'inline-flex',
                                 alignItems: 'center',
                                 marginTop: 6
-                            } }) }), item.key))) })) })), jsxRuntime.jsx(FormItem$6, Object.assign({ name: "stroke", label: t('common.stroke_color') }, { children: jsxRuntime.jsx(SolidColorSetter, { onChange: fireEvent }) })), jsxRuntime.jsx(FormItem$6, Object.assign({ name: "strokeWidth", label: t('common.stroke_width') }, { children: jsxRuntime.jsx(SliderInputNumber, { min: 1, max: 100, onChangeComplete: fireEvent }) })), jsxRuntime.jsx(FormItem$6, Object.assign({ name: "borderRadius", label: t('common.round') }, { children: jsxRuntime.jsx(SliderInputNumber, { min: 0, max: 200, onChangeComplete: fireEvent }) }))] })));
-}
-
-const COLOR_FILTER_LIST = [
-    {
-        label: '无',
-        value: 'none',
-        src: 'https://cdn.pixabay.com/photo/2017/02/15/13/18/girl-2068638_1280.jpg'
-    },
-    {
-        label: '复古',
-        value: 'Sepia',
-        src: 'https://raw.githubusercontent.com/sleepy-zone/fabritor-assets/main/images/复古.png'
-    },
-    {
-        label: '胶片',
-        value: 'Kodachrome',
-        src: 'https://raw.githubusercontent.com/sleepy-zone/fabritor-assets/main/images/胶片.png'
-    },
-    {
-        label: '老照片',
-        value: 'Vintage',
-        src: 'https://raw.githubusercontent.com/sleepy-zone/fabritor-assets/main/images/老照片.png'
-    },
-    {
-        label: '宝丽来',
-        value: 'Polaroid',
-        src: 'https://raw.githubusercontent.com/sleepy-zone/fabritor-assets/main/images/宝丽来.png'
-    },
-    {
-        label: '模糊',
-        value: 'Blur',
-        src: 'https://raw.githubusercontent.com/sleepy-zone/fabritor-assets/main/images/模糊.png'
-    },
-    {
-        label: '浮雕',
-        value: 'Emboss',
-        src: 'https://raw.githubusercontent.com/sleepy-zone/fabritor-assets/main/images/浮雕.png'
-    },
-    {
-        label: '像素',
-        value: 'Pixelate',
-        src: 'https://raw.githubusercontent.com/sleepy-zone/fabritor-assets/main/images/像素.png'
-    },
-    {
-        label: '黑白',
-        value: 'Grayscale',
-        src: 'https://raw.githubusercontent.com/sleepy-zone/fabritor-assets/main/images/黑白.png'
-    },
-    {
-        label: '调色',
-        value: 'HueRotation',
-        src: 'https://raw.githubusercontent.com/sleepy-zone/fabritor-assets/main/images/调色.png'
-    }
-];
-function RadioImageGroup(props) {
-    const { value, onChange } = props;
-    const handleChange = (v, key) => {
-        onChange === null || onChange === void 0 ? void 0 : onChange(Object.assign(Object.assign({}, value), { [key]: v }));
-    };
-    return (jsxRuntime.jsx("div", Object.assign({ className: "fabritor-radio-image-group" }, { children: COLOR_FILTER_LIST.map(option => (jsxRuntime.jsxs("div", Object.assign({ className: "fabritor-radio-image-group-item", onClick: () => { handleChange(option.value, 'type'); } }, { children: [jsxRuntime.jsx("div", Object.assign({ className: "fabritor-radio-image-group-img", style: { borderColor: (value === null || value === void 0 ? void 0 : value.type) === option.value ? '#ff2222' : '#eeeeee' } }, { children: jsxRuntime.jsx("img", { src: option.src }) })), jsxRuntime.jsx("span", { children: option.label }), option.value === 'Blur' && (value === null || value === void 0 ? void 0 : value.type) === 'Blur' ?
-                    jsxRuntime.jsx(antd.Slider, { min: 0, max: 1, step: 0.01, value: (value === null || value === void 0 ? void 0 : value.param) == undefined ? 0.2 : value === null || value === void 0 ? void 0 : value.param, onChange: (v) => { handleChange(v, 'param'); } }) : null, option.value === 'Pixelate' && (value === null || value === void 0 ? void 0 : value.type) === 'Pixelate' ?
-                    jsxRuntime.jsx(antd.Slider, { min: 2, max: 20, step: 0.01, value: (value === null || value === void 0 ? void 0 : value.param) == undefined ? 4 : value === null || value === void 0 ? void 0 : value.param, onChange: (v) => { handleChange(v, 'param'); } }) : null, option.value === 'HueRotation' && (value === null || value === void 0 ? void 0 : value.type) === 'HueRotation' ?
-                    jsxRuntime.jsx(antd.Slider, { min: -2, max: 2, step: 0.002, value: (value === null || value === void 0 ? void 0 : value.param) == undefined ? 0 : value === null || value === void 0 ? void 0 : value.param, onChange: (v) => { handleChange(v, 'param'); } }) : null] })))) })));
-}
-
-const { Item: FormItem$5 } = antd.Form;
-const handleFilterValue = (filter) => {
-    if (!filter)
-        return { type: 'none' };
-    const { type } = filter;
-    if (type === 'Blur') {
-        return { type, param: filter.blur };
-    }
-    if (type === 'Pixelate') {
-        return { type, param: filter.blocksize };
-    }
-    if (type === 'HueRotation') {
-        return { type, param: filter.rotation };
-    }
-    return { type };
-};
-function ImageFx() {
-    const { object, editor } = React.useContext(GlobalStateContext);
-    const [form] = antd.Form.useForm();
-    const handleFxValueChange = (values) => {
-        if (values.filter) {
-            const { type, param } = values.filter;
-            let filter;
-            if (type === 'Emboss') {
-                filter = new fabric$1.fabric.Image.filters.Convolute({
-                    matrix: [1, 1, 1,
-                        1, 0.7, -1,
-                        -1, -1, -1]
-                });
-            }
-            else if (type === 'none') {
-                filter = null;
-            }
-            else {
-                filter = new fabric$1.fabric.Image.filters[type]();
-            }
-            if (type === 'Blur') {
-                filter.blur = param == undefined ? 0.2 : param;
-            }
-            if (type === 'Pixelate') {
-                filter.blocksize = param == undefined ? 4 : param;
-            }
-            if (type === 'HueRotation') {
-                filter.rotation = param == undefined ? 0 : param;
-            }
-            object.applyFilter(filter);
-            object.canvas.requestRenderAll();
-            editor.fireCustomModifiedEvent();
-        }
-    };
-    const initImageFx = () => {
-        const filter = object.getFilter();
-        console.log(filter);
-        form.setFieldsValue({
-            filter: handleFilterValue(filter)
-        });
-    };
-    React.useEffect(() => {
-        if (object && object.type === 'f-image') {
-            initImageFx();
-        }
-    }, [object]);
-    return (jsxRuntime.jsx(antd.Form, Object.assign({ form: form, onValuesChange: handleFxValueChange }, { children: jsxRuntime.jsx(FormItem$5, Object.assign({ name: "filter" }, { children: jsxRuntime.jsx(RadioImageGroup, {}) })) })));
+                            } }) }), item.key))) })) })), jsxRuntime.jsx(FormItem$5, Object.assign({ name: "stroke", label: t('common.stroke_color') }, { children: jsxRuntime.jsx(SolidColorSetter, { onChange: fireEvent }) })), jsxRuntime.jsx(FormItem$5, Object.assign({ name: "strokeWidth", label: t('common.stroke_width') }, { children: jsxRuntime.jsx(SliderInputNumber, { min: 1, max: 100, onChangeComplete: fireEvent }) })), jsxRuntime.jsx(FormItem$5, Object.assign({ name: "borderRadius", label: t('common.round') }, { children: jsxRuntime.jsx(SliderInputNumber, { min: 0, max: 200, onChangeComplete: fireEvent }) }))] })));
 }
 
 const { Item: FormItem$4 } = antd.Form;
@@ -6703,7 +6575,7 @@ function ImageSetter() {
     const [form] = antd.Form.useForm();
     const [openFx, setOpenFx] = React.useState(false);
     const [hasRef, setHasRef] = React.useState(false);
-    const IMAGE_ADVANCE_CONFIG = [
+    [
         {
             icon: jsxRuntime.jsx(icons.FunctionOutlined, { style: { fontSize: 22 } }),
             label: t('setter.image.filter'),
@@ -6771,18 +6643,14 @@ function ImageSetter() {
             });
         }
     }, [object]);
-    return (jsxRuntime.jsxs(jsxRuntime.Fragment, { children: [jsxRuntime.jsxs(antd.Form, Object.assign({ form: form, onValuesChange: handleValuesChange, colon: false }, { children: [jsxRuntime.jsx(antd.Form.Item, Object.assign({ name: "ref", help: RefHelp, label: jsxRuntime.jsx(RefLabel, {}) }, { children: jsxRuntime.jsx(RefSelect, { id: 'ref', objId: object['id'], value: form.getFieldValue('ref'), onChange: (val) => {
-                                form.setFieldValue('ref', val);
-                                object.set('ref', val);
-                            } }) })), hasRef ? jsxRuntime.jsx(antd.Form.Item, Object.assign({ label: jsxRuntime.jsx("span", { style: {
-                                display: 'inline-block',
-                                width: 42,
-                            } }), name: "img" }, { children: jsxRuntime.jsx(ReplaceSetter, { title: "Replace placeholder image" }) }))
-                        : jsxRuntime.jsx(FormItem$4, Object.assign({ name: "img" }, { children: jsxRuntime.jsx(ReplaceSetter, {}) }))] })), jsxRuntime.jsx(FList, { dataSource: IMAGE_ADVANCE_CONFIG, renderItemChildren: (item) => (jsxRuntime.jsxs(jsxRuntime.Fragment, { children: [item.icon, jsxRuntime.jsx("span", Object.assign({ style: {
-                                fontSize: 16,
-                                fontWeight: 'bold',
-                                margin: '0 6px 0 10px'
-                            } }, { children: item.label })), jsxRuntime.jsx(icons.RightOutlined, {})] })) }), jsxRuntime.jsx(MoreConfigWrapper, Object.assign({ open: openFx, setOpen: setOpenFx, title: t('setter.image.filter') }, { children: jsxRuntime.jsx(ImageFx, {}) }))] }));
+    return (jsxRuntime.jsx(jsxRuntime.Fragment, { children: jsxRuntime.jsxs(antd.Form, Object.assign({ form: form, onValuesChange: handleValuesChange, colon: false }, { children: [jsxRuntime.jsx(antd.Form.Item, Object.assign({ name: "ref", help: RefHelp, label: jsxRuntime.jsx(RefLabel, {}) }, { children: jsxRuntime.jsx(RefSelect, { id: 'ref', objId: object['id'], value: form.getFieldValue('ref'), onChange: (val) => {
+                            form.setFieldValue('ref', val);
+                            object.set('ref', val);
+                        } }) })), hasRef ? jsxRuntime.jsx(antd.Form.Item, Object.assign({ label: jsxRuntime.jsx("span", { style: {
+                            display: 'inline-block',
+                            width: 42,
+                        } }), name: "img" }, { children: jsxRuntime.jsx(ReplaceSetter, { title: "Replace placeholder image" }) }))
+                    : jsxRuntime.jsx(FormItem$4, Object.assign({ name: "img" }, { children: jsxRuntime.jsx(ReplaceSetter, {}) }))] })) }));
 }
 
 const { Item: FormItem$3 } = antd.Form;
