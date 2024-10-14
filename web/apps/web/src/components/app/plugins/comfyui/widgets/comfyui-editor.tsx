@@ -18,7 +18,7 @@ import { CheckDialog } from '../check-dialog';
 import { COMFYUI_API, DEFAULT_COMFYUI_API, MessageType } from '../constant';
 import emitter, { EventType } from '../emitter';
 import { saveComfy, uploadComfy, getFile } from '../services';
-import type { GetFileResponse } from '../services/type';
+import type { SaveResponse } from '../services/type';
 import { isValidUrl, checkDependency } from '../utils';
 
 export const ComfyUIEditor = ({
@@ -34,7 +34,7 @@ export const ComfyUIEditor = ({
   const [error, setError] = useState<string>('');
   const [loaded, setLoaded] = useState(false);
   const [dependencies, setDependencies] = useState<
-    GetFileResponse['data']['dependencies'] | null
+    SaveResponse['data']['dependencies'] | null
   >(null);
   const iframeRef = useRef<HTMLIFrameElement>(null);
   const { getValues } = useFormContext();
@@ -150,6 +150,14 @@ export const ComfyUIEditor = ({
               id: comfy_workflow_id,
             });
           }
+        } else {
+          toast.error(result?.message, {
+            position: 'top-center',
+            autoClose: 3000,
+            hideProgressBar: true,
+            pauseOnHover: true,
+            closeButton: false,
+          });
         }
       },
     },
@@ -170,6 +178,17 @@ export const ComfyUIEditor = ({
   };
 
   const handleImport = (file: File) => {
+    if (!file.name.toLowerCase().endsWith('.json')) {
+      toast.error('Please upload a JSON file', {
+        position: 'top-center',
+        autoClose: 3000,
+        hideProgressBar: true,
+        pauseOnHover: true,
+        closeButton: false,
+      });
+      return;
+    }
+
     const reader = new FileReader();
     reader.onload = event => {
       try {
@@ -183,9 +202,15 @@ export const ComfyUIEditor = ({
           { type: MessageType.LOAD, data: json },
           value,
         );
-        // 处理导入的 JSON 数据
       } catch (error) {
         console.error('Invalid JSON file:', error);
+        toast.error('Invalid JSON file', {
+          position: 'top-center',
+          autoClose: 3000,
+          hideProgressBar: true,
+          pauseOnHover: true,
+          closeButton: false,
+        });
       }
     };
     reader.readAsText(file);

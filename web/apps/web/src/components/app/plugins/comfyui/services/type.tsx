@@ -33,6 +33,7 @@ export interface SaveResponse {
         name: string;
         repo: string;
         commit: string;
+        require_recheck: boolean;
       }>;
       models: Record<
         string,
@@ -40,6 +41,7 @@ export interface SaveResponse {
           filename: string;
           save_path: string;
           urls: string[];
+          require_recheck: boolean;
         }
       >;
       files: Record<string, any>;
@@ -68,6 +70,7 @@ export interface SaveResponse {
     };
   };
   success: boolean;
+  message?: string;
 }
 
 export interface GetFileRequest {

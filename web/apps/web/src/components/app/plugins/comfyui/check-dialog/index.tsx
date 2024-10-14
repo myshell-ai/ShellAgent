@@ -7,14 +7,14 @@ import React, { useRef, useCallback } from 'react';
 
 import { CheckerContent } from './content';
 import { updateDependency } from '../services';
-import type { GetFileResponse } from '../services/type';
+import type { SaveResponse } from '../services/type';
 import { formatFormData2Dependency } from '../utils';
 
 interface CheckDialogProps {
   open: boolean;
   setOpen: (open: boolean) => void;
   comfy_workflow_id: string;
-  dependencies: GetFileResponse['data']['dependencies'] | null;
+  dependencies: SaveResponse['data']['dependencies'] | null;
 }
 
 export const CheckDialog: React.FC<CheckDialogProps> = ({

@@ -2,12 +2,12 @@ import { DeleteOutlined } from '@ant-design/icons';
 import { Form, Input, Button, FormInstance, Tabs } from 'antd';
 import React, { useState, useMemo, useEffect } from 'react';
 
-import type { GetFileResponse } from '../services/type';
+import type { SaveResponse } from '../services/type';
 import { checkDependency, formatDependencyData2Form } from '../utils';
 
 interface CheckerContentProps {
   formRef: React.RefObject<FormInstance>;
-  dependencies: GetFileResponse['data']['dependencies'] | null;
+  dependencies: SaveResponse['data']['dependencies'] | null;
 }
 
 export enum CheckTypeEnum {

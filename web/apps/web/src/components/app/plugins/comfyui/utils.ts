@@ -1,4 +1,4 @@
-import type { GetFileResponse, UpdateDependencyRequest } from './services/type';
+import type { SaveResponse, UpdateDependencyRequest } from './services/type';
 
 export function isValidUrl(url: string) {
   try {
@@ -11,7 +11,7 @@ export function isValidUrl(url: string) {
 }
 
 export function checkDependency(
-  data: GetFileResponse['data']['dependencies'] | null,
+  data: SaveResponse['data']['dependencies'] | null,
 ) {
   const missingCustomNodes: UpdateDependencyRequest['missing_custom_nodes'] =
     [];
@@ -19,14 +19,14 @@ export function checkDependency(
 
   // 检查custom_nodes的repo参数是否为空
   data?.custom_nodes?.forEach(node => {
-    if (!node?.repo) {
+    if (node?.require_recheck) {
       missingCustomNodes.push(node);
     }
   });
 
   // 检查models的urls是否为空
   Object.entries(data?.models || {}).forEach(([key, model]) => {
-    if (!model?.urls || model.urls.length === 0) {
+    if (model?.require_recheck) {
       missingModels[key] = model;
     }
   });
