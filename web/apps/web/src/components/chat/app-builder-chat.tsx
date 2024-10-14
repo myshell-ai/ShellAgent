@@ -242,7 +242,7 @@ ${serverMessage.embedObjs
       typeof i.url === 'string' && i.url.indexOf('https://') > -1
         ? i.url
         : `/api/files/${i.url}`;
-    return `<img src={${url}} width="1024" />`;
+    return `<img src="${url}" width="1024" />`;
   })
   .join('\n\n')}
 `;
