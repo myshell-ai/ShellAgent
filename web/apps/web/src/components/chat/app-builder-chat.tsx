@@ -236,7 +236,15 @@ export const AppBuilderChat = () => {
       ) {
         displayMessage.text = `
 ${displayMessage.text}
-${serverMessage.embedObjs.map(i => `<img src="/api/files/${i.url}" width="1024" />`).join('\n\n')}
+${serverMessage.embedObjs
+  .map(i => {
+    const url =
+      typeof i.url === 'string' && i.url.indexOf('https//') > -1
+        ? i.url
+        : `/api/files/${i.url}`;
+    return `<img src={url} width="1024" />`;
+  })
+  .join('\n\n')}
 `;
       }
       if (serverMessage.componentContainer) {
