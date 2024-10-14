@@ -35,7 +35,8 @@ def memory_watchdog(cpu_limit_gb=30, gpu_limit_gb=20, device_num=0):
             print("Memory limit exceeded! Exiting program.")
             os._exit(1)
 
-        time.sleep(5)  # Check memory usage every 5 seconds
+        time.sleep(1)  # Check memory usage every 5 seconds
+        # print("CPU usage", cpu_memory_usage / (1024 * 1024 * 1024))
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
@@ -55,6 +56,7 @@ if __name__ == '__main__':
     import servers.workflow
     import servers.settings
     import servers.tools
+    import servers.comfy_runner
     
     import GPUtil
     
