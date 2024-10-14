@@ -16,7 +16,6 @@ if '%errorlevel%' == '0' (
     exit /b
 )
 
-:start
 cd /d %~dp0
 cd ShellAgent
 
@@ -41,15 +40,5 @@ if not exist "models\model_status.json" (
 
 ..\python_embeded\python.exe -m pip install -e .
 ..\python_embeded\python.exe servers\main.py
-
-if %errorlevel% equ 42 (
-    echo Restart signal detected, program will restart in 3 seconds...
-    timeout /t 3 >nul
-    goto start
-) else (
-    echo Program has exited, press any key to close the window...
-    pause >nul
-    exit /b
-)
 
 pause
