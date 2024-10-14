@@ -77,6 +77,7 @@ class WidgetTask(TaskBase):
     widget_name: str = None
     package_name: str = None
     widget_class_name: str = None
+    # add widget id here
     
 class WorkflowTask(TaskBase):
     mode: Literal["workflow"] = "workflow"
