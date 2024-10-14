@@ -77,12 +77,18 @@ class WidgetTask(TaskBase):
     widget_name: str = None
     package_name: str = None
     widget_class_name: str = None
+    # add widget id here
     
 class WorkflowTask(TaskBase):
     mode: Literal["workflow"] = "workflow"
     workflow_id: str
+    
+class ComfyWorkflowTask(WidgetTask):
+    mode: Literal["widget", "comfy_workflow"] = "widget"
+    api: str
+    comfy_workflow_id: str
 
-Task = Union[BlockTask, WidgetTask, WorkflowTask]
+Task = Union[ComfyWorkflowTask, BlockTask, WidgetTask, WorkflowTask]
 
 T1 = TypeVar('T1', bound=Block)
 class BlockWithTransitions(Block, Generic[T1]):

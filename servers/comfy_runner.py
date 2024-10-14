@@ -10,6 +10,16 @@ from datetime import datetime
 from servers.base import app, PROJECT_ROOT
 
 COMFY_ROOT = os.path.join(PROJECT_ROOT, "comfy_workflow")
+COMFY_LOCAL_DEPS_PATH = os.path.join(PROJECT_ROOT, "comfy_data", "dependencies.json")
+
+if not os.path.isfile(COMFY_LOCAL_DEPS_PATH):
+    os.makedirs(os.path.dirname(COMFY_LOCAL_DEPS_PATH), exist_ok=True)
+    empty_data = {
+        "models": {},
+        "custom_nodes": {}
+    }
+    json.dump(empty_data, open(COMFY_LOCAL_DEPS_PATH, "w"))
+
 @app.route(f'/api/comfyui/upload', methods=['POST'])
 def upload_workflow():
     data = request.get_json()
@@ -74,8 +84,12 @@ def save_comfyui_workflow():
         "create_time": datetime.now().strftime('%Y-%m-%d %H:%M:%S')
     }
     
+    # here we add the dependencies previously provided by the user
+    custom_dependencies = json.load(open(COMFY_LOCAL_DEPS_PATH))
+    
     post_data = {
         "prompt": workflow_api,
+        "custom_dependencies": custom_dependencies,
     }
     
     results = requests.post(f"{api}/shellagent/export", json=post_data).json()
@@ -109,6 +123,47 @@ def save_comfyui_workflow():
             "message": results["message"]
         }
     return jsonify(return_dict)
+
+
+@app.route(f'/api/comfyui/update_dependency', methods=['POST'])
+def update_dependency():
+    data = request.get_json()
+    workflow_id = data["comfy_workflow_id"]
+    missing_repos = data.get("missing_custom_nodes", [])
+    missing_repos = {item["name"]: item for item in missing_repos}
+    missing_models = data.get("missing_models", {})
+    
+    # read the local file
+    custom_dependencies = json.load(open(COMFY_LOCAL_DEPS_PATH))
+    
+    # read
+    shellagent_json_path = os.path.join(COMFY_ROOT, workflow_id, "workflow.shellagent.json")
+    shellagent_json = json.load(open(shellagent_json_path))
+    shellagent_json["dependencies"]["models"].update(missing_models)
+    for model_id, item in missing_models.items():
+        if len(item["urls"]):
+            custom_dependencies["models"].update({model_id: item})
+        
+    for index, item in enumerate(shellagent_json["dependencies"]["custom_nodes"]):
+        if item["name"] in missing_repos:
+            shellagent_json["dependencies"]["custom_nodes"][index] = missing_repos[item["name"]]
+            if item["repo"] != "":
+                custom_dependencies["custom_nodes"].update({item["name"]: item})
+            
+    with open(COMFY_LOCAL_DEPS_PATH, "w") as f:
+        json.dump(custom_dependencies, f, indent=2)
+        
+    with open(shellagent_json_path, "w") as f:
+        json.dump(shellagent_json, f, indent=2)
+        
+    return_dict = {
+        "success": True,
+        "data": shellagent_json
+    }
+    # update
+    return jsonify(return_dict)
+    
+
 
 
 @app.route(f'/api/comfyui/get_file', methods=['POST'])
