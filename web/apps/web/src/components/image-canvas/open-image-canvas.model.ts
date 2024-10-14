@@ -40,6 +40,8 @@ export class OpenImageCanvasModel {
     const jsonStr = values.inputs?.config;
     if (jsonStr === undefined) {
       // await this.imageCanvas.loadFromJSON(null);
+    } else if (jsonStr === '') {
+      // await this.imageCanvas.loadFromJSON(null);
     } else {
       try {
         const json = JSON.parse(jsonStr);
