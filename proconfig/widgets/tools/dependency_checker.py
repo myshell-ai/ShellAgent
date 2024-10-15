@@ -103,7 +103,7 @@ widget_status = json.load(open("custom_widgets/widgets_status.json"))
 all_widget_json = json.load(open("custom_widget_info.json"))
 def check_missing_widgets(config, missing_widgets):
     # very simple
-    package_name = getattr(config, "package_name") or "myshell"
+    package_name = getattr(config, "package_name", None) or "myshell"
     if package_name != "myshell":
         if package_name in missing_widgets:
             # already added
@@ -157,7 +157,7 @@ def check_dependency_recursive(config, non_existed_models: list, missing_models:
         elif config.type == "state":
             local_vars = {"context": local_vars["context"]}
             for k, v in config.inputs.items():
-                if getattr(v, "default_value"):
+                if getattr(v, "default_value", None):
                     local_vars[k] = calc_expression_no_strict(v.default_value, local_vars)
                 elif k in payload:
                     local_vars[k] = payload[k]
@@ -167,7 +167,7 @@ def check_dependency_recursive(config, non_existed_models: list, missing_models:
         elif config.type == "workflow":
             local_vars = {"context": config.context}
             for k, v in config.inputs.items():
-                if getattr(v, "default_value"):
+                if getattr(v, "default_value", None):
                     local_vars[k] = calc_expression_no_strict(v.default_value, local_vars)
                 elif k in payload:
                     local_vars[k] = payload[k]
