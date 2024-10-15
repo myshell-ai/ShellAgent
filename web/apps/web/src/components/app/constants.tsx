@@ -91,6 +91,12 @@ export const materialList: MaterialListType = [
         type: NodeTypeEnum.widget,
         undraggable: true,
       },
+      {
+        name: 'ClaudeWidget',
+        display_name: 'Claude',
+        type: NodeTypeEnum.widget,
+        undraggable: true,
+      },
     ],
   },
   {
@@ -101,6 +107,12 @@ export const materialList: MaterialListType = [
       {
         name: 'ImageCanvasWidget',
         display_name: 'Image Canvas',
+        type: NodeTypeEnum.widget,
+        undraggable: true,
+      },
+      {
+        name: 'XWidget',
+        display_name: 'X (Twitter)',
         type: NodeTypeEnum.widget,
         undraggable: true,
       },
