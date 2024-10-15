@@ -11,6 +11,7 @@ BlockType = Literal["automata", "state", "task", "workflow"]
 class Block(BaseModel):
     type: BlockType = Field(..., description="type of the block")
     name: str = Field("", description="name of the block")
+    display_name: str = Field(None, description="the display name of the block")
     properties: Dict[str, Any] = Field({}, description="to specify other properties")
     inputs: Dict[CustomKey, Union[Input, Value]] = {}
     outputs: Dict[Union[CustomKey, ContextCustomKey], Union[Variable, Value]] = {}
@@ -21,6 +22,8 @@ class Block(BaseModel):
         self.sanity_check()
         
     def sanity_check(self):
+        if self.display_name == None:
+            self.display_name = self.name
         pass
         
         
