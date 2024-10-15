@@ -37,7 +37,6 @@ const InputPreview = () => {
           data: {
             id: generateUUID(),
             custom: true,
-            event_key: generateUUID(),
             type: EdgeDataTypeEnum.CHAT,
             source: connection.source,
             target: connection.target,
@@ -88,19 +87,14 @@ const InputPreview = () => {
 
 const ButtonPreview = ({
   index,
-  name,
   id,
   children,
 }: PropsWithChildren<{
-  name: string;
   id: string;
   index: number;
 }>) => {
   const { setInsideSheetOpen } = useAppState(state => state);
-  const { setNodeData, nodeData } = useAppStore(state => ({
-    setNodeData: state.setNodeData,
-    nodeData: state.nodeData,
-  }));
+  const nodeData = useAppStore(state => state.nodeData);
   const stateId = useSchemaContext(state => state.id);
 
   const handleClick = (e: React.MouseEvent<HTMLButtonElement>) => {
@@ -118,7 +112,11 @@ const ButtonPreview = ({
 
   const handleConnect = (connection: Connection) => {
     if (connection.source && connection.target) {
-      const event_key = generateUUID();
+      const { event: event_key } =
+        ((nodeData[stateId]?.render?.buttons as IButtonType[])?.find(
+          button => button.id === id,
+        )?.on_click as any) || {};
+
       onConnect({
         connect: connection,
         edge: {
@@ -134,26 +132,6 @@ const ButtonPreview = ({
           },
           style: {
             stroke: getColor(handleId),
-          },
-        },
-      });
-
-      // 把eventname写入button的on_click
-      // 简化更新按钮和节点数据的逻辑
-      const updatedButtons =
-        (nodeData[stateId]?.render?.buttons as IButtonType[])?.map(button =>
-          button.id === id
-            ? { ...button, on_click: { event: event_key, payload: {} } }
-            : button,
-        ) || [];
-
-      setNodeData({
-        id: stateId,
-        data: {
-          ...nodeData[stateId],
-          render: {
-            ...nodeData[stateId]?.render,
-            buttons: updatedButtons,
           },
         },
       });
@@ -211,11 +189,7 @@ const MessagePreview = () => {
       {buttons.length ? (
         <>
           {buttons.map((button, index) => (
-            <ButtonPreview
-              name={button.content}
-              key={button.id}
-              id={button.id}
-              index={index}>
+            <ButtonPreview key={button.id} id={button.id} index={index}>
               {button.content}
             </ButtonPreview>
           ))}

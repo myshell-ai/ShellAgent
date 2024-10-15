@@ -57,6 +57,8 @@ export enum EventStatusEnum {
   task_end = 'task_end',
   workflow_start = 'workflow_start',
   workflow_end = 'workflow_end',
+  heartbeat = 'heartbeat',
+  queuing = 'queuing',
 }
 
 // SSE运行状态
