@@ -253,9 +253,15 @@ export class AppBuilderChatModel {
           }
         }
         if (ev.event === EventStatusEnum.queuing) {
-          const data = JSON.parse(ev.data);
-          console.log('data>>>>', data);
-          this.previousTasksNumber = data.previous_tasks;
+          try {
+            const data = JSON.parse(ev.data);
+            this.previousTasksNumber = data.previous_tasks;
+          } catch {
+            this.emitter.emitter.emit(
+              'message.error',
+              `Parse error, ${ev.data}`,
+            );
+          }
         }
       },
       onopen: async () => {
