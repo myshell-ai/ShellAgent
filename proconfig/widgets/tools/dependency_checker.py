@@ -103,7 +103,7 @@ widget_status = json.load(open("custom_widgets/widgets_status.json"))
 all_widget_json = json.load(open("custom_widget_info.json"))
 def check_missing_widgets(config, missing_widgets):
     # very simple
-    package_name = config.package_name or "myshell"
+    package_name = getattr(config, "package_name") or "myshell"
     if package_name != "myshell":
         if package_name in missing_widgets:
             # already added
