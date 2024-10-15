@@ -15,7 +15,7 @@ def convert_comfyui_to_proconfig_fn():
     proconfig = data["data"]
     try:
         result = convert_comfyui_to_proconfig(proconfig)
-        dependency_results = check_dependency(result)
+        dependency_results, _ = check_dependency(result)
         return_dict = {
             "data": result,
             "non_existed_models": dependency_results["non_existed_models"],
