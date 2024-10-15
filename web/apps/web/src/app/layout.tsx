@@ -24,6 +24,9 @@ export default function RootLayout({
 }: PropsWithChildren): JSX.Element {
   return (
     <html lang="en">
+      <head>
+        <link rel="prefetch" href="Reflect.min.js" as="script" />
+      </head>
       <body>
         <MainLayout>{children}</MainLayout>
       </body>
