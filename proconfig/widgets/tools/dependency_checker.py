@@ -8,7 +8,7 @@ from proconfig.utils.expressions import calc_expression, tree_map
 from functools import partial
 from proconfig.utils.misc import windows_to_linux_path
 import logging
-
+from easydict import EasyDict as edict
 
 PROCONFIG_PROJECT_ROOT = os.environ.get("PROCONFIG_PROJECT_ROOT", "data")
 
@@ -125,7 +125,7 @@ def check_missing_widgets(config, missing_widgets):
 # missing widgets: widgets installed locally but haven't registered in widget-list
 def check_dependency_recursive(config, non_existed_models: list, missing_models: dict, undefined_widgets: list, missing_widgets: dict, local_vars: dict, payload: dict, workflow_ids: list, comfyui_workflow_ids: list):
     # config is a json
-    if config.type == "task":
+    if config.type == "task": # leaf nodes
         if config.mode == "undefined":
             if config.widget_class_name not in undefined_widgets:
                 undefined_widgets.append(config.widget_class_name)
@@ -149,8 +149,8 @@ def check_dependency_recursive(config, non_existed_models: list, missing_models:
             return check_dependency_recursive(workflow_config, non_existed_models, missing_models, undefined_widgets, missing_widgets, {}, payload=payload, workflow_ids=workflow_ids, comfyui_workflow_ids=comfyui_workflow_ids)
         elif config.mode == "block":
             payload = {k: calc_expression_no_strict(v, local_vars) for k, v in config.inputs.items()}
-            config.block = TypeMap[config.block["type"]].model_validate(config.block)
-            return check_dependency_recursive(config.block, non_existed_models, missing_models, undefined_widgets, missing_widgets, local_vars, payload=payload, workflow_ids=workflow_ids, comfyui_workflow_ids=comfyui_workflow_ids)
+            config_block = TypeMap[config.block["type"]].model_validate(config_block)
+            return check_dependency_recursive(config_block, non_existed_models, missing_models, undefined_widgets, missing_widgets, local_vars, payload=payload, workflow_ids=workflow_ids, comfyui_workflow_ids=comfyui_workflow_ids)
     elif config.type in ["automata", "workflow", "state"]:
         if config.type == "automata":
             local_vars = {"context": config.context} # we do not know what other to do
@@ -173,8 +173,9 @@ def check_dependency_recursive(config, non_existed_models: list, missing_models:
                     local_vars[k] = payload[k]
                 else:
                     local_vars[k] = DefaultValueMap[v.type]
-                        
-        if type(config.blocks) == dict:
+        
+        config.blocks = getattr(config, "blocks", [])          
+        if type(config.blocks) in [dict, edict]:
             for name, block_config in config.blocks.items():
                 check_dependency_recursive(block_config, non_existed_models, missing_models, undefined_widgets, missing_widgets, local_vars, {}, workflow_ids=workflow_ids, comfyui_workflow_ids=comfyui_workflow_ids)
         elif type(config.blocks) == list:
@@ -186,10 +187,11 @@ def check_dependency_recursive(config, non_existed_models: list, missing_models:
 def check_dependency(config):
     # here config is a json
     assert config["type"] in ["automata", "workflow"]
-    if config["type"] == "automata":
-        config = Automata.model_validate(config)
-    else:
-        config = Workflow.model_validate(config)
+    config = edict(config)
+    # if config["type"] == "automata":
+    #     config = Automata.model_validate(config)
+    # else:
+    #     config = Workflow.model_validate(config)
         
     workflow_ids = []
     comfyui_workflow_ids = []
@@ -207,7 +209,7 @@ def check_dependency(config):
         "widgets": missing_widgets,
         "workflow_ids": workflow_ids,
         "comfyui_workflow_ids": comfyui_workflow_ids,
-    }, config.model_dump()
+    }, config
     
 if __name__ == "__main__":
     config = json.load(open("configs/comfyui_converted/test.json"))
