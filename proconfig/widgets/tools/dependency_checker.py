@@ -126,6 +126,7 @@ def check_missing_widgets(config, missing_widgets):
 def check_dependency_recursive(config, non_existed_models: list, missing_models: dict, undefined_widgets: list, missing_widgets: dict, local_vars: dict, payload: dict, workflow_ids: list, comfyui_workflow_ids: list):
     # config is a json
     if config.type == "task": # leaf nodes
+        config.mode = getattr(config, "mode", None)
         if config.mode == "undefined":
             if config.widget_class_name not in undefined_widgets:
                 undefined_widgets.append(config.widget_class_name)
