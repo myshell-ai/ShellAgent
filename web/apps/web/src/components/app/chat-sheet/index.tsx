@@ -111,7 +111,15 @@ const RunSheet: React.FC<{}> = () => {
         title={
           <span>
             Run &nbsp;{' '}
-            {appBuilderChatModel.isRunLoading ? <LoadingOutlined /> : null}
+            {appBuilderChatModel.previousTasksNumber > 0 && (
+              <span className="text-sm text-gray-500">
+                (Queuing, {appBuilderChatModel.previousTasksNumber} task
+                {appBuilderChatModel.previousTasksNumber > 1 ? 's' : ''} ahead)
+              </span>
+            )}
+            {appBuilderChatModel.isRunLoading ? (
+              <LoadingOutlined className="ml-2" />
+            ) : null}
           </span>
         }
         onClose={appBuilderChatModel.closeRunDrawer}
