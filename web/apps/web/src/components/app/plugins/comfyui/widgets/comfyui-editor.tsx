@@ -278,6 +278,7 @@ export const ComfyUIEditor = ({
             </Upload>
           </div>
         }
+        forceRender
         open={isModalVisible}
         onOk={handleSave}
         mask={false}
