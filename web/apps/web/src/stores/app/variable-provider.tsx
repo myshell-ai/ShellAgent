@@ -18,9 +18,9 @@ interface TVariable {
 export type TScope = TVariable[];
 
 interface VariableProps {
-  input?: TScope;
+  inputs?: TScope;
   context?: TScope;
-  output?: TScope;
+  outputs?: TScope;
   tasks?: TScope;
   states?: TScope;
   payloads?: TScope;
@@ -49,8 +49,8 @@ export const VariableProvider: React.FC<VariableProviderProps> = ({
   const nodes = useReactFlowStore(state => state.nodes);
 
   const nodeData = useAppStore(state => state.nodeData);
-  const input = useMemo<TScope>(() => {
-    const inputDataMap: Record<string, TValues> = nodeData[id]?.input || {};
+  const inputs = useMemo<TScope>(() => {
+    const inputDataMap: Record<string, TValues> = nodeData[id]?.inputs || {};
 
     if (isEmpty(inputDataMap)) return [];
     return [
@@ -66,8 +66,8 @@ export const VariableProvider: React.FC<VariableProviderProps> = ({
     ];
   }, [nodeData, id]);
 
-  const output = useMemo<TScope>(() => {
-    const outputDataMap: Record<string, TValues> = nodeData[id]?.output || {};
+  const outputs = useMemo<TScope>(() => {
+    const outputDataMap: Record<string, TValues> = nodeData[id]?.outputs || {};
     if (isEmpty(outputDataMap)) return [];
     return [
       {
@@ -157,14 +157,14 @@ export const VariableProvider: React.FC<VariableProviderProps> = ({
 
   const values = useMemo(
     () => ({
-      input,
-      output,
+      inputs,
+      outputs,
       context,
       states,
       tasks,
       payloads,
     }),
-    [input, context, output, states, tasks, payloads],
+    [inputs, context, outputs, states, tasks, payloads],
   );
 
   return (

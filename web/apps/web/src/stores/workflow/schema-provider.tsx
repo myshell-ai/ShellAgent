@@ -18,7 +18,7 @@ type SchemaState = {
   id: string;
   schema: ISchema;
   schemaMode: string;
-  output?: Record<string, any>;
+  outputs?: Record<string, any>;
   name?: string;
   inputRefTypes: Record<string, string>;
   outputRefTypes: Record<string, string>;
@@ -56,7 +56,7 @@ export interface SchemaProviderProps {
   mode?: string;
   display_name?: string;
   children: React.ReactNode | React.ReactNode[];
-  output?: Record<string, any>;
+  outputs?: Record<string, any>;
 }
 
 export const SchemaProvider: React.FC<SchemaProviderProps> = ({
@@ -65,7 +65,7 @@ export const SchemaProvider: React.FC<SchemaProviderProps> = ({
   display_name = '',
   id,
   children,
-  output,
+  outputs,
 }) => {
   const {
     fieldsModeMap,
@@ -161,10 +161,10 @@ export const SchemaProvider: React.FC<SchemaProviderProps> = ({
       setSchemaMode,
       name,
       formKey,
-      output,
+      outputs,
       ...memoizedData,
     }),
-    [id, memoizedData, schemaMode, name, formKey, output],
+    [id, memoizedData, schemaMode, name, formKey, outputs],
   );
 
   return (

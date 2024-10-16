@@ -19,7 +19,7 @@ type SchemaState = {
   schemaMode: string;
   fieldMode: Record<string, TFieldMode>;
   multiSchema: boolean;
-  output?: Record<string, any>;
+  outputs?: Record<string, any>;
   outputSchema: JsonSchema7;
   formKey: string;
   type?: NodeType;
@@ -59,7 +59,7 @@ export interface SchemaProviderProps {
   name: string | undefined;
   display_name: string | undefined;
   children: React.ReactNode | React.ReactNode[];
-  output?: Record<string, any>;
+  outputs?: Record<string, any>;
   type?: NodeType;
 }
 
@@ -68,7 +68,7 @@ export const SchemaProvider: React.FC<SchemaProviderProps> = ({
   display_name = '',
   id,
   children,
-  output,
+  outputs,
   type,
 }) => {
   // const context = useVariableContext(state => state.context);
@@ -155,7 +155,7 @@ export const SchemaProvider: React.FC<SchemaProviderProps> = ({
       fieldMode,
       setFieldMode,
       multiSchema,
-      output,
+      outputs,
       outputSchema,
       formKey,
       type,
@@ -169,7 +169,7 @@ export const SchemaProvider: React.FC<SchemaProviderProps> = ({
       fieldMode,
       setFieldMode,
       multiSchema,
-      output,
+      outputs,
       outputSchema,
       formKey,
       type,

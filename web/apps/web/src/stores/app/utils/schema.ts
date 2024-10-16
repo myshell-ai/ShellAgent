@@ -311,7 +311,7 @@ const stateConfigSchema: ISchema = {
   'x-title-size': 'h4',
   'x-class': 'space-y-3',
   properties: {
-    input: {
+    inputs: {
       type: 'object',
       title: 'Input',
       additionalProperties: {
@@ -877,7 +877,7 @@ const stateConfigSchema: ISchema = {
         draggable: true,
       },
     },
-    output: {
+    outputs: {
       type: 'object',
       title: 'Output',
       additionalProperties: {

@@ -49,7 +49,7 @@ const StartNode: React.FC<NodeProps<StartNodeType>> = ({
       // const diffKeys = findDiffKeys(preNodeData.current[data.id], values);
       // if (diffKeys.length) {
       //   diffKeys.forEach(key => {
-      //     const id = key.includes('input.') ? key.split('.')[1] : key;
+      //     const id = key.includes('inputs.') ? key.split('.')[1] : key;
       //     const paths = getDelPathInfo(preNodeData.current, id);
       //     Object.entries(paths).forEach(([path, value]) => {
       //       setResetData({ path, value });

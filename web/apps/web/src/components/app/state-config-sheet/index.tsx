@@ -30,8 +30,6 @@ import { VariableProvider } from '@/stores/app/variable-provider';
 
 import emitter, { EventType, useEventEmitter } from '../emitter';
 import { IButtonType } from '../node-form/widgets';
-import { Divider } from 'antd';
-import { Box } from 'react-system';
 
 const StateConfigSheet: React.FC<{}> = () => {
   const appBuilderChatModel = useInjection(AppBuilderChatModel);

@@ -9,21 +9,21 @@ export const useSelectOptions = (name?: string) => {
   const { parent } = useFormEngineContext();
   const {
     payloads = [],
-    input = [],
+    inputs = [],
     tasks = [],
-    output = [],
+    outputs = [],
     context = [],
     states = [],
   } = useVariableContext(state => ({
     payloads: state.payloads,
-    input: state.input,
+    inputs: state.inputs,
     tasks: state.tasks,
-    output: state.output,
+    outputs: state.outputs,
     context: state.context,
     states: state.states,
   }));
 
-  const currentGroup = [...input, ...tasks, ...output];
+  const currentGroup = [...inputs, ...tasks, ...outputs];
 
   if (parent?.startsWith('condition.')) {
     // target inputs需要payload
@@ -36,7 +36,7 @@ export const useSelectOptions = (name?: string) => {
     return items.reduce((memo, item) => {
       const current = { ...item };
       if (
-        parent?.startsWith('input.') &&
+        parent?.startsWith('inputs.') &&
         ['Input', 'Output', 'Task'].includes(current.label)
       ) {
         return memo;
@@ -59,7 +59,7 @@ export const useSelectOptions = (name?: string) => {
           }
         }
       } else if (
-        name?.startsWith('output.') &&
+        name?.startsWith('outputs.') &&
         ['Output'].includes(current.label)
       ) {
         return memo;
