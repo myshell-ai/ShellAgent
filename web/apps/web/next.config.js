@@ -17,16 +17,19 @@ module.exports = {
       ...config.resolve.alias,
       '@/styles/md-viewer.scss': false,
       '@/common/assets/audio-playing.json': false,
-      '@binance/w3w-wagmi-connector-v2': false,
-      '@particle-network/auth': false,
-      '@particle-network/chains': false,
-      '@particle-network/connect': false,
-      '@particle-network/provider': false,
     };
     config.resolve.fallback = {
       ...config.resolve?.fallback,
       zlib: false,
     };
+    // config.optimization = {
+    //   minimize: false
+    // }
+    config.plugins.push(
+      new webpack.optimize.LimitChunkCountPlugin({
+        maxChunks: 1,
+      }),
+    );
     return config;
   },
   rewrites: async () => {
