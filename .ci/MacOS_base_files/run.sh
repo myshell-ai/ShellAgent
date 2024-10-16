@@ -1,3 +1,10 @@
+VENV_NAME="shellagent"
+VENV_PATH="./$VENV_NAME"
+
+python -m venv "$VENV_PATH"
+source "$VENV_PATH/bin/activate
+
 cd ShellAgent
-../python_embeded/python3.10/bin/python3 -m pip install -e .
-../python_embeded/python3.10/bin/python3 servers/main.py
+python -m pip install poetry
+python -m pip install -e .
+python servers/main.py

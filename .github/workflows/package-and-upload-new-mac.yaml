@@ -85,26 +85,27 @@ jobs:
           cd ..
           cp -r ShellAgent ShellAgent_copy
 
-          curl -O https://www.python.org/ftp/python/3.10.10/Python-3.10.10.tgz
-          tar -xzf Python-3.10.10.tgz
+          # curl -O https://www.python.org/ftp/python/3.10.10/Python-3.10.10.tgz
+          # tar -xzf Python-3.10.10.tgz
 
-          cd Python-3.10.10
-          ./configure --prefix=$(pwd)/python3.10
-          make
-          make install
+          # cd Python-3.10.10
+          # ./configure --prefix=$(pwd)/python3.10
+          # make
+          # make install
 
-          cd ..
-          cd ShellAgent
+          # cd ..
+
+          # cd ShellAgent
           
-          ../Python-3.10.10/python3.10/bin/python3 -m pip install poetry
-          ../Python-3.10.10/python3.10/bin/python3 -m pip install -e .
+          # ../Python-3.10.10/python3.10/bin/python3 -m pip install poetry
+          # ../Python-3.10.10/python3.10/bin/python3 -m pip install -e .
 
-          ../Python-3.10.10/python3.10/bin/python3 --version
+          # ../Python-3.10.10/python3.10/bin/python3 --version
           
-          cd ..
+          # cd ..
 
           mkdir ShellAgent_MacOS_portable
-          mv Python-3.10.10 ShellAgent_MacOS_portable/python_embeded
+          # mv Python-3.10.10 ShellAgent_MacOS_portable/python_embeded
           mv ShellAgent_copy ShellAgent_MacOS_portable/ShellAgent
 
           cd ShellAgent_MacOS_portable
