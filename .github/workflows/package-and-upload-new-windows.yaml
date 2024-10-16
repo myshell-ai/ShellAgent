@@ -111,6 +111,7 @@ jobs:
 
           cd ShellAgent
 
+          ../python_embeded/python.exe -m pip install poetry
           ../python_embeded/python.exe -m pip install -e .
 
           cd ..
