@@ -2,33 +2,21 @@
 name: "Release To HF New"
 
 on:
-  workflow_dispatch:
-    inputs:
-      git_tag:
-        description: 'Git Branch Tag'
-        required: true
-        type: string
-        default: "main"
-      cu:
-        description: 'CUDA Version'
-        required: true
-        type: string
-        default: "124"
-      python_minor:
-        description: 'Python Minor Version'
-        required: true
-        type: string
-        default: "10"
-      python_patch:
-        description: 'Python Patch Version'
-        required: true
-        type: string
-        default: "10"
-      version:
-        description: 'Release Version Tag'
-        required: true
-        type: string
-        default: "beta"
+  push:
+    branches:
+      - dev_comfyui_v2
+  # workflow_dispatch:
+  #   inputs:
+  #     git_tag:
+  #       description: 'Git Branch Tag'
+  #       required: true
+  #       type: string
+  #       default: "main"
+      # version:
+      #   description: 'Release Version Tag'
+      #   required: true
+      #   type: string
+      #   default: "beta"
 
 jobs:
   build:
@@ -71,13 +59,14 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          ref: ${{ inputs.git_tag }}
+          # ref: ${{ inputs.git_tag }}
+          ref: dev_comfyui_v2
           fetch-depth: 0
           persist-credentials: false
           submodules: recursive
       - uses: actions/setup-python@v5
         with:
-          python-version: 3.${{ inputs.python_minor }}.${{ inputs.python_patch }}
+          python-version: 3.10.10
 
       - name: Download web-build artifact
         uses: actions/download-artifact@v3
@@ -143,7 +132,8 @@ jobs:
           # Upload the file to Hugging Face repository
           api.upload_file(
               path_or_fileobj=file_path,
-              path_in_repo="ShellAgent_${{ inputs.version }}.7z",
+              # path_in_repo="ShellAgent_${{ inputs.version }}.7z",
+              path_in_repo="ShellAgent_v1.0.0.7z",
               repo_id=repo_id,
               repo_type="model",  # or 'dataset' depending on your use case
               token="${{ secrets.HF_TOKEN }}"
