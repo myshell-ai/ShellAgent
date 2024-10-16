@@ -213,8 +213,8 @@ const StateNode: React.FC<NodeProps<StateNodeType>> = ({
           name: uuid(),
           mode: item.nodeType === 'workflow' ? 'workflow' : 'widget',
           workflow_id: undefined,
-          // item.nodeType === 'workflow' ? generateUUID() : undefined,
-          widget_name: item.nodeType === 'widget' ? item.name : undefined,
+          widget_name:
+            item.nodeType === 'widget' ? item.widget_name : undefined,
           widget_class_name: item.nodeType === 'widget' ? item.name : undefined,
           inputs: {},
           outputs: {},
