@@ -1,18 +1,12 @@
 import os
 from proconfig.widgets.base import BaseWidget, WIDGETS
 from typing import Literal, Any, Dict
-import torch
 from proconfig.utils.misc import upload_file_to_myshell
-from PIL import Image, ImageDraw, ImageFont
 import json
-import emoji
-from pilmoji import Pilmoji
-import tempfile
-import requests
-from io import BytesIO
 import uuid
 import websocket
 import urllib
+
 
 NON_FILE_INPUT_TYPES = ["text", "number", "integer"]
 
@@ -35,6 +29,8 @@ def get_media(server_address, filename, subfolder, folder_type):
 
 def comfyui_run(api, prompt, schemas, user_inputs):
     server_address = api.split("//")[-1]
+    if server_address.endswith("/"):
+        server_address = server_address[:-1]
     print("server address:", server_address)
     httpx = "https" if "https" in api else "http"
     wsx = "wss" if httpx == "https" else "ws"
@@ -114,6 +110,15 @@ def comfyui_run(api, prompt, schemas, user_inputs):
                     f.write(video_data)
                 videos_output.append(save_path)
             outputs[schemas["outputs"][node_id]["title"]] = videos_output
+        elif node_output_schema["type"] == "string" and node_output_schema.get("url_type") == "video":
+            video_path = node_output['video'][0]
+            output_dir, filename = os.path.split(video_path)
+            video_data = get_media(http_address, filename, "", output_dir)
+            save_path = video_path
+            os.makedirs(os.path.dirname(save_path), exist_ok=True)
+            with open(save_path, "wb") as f:
+                f.write(video_data)
+            outputs[schemas["outputs"][node_id]["title"]] = save_path
     return outputs
 
 
@@ -125,7 +130,6 @@ class ComfyUIWidget(BaseWidget):
     
     dynamic_schema = True
     
-    @torch.no_grad()
     def execute(self, environ, config):
         comfy_extra_inputs = config.pop("comfy_extra_inputs")
         comfy_workflow_root = os.path.join(os.environ["PROCONFIG_PROJECT_ROOT"], "comfy_workflow")
