@@ -1,8 +1,9 @@
 import { ISchema, TValues } from '@shellagent/form-engine';
+import { FieldModeEnum } from '@shellagent/shared/protocol/extend-config';
 import { isEmpty } from 'lodash-es';
 
 import { ENABLE_MIME } from '@/utils/file-types';
-import { FieldModeEnum } from '@shellagent/shared/protocol/extend-config';
+
 export const getSchemaByInputs = (inputs: TValues): ISchema => {
   const properties: { [key: string]: ISchema } = {};
   Object.keys(inputs || {}).reduce<{ [key: string]: ISchema }>((prev, key) => {

@@ -3,6 +3,7 @@ import './reflect-metadata-client-side';
 import { ChatNewModel } from '@shellagent/ui';
 import { ImageCanvasModel } from 'image-canvas/model';
 import { Container, interfaces } from 'inversify';
+import { toJS } from 'mobx';
 import { toast } from 'react-toastify';
 
 import { AppBuilderModel } from '@/components/app/app-builder.model';
@@ -19,7 +20,7 @@ import { SettingsModel } from '@/components/settings/settings.model';
 import { EmitterModel } from '@/utils/emitter.model';
 import { ModalModel } from '@/utils/modal.model';
 import { RequestModel } from '@/utils/request.model';
-import { toJS } from 'mobx';
+
 (window as any).toJS = toJS;
 
 export const container = new Container();

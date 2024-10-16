@@ -1,7 +1,6 @@
 import {
   RefOptionsOutput,
   refOptOutputGlobalSchema,
-  Scopes,
   scopesSchema,
   State,
   stateSchema,
@@ -22,7 +21,7 @@ export function convertNodeDataToState(nodeData: any): State {
     children: {
       inputs: {
         variables: Object.fromEntries(
-          Object.entries(nodeData.input || {}).map(
+          Object.entries(nodeData.inputs || {}).map(
             ([key, value]: [string, any]) => [
               key,
               { type: value.type, display_name: value.name },
@@ -42,7 +41,7 @@ export function convertNodeDataToState(nodeData: any): State {
       })),
       outputs: {
         variables: Object.fromEntries(
-          Object.entries(nodeData.output || {}).map(
+          Object.entries(nodeData.outputs || {}).map(
             ([key, value]: [string, any]) => [
               key,
               { type: value.type, display_name: value.name },
@@ -69,12 +68,8 @@ export function convertNodeDataToState(nodeData: any): State {
       },
     },
   };
-  try {
-    // console.log(ret)
-    return stateSchema.parse(ret);
-  } catch (e) {
-    throw e;
-  }
+
+  return stateSchema.parse(ret);
 }
 
 export function convetNodeDataToScopes(nodeDatas: any, edges: any[]) {
@@ -118,7 +113,7 @@ export function convertRefOptsToCascaderOpts(
   const cascaderOptions: CascaderOption[] = [];
 
   const globalOptions: CascaderOption[] = [];
-  for (const [key, val] of Object.entries(refOptions.global)) {
+  Object.entries(refOptions.global).forEach(([key, val]) => {
     const val2 = refOptOutputGlobalSchema.parse(val);
     const children: CascaderOption[] = Object.entries(val2.variables || {}).map(
       ([variableKey, variable]) => ({
@@ -135,7 +130,7 @@ export function convertRefOptsToCascaderOpts(
         children,
       });
     }
-  }
+  });
 
   if (globalOptions.length > 0) {
     cascaderOptions.push({

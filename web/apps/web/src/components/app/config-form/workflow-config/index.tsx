@@ -49,11 +49,11 @@ export const WorkflowConfig: React.FC<WorkflowConfigProps> = ({
 
   // 获取workflow详情
   const inputs = useMemo(
-    () => workflowNodeData[NodeIdEnum.start]?.input as Record<string, TValues>,
+    () => workflowNodeData[NodeIdEnum.start]?.inputs as Record<string, TValues>,
     [workflowNodeData],
   );
   const outputs = useMemo(
-    () => workflowNodeData[NodeIdEnum.end]?.output as Record<string, TValues>,
+    () => workflowNodeData[NodeIdEnum.end]?.outputs as Record<string, TValues>,
     [workflowNodeData],
   );
 

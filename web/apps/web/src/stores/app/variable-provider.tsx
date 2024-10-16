@@ -19,10 +19,10 @@ interface TVariable {
 
 export type TScope = TVariable[];
 
-export interface VariableProps {
-  input?: TScope;
+interface VariableProps {
+  inputs?: TScope;
   context?: TScope;
-  output?: TScope;
+  outputs?: TScope;
   tasks?: TScope;
   states?: TScope;
   payloads?: TScope;
@@ -43,7 +43,7 @@ export interface VariableProviderProps {
 }
 
 export function getInput(nodeData: Record<string, TValues>, id: string) {
-  const inputDataMap: Record<string, TValues> = nodeData[id]?.input || {};
+  const inputDataMap: Record<string, TValues> = nodeData[id]?.inputs || {};
 
   if (isEmpty(inputDataMap)) return [];
   return [
@@ -60,7 +60,7 @@ export function getInput(nodeData: Record<string, TValues>, id: string) {
 }
 
 export function getOutput(nodeData: Record<string, TValues>, id: string) {
-  const outputDataMap: Record<string, TValues> = nodeData[id]?.output || {};
+  const outputDataMap: Record<string, TValues> = nodeData[id]?.outputs || {};
   if (isEmpty(outputDataMap)) return [];
   return [
     {
@@ -165,12 +165,24 @@ export const VariableProvider: React.FC<VariableProviderProps> = ({
     });
   }, [nodeData]);
 
-  const input = useMemo<TScope>(() => {
+  const inputs = useMemo<TScope>(() => {
     return getInput(nodeData, id);
   }, [nodeData, id]);
 
-  const output = useMemo<TScope>(() => {
-    return getOutput(nodeData, id);
+  const outputs = useMemo<TScope>(() => {
+    const outputDataMap: Record<string, TValues> = nodeData[id]?.outputs || {};
+    if (isEmpty(outputDataMap)) return [];
+    return [
+      {
+        label: 'Output',
+        value: '',
+        children: Object.entries(outputDataMap).map(([key, data]) => ({
+          label: data?.name || key,
+          value: key,
+          field_type: 'string',
+        })),
+      },
+    ];
   }, [nodeData, id]);
 
   const tasks = useMemo<TScope>(() => {
@@ -191,14 +203,14 @@ export const VariableProvider: React.FC<VariableProviderProps> = ({
 
   const values = useMemo(
     () => ({
-      input,
-      output,
+      inputs,
+      outputs,
       context,
       states,
       tasks,
       payloads,
     }),
-    [input, context, output, states, tasks, payloads],
+    [inputs, context, outputs, states, tasks, payloads],
   );
 
   return (

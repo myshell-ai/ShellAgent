@@ -128,7 +128,7 @@ const TransitionConditionEditor = ({
     setOpen(open);
     setIndex(index);
     const currentCondition = value[index];
-    const schema = getSchemaByInputs(nodeData[currentCondition.target]?.input);
+    const schema = getSchemaByInputs(nodeData[currentCondition.target]?.inputs);
     setSchema(schema);
   };
 

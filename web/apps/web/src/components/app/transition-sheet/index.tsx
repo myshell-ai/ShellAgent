@@ -13,10 +13,10 @@ import { useMemo, useCallback, memo } from 'react';
 import { ICondition, ICustomEdge, EdgeTypeEnum } from '@/components/app/edges';
 import NodeForm from '@/components/app/node-form';
 import { AppBuilderChatModel } from '@/components/chat/app-builder-chat.model';
+import { SchemaProvider } from '@/stores/app/schema-provider';
 import { useAppState } from '@/stores/app/use-app-state';
 import { transitionConfigSchema } from '@/stores/app/utils/schema';
 import { generateUUID } from '@/utils/common-helper';
-import { SchemaProvider } from '@/stores/app/schema-provider';
 
 import { form2EdgeData, edgeData2Form } from './utils';
 

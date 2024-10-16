@@ -52,7 +52,7 @@ export interface SchemaProviderProps {
   name: string | undefined;
   display_name: string | undefined;
   children: React.ReactNode | React.ReactNode[];
-  output?: Record<string, any>;
+  outputs?: Record<string, any>;
 }
 
 export const SchemaProvider: React.FC<SchemaProviderProps> = ({
@@ -60,7 +60,7 @@ export const SchemaProvider: React.FC<SchemaProviderProps> = ({
   display_name = '',
   id,
   children,
-  output,
+  outputs,
 }) => {
   const context = useVariableContext(state => state.context);
   const [fieldMode = {}, setFieldModeStorage] = useState<
@@ -134,7 +134,7 @@ export const SchemaProvider: React.FC<SchemaProviderProps> = ({
       fieldMode,
       setFieldMode,
       multiSchema,
-      output,
+      outputs,
       outputSchema,
     }),
     [
@@ -144,7 +144,7 @@ export const SchemaProvider: React.FC<SchemaProviderProps> = ({
       fieldMode,
       setFieldMode,
       multiSchema,
-      output,
+      outputs,
       outputSchema,
     ],
   );
