@@ -115,6 +115,7 @@ export const materialList: MaterialListType = [
         display_name: 'X (Twitter)',
         type: NodeTypeEnum.widget,
         undraggable: true,
+        widget_name: '1784206090390036480',
       },
       {
         name: 'ImageTextFuserWidget',
