@@ -90,10 +90,8 @@ jobs:
           wget https://repo.anaconda.com/miniconda/Miniconda3-latest-MacOSX-x86_64.sh -O Miniconda3-latest-MacOSX-x86_64.sh
           bash Miniconda3-latest-MacOSX-x86_64.sh -b -p ../miniconda
           CONDA_SH_PATH="../miniconda/etc/profile.d/conda.sh"
-          conda init
-          source ~/.bash_profile
           source "$CONDA_SH_PATH"
-          
+
           echo "Creating new conda environment shell_agent with Python 3.10..."
           conda create -y -n shell_agent python=3.10
           echo "Environment shell_agent created."
