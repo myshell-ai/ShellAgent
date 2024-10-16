@@ -1,5 +1,5 @@
 
-name: "Release To HF"
+name: "Release To HF New"
 
 on:
   workflow_dispatch:
