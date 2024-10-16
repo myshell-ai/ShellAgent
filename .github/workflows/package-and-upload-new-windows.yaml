@@ -117,7 +117,9 @@ jobs:
           cd ..
           cd ..
 
-          "C:\Program Files\7-Zip\7z.exe" a -t7z -m0=lzma2 -mx=8 -mfb=64 -md=32m -ms=on -mf=BCJ2 ShellAgent_windows_portable.7z ShellAgent_windows_portable/*
+
+          powershell Compress-Archive -Path ShellAgent_windows_portable/* -DestinationPath ShellAgent_windows_portable.zip
+          # "C:\Program Files\7-Zip\7z.exe" a -t7z -m0=lzma2 -mx=8 -mfb=64 -md=32m -ms=on -mf=BCJ2 ShellAgent_windows_portable.7z ShellAgent_windows_portable/*
           mv ShellAgent_windows_portable.7z ShellAgent/ShellAgent_windows_portable.7z
 
           ls
