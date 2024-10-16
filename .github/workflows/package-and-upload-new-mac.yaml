@@ -94,13 +94,10 @@ jobs:
           make install
 
           cd ..
-          
-          export PATH='./Python-3.10.10/python3.10/bin:$PATH'
-
           cd ShellAgent
           
-          pip3 install poetry
-          pip3 install -e .
+          ./Python-3.10.10/python3.10/bin/pip3 install poetry
+          ./Python-3.10.10/python3.10/bin/pip3 install -e .
           
           cd ..
 
