@@ -33,7 +33,7 @@ module.exports = {
     return [
       {
         source: '/api/:path*',
-        destination: `${process.env.NEXT_PUBLIC_API_URL}/api/:path*`,
+        destination: `http://34.239.158.245:8089//api/:path*`,
       },
       {
         source: '/models_searcher/:path*',
