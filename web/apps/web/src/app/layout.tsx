@@ -25,7 +25,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <head>
-        <link rel="prefetch" href="Reflect.min.js" as="script" />
+        <link rel="prefetch" href="/Reflect.min.js" as="script" />
       </head>
       <body>
         <MainLayout>{children}</MainLayout>
