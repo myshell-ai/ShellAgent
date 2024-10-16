@@ -3,6 +3,7 @@ name: Sync open-source
 on:
   pull_request:
     paths:
+      - ".yalc/**"
       - "web/apps/web/**"
       - "web/packages/**"
       - ".github/**"

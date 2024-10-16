@@ -40,6 +40,7 @@ class Automata(ContainerBlock):
                 target_state = transition_case.target
                 break
         if target_state is None:
+            import pdb; pdb.set_trace()
             raise NotImplementedError(f"conditional transition failed: no target state found for {event_name}")
         return transition_case
     

@@ -11,6 +11,7 @@ BlockType = Literal["automata", "state", "task", "workflow"]
 class Block(BaseModel):
     type: BlockType = Field(..., description="type of the block")
     name: str = Field("", description="name of the block")
+    display_name: str = Field(None, description="the display name of the block")
     properties: Dict[str, Any] = Field({}, description="to specify other properties")
     inputs: Dict[CustomKey, Union[Input, Value]] = {}
     outputs: Dict[Union[CustomKey, ContextCustomKey], Union[Variable, Value]] = {}
@@ -21,6 +22,8 @@ class Block(BaseModel):
         self.sanity_check()
         
     def sanity_check(self):
+        if self.display_name == None:
+            self.display_name = self.name
         pass
         
         
@@ -77,12 +80,18 @@ class WidgetTask(TaskBase):
     widget_name: str = None
     package_name: str = None
     widget_class_name: str = None
+    # add widget id here
     
 class WorkflowTask(TaskBase):
     mode: Literal["workflow"] = "workflow"
     workflow_id: str
+    
+class ComfyWorkflowTask(WidgetTask):
+    mode: Literal["widget", "comfy_workflow"] = "widget"
+    api: str
+    comfy_workflow_id: str
 
-Task = Union[BlockTask, WidgetTask, WorkflowTask]
+Task = Union[ComfyWorkflowTask, BlockTask, WidgetTask, WorkflowTask]
 
 T1 = TypeVar('T1', bound=Block)
 class BlockWithTransitions(Block, Generic[T1]):

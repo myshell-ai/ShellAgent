@@ -1,16 +1,16 @@
 import {
-  NodeProps,
-  StateNode as StateNodeType,
-  useReactFlowStore,
-  NodeTypeEnum,
+  Connection,
+  DRAGGABLE_NODE_ID,
+  DraggableNodeType,
   Node,
   NodeId,
+  NodeProps,
+  NodeTypeEnum,
   SourceHandle,
+  StateNode as StateNodeType,
   TargetHandle,
-  Connection,
   useDrop,
-  DraggableNodeType,
-  DRAGGABLE_NODE_ID,
+  useReactFlowStore,
   uuid,
 } from '@shellagent/flow-engine';
 import { TValues } from '@shellagent/form-engine';
@@ -25,7 +25,7 @@ import React, {
   useMemo,
 } from 'react';
 
-import { EdgeTypeEnum, EdgeDataTypeEnum } from '@/components/app/edges';
+import { EdgeDataTypeEnum, EdgeTypeEnum } from '@/components/app/edges';
 import NodeCard from '@/components/app/node-card';
 import NodeForm from '@/components/app/node-form';
 import { useAppStore } from '@/stores/app/app-provider';

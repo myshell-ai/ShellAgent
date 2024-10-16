@@ -47,9 +47,9 @@ const FlowHeader: React.FC<{ appId: string }> = ({ appId }) => {
   }, [appId, nodeData, config, nodes, edges, viewport]);
 
   usePasteState({ enabeKeyboard: true });
-
+  const isDev = process.env.NEXT_PUBLIC_DEVELOPMENT === 'yes';
   const debouncedValues = useDebounce(values, {
-    wait: 1500,
+    wait: isDev ? 120 * 1000 : 1500,
   });
 
   const { run: saveData } = useRequest(saveApp, {

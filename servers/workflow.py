@@ -22,7 +22,8 @@ from proconfig.widgets.imagen_widgets.utils.model_manager import safe_download
 from proconfig.utils.widget_manager import install_widget
 
 from servers.base import app, WORKFLOW_SAVE_ROOT, MODEL_DIR, CUSTOM_WIDGETS_DIR, WORKFLOW_RUNS_SAVE_ROOT
-
+from pympler.tracker import SummaryTracker
+tracker = SummaryTracker()
 
 @app.route(f'/api/workflow/get_widget_list')
 def get_widget_list():
@@ -268,6 +269,8 @@ def run_workflow():
                 message = client_queue.get(timeout=1)
                 if message == '@@END_RUN@@':
                     torch.cuda.empty_cache()
+                    print("tracker workflow")
+                    tracker.print_diff()
                     break
                 yield message
             except queue.Empty:

@@ -28,7 +28,7 @@ from proconfig.core.chat import (
     EmbedObj, EmbedObjStatus, EmbedObjType
 )
 
-from servers.base import app, APP_SAVE_ROOT, WORKFLOW_SAVE_ROOT, APP_RUNS_SAVE_ROOT
+from servers.base import app, APP_SAVE_ROOT, WORKFLOW_SAVE_ROOT, APP_RUNS_SAVE_ROOT, PROJECT_ROOT
 
 
 # app related
@@ -114,7 +114,7 @@ def export_app():
         metadata_path = os.path.join(APP_SAVE_ROOT, data["app_id"], data["version_name"], "metadata.json")
         metadata = json.load(open(metadata_path))
         automata = json.load(open(automata_path))
-        dependency_results = check_dependency(automata)
+        dependency_results, automata = check_dependency(automata)
         # get the workflows
         workflows = {}
         for workflow_id in dependency_results["workflow_ids"]:
@@ -122,9 +122,35 @@ def export_app():
             workflow = json.load(open(workflow_path))
             workflows[workflow_id] = workflow
             
+        # get the comfyui workflows
+        comfyui_workflows = {}
+        comfyui_dependencies = {
+            "comfyui_version": {},
+            "custom_nodes": [],
+            "models": {},
+            "files": {}
+        }
+        custom_node_names = []
+        for comfyui_workflow_id in dependency_results["comfyui_workflow_ids"]:
+            shellagent_json_path = os.path.join(PROJECT_ROOT, "comfy_workflow", comfyui_workflow_id, "workflow.shellagent.json")
+            shellagent_json = json.load(open(shellagent_json_path))
+            comfyui_workflows[comfyui_workflow_id] = {
+                "workflow_api": shellagent_json["workflow_api"],
+                "schemas": shellagent_json["schemas"],
+            }
+            for k in ["comfyui_version", "models", "files"]:
+                comfyui_dependencies[k].update(shellagent_json["dependencies"][k])
+            for custom_node in shellagent_json["dependencies"]["custom_nodes"]:
+                if custom_node["name"] not in custom_node_names:
+                    comfyui_dependencies["custom_nodes"].append(custom_node)
+                    custom_node_names.append(custom_node["name"])
+                    
+            
         exported_data = {
             "automata": automata,
             "workflows": workflows,
+            "comfyui_workflows": comfyui_workflows,
+            "comfyui_dependencies": comfyui_dependencies
         }
         logging.info("ready to upload")
         exported_data = process_local_file_path_async(exported_data, data.get("max_workers", 20))
@@ -227,6 +253,7 @@ def app_run():
     sess_id = event_data.session_id
     sess_state = sess_states.get(sess_id, {})
     sess_state["message_count"] = sess_state.get("message_count", 0)
+    sess_state[EVENT_MAPPING_KEY] = sess_state.get(EVENT_MAPPING_KEY, {})
     
     # decide the event_name
     if event_data.messageType == 15:
@@ -360,7 +387,7 @@ def parse_server_message(session_id, render, event_mapping, message_count):
     # build the componentContainer
     buttons = []
     for button_count, button in enumerate(render.get("buttons", [])):
-        buttonId = f'BUTTON_{button_count}'
+        buttonId = f'MESSAGE_{message_count}_BUTTON_{button_count}'
         schema, _ = build_form_schema(event_mapping[buttonId]["target_inputs"])
         
         if schema is not None:
@@ -485,7 +512,10 @@ def execute_automata(task_id, client_queue, automata, environ, payload, sess_id,
     runner = Runner(callback=callback)
     try:
         sess_state, render, event_mapping = runner.run_automata(automata, sess_state, environ, payload)
-        sess_state[EVENT_MAPPING_KEY] = event_mapping
+        # add message count
+        message_count = sess_state["message_count"]
+        event_mapping = {f'MESSAGE_{message_count}_{k}': v for k, v in event_mapping.items()}
+        sess_state[EVENT_MAPPING_KEY].update(event_mapping)
         sess_states[sess_id] = sess_state
         server_message = parse_server_message(sess_id, render, event_mapping, sess_state["message_count"])
         sess_state["message_count"] += 1

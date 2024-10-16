@@ -18,12 +18,18 @@ const getUnlinkedButtonsErrors = (
 ) => {
   const { nodes } = reactflow;
   const buttons = Object.entries(automata.blocks).reduce(
-    (acc: { button: Button; key: string }[], [key, block]: [string, State]) => {
+    (
+      acc: { button: Button; key: string; transitions: string[] }[],
+      [key, block]: [string, State],
+    ) => {
       if (block.render?.buttons) {
         acc.push(
           ...(block.render.buttons as Button[]).map(button => ({
             button,
             key,
+            transitions: Object.keys(
+              (block as any)?.transitions as Record<string, any>,
+            ),
           })),
         );
       }
@@ -31,8 +37,9 @@ const getUnlinkedButtonsErrors = (
     },
     [],
   );
-  buttons.forEach(({ button, key }) => {
-    if (!(button.on_click as any)?.event) {
+
+  buttons.forEach(({ button, key, transitions }) => {
+    if (!transitions.includes((button.on_click as any)?.event)) {
       const displayName = getStateDisplayNameById(key, nodes);
       errors.push({
         message: (
