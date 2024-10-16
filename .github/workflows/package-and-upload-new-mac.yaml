@@ -21,44 +21,44 @@ on:
       #   default: "beta"
 
 jobs:
-  build:
-    runs-on: ubuntu-latest
+  # build:
+  #   runs-on: ubuntu-latest
 
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          ref: ${{ inputs.git_tag }}
+  #   steps:
+  #     - uses: actions/checkout@v4
+  #       with:
+  #         ref: ${{ inputs.git_tag }}
 
-      - uses: pnpm/action-setup@v2
-        with:
-          version: 9
-          run_install: false
+  #     - uses: pnpm/action-setup@v2
+  #       with:
+  #         version: 9
+  #         run_install: false
 
-      - uses: actions/setup-node@v4
-        with:
-          node-version: "20"
-          cache: "pnpm"
-          cache-dependency-path: "web/pnpm-lock.yaml"
+  #     - uses: actions/setup-node@v4
+  #       with:
+  #         node-version: "20"
+  #         cache: "pnpm"
+  #         cache-dependency-path: "web/pnpm-lock.yaml"
 
-      - working-directory: "./web"
-        run: pnpm install
+  #     - working-directory: "./web"
+  #       run: pnpm install
 
-      - working-directory: "./web"
-        run: pnpm turbo run build --filter=web
-        env:
-          NEXT_PUBLIC_API_URL: ${{ secrets.NEXT_PUBLIC_API_URL }}
+  #     - working-directory: "./web"
+  #       run: pnpm turbo run build --filter=web
+  #       env:
+  #         NEXT_PUBLIC_API_URL: ${{ secrets.NEXT_PUBLIC_API_URL }}
 
-      - uses: actions/upload-artifact@v3
-        with:
-          name: web-build
-          path: web/apps/web/dist
+  #     - uses: actions/upload-artifact@v3
+  #       with:
+  #         name: web-build
+  #         path: web/apps/web/dist
     
   package_shellagent_linux:
     permissions:
       contents: "write"
       packages: "write"
       pull-requests: "read"
-    needs: build 
+    # needs: build 
     runs-on: macos-latest
     steps:
       - uses: actions/checkout@v4
@@ -84,24 +84,18 @@ jobs:
 
           cd ..
           cp -r ShellAgent ShellAgent_copy
+
+          curl -O https://www.python.org/ftp/python/3.10.10/python-3.10.10-macos11.pkg
+          sudo installer -pkg python-3.10.10-macos11.pkg -target ./
+
+          PYTHON_PATH=$(which python3.10)
+          echo $PYTHON_PATH
+          $PYTHON_PATH --version
+
           cd ShellAgent
           
-          
-          wget https://repo.anaconda.com/miniconda/Miniconda3-latest-MacOSX-x86_64.sh -O Miniconda3-latest-MacOSX-x86_64.sh
-          sh Miniconda3-latest-MacOSX-x86_64.sh -b -p ../miniconda
-          CONDA_SH_PATH="../miniconda/etc/profile.d/conda.sh"
-          source "$CONDA_SH_PATH"
-
-          echo "Creating new conda environment shell_agent with Python 3.10..."
-          conda create -y -n shell_agent python=3.10
-          echo "Environment shell_agent created."
-
-          echo "Activating the shell_agent environment..."
-          conda activate shell_agent
-          echo "Installing package in editable mode..."
           pip install poetry
           pip install -e .
-          echo "Package installed."
           
           cd ..
 
@@ -134,8 +128,8 @@ jobs:
           # Upload the file to Hugging Face repository
           api.upload_file(
               path_or_fileobj=file_path,
-              # path_in_repo="ShellAgent_${{ inputs.version }}.7z",
-              path_in_repo="ShellAgent_macos_v1.0.0.7z",
+              # path_in_repo="ShellAgent_${{ inputs.version }}.zip",
+              path_in_repo="ShellAgent_macos_v1.0.0.zip",
               repo_id=repo_id,
               repo_type="model",  # or 'dataset' depending on your use case
               token="${{ secrets.HF_TOKEN }}"
