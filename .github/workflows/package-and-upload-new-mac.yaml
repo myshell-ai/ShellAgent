@@ -93,13 +93,13 @@ jobs:
           make install
 
           export PATH='./python3.10/bin:$PATH'
-          ln -s ./python3.10/bin/python3.10 ./python3.10/bin/python
-          ln -s ./python3.10/bin/pip3 ./python3.10/bin/pip
+          # ln -s ./python3.10/bin/python3.10 ./python3.10/bin/python
+          # ln -s ./python3.10/bin/pip3 ./python3.10/bin/pip
 
           cd ShellAgent
           
-          pip install poetry
-          pip install -e .
+          pip3 install poetry
+          pip3 install -e .
           
           cd ..
 
@@ -118,7 +118,7 @@ jobs:
           ls
 
       - name: Install Hugging Face Hub SDK
-        run: pip install huggingface_hub
+        run: pip3 install huggingface_hub
 
       - name: Upload binaries to Hugging Face
         run: |
