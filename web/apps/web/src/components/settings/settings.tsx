@@ -149,6 +149,7 @@ export const SettingsDialog = observer(() => {
       width="900px"
       height="80%"
       onCancel={() => model.modal.close()}
+      zIndex={1500}
       footer={null}>
       <Flex height="100%">
         <SettingsSideBar />

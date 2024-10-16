@@ -7,14 +7,13 @@ import {
   DataFunc,
 } from 'react-mentions';
 
+import { useVariableContext } from '@/stores/workflow/variable-provider';
+
 import classNames from './index.module.css';
-import {
-  flattenOptions,
-  MentionRegex,
-  WrapperRegex,
-  DEFAULT_LABEL,
-} from './utils';
-import { useSelectOptions } from '../variable-select/use-select-options';
+
+const MentionRegex = /@\[(.*?)\]\(value:(.*?)\)/;
+const WrapperRegex = /^\{\{(.*?)\}\}/;
+const DEFAULT_LABEL = 'veriable undefined';
 
 interface IExpressionValue {
   target: { value: string | number };
@@ -24,20 +23,16 @@ interface IExpressionInputProps {
   value?: string;
   onChange?: (e: IExpressionValue) => void;
   singleLine?: boolean;
-  name?: string;
-  placeholder?: string;
 }
 
 const ExpressionInput: React.FC<IExpressionInputProps> = ({
   onChange,
   value,
   singleLine,
-  name,
-  placeholder,
 }) => {
-  const options = useSelectOptions(name);
-  const flatOptions = flattenOptions(options);
+  const scope = useVariableContext(state => state.treeScope) || [];
 
+  // TODO 看这个问题
   const getWrappedText = (text: string) => {
     let currentIndex = 0;
 
@@ -75,45 +70,29 @@ const ExpressionInput: React.FC<IExpressionInputProps> = ({
 
     return text;
   };
-
-  // TODO 如果多个value相同，只能映射到最后一个label
   const v2l = (value: string) => {
-    const valueToLabelMap = new Map<string, string>();
-
-    // 构建 value 到 label 的映射
-    flatOptions.forEach(item => {
-      const { value: itemValue, label } = item;
-      if (itemValue) {
-        valueToLabelMap.set(itemValue, label || DEFAULT_LABEL);
-      }
-    });
-
-    // 替换 value 为对应的 label
-    valueToLabelMap.forEach((label, itemValue) => {
-      const regex = new RegExp(`\\b${itemValue}\\b`, 'g');
-      // 确保替换时没有重复替换
-      value = value.replace(regex, match => {
-        // 检查是否已经被替换过
-        const alreadyReplaced = new RegExp(
-          `@\\[${label}\\]\\(value:${itemValue}\\)`,
-        ).test(value);
-        return alreadyReplaced ? match : `@[${label}](value:${itemValue})`;
-      });
-    });
-
-    return value;
+    return (
+      scope?.reduce<string>((prev, item) => {
+        const { value, label } = item;
+        if (value && prev) {
+          prev = prev.replaceAll(
+            value,
+            `@[${label || DEFAULT_LABEL}](value:${value})`,
+          );
+        }
+        return prev;
+      }, value) || value
+    );
   };
-
   const l2v = (label: string) => {
     const str =
-      flatOptions?.reduce<string>((prev, item) => {
-        const { value, label: itemLabel } = item;
+      scope?.reduce<string>((prev, item) => {
+        const { value, label } = item;
         if (value && prev) {
-          const regex = new RegExp(
-            `@\\[${itemLabel || DEFAULT_LABEL}\\]\\(value:${value}\\)`,
-            'g',
+          prev = prev.replaceAll(
+            `@[${label || DEFAULT_LABEL}](value:${value})`,
+            value || '',
           );
-          prev = prev.replace(regex, value || '');
         }
         return prev;
       }, label) || label;
@@ -142,7 +121,7 @@ const ExpressionInput: React.FC<IExpressionInputProps> = ({
   const newValue = value ? v2l(value) : value;
 
   const mentions =
-    flatOptions?.reduce<SuggestionDataItem[]>((memo, cur) => {
+    scope?.reduce<SuggestionDataItem[]>((memo, cur) => {
       if (cur.value) {
         memo.push({
           id: cur.value,
@@ -165,9 +144,7 @@ const ExpressionInput: React.FC<IExpressionInputProps> = ({
 
   const customSuggestionsContainer = useCallback(
     (children: any) => (
-      <div
-        id="mentions__suggestions_container"
-        className={classNames.mentions__suggestions_container}>
+      <div className={classNames.mentions__suggestions_container}>
         {children}
       </div>
     ),
@@ -192,7 +169,6 @@ const ExpressionInput: React.FC<IExpressionInputProps> = ({
       allowSpaceInQuery
       singleLine={singleLine}
       placeholder={
-        placeholder ??
         "Support for entering '{{ }}' embedded expressions, mention variable using '/'."
       }
       a11ySuggestionsListLabel="Suggested mentions"

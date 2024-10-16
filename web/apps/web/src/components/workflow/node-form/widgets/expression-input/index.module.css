@@ -1,0 +1,156 @@
+.mentions {
+  margin: 0;
+}
+
+.mentions--singleLine .mentions__control {
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  background-color: var(--surface-search-field);
+  border-radius: 0.75rem;
+  color: var(--text);
+  border-color: var(--border);
+  --tw-shadow-colored: 0 1px 2px 0 var(--tw-shadow-color);
+  --tw-shadow-color: var(--shadow-background-default);
+  --tw-shadow: var(--tw-shadow-colored);
+  box-shadow: var(--tw-ring-offset-shadow, 0 0 #0000),
+    var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow);
+}
+.mentions--singleLine .mentions__highlighter {
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  padding: 12px;
+}
+.mentions--singleLine .mentions__input {
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  color: var(--text);
+  padding: 12px;
+  border-width: 1px;
+  border-radius: 0.75rem;
+  width: 100%;
+  border-color: var(--border);
+}
+
+.mentions--singleLine .mentions__control:hover {
+  background-color: var(--surface-subtle);
+}
+
+.mentions--singleLine .mentions__input:focus-visible {
+  --tw-ring-offset-width: 1px;
+  --tw-ring-color: var(--focus-ring-brand);
+  --tw-ring-offset-shadow: var(--tw-ring-inset) 0 0 0
+    var(--tw-ring-offset-width) var(--tw-ring-offset-color);
+  --tw-ring-shadow: var(--tw-ring-inset) 0 0 0
+    calc(2px + var(--tw-ring-offset-width)) var(--tw-ring-color);
+  --tw-shadow-colored: 0 1px 2px 0 var(--tw-shadow-color);
+  --tw-shadow-color: var(--shadow-background-default);
+  --tw-shadow: var(--tw-shadow-colored);
+  box-shadow: var(--tw-ring-offset-shadow), var(--tw-ring-shadow),
+    var(--tw-shadow, 0 0 #0000);
+  outline: 2px solid transparent;
+  outline-offset: 2px;
+  --tw-ring-offset-color: var(--surface-default);
+  --tw-shadow-color: var(--shadow-background-default);
+  --tw-shadow: var(--tw-shadow-colored);
+  color: var(--text);
+}
+
+.mentions--multiLine .mentions__control {
+  min-height: 138px;
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  background-color: var(--surface-search-field);
+  border-radius: 0.75rem;
+  color: var(--text);
+  border-color: var(--border);
+  --tw-shadow-colored: 0 1px 2px 0 var(--tw-shadow-color);
+  --tw-shadow-color: var(--shadow-background-default);
+  --tw-shadow: var(--tw-shadow-colored);
+  box-shadow: var(--tw-ring-offset-shadow, 0 0 #0000),
+    var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow);
+}
+
+.mentions--multiLine .mentions__control:hover {
+  background-color: var(--surface-subtle);
+}
+
+.mentions--multiLine .mentions__input:focus-visible {
+  --tw-ring-offset-width: 1px;
+  --tw-ring-color: var(--focus-ring-brand);
+  --tw-ring-offset-shadow: var(--tw-ring-inset) 0 0 0
+    var(--tw-ring-offset-width) var(--tw-ring-offset-color);
+  --tw-ring-shadow: var(--tw-ring-inset) 0 0 0
+    calc(2px + var(--tw-ring-offset-width)) var(--tw-ring-color);
+  box-shadow: var(--tw-ring-offset-shadow), var(--tw-ring-shadow),
+    var(--tw-shadow, 0 0 #0000);
+  outline: 2px solid transparent;
+  outline-offset: 2px;
+  --tw-ring-offset-color: var(--surface-default);
+  --tw-shadow-color: var(--shadow-background-default);
+  --tw-shadow: var(--tw-shadow-colored);
+  color: var(--text);
+}
+
+.mentions--multiLine .mentions__highlighter {
+  min-height: 138px;
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  padding: 12px;
+}
+
+.mentions--multiLine .mentions__input {
+  min-height: 138px;
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  color: var(--text);
+  padding: 12px;
+  border-width: 1px;
+  border-radius: 0.75rem;
+  width: 100%;
+  border-color: var(--border);
+}
+
+.mentions__suggestions_container {
+  display: flex;
+  width: auto;
+  max-height: 200px;
+  overflow-y: auto;
+  padding: 8px;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  background: #fff;
+  box-shadow: 0px 0px 40px 0px rgba(0, 0, 0, 0.1);
+}
+.mentions__suggestions__list {
+  display: flex;
+  width: 100%;
+  border-radius: 8px;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 8px;
+  gap: 2px;
+}
+
+.mentions__suggestions__item {
+  width: 100%;
+  white-space: nowrap;
+  border-radius: 8px;
+  padding: 4px;
+  color: #202223;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 18px;
+  word-break: break-all;
+}
+
+.mentions__suggestions__item--focused {
+  border-radius: 8px;
+  background: #f2f7fe;
+}
+
+.mentions__mention {
+  position: relative;
+  z-index: 99;
+  color: #3e5cfa;
+  pointer-events: none;
+}

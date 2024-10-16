@@ -1,3 +1,5 @@
+/* eslint-disable react/destructuring-assignment */
+
 'use client';
 
 import {
@@ -9,27 +11,44 @@ import { isEmpty, merge } from 'lodash-es';
 import { useCallback, useEffect, useMemo } from 'react';
 
 import NodeForm from '@/components/app/node-form';
+import { getPlugin } from '@/components/app/plugins';
 import { useAppStore } from '@/stores/app/app-provider';
 import { getSchemaByWidget } from '@/stores/app/utils/get-widget-schema';
 import { useWorkflowStore } from '@/stores/workflow/workflow-provider';
 
-interface WidgetConfigProps {
+export interface WidgetConfigProps {
   values: TValues | undefined;
   parent: string;
   id: string;
   onChange: (values: TValues) => void;
 }
 
-export const WidgetConfig: React.FC<WidgetConfigProps> = ({
+export interface CommonWidgetConfigProps extends WidgetConfigProps {
+  onModeChange: (name: string, mode: TFieldMode) => void;
+  modeMap: Record<string, TFieldMode>;
+}
+
+const CustomWidgetConfig: React.FC<CommonWidgetConfigProps> = props => {
+  const { values } = props;
+  if (!values) {
+    return null;
+  }
+
+  const PluginComponent = getPlugin(values.widget_class_name);
+  if (PluginComponent) {
+    return <PluginComponent {...props} />;
+  }
+
+  return null;
+};
+
+const StandardWidgetConfig: React.FC<CommonWidgetConfigProps> = ({
   values,
   parent,
-  id,
   onChange,
+  onModeChange,
+  modeMap,
 }) => {
-  const { setFieldsModeMap, fieldsModeMap } = useAppStore(state => ({
-    setFieldsModeMap: state.setFieldsModeMap,
-    fieldsModeMap: state.config?.fieldsModeMap,
-  }));
   const { loading, getWidgetSchema, widgetSchema } = useWorkflowStore(
     state => ({
       loading: state.loading.getWidgetSchema,
@@ -92,13 +111,6 @@ export const WidgetConfig: React.FC<WidgetConfigProps> = ({
     values,
   ]);
 
-  const onModeChange = useCallback(
-    (name: string, mode: TFieldMode) => {
-      setFieldsModeMap({ id: `${id}.${parent}`, name, mode });
-    },
-    [id, setFieldsModeMap, parent],
-  );
-
   if (!values) {
     return null;
   }
@@ -111,7 +123,40 @@ export const WidgetConfig: React.FC<WidgetConfigProps> = ({
       onChange={handleOnChange}
       loading={loading?.[values.widget_class_name]}
       onModeChange={onModeChange}
-      modeMap={fieldsModeMap?.[`${id}.${parent}`] || {}}
+      modeMap={modeMap}
+    />
+  );
+};
+
+export const WidgetConfig: React.FC<WidgetConfigProps> = props => {
+  const { id, parent } = props;
+  const { setFieldsModeMap, fieldsModeMap } = useAppStore(state => ({
+    setFieldsModeMap: state.setFieldsModeMap,
+    fieldsModeMap: state.config?.fieldsModeMap,
+  }));
+
+  const onModeChange = useCallback(
+    (name: string, mode: TFieldMode) => {
+      setFieldsModeMap({ id: `${id}.${parent}`, name, mode });
+    },
+    [id, setFieldsModeMap, parent],
+  );
+
+  const modeMap = fieldsModeMap?.[`${id}.${parent}`] || {};
+  if (props.values?.custom) {
+    return (
+      <CustomWidgetConfig
+        {...props}
+        onModeChange={onModeChange}
+        modeMap={modeMap}
+      />
+    );
+  }
+  return (
+    <StandardWidgetConfig
+      {...props}
+      onModeChange={onModeChange}
+      modeMap={modeMap}
     />
   );
 };

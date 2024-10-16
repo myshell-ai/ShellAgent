@@ -6,14 +6,14 @@ import { ENABLE_MIME } from '@/utils/file-types';
 export const getSchemaByInputs = (inputs: TValues): ISchema => {
   const properties: { [key: string]: ISchema } = {};
   Object.keys(inputs || {}).reduce<{ [key: string]: ISchema }>((prev, key) => {
-    const { description, name, type, value, choices, title } = inputs[key];
+    const { description, type, value, choices, title } = inputs[key];
     const defaultValue = value || inputs[key].default_value;
     switch (type) {
       case 'audio':
         prev[key] = {
           type: 'string',
           default: defaultValue,
-          title: name || title,
+          title,
           description,
           'x-layout': 'Vertical',
           'x-type': 'Control',
@@ -30,7 +30,7 @@ export const getSchemaByInputs = (inputs: TValues): ISchema => {
         prev[key] = {
           type: 'string',
           default: defaultValue,
-          title: name || title,
+          title,
           description,
           'x-layout': 'Vertical',
           'x-type': 'Control',
@@ -47,7 +47,7 @@ export const getSchemaByInputs = (inputs: TValues): ISchema => {
         prev[key] = {
           type: 'string',
           default: defaultValue,
-          title: name || title,
+          title,
           description,
           'x-layout': 'Vertical',
           'x-type': 'Control',
@@ -62,7 +62,7 @@ export const getSchemaByInputs = (inputs: TValues): ISchema => {
         prev[key] = {
           type: 'string',
           default: defaultValue,
-          title: name || title,
+          title,
           description,
           'x-layout': 'Vertical',
           'x-type': 'Control',
@@ -77,7 +77,7 @@ export const getSchemaByInputs = (inputs: TValues): ISchema => {
         prev[key] = {
           type: 'string',
           default: defaultValue,
-          title: name || title,
+          title,
           description,
           'x-layout': 'Vertical',
           'x-type': 'Control',
@@ -92,7 +92,7 @@ export const getSchemaByInputs = (inputs: TValues): ISchema => {
         prev[key] = {
           type: 'string',
           default: defaultValue,
-          title: name || title,
+          title,
           description,
           'x-layout': 'Vertical',
           'x-raw': true,
@@ -108,7 +108,7 @@ export const getSchemaByInputs = (inputs: TValues): ISchema => {
       prev[key] = {
         type: 'string',
         default: defaultValue,
-        title: name || title,
+        title,
         description,
         'x-raw': true,
         'x-component': 'Select',
@@ -152,19 +152,46 @@ export const getSchemaByInputs = (inputs: TValues): ISchema => {
   };
 };
 
-export const getWorkflowSchema = ({
+export const defaultSchema: ISchema = {
+  type: 'object',
+  'x-type': 'Section',
+  'x-title-copiable': false,
+  properties: {
+    api: {
+      type: 'string',
+      'x-layout': 'Vertical',
+      'x-type': 'Block',
+      'x-component': 'ComfyUIEditor',
+      'x-title-size': 'h4',
+    },
+    comfy_workflow_id: {
+      type: 'string',
+      'x-component': 'Input',
+      'x-type': 'Control',
+      'x-title-size': 'h4',
+      'x-hidden': true,
+    },
+  },
+};
+
+export const getComfyuiSchema = ({
   inputs = {},
   outputs = {},
-  options,
 }: {
   inputs: TValues;
   outputs: TValues;
-  options: { label: string; value: string }[];
 }): ISchema => {
-  const types = Object.keys(outputs || {}).reduce<{ [key: string]: string }>(
+  const types = Object.keys(outputs || {}).reduce<{ [key: string]: any }>(
     (acc, key) => {
-      const { name, type } = outputs[key];
-      acc[name] = type;
+      const { title, type, items } = outputs[key];
+      if (type === 'array' && items) {
+        acc[title] = {
+          type: items.type,
+          url_type: items.url_type,
+        };
+      } else {
+        acc[title] = type;
+      }
       return acc;
     },
     {},
@@ -173,20 +200,21 @@ export const getWorkflowSchema = ({
   return {
     type: 'object',
     'x-type': 'Section',
-    'x-title-size': 'h4',
+    'x-title-copiable': false,
     properties: {
-      workflow_id: {
-        title: 'Workflow',
+      api: {
+        type: 'string',
+        'x-layout': 'Vertical',
         'x-type': 'Block',
+        'x-component': 'ComfyUIEditor',
         'x-title-size': 'h4',
-        'x-component': 'Select',
-        'x-component-props': {
-          placeholder: 'select workflow',
-          options,
-          triggerClassName: 'h-7',
-        },
-        'x-value-prop-name': 'defaultValue',
-        'x-onchange-prop-name': 'onValueChange',
+      },
+      comfy_workflow_id: {
+        type: 'string',
+        'x-component': 'Input',
+        'x-type': 'Control',
+        'x-title-size': 'h4',
+        'x-hidden': true,
       },
       inputs: getSchemaByInputs(inputs),
       outputs: {

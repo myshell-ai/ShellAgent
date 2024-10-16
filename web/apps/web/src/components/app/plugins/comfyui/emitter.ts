@@ -1,13 +1,36 @@
-import { Edge, EdgeData } from '@shellagent/flow-engine';
 import mitt from 'mitt';
 import { useEffect } from 'react';
 
 export enum EventType {
-  DELETE_EDGE = 'DELETE_EDGE',
+  UPDATE_FORM = 'UPDATE_FORM',
 }
 
 type Events = {
-  [EventType.DELETE_EDGE]: Edge<EdgeData>;
+  [EventType.UPDATE_FORM]: {
+    data: {
+      inputs: Record<
+        string,
+        {
+          title: string;
+          type: string;
+          default?: any;
+          description: string;
+        }
+      >;
+      outputs: Record<
+        string,
+        {
+          title: string;
+          type: string;
+          items?: {
+            type: string;
+            url_type: string;
+          };
+        }
+      >;
+    };
+    id: string;
+  };
 };
 
 const emitter = mitt<Events>();
