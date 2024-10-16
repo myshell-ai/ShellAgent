@@ -12,7 +12,6 @@ from typing import Dict, Any, Literal, List
 from flask import Response, request, jsonify
 from filelock import FileLock
 
-import torch
 import re
 
 from pydantic import BaseModel
@@ -284,7 +283,6 @@ def app_run():
                 message = client_queue.get(timeout=1)
                 yield message
                 if message.split('\n')[0].startswith("event: state_exit"):
-                    torch.cuda.empty_cache()
                     break
             except queue.Empty:
                 data = json.dumps({})
