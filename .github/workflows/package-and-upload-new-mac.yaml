@@ -96,8 +96,8 @@ jobs:
           cd ..
           cd ShellAgent
           
-          ../Python-3.10.10/python3.10/bin/pip3 install poetry
-          ../Python-3.10.10/python3.10/bin/pip3 install -e .
+          ../Python-3.10.10/python3.10/bin/python3 -m pip install poetry
+          ../Python-3.10.10/python3.10/bin/python3 -m pip install -e .
 
           ../Python-3.10.10/python3.10/bin/python3 --version
           
