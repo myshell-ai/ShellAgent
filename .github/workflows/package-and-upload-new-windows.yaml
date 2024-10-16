@@ -5,6 +5,8 @@ on:
   push:
     branches:
       - dev_comfyui_v2
+    paths:
+      - ".github/workflows/package-and-upload-new-windows.yaml"
   # workflow_dispatch:
   #   inputs:
   #     git_tag:
