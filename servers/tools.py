@@ -51,6 +51,7 @@ def monitor_memory():
         # print(f"Current GPU memory usage: {gpu_memory_usage / (1024 * 1024 * 1024):.2f} GB")
     else:
         gpu_memory_usage = 0
+        gpu_memory_total = 0
         # print("No GPU found.")
         
     return_dict = {
