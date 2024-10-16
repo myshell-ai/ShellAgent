@@ -95,7 +95,7 @@ jobs:
           export PATH='./python3.10/bin:$PATH'
           # ln -s ./python3.10/bin/python3.10 ./python3.10/bin/python
           # ln -s ./python3.10/bin/pip3 ./python3.10/bin/pip
-
+          cd ..
           cd ShellAgent
           
           pip3 install poetry
