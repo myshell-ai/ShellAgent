@@ -92,6 +92,7 @@ const ModelForm: React.FC = () => (
                 <Input readOnly placeholder="Save path" />
               </Form.Item>
               <Form.List
+                initialValue={[]}
                 name={[field.name, 'urls']}
                 rules={[
                   {
