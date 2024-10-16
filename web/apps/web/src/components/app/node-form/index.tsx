@@ -19,6 +19,7 @@ import {
   FormRef,
 } from '@shellagent/ui';
 import { isEmpty } from 'lodash-es';
+import dynamic from 'next/dynamic';
 import React, { useEffect, useMemo, forwardRef } from 'react';
 
 import FileUpload from '@/components/common/uploader';
@@ -31,13 +32,19 @@ import {
   VariableSelect,
   ModeSelect,
   Render,
-  TasksConfig,
+  // TasksConfig,
   MessagePreview,
   ButtonEditor,
   WorkflowSelect,
   TransitionConditionEditor,
   VariableNameInput,
 } from './widgets';
+import { OpenImageCanvas } from '../../image-canvas/open-image-canvas';
+
+const TasksConfig = dynamic(
+  () => import('./widgets/tasks-config').then(module => module.TasksConfig),
+  { ssr: false },
+);
 
 interface NodeFormProps {
   values: TValues;
@@ -118,6 +125,7 @@ const NodeForm = forwardRef<FormRef, NodeFormProps>(
           WorkflowSelect,
           TransitionConditionEditor,
           VariableNameInput,
+          OpenImageCanvas,
           ...components,
         }}
       />

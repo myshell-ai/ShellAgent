@@ -1,0 +1,222 @@
+@import url('cropperjs/dist/cropper.css');
+
+/* antd hack */
+/* antd dropdown cascade bug, sub menu z-index = 100 -> z-index 1200 compatible with shell-agent */
+.ant-dropdown-menu-submenu {
+  z-index: 1200 !important;
+}
+
+/*
+.x-ref-select {
+  .ant-select-selection-item {
+    direction: rtl;
+    padding-inline-start: 18px !important;
+    padding-inline-end: 0 !important;
+  }
+} */
+
+/* @import url(../global.css); */
+html, body {
+  height: 100%;
+  margin: 0;
+}
+
+#ice-container {
+  height: 100%;
+}
+
+.fabritor-layout .ant-tabs-nav-wrap {
+  width: 64px;
+}
+
+.fabritor-layout  .ant-tabs-left > .ant-tabs-nav .ant-tabs-tab {
+  padding: 8px 0;
+}
+
+.fabritor-layout .ant-tabs-tab-btn {
+  width: 100%;
+}
+
+.ant-tabs-content-holder {
+  overflow: auto !important;
+}
+
+.fabritor-layout h5.ant-typography {
+  margin: 0;
+}
+
+.fabritor-color-setter .rcs .rc-input-number-affix-wrapper {
+  height: 20px;
+}
+.fabritor-color-setter .rcs-preset-colors {
+  gap: 5;
+}
+
+.fabritor-toolbar-item {
+  display: inline-flex;
+  align-items: center;
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 6px;
+  line-height: 0;
+
+  &:hover {
+    background-color: rgba(64, 87, 109, 0.07);
+  }
+}
+
+#fabritor-rough-svg {
+  position: fixed;
+  left: 99999999px;
+  top: 99999999px;
+  z-index: -1;
+}
+
+/*
+@import url(./UI/header/Toolbar/index.css);
+ */
+
+.fabritor-toolbar {
+  height: 46px;
+  background-color: #fff;
+  border-bottom: 1px solid #e8e8e8;
+  padding: 0 16px;
+  overflow-x: auto;
+}
+.fabritor-crop-wrapper .cropper-line {
+  background-color: #f22;
+  opacity: 1;
+}
+.fabritor-crop-wrapper .cropper-line.line-n {
+  height: 2px;
+  top: -2px;
+}
+.fabritor-crop-wrapper .cropper-line.line-e {
+  width: 2px;
+  right: -2px;
+}
+.fabritor-crop-wrapper .cropper-line.line-s {
+  height: 2px;
+  bottom: -2px;
+}
+.fabritor-crop-wrapper .cropper-line.line-w {
+  width: 2px;
+  left: -2px;
+}
+.fabritor-crop-wrapper .cropper-point {
+  opacity: 1;
+  background-color: #fff;
+  box-shadow: 0 0 2px 2px rgba(221, 221, 221, 1);
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+}
+.fabritor-crop-wrapper .cropper-point.point-ne {
+  right: -5px;
+  top: -5px;
+}
+.fabritor-crop-wrapper .cropper-point.point-nw {
+  left: -5px;
+  top: -5px;
+}
+.fabritor-crop-wrapper .cropper-point.point-sw {
+  left: -5px;
+  bottom: -5px;
+}
+.fabritor-crop-wrapper .cropper-point.point-se {
+  right: -5px;
+  bottom: -5px;
+}
+.fabritor-crop-wrapper .cropper-point.point-n {
+  width: 20px;
+  height: 6px;
+  border-radius: 10px;
+  top: -3px;
+}
+.fabritor-crop-wrapper .cropper-point.point-w {
+  width: 6px;
+  height: 20px;
+  border-radius: 10px;
+  left: -3px;
+}
+.fabritor-crop-wrapper .cropper-point.point-s {
+  width: 20px;
+  height: 6px;
+  border-radius: 10px;
+  bottom: -3px;
+}
+.fabritor-crop-wrapper .cropper-point.point-e {
+  width: 6px;
+  height: 20px;
+  border-radius: 10px;
+  right: -3px;
+}
+.rcs-preset-colors {
+  gap: 5px !important;
+}
+
+/* @import url(./UI/panel/index.css); */
+
+.fabritor-panel-wrapper {
+  margin-left: -24px;
+  padding: 16px;
+}
+.fabritor-panel-shape-item {
+  cursor: pointer;
+}
+.fabritor-list-item {
+  background: rgba(53, 71, 90, 0.2);
+  border-radius: 8px;
+  margin-bottom: 10px;
+  cursor: pointer;
+  border: 2px solid transparent;
+  box-sizing: border-box;
+}
+.fabritor-list-item:hover {
+  border: 2px solid rgba(255, 34, 34, 0.5) !important;
+}
+.fabritor-sider {
+  position: relative;
+}
+.fabritor-sider .ant-layout-sider-children {
+  display: flex;
+  flex-direction: column;
+}
+.fabritor-sider .fabritor-setter-panel {
+  position: absolute;
+  left: 64px;
+  top: 50px;
+  right: 0;
+  bottom: 0;
+  overflow: auto;
+  z-index: 99;
+  background-color: #fff;
+}
+
+/* @import url(./UI/setter/ImageSetter/ImageFx/FilterGroup/index.css); */
+.fabritor-radio-image-group {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-around;
+  margin-top: 16px;
+}
+.fabritor-radio-image-group-item {
+  width: 100px;
+  text-align: center;
+  cursor: pointer;
+  margin-bottom: 8px;
+}
+.fabritor-radio-image-group-item img {
+  border-radius: 6px;
+  width: 96px;
+  height: 96px;
+}
+.fabritor-radio-image-group-item span {
+  font-size: 13px;
+}
+.fabritor-radio-image-group-img {
+  font-size: 0;
+  border: 2px solid #ddd;
+  border-radius: 8px;
+}
+

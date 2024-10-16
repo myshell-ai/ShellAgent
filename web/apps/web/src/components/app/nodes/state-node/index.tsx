@@ -1,19 +1,19 @@
 import {
-  NodeProps,
-  StateNode as StateNodeType,
-  useReactFlowStore,
-  NodeTypeEnum,
+  Connection,
+  DRAGGABLE_NODE_ID,
+  DraggableNodeType,
   Node,
   NodeId,
+  NodeProps,
+  NodeTypeEnum,
   SourceHandle,
+  StateNode as StateNodeType,
   TargetHandle,
-  Connection,
   useDrop,
-  DraggableNodeType,
-  DRAGGABLE_NODE_ID,
+  useReactFlowStore,
   uuid,
 } from '@shellagent/flow-engine';
-import { TValues, TFieldMode } from '@shellagent/form-engine';
+import { TFieldMode, TValues } from '@shellagent/form-engine';
 import { FormRef } from '@shellagent/ui';
 import { useKeyPress } from 'ahooks';
 import { isEqual } from 'lodash-es';
@@ -21,13 +21,12 @@ import React, { useCallback, useRef, useEffect, useState } from 'react';
 import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
 
-import { EdgeTypeEnum, EdgeDataTypeEnum } from '@/components/app/edges';
+import { EdgeDataTypeEnum, EdgeTypeEnum } from '@/components/app/edges';
 import NodeCard from '@/components/app/node-card';
 import NodeForm from '@/components/app/node-form';
 import { useAppStore } from '@/stores/app/app-provider';
 import { useAppState } from '@/stores/app/use-app-state';
 import {
-  generateUUID,
   getKeyboardKeyCodeBySystem,
   isEventTargetInputArea,
 } from '@/utils/common-helper';
@@ -191,7 +190,6 @@ const StateNode: React.FC<NodeProps<StateNodeType>> = ({
           data: {
             id,
             custom: true,
-            event_key: generateUUID(),
             type: EdgeDataTypeEnum.ALWAYS,
             source: connection.source,
             target: connection.target,
@@ -219,10 +217,7 @@ const StateNode: React.FC<NodeProps<StateNodeType>> = ({
             display_name: item.display_name,
             name: uuid(),
             mode: item.nodeType,
-            workflow_id:
-              item.nodeType === NodeTypeEnum.workflow
-                ? generateUUID()
-                : undefined,
+            workflow_id: undefined,
             widget_name:
               item.nodeType === NodeTypeEnum.widget ? item.name : undefined,
             widget_class_name:

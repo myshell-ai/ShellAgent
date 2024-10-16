@@ -58,11 +58,12 @@ export const initData = (data: FieldValues) => {
           const { keyMap: payloadMap, newObj: newPayload } = updateKeys(
             (button?.on_click as any)?.payload || {},
           );
+          const id = generateUUID() as Lowercase<string>;
           return {
             ...button,
-            id: generateUUID(),
+            id,
             on_click: {
-              event: '',
+              event: id,
               payload: replaceKeyInData(newPayload, payloadMap),
             },
           };

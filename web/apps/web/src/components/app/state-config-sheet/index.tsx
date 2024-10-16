@@ -2,11 +2,11 @@
 
 import {
   NodeId,
-  useReactFlowStore,
   NodeTypeEnum,
+  useReactFlowStore,
 } from '@shellagent/flow-engine';
-import { TValues, TFieldMode } from '@shellagent/form-engine';
-import { FormRef, Drawer } from '@shellagent/ui';
+import { TFieldMode, TValues } from '@shellagent/form-engine';
+import { Drawer, FormRef } from '@shellagent/ui';
 import { useInjection } from 'inversify-react';
 import { isEqual, isNumber } from 'lodash-es';
 import { observer } from 'mobx-react-lite';
@@ -20,8 +20,8 @@ import { WorkflowConfig } from '@/components/app/config-form/workflow-config';
 import { EditableTitle } from '@/components/app/editable-title';
 import NodeForm from '@/components/app/node-form';
 import {
-  IWorkflowTask,
   IWidgetTask,
+  IWorkflowTask,
 } from '@/components/app/node-form/widgets/tasks-config';
 import { AppBuilderChatModel } from '@/components/chat/app-builder-chat.model';
 import { useAppStore } from '@/stores/app/app-provider';

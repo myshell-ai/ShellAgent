@@ -15,79 +15,6 @@ export enum CheckTypeEnum {
   model = 'model',
 }
 
-export const CheckerContent: React.FC<CheckerContentProps> = ({
-  formRef,
-  dependencies,
-}) => {
-  const [type, setType] = useState<CheckTypeEnum>(CheckTypeEnum.customNode);
-  const [form] = Form.useForm();
-
-  const {
-    hasMissingCustomNodes,
-    hasMissingModels,
-    missingCustomNodes,
-    missingModels,
-  } = useMemo(() => checkDependency(dependencies), [dependencies]);
-
-  useEffect(() => {
-    setType(
-      hasMissingCustomNodes ? CheckTypeEnum.customNode : CheckTypeEnum.model,
-    );
-  }, [hasMissingCustomNodes]);
-
-  const tabItems = useMemo(() => {
-    const items = [];
-
-    if (hasMissingCustomNodes) {
-      items.push({
-        key: CheckTypeEnum.customNode,
-        label: 'Custom Node',
-        children: <CustomNodeForm />,
-      });
-    }
-
-    if (hasMissingModels) {
-      items.push({
-        key: CheckTypeEnum.model,
-        label: 'Models',
-        children: <ModelForm />,
-      });
-    }
-
-    return items;
-  }, [hasMissingCustomNodes, hasMissingModels]);
-
-  const handleTabChange = (activeKey: string) => {
-    setType(activeKey as CheckTypeEnum);
-    form.resetFields();
-  };
-
-  const initialValues = useMemo(
-    () =>
-      formatDependencyData2Form({
-        missing_custom_nodes: missingCustomNodes,
-        missing_models: missingModels,
-      }),
-    [missingCustomNodes, missingModels],
-  );
-
-  return (
-    <Form
-      form={form}
-      layout="vertical"
-      ref={formRef}
-      disabled={type === CheckTypeEnum.customNode}
-      initialValues={initialValues}>
-      <Tabs
-        activeKey={type}
-        onChange={handleTabChange}
-        className="w-full px-4"
-        items={tabItems}
-      />
-    </Form>
-  );
-};
-
 const CustomNodeForm: React.FC = () => (
   <>
     <p className="mb-4 text-sm text-gray-500">
@@ -229,3 +156,76 @@ const ModelForm: React.FC = () => (
     </Form.List>
   </>
 );
+
+export const CheckerContent: React.FC<CheckerContentProps> = ({
+  formRef,
+  dependencies,
+}) => {
+  const [type, setType] = useState<CheckTypeEnum>(CheckTypeEnum.customNode);
+  const [form] = Form.useForm();
+
+  const {
+    hasMissingCustomNodes,
+    hasMissingModels,
+    missingCustomNodes,
+    missingModels,
+  } = useMemo(() => checkDependency(dependencies), [dependencies]);
+
+  useEffect(() => {
+    setType(
+      hasMissingCustomNodes ? CheckTypeEnum.customNode : CheckTypeEnum.model,
+    );
+  }, [hasMissingCustomNodes]);
+
+  const tabItems = useMemo(() => {
+    const items = [];
+
+    if (hasMissingCustomNodes) {
+      items.push({
+        key: CheckTypeEnum.customNode,
+        label: 'Custom Node',
+        children: <CustomNodeForm />,
+      });
+    }
+
+    if (hasMissingModels) {
+      items.push({
+        key: CheckTypeEnum.model,
+        label: 'Models',
+        children: <ModelForm />,
+      });
+    }
+
+    return items;
+  }, [hasMissingCustomNodes, hasMissingModels]);
+
+  const handleTabChange = (activeKey: string) => {
+    setType(activeKey as CheckTypeEnum);
+    form.resetFields();
+  };
+
+  const initialValues = useMemo(
+    () =>
+      formatDependencyData2Form({
+        missing_custom_nodes: missingCustomNodes,
+        missing_models: missingModels,
+      }),
+    [missingCustomNodes, missingModels],
+  );
+
+  return (
+    <Form
+      form={form}
+      layout="vertical"
+      ref={formRef}
+      disabled={type === CheckTypeEnum.customNode}
+      initialValues={initialValues}>
+      <Tabs
+        activeKey={type}
+        onChange={handleTabChange}
+        className="w-full px-4"
+        items={tabItems}
+      />
+    </Form>
+  );
+};

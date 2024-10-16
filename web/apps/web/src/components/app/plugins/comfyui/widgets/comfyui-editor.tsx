@@ -68,53 +68,6 @@ export const ComfyUIEditor = ({
     },
   });
 
-  const handleMessage = useCallback(
-    (event: MessageEvent) => {
-      if (!value) {
-        return;
-      }
-
-      try {
-        const valueUrl = new URL(value);
-        if (valueUrl.origin !== event.origin) return;
-
-        const comfy_workflow_id = getValues('comfy_workflow_id');
-
-        switch (event.data.type) {
-          case MessageType.LOADED:
-            setLoaded(true);
-            getComfySchema({
-              comfy_workflow_id,
-              filename: 'workflow.json',
-            });
-            console.log('ComfyUI loaded');
-            break;
-          case MessageType.SAVE:
-            saveComfyRequest({
-              prompt: event.data.prompt,
-              comfyui_api: valueUrl.origin,
-              workflow: event.data.workflow,
-              name: event.data.name,
-              comfy_workflow_id,
-            });
-            break;
-          default:
-            break;
-        }
-      } catch (error) {
-        console.error('Invalid URL:', error);
-      }
-    },
-    [value, getValues],
-  );
-
-  useEffect(() => {
-    window.addEventListener('message', handleMessage);
-    return () => {
-      window.removeEventListener('message', handleMessage);
-    };
-  }, [handleMessage]);
-
   const handleCancel = () => {
     setIsModalVisible(false);
   };
@@ -169,6 +122,53 @@ export const ComfyUIEditor = ({
       console.log('Upload successful:', result);
     },
   });
+
+  const handleMessage = useCallback(
+    (event: MessageEvent) => {
+      if (!value) {
+        return;
+      }
+
+      try {
+        const valueUrl = new URL(value);
+        if (valueUrl.origin !== event.origin) return;
+
+        const comfy_workflow_id = getValues('comfy_workflow_id');
+
+        switch (event.data.type) {
+          case MessageType.LOADED:
+            setLoaded(true);
+            getComfySchema({
+              comfy_workflow_id,
+              filename: 'workflow.json',
+            });
+            console.log('ComfyUI loaded');
+            break;
+          case MessageType.SAVE:
+            saveComfyRequest({
+              prompt: event.data.prompt,
+              comfyui_api: valueUrl.origin,
+              workflow: event.data.workflow,
+              name: event.data.name,
+              comfy_workflow_id,
+            });
+            break;
+          default:
+            break;
+        }
+      } catch (error) {
+        console.error('Invalid URL:', error);
+      }
+    },
+    [value, getValues],
+  );
+
+  useEffect(() => {
+    window.addEventListener('message', handleMessage);
+    return () => {
+      window.removeEventListener('message', handleMessage);
+    };
+  }, [handleMessage]);
 
   const handleSave = () => {
     iframeRef.current?.contentWindow?.postMessage(

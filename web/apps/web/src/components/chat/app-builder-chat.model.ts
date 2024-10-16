@@ -39,6 +39,8 @@ export class AppBuilderChatModel {
 
   @observable isRunLoading = false;
 
+  @observable previousTasksNumber = 0;
+
   currentLuiButton:
     | {
         buttonId: string;
@@ -248,6 +250,17 @@ export class AppBuilderChatModel {
             runInAction(() => {
               this.isRunLoading = false;
             });
+          }
+        }
+        if (ev.event === EventStatusEnum.queuing) {
+          try {
+            const data = JSON.parse(ev.data);
+            this.previousTasksNumber = data.previous_tasks;
+          } catch {
+            this.emitter.emitter.emit(
+              'message.error',
+              `Parse error, ${ev.data}`,
+            );
           }
         }
       },

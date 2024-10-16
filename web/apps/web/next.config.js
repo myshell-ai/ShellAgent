@@ -30,11 +30,15 @@ module.exports = {
     return config;
   },
   rewrites: async () => {
-    const NEXT_PUBLIC_API_URL = process.env.NEXT_PUBLIC_API_URL;
     return [
       {
         source: '/api/:path*',
-        destination: `${NEXT_PUBLIC_API_URL}/api/:path*`,
+        // TODO
+        destination: `http://34.239.158.245:8089/api/:path*`,
+      },
+      {
+        source: '/models_searcher/:path*',
+        destination: `${process.env.NEXT_PUBLIC_MODELS_SEARCHER || 'https://shellagent.myshell.ai/models_searcher'}/:path*`,
       },
     ];
   },
