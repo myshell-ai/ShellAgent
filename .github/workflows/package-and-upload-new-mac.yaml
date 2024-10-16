@@ -21,44 +21,44 @@ on:
       #   default: "beta"
 
 jobs:
-  # build:
-  #   runs-on: ubuntu-latest
+  build:
+    runs-on: ubuntu-latest
 
-  #   steps:
-  #     - uses: actions/checkout@v4
-  #       with:
-  #         ref: ${{ inputs.git_tag }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.git_tag }}
 
-  #     - uses: pnpm/action-setup@v2
-  #       with:
-  #         version: 9
-  #         run_install: false
+      - uses: pnpm/action-setup@v2
+        with:
+          version: 9
+          run_install: false
 
-  #     - uses: actions/setup-node@v4
-  #       with:
-  #         node-version: "20"
-  #         cache: "pnpm"
-  #         cache-dependency-path: "web/pnpm-lock.yaml"
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "pnpm"
+          cache-dependency-path: "web/pnpm-lock.yaml"
 
-  #     - working-directory: "./web"
-  #       run: pnpm install
+      - working-directory: "./web"
+        run: pnpm install
 
-  #     - working-directory: "./web"
-  #       run: pnpm turbo run build --filter=web
-  #       env:
-  #         NEXT_PUBLIC_API_URL: ${{ secrets.NEXT_PUBLIC_API_URL }}
+      - working-directory: "./web"
+        run: pnpm turbo run build --filter=web
+        env:
+          NEXT_PUBLIC_API_URL: ${{ secrets.NEXT_PUBLIC_API_URL }}
 
-  #     - uses: actions/upload-artifact@v3
-  #       with:
-  #         name: web-build
-  #         path: web/apps/web/dist
+      - uses: actions/upload-artifact@v3
+        with:
+          name: web-build
+          path: web/apps/web/dist
     
   package_shellagent_linux:
     permissions:
       contents: "write"
       packages: "write"
       pull-requests: "read"
-    # needs: build 
+    needs: build 
     runs-on: macos-latest
     steps:
       - uses: actions/checkout@v4
@@ -73,11 +73,11 @@ jobs:
         with:
           python-version: 3.10.10
 
-      # - name: Download web-build artifact
-      #   uses: actions/download-artifact@v3
-      #   with:
-      #     name: web-build
-      #     path: ./servers/web-build
+      - name: Download web-build artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: web-build
+          path: ./servers/web-build
 
       - shell: bash
         run: |
@@ -98,11 +98,13 @@ jobs:
           
           ../Python-3.10.10/python3.10/bin/pip3 install poetry
           ../Python-3.10.10/python3.10/bin/pip3 install -e .
+
+          ../Python-3.10.10/python3.10/bin/python3 --version
           
           cd ..
 
           mkdir ShellAgent_MacOS_portable
-          mv Python-3.10.10 ShellAgent_MacOS_portable
+          mv Python-3.10.10 ShellAgent_MacOS_portable/python_embeded
           mv ShellAgent_copy ShellAgent_MacOS_portable/ShellAgent
 
           cd ShellAgent_MacOS_portable
