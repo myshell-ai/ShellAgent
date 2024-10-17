@@ -240,12 +240,18 @@ export const ComfyUIEditor = ({
 
   const reloadSettings = async () => {
     const settings = await model.loadSettingsEnv();
-    const api =
-      settings?.envs?.find(env => env.key === COMFYUI_API)?.value ||
-      DEFAULT_COMFYUI_API;
-    onChange(api);
+    const api = settings?.envs?.find(env => env.key === COMFYUI_API)?.value;
     if (api && isValidUrl(api)) {
+      onChange(api);
       setIsLoading(true);
+    } else {
+      toast.error('Invalid ComfyUI API settings', {
+        position: 'top-center',
+        autoClose: 3000,
+        hideProgressBar: true,
+        pauseOnHover: true,
+        closeButton: false,
+      });
     }
   };
 
