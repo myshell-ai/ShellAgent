@@ -96,7 +96,6 @@ jobs:
           zip -r ShellAgent_linux_release.zip ShellAgent_linux_release/
           mv ShellAgent_linux_release.zip ShellAgent/ShellAgent_linux_release.zip
 
-
           ls
 
       - name: Install Hugging Face Hub SDK

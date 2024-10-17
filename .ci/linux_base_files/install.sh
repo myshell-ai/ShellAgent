@@ -39,10 +39,8 @@ find_conda_sh() {
 check_conda_installed() {
     if command -v conda &> /dev/null; then
         echo "Conda is installed."
-        # 获取 Conda 的母文件夹
         conda_root=$(conda info | grep 'base environment' | awk '{print $4}')
 
-        # 检查是否成功获取路径
         if [ -n "$conda_root" ]; then
             echo "find conda root: $conda_root"
             CONDA_SH_PATH="$conda_root/etc/profile.d/conda.sh"
