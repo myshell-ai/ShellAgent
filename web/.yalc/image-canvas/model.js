@@ -118,7 +118,7 @@ exports.ImageCanvasModel = class ImageCanvasModel {
     }
     processWorkflowRunnerOutput(keyPath) {
         keyPath = keyPath.slice(0);
-        if (keyPath.indexOf(WORKFLOW_RUNNER) > -1) {
+        if (keyPath.some(v => v.indexOf(WORKFLOW_RUNNER) > -1)) {
             return keyPath[0].replace('}}', '[0]}}');
         }
         return keyPath[0];
