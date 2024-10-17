@@ -22,9 +22,9 @@ module.exports = {
       ...config.resolve?.fallback,
       zlib: false,
     };
-    // config.optimization = {
-    //   minimize: false
-    // }
+    config.optimization = {
+      minimize: false,
+    };
     config.plugins.push(
       new webpack.optimize.LimitChunkCountPlugin({
         maxChunks: 1,
