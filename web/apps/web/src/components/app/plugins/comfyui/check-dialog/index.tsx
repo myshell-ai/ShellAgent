@@ -13,6 +13,7 @@ import { formatFormData2Dependency } from '../utils';
 interface CheckDialogProps {
   open: boolean;
   setOpen: (open: boolean) => void;
+  setModalOpen: (open: boolean) => void;
   comfy_workflow_id: string;
   dependencies: SaveResponse['data']['dependencies'] | null;
 }
@@ -20,6 +21,7 @@ interface CheckDialogProps {
 export const CheckDialog: React.FC<CheckDialogProps> = ({
   open,
   setOpen,
+  setModalOpen,
   comfy_workflow_id,
   dependencies,
 }) => {
@@ -27,6 +29,12 @@ export const CheckDialog: React.FC<CheckDialogProps> = ({
 
   const { run: updateDependencyRequest } = useRequest(updateDependency, {
     manual: true,
+    onSuccess: result => {
+      if (result.success) {
+        setOpen(false);
+        setModalOpen(false);
+      }
+    },
   });
 
   const handleSubmit = useCallback(async () => {
@@ -34,8 +42,6 @@ export const CheckDialog: React.FC<CheckDialogProps> = ({
       await formRef.current?.validateFields();
       const values = formRef.current?.getFieldsValue();
       const formattedValues = formatFormData2Dependency(values);
-
-      setOpen(false);
       updateDependencyRequest({
         ...formattedValues,
         comfy_workflow_id,
@@ -43,7 +49,7 @@ export const CheckDialog: React.FC<CheckDialogProps> = ({
     } catch (error) {
       console.error('Form validation failed:', error);
     }
-  }, [comfy_workflow_id, setOpen, updateDependencyRequest]);
+  }, [comfy_workflow_id, setOpen, setModalOpen, updateDependencyRequest]);
 
   const handleCancel = useCallback(() => setOpen(false), [setOpen]);
 

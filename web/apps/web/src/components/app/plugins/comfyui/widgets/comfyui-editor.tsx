@@ -25,6 +25,8 @@ import { saveComfy, uploadComfy, getFile } from '../services';
 import type { SaveResponse } from '../services/type';
 import { isValidUrl, checkDependency } from '../utils';
 
+const settingsDisabled = process.env.NEXT_PUBLIC_DISABLE_SETTING === 'yes';
+
 export const ComfyUIEditor = ({
   value,
   onChange,
@@ -32,7 +34,7 @@ export const ComfyUIEditor = ({
   value: string;
   onChange: (value: string) => void;
 }) => {
-  const [isModalVisible, setIsModalVisible] = useState(false);
+  const [modalOpen, setModalOpen] = useState(false);
   const [checkDialogOpen, setCheckDialogOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string>('');
@@ -45,7 +47,7 @@ export const ComfyUIEditor = ({
   const model = useInjection(SettingsModel);
 
   const showModal = () => {
-    setIsModalVisible(true);
+    setModalOpen(true);
   };
 
   const { run: getComfySchema } = useRequest(getFile, {
@@ -73,7 +75,7 @@ export const ComfyUIEditor = ({
   });
 
   const handleCancel = () => {
-    setIsModalVisible(false);
+    setModalOpen(false);
   };
 
   const { run: saveComfyRequest, loading: saveLoading } = useRequest(
@@ -87,20 +89,10 @@ export const ComfyUIEditor = ({
             data.dependencies,
           );
           if (hasMissingCustomNodes || hasMissingModels) {
-            toast.error(
-              'Dependencies missing, please check and submit the required dependencies',
-              {
-                position: 'top-center',
-                autoClose: 3000,
-                hideProgressBar: true,
-                pauseOnHover: true,
-                closeButton: false,
-              },
-            );
             setCheckDialogOpen(true);
             setDependencies(data.dependencies);
           } else {
-            setIsModalVisible(false);
+            setModalOpen(false);
             const comfy_workflow_id = getValues('comfy_workflow_id');
             emitter.emit(EventType.UPDATE_FORM, {
               data: result.data.schemas,
@@ -234,11 +226,14 @@ export const ComfyUIEditor = ({
   };
 
   const showSettingButton = useMemo(() => {
+    if (settingsDisabled) {
+      return false;
+    }
     if (!value) {
       return true;
     }
     return !isValidUrl(value);
-  }, [value]);
+  }, [value, settingsDisabled]);
 
   const reloadSettings = async () => {
     const settings = await model.loadSettingsEnv();
@@ -294,7 +289,7 @@ export const ComfyUIEditor = ({
           },
         }}
         forceRender
-        open={isModalVisible}
+        open={modalOpen}
         onOk={handleSave}
         mask={false}
         width="80%"
@@ -351,6 +346,7 @@ export const ComfyUIEditor = ({
       </Modal>
       <CheckDialog
         open={checkDialogOpen}
+        setModalOpen={setModalOpen}
         setOpen={setCheckDialogOpen}
         dependencies={dependencies}
         comfy_workflow_id={getValues('comfy_workflow_id')}
