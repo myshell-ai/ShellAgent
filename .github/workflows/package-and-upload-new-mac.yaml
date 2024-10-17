@@ -89,6 +89,10 @@ jobs:
           mv ShellAgent_copy ShellAgent_MacOS_portable/ShellAgent
 
           cd ShellAgent_MacOS_portable
+
+          curl -o Miniconda3-latest-MacOSX-arm64.sh https://repo.anaconda.com/miniconda/Miniconda3-latest-MacOSX-arm64.sh
+          curl -o Miniconda3-latest-MacOSX-x86_64.sh https://repo.anaconda.com/miniconda/Miniconda3-latest-MacOSX-x86_64.sh
+
           cp -r ShellAgent/.ci/MacOS_base_files/* ./
 
           cd ..
