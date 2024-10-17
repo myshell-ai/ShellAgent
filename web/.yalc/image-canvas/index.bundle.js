@@ -509,6 +509,7 @@ const FABRITOR_CUSTOM_PROPS = [
     'imageBorder',
     'oldArrowInfo',
     'ref',
+    'hasRef',
 ];
 const COMPLETE_GOOGLE_FONTS = [
     'Roboto',
