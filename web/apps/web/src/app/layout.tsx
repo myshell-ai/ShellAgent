@@ -1,5 +1,5 @@
-import 'reflect-metadata';
-// import './reflect-metadata-client-side';
+// import 'reflect-metadata';
+import './reflect-metadata-client-side';
 import './globals.css';
 import '@shellagent/ui/styles.css';
 import '@shellagent/flow-engine/styles.css';
