@@ -33,7 +33,11 @@ const CustomNodeForm: React.FC = () => (
                 required
                 name={[field.name, 'name']}
                 label="Name">
-                <Input readOnly placeholder="Enter custom node name" />
+                <Input
+                  variant="filled"
+                  readOnly
+                  placeholder="Enter custom node name"
+                />
               </Form.Item>
               <Form.Item
                 {...field}
@@ -82,14 +86,14 @@ const ModelForm: React.FC = () => (
                 required
                 name={[field.name, 'filename']}
                 label="Filename">
-                <Input readOnly placeholder="Filename" />
+                <Input variant="filled" readOnly placeholder="Filename" />
               </Form.Item>
               <Form.Item
                 {...field}
                 required
                 name={[field.name, 'save_path']}
                 label="Save Path">
-                <Input readOnly placeholder="Save path" />
+                <Input variant="filled" readOnly placeholder="Save path" />
               </Form.Item>
               <Form.List
                 initialValue={[]}
@@ -130,7 +134,7 @@ const ModelForm: React.FC = () => (
                               placeholder="Enter URL"
                             />
                           </Form.Item>
-                          {urlFields.length > 1 && (
+                          {urlFields.length && (
                             <Button
                               onClick={() => removeUrl(urlField.name)}
                               icon={<DeleteOutlined />}

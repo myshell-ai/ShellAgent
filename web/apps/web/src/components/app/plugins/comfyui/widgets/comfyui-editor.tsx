@@ -261,7 +261,7 @@ export const ComfyUIEditor = ({
         title={
           <div className="flex justify-between items-center">
             <div className="flex gap-2">
-              <span>ComfyUI Editor</span>
+              <span className="text-lg font-medium">ComfyUI Editor</span>
               {error && <div className="text-red-500 font-normal">{error}</div>}
             </div>
             <Upload
@@ -278,6 +278,11 @@ export const ComfyUIEditor = ({
             </Upload>
           </div>
         }
+        styles={{
+          content: {
+            padding: '12px 16px',
+          },
+        }}
         forceRender
         open={isModalVisible}
         onOk={handleSave}
@@ -329,8 +334,7 @@ export const ComfyUIEditor = ({
           title="comfyui"
           ref={iframeRef}
           src={value}
-          height="600px"
-          className={`w-full ${isLoading || showSettingButton ? 'hidden' : ''}`}
+          className={`w-full h-[80vh] ${isLoading || showSettingButton ? 'hidden' : ''}`}
           onLoad={handleIframeLoad}
           onError={handleIframeError}
         />
