@@ -1,2 +1,3 @@
 from proconfig.widgets.myshell_widgets.tools.image_text_fuser import ImageTextFuserWidget
 from proconfig.widgets.myshell_widgets.tools.image_canvas import ImageCanvasWidget
+from proconfig.widgets.myshell_widgets.tools.twitter_search import XWidget
