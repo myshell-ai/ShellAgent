@@ -305,12 +305,12 @@ export const ComfyUIEditor = ({
         }
         closeIcon={null}>
         {isLoading && (
-          <div className="flex justify-center items-center h-[600px]">
+          <div className="flex justify-center items-center h-[80vh]">
             <Spinner size="lg" className="text-brand" />
           </div>
         )}
         {showSettingButton && (
-          <div className="flex flex-col gap-2 justify-center items-center h-[600px]">
+          <div className="flex flex-col gap-2 justify-center items-center h-[80vh]">
             <div>
               There is an issue with the ComfyUI API settings, please reset them
               <Button size="sm" onClick={showSettings} className="ml-2">
