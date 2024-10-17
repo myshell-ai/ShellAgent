@@ -116,7 +116,7 @@ jobs:
               # path_in_repo="ShellAgent_${{ inputs.version }}.zip",
               path_in_repo="ShellAgent_linux_v1.0.0.zip",
               repo_id=repo_id,
-              repo_type="model",  # or 'dataset' depending on your use case
+              repo_type="model",
               token="${{ secrets.HF_TOKEN }}"
           )
         shell: python
