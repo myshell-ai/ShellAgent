@@ -37,6 +37,8 @@ def comfyui_run(api, prompt, schemas, user_inputs):
     ws_address = f"{wsx}://{server_address}"
     http_address = f"{httpx}://{server_address}"
     
+    is_local = "localhost" in server_address or "127.0.0.1" in server_address
+    
     client_id = str(uuid.uuid4())
     ws = websocket.WebSocket()
     ws.connect("{}/ws?clientId={}".format(ws_address, client_id))
@@ -45,7 +47,11 @@ def comfyui_run(api, prompt, schemas, user_inputs):
     for node_id, node_schema in schemas["inputs"].items():
         input_value = user_inputs[node_id]
         if node_schema["type"] not in NON_FILE_INPUT_TYPES: # file input
-            input_value = os.path.join(os.getcwd(), input_value)
+            if is_local:
+                input_value = os.path.join(os.getcwd(), input_value)
+            else:
+                # upload to CDN
+                input_value = upload_file_to_myshell(input_value)
             
         prompt[node_id]["inputs"]["default_value"] = input_value
         
