@@ -99,6 +99,7 @@ jobs:
           cp -r ../ShellAgent/.ci/python_dependencies_wins/libs ./libs
           sed -i '1i../ShellAgent' ./python310._pth
           
+          
           cd ..
 
           mkdir ShellAgent_windows_portable
