@@ -108,7 +108,7 @@ jobs:
 
           # Set repository and file paths
           repo_id = "myshell-ai/ShellAgent"
-          file_path = "ShellAgent_MacOS_portable.zip"
+          file_path = "ShellAgent_linux_release.zip"
 
           # Upload the file to Hugging Face repository
           api.upload_file(
