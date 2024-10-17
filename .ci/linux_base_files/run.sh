@@ -22,6 +22,28 @@ find_conda_sh() {
     return 1
 }
 
+# Function to check if conda is installed
+check_conda_installed() {
+    if command -v conda &> /dev/null; then
+        echo "Conda is installed."
+        conda_root=$(conda info | grep 'base environment' | awk '{print $4}')
+
+        if [ -n "$conda_root" ]; then
+            echo "find conda root: $conda_root"
+            CONDA_SH_PATH="$conda_root/etc/profile.d/conda.sh"
+        else
+            echo "Parse conda info failed. Try to search it in some regular path"
+            find_conda_sh
+        fi
+        
+        return 0
+    else
+        echo "Conda is not installed. Installing Miniconda..."
+        install_miniconda
+        return 1
+    fi
+}
+
 # Function to initialize conda for the current shell session
 initialize_conda() {
     if [ -z "$CONDA_SH_PATH" ]; then
@@ -35,7 +57,7 @@ initialize_conda() {
 }
 
 # Main script execution
-find_conda_sh
+check_conda_installed
 initialize_conda
 echo "activate python from $(which python)"
 
