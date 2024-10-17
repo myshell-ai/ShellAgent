@@ -6,7 +6,7 @@ on:
     branches:
       - dev_comfyui_v2
     paths:
-      - ".github/workflows/package-and-upload-new-mac.yaml"
+      - ".github/workflows/package-and-upload-new-linux.yaml"
   # workflow_dispatch:
   #   inputs:
   #     git_tag:
