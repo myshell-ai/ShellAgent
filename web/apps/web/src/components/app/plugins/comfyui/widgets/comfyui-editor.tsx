@@ -2,10 +2,12 @@ import {
   UploadOutlined,
   ReloadOutlined,
   ExportOutlined,
+  FullscreenOutlined,
+  FullscreenExitOutlined,
 } from '@ant-design/icons';
 import { Button, useFormContext, Spinner } from '@shellagent/ui';
 import { useRequest } from 'ahooks';
-import { Modal, Upload } from 'antd';
+import { Modal, Upload, Tooltip } from 'antd';
 import { useInjection } from 'inversify-react';
 import React, {
   useState,
@@ -45,6 +47,7 @@ export const ComfyUIEditor = ({
   const iframeRef = useRef<HTMLIFrameElement>(null);
   const { getValues } = useFormContext();
   const model = useInjection(SettingsModel);
+  const [isFullscreen, setIsFullscreen] = useState(false);
 
   const showModal = () => {
     setModalOpen(true);
@@ -251,6 +254,46 @@ export const ComfyUIEditor = ({
     [showSettingButton, isLoading, loaded],
   );
 
+  const toggleFullscreen = () => {
+    setIsFullscreen(!isFullscreen);
+  };
+
+  const modalStyles = isFullscreen
+    ? {
+        mask: {
+          height: '100vh',
+          width: '100vw',
+          margin: 0,
+          top: 0,
+          paddingBottom: 0,
+        },
+        wrapper: {
+          height: '100vh',
+          width: '100vw',
+          margin: 0,
+          top: 0,
+          paddingBottom: 0,
+        },
+        content: {
+          padding: '12px 16px',
+          height: '100vh',
+          width: '100vw',
+          margin: 0,
+          top: 0,
+          paddingBottom: 0,
+        },
+        body: {
+          height: 'calc(100vh - 55px - 53px)',
+          padding: 0,
+          overflow: 'hidden',
+        },
+      }
+    : {
+        content: {
+          padding: '12px 16px',
+        },
+      };
+
   return (
     <div>
       <Button size="sm" className="w-full" onClick={showModal}>
@@ -269,31 +312,38 @@ export const ComfyUIEditor = ({
                 }}
               />
             </div>
-            <Upload
-              accept=".json"
-              showUploadList={false}
-              beforeUpload={file => {
-                handleImport(file);
-                return false;
-              }}>
-              <Button size="sm" disabled={disabled}>
-                <UploadOutlined className="mr-2" />
-                Import
-              </Button>
-            </Upload>
+            <div className="flex items-center gap-2">
+              <Upload
+                accept=".json"
+                showUploadList={false}
+                beforeUpload={file => {
+                  handleImport(file);
+                  return false;
+                }}>
+                <Button size="sm" disabled={disabled}>
+                  <UploadOutlined className="mr-2" />
+                  Import
+                </Button>
+              </Upload>
+              <Tooltip title={isFullscreen ? 'Exit fullscreen' : 'Fullscreen'}>
+                <Button onClick={toggleFullscreen} variant="plain">
+                  {isFullscreen ? (
+                    <FullscreenExitOutlined />
+                  ) : (
+                    <FullscreenOutlined />
+                  )}
+                </Button>
+              </Tooltip>
+            </div>
           </div>
         }
-        styles={{
-          content: {
-            padding: '12px 16px',
-          },
-        }}
+        styles={modalStyles}
         forceRender
         open={modalOpen}
         onOk={handleSave}
         mask={false}
-        width="80%"
-        className="top-5"
+        width={isFullscreen ? '100%' : '80%'}
+        className={isFullscreen ? 'top-0 p-0 m-0' : 'top-5'}
         footer={
           <div className="flex justify-end gap-2">
             <Button size="sm" variant="outline" onClick={handleCancel}>
@@ -339,7 +389,7 @@ export const ComfyUIEditor = ({
           title="comfyui"
           ref={iframeRef}
           src={value}
-          className={`w-full h-[80vh] ${isLoading || showSettingButton ? 'hidden' : ''}`}
+          className={`w-full ${isFullscreen ? 'h-full' : 'h-[80vh]'} ${isLoading || showSettingButton ? 'hidden' : ''}`}
           onLoad={handleIframeLoad}
           onError={handleIframeError}
         />
