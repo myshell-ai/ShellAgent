@@ -1,4 +1,8 @@
-import { UploadOutlined, ReloadOutlined } from '@ant-design/icons';
+import {
+  UploadOutlined,
+  ReloadOutlined,
+  ExportOutlined,
+} from '@ant-design/icons';
 import { Button, useFormContext, Spinner } from '@shellagent/ui';
 import { useRequest } from 'ahooks';
 import { Modal, Upload } from 'antd';
@@ -263,6 +267,12 @@ export const ComfyUIEditor = ({
             <div className="flex gap-2">
               <span className="text-lg font-medium">ComfyUI Editor</span>
               {error && <div className="text-red-500 font-normal">{error}</div>}
+              <ExportOutlined
+                className="cursor-pointer text-primary"
+                onClick={() => {
+                  window.open(value, '_blank');
+                }}
+              />
             </div>
             <Upload
               accept=".json"
