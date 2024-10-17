@@ -1,6 +1,7 @@
 import { DeleteOutlined } from '@ant-design/icons';
 import { Form, Input, Button, FormInstance, Tabs } from 'antd';
 import React, { useState, useMemo, useEffect } from 'react';
+import { Text } from '@shellagent/ui';
 
 import type { SaveResponse } from '../services/type';
 import { checkDependency, formatDependencyData2Form } from '../utils';
@@ -18,8 +19,8 @@ export enum CheckTypeEnum {
 const CustomNodeForm: React.FC = () => (
   <>
     <p className="mb-4 text-sm text-gray-500">
-      The following components are currently untracked. Please provide
-      additional details to ensure proper import for users.
+      Repo must be valid public Git repositories. Node version can be specified
+      by Commit.
     </p>
     <Form.List name="missing_custom_nodes">
       {fields => (
@@ -69,7 +70,7 @@ const CustomNodeForm: React.FC = () => (
 const ModelForm: React.FC = () => (
   <>
     <p className="mb-4 text-sm text-gray-500">
-      Please provide URLs for the missing models to ensure proper import.
+      URL must be valid public download links.
     </p>
     <Form.List name="missing_models" initialValue={[]}>
       {fields => (
@@ -219,18 +220,24 @@ export const CheckerContent: React.FC<CheckerContentProps> = ({
   );
 
   return (
-    <Form
-      form={form}
-      layout="vertical"
-      ref={formRef}
-      disabled={type === CheckTypeEnum.customNode}
-      initialValues={initialValues}>
-      <Tabs
-        activeKey={type}
-        onChange={handleTabChange}
-        className="w-full px-4"
-        items={tabItems}
-      />
-    </Form>
+    <>
+      <Text className="text-sm text-gray-500 px-4 pt-2">
+        Dependency metadata is required for other environments like MyShell to
+        run the workflow correctly.
+      </Text>
+      <Form
+        form={form}
+        layout="vertical"
+        ref={formRef}
+        disabled={type === CheckTypeEnum.customNode}
+        initialValues={initialValues}>
+        <Tabs
+          activeKey={type}
+          onChange={handleTabChange}
+          className="w-full px-4"
+          items={tabItems}
+        />
+      </Form>
+    </>
   );
 };

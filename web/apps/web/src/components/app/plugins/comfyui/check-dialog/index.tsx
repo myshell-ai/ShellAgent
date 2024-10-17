@@ -1,6 +1,6 @@
 'use client';
 
-import { AModal, Button } from '@shellagent/ui';
+import { AModal, Button, Title } from '@shellagent/ui';
 import { useRequest } from 'ahooks';
 import { FormInstance } from 'antd';
 import React, { useRef, useCallback } from 'react';
@@ -27,15 +27,18 @@ export const CheckDialog: React.FC<CheckDialogProps> = ({
 }) => {
   const formRef = useRef<FormInstance>(null);
 
-  const { run: updateDependencyRequest } = useRequest(updateDependency, {
-    manual: true,
-    onSuccess: result => {
-      if (result.success) {
-        setOpen(false);
-        setModalOpen(false);
-      }
+  const { run: updateDependencyRequest, loading: submitLoading } = useRequest(
+    updateDependency,
+    {
+      manual: true,
+      onSuccess: result => {
+        if (result.success) {
+          setOpen(false);
+          setModalOpen(false);
+        }
+      },
     },
-  });
+  );
 
   const handleSubmit = useCallback(async () => {
     try {
@@ -61,8 +64,14 @@ export const CheckDialog: React.FC<CheckDialogProps> = ({
       zIndex={9999}
       bodyPadding={0}
       onCancel={handleCancel}
+      title={<Title size="h3">Additional Metadata</Title>}
       footer={[
-        <Button size="lg" key="submit" type="submit" onClick={handleSubmit}>
+        <Button
+          size="lg"
+          key="submit"
+          type="submit"
+          onClick={handleSubmit}
+          loading={submitLoading}>
           Submit
         </Button>,
       ]}>
