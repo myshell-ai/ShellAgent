@@ -96,6 +96,7 @@ jobs:
           cp -r ShellAgent/.ci/MacOS_base_files/* ./
 
           cd ..
+          
           zip -r ShellAgent_MacOS_portable.zip ShellAgent_MacOS_portable/
           mv ShellAgent_MacOS_portable.zip ShellAgent/ShellAgent_MacOS_portable.zip
 

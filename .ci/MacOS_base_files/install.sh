@@ -42,7 +42,7 @@ install_miniconda() {
 continue_script() {
     echo "=========>   Create and activate Conda environment"
     conda create -n shellagent python=3.10 -y
-    source activate shellagent
+    conda activate shellagent
     
     echo "=========>   Python version in environment:"
     which python
