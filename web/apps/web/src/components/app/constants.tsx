@@ -96,6 +96,7 @@ export const materialList: MaterialListType = [
         display_name: 'Claude',
         type: NodeTypeEnum.widget,
         undraggable: true,
+        widget_name: '@myshell_llm/1744218088699596812',
       },
     ],
   },
