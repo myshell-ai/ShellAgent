@@ -19,43 +19,7 @@ find_conda_sh() {
             return 0
         fi
     done
-    
-    echo "Conda.sh not found in standard locations. Checking environment variable CUSTOM_CONDA_PATH..."
-    if [ -n "$CUSTOM_CONDA_PATH" ]; then
-        CONDA_SH_PATH="$CUSTOM_CONDA_PATH/etc/profile.d/conda.sh"
-        if [ -f "$CONDA_SH_PATH" ]; then
-            echo "Conda.sh found at $CONDA_SH_PATH"
-            return 0
-        else
-            echo "Conda.sh not found at $CONDA_SH_PATH. Please check your CUSTOM_CONDA_PATH."
-        fi
-    else
-        echo "Conda.sh not found. Conda may not be installed."
-    fi
     return 1
-}
-
-# Function to check if conda is installed
-check_conda_installed() {
-    if command -v conda &> /dev/null; then
-        echo "Conda is installed."
-        find_conda_sh
-        return 0
-    else
-        echo "Conda is not installed. Installing Miniconda..."
-        install_miniconda
-        return 1
-    fi
-}
-
-# Function to install Miniconda
-install_miniconda() {
-    wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh -O Miniconda3-latest-Linux-x86_64.sh
-    bash Miniconda3-latest-Linux-x86_64.sh -b -p $HOME/miniconda
-    CONDA_SH_PATH="$HOME/miniconda/etc/profile.d/conda.sh"
-    conda init
-    source ~/.bashrc
-    echo "Miniconda installed."
 }
 
 # Function to initialize conda for the current shell session
@@ -66,12 +30,13 @@ initialize_conda() {
     fi
     source "$CONDA_SH_PATH"
     eval "$(conda shell.bash hook)"
+    echo "Activating the '$SHELLAGENT_ENV' environment..."
+    conda activate $SHELLAGENT_ENV
 }
 
 # Main script execution
-check_conda_installed
+find_conda_sh
 initialize_conda
-
 echo "activate python from $(which python)"
 
 cd ShellAgent

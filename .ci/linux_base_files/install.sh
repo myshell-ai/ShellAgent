@@ -78,8 +78,9 @@ activate_and_install() {
     echo "Activating the '$SHELLAGENT_ENV' environment..."
     conda activate $SHELLAGENT_ENV
     echo "Installing package in editable mode..."
-    bash scripts/install_torch_linux.sh
-    pip install -e .
+    cd ShellAgent
+    pip install poetry 
+    pip install --use-pep517 -e . 
     echo "Package installed."
 }
 
