@@ -1,9 +1,19 @@
-import { getDefaultValueBySchema, ISchema } from '@shellagent/form-engine';
+import {
+  getDefaultValueBySchema,
+  ISchema,
+  TValues,
+} from '@shellagent/form-engine';
 import { FormRef } from '@shellagent/ui';
 import { useRequest } from 'ahooks';
 import { useInjection } from 'inversify-react';
 import { merge } from 'lodash-es';
-import React, { useRef, useEffect, useState, useMemo } from 'react';
+import React, {
+  useRef,
+  useEffect,
+  useState,
+  useMemo,
+  useCallback,
+} from 'react';
 
 import { CommonWidgetConfigProps } from '@/components/app/config-form/widget-config';
 import NodeForm from '@/components/app/node-form';
@@ -41,10 +51,16 @@ const ComfyUIPlugin: React.FC<CommonWidgetConfigProps> = ({
         // 本地版
         const settings = await model.loadSettingsEnv();
         const api = settings?.envs?.find(env => env.key === COMFYUI_API)?.value;
-        formRef.current?.setValue('api', api);
+        onChange({
+          ...values,
+          api,
+        });
       } else {
         // 线上版
-        formRef.current?.setValue('api', DEFAULT_COMFYUI_API);
+        onChange({
+          ...values,
+          api: DEFAULT_COMFYUI_API,
+        });
       }
     };
 
@@ -55,10 +71,6 @@ const ComfyUIPlugin: React.FC<CommonWidgetConfigProps> = ({
     () => getDefaultValueBySchema(schema, false),
     [schema],
   );
-
-  useEffect(() => {
-    onChange(merge({}, defaultValues, values));
-  }, [defaultValues]);
 
   const { run: getComfySchema, loading: isLoading } = useRequest(getFile, {
     manual: true,
@@ -97,6 +109,13 @@ const ComfyUIPlugin: React.FC<CommonWidgetConfigProps> = ({
     }
   });
 
+  const handleOnChange = useCallback(
+    (newValues: TValues) => {
+      onChange(merge({}, defaultValues, newValues));
+    },
+    [defaultValues, onChange],
+  );
+
   if (!values) {
     return null;
   }
@@ -109,7 +128,7 @@ const ComfyUIPlugin: React.FC<CommonWidgetConfigProps> = ({
         key={JSON.stringify(schema)}
         schema={schema}
         values={values}
-        onChange={onChange}
+        onChange={handleOnChange}
         onModeChange={onModeChange}
         loading={isLoading}
         modeMap={modeMap}

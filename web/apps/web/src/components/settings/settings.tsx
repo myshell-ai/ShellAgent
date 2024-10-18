@@ -80,7 +80,11 @@ export const SettingsForm = () => {
                         </Box>
                         <Flex mx={1} alignItems="center">
                           <Icon
-                            onClick={() => arrayHelpers.remove(index)}
+                            className="cursor-pointer"
+                            onClick={() => {
+                              arrayHelpers.remove(index);
+                              formikProps.submitForm();
+                            }}
                             component={TrashIcon}
                           />
                         </Flex>
