@@ -5628,7 +5628,7 @@ var objects = [
 		globalCompositeOperation: "source-over",
 		skewX: 0,
 		skewY: 0,
-		fontFamily: "Open Sans",
+		fontFamily: "Acme",
 		fontWeight: "bold",
 		fontSize: 120,
 		text: "ShellAgent",
