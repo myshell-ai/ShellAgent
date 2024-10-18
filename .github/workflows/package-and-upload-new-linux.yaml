@@ -91,7 +91,6 @@ jobs:
 
           cd ShellAgent_linux_release
           cp -r ShellAgent/.ci/linux_base_files/* ./
-
           cd ..
 
           zip -r ShellAgent_linux_release.zip ShellAgent_linux_release/
