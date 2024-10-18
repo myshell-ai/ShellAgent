@@ -1,4 +1,3 @@
-import torch
 from typing import Any, Literal, Optional, List
 from pydantic import Field, BaseModel
 
