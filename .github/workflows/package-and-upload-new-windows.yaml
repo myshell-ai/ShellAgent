@@ -2,24 +2,18 @@
 name: "Release To HF Win"
 
 on:
-  push:
-    branches:
-      - dev_comfyui_v2
-    paths:
-      - ".github/workflows/package-and-upload-new-windows.yaml"
-      - "proconfig/**"
-  # workflow_dispatch:
-  #   inputs:
-  #     git_tag:
-  #       description: 'Git Branch Tag'
-  #       required: true
-  #       type: string
-  #       default: "main"
-      # version:
-      #   description: 'Release Version Tag'
-      #   required: true
-      #   type: string
-      #   default: "beta"
+  workflow_dispatch:
+    inputs:
+      git_tag:
+        description: 'Git Branch Tag'
+        required: true
+        type: string
+        default: "main"
+      version:
+        description: 'Release Version Tag'
+        required: true
+        type: string
+        default: "beta"
 
 jobs:
   build:
@@ -64,8 +58,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          # ref: ${{ inputs.git_tag }}
-          ref: dev_comfyui_v2
+          ref: ${{ inputs.git_tag }}
           fetch-depth: 0
           persist-credentials: false
           submodules: recursive
@@ -122,36 +115,13 @@ jobs:
 
           ls
 
-      - name: Install Hugging Face Hub SDK
-        run: pip install huggingface_hub
-
-      - name: Upload binaries to Hugging Face
-        run: |
-          from huggingface_hub import HfApi
-          api = HfApi()
-
-          # Set repository and file paths
-          repo_id = "myshell-ai/ShellAgent"
-          file_path = "ShellAgent_windows_portable.7z"
-
-          # Upload the file to Hugging Face repository
-          api.upload_file(
-              path_or_fileobj=file_path,
-              # path_in_repo="ShellAgent_${{ inputs.version }}.7z",
-              path_in_repo="ShellAgent_win_v1.0.0.7z",
-              repo_id=repo_id,
-              repo_type="model",  # or 'dataset' depending on your use case
-              token="${{ secrets.HF_TOKEN }}"
-          )
-        shell: python
-
-  create_github_release:
-    needs: [build, package_shellagent_windows]
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
+      - name: Upload binaries to release
+        uses: svenstaro/upload-release-action@v2
         with:
-          ref: ${{ inputs.git_tag }}
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          file: ShellAgent_windows_portable.7z
+          tag: ${{ inputs.version }}
+          overwrite: true
 
       - name: Download web-build artifact
         uses: actions/download-artifact@v3
@@ -162,23 +132,32 @@ jobs:
       - name: Zip web-build
         run: zip -r web-build.zip ./web-build
 
-      - name: Create Release
-        id: create_release
-        uses: actions/create-release@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Upload web-build to release
+        uses: svenstaro/upload-release-action@v2
         with:
-          tag_name: ${{ inputs.version }}
-          release_name: Release ${{ inputs.version }}
-          draft: false
-          prerelease: false
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          file: web-build.zip
+          tag: ${{ inputs.version }}
+          overwrite: true
 
-      - name: Upload Release Asset
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./web-build.zip
-          asset_name: web-build.zip
-          asset_content_type: application/zip
+      # - name: Install Hugging Face Hub SDK
+      #   run: pip install huggingface_hub
+
+      # - name: Upload binaries to Hugging Face
+      #   run: |
+      #     from huggingface_hub import HfApi
+      #     api = HfApi()
+
+      #     # Set repository and file paths
+      #     repo_id = "myshell-ai/ShellAgent"
+      #     file_path = "ShellAgent_windows_portable.7z"
+
+      #     # Upload the file to Hugging Face repository
+      #     api.upload_file(
+      #         path_or_fileobj=file_path,
+      #         path_in_repo="ShellAgent_${{ inputs.version }}.7z",
+      #         repo_id=repo_id,
+      #         repo_type="model",  # or 'dataset' depending on your use case
+      #         token="${{ secrets.HF_TOKEN }}"
+      #     )
+      #   shell: python
