@@ -1,0 +1,127 @@
+
+name: "Release To HF Mac"
+
+on:
+  workflow_dispatch:
+    inputs:
+      git_tag:
+        description: 'Git Branch Tag'
+        required: true
+        type: string
+        default: "main"
+      version:
+        description: 'Release Version Tag'
+        required: true
+        type: string
+        default: "beta"
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.git_tag }}
+
+      - uses: pnpm/action-setup@v2
+        with:
+          version: 9
+          run_install: false
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "pnpm"
+          cache-dependency-path: "web/pnpm-lock.yaml"
+
+      - working-directory: "./web"
+        run: pnpm install
+
+      - working-directory: "./web"
+        run: pnpm turbo run build --filter=web
+        env:
+          NEXT_PUBLIC_API_URL: ${{ secrets.NEXT_PUBLIC_API_URL }}
+
+      - uses: actions/upload-artifact@v3
+        with:
+          name: web-build
+          path: web/apps/web/dist
+    
+  package_shellagent_linux:
+    permissions:
+      contents: "write"
+      packages: "write"
+      pull-requests: "read"
+    needs: build 
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.git_tag }}
+          fetch-depth: 0
+          persist-credentials: false
+          submodules: recursive
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: 3.10.10
+
+      - name: Download web-build artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: web-build
+          path: ./servers/web-build
+
+      - shell: bash
+        run: |
+
+          cd ..
+          cp -r ShellAgent ShellAgent_copy
+
+          mkdir ShellAgent_MacOS_portable
+          mv ShellAgent_copy ShellAgent_MacOS_portable/ShellAgent
+
+          cd ShellAgent_MacOS_portable
+
+          # curl -o Miniconda3-latest-MacOSX-arm64.sh https://repo.anaconda.com/miniconda/Miniconda3-latest-MacOSX-arm64.sh
+          # curl -o Miniconda3-latest-MacOSX-x86_64.sh https://repo.anaconda.com/miniconda/Miniconda3-latest-MacOSX-x86_64.sh
+          cp -r ShellAgent/.ci/MacOS_base_files/* ./
+
+          cd ..
+          
+          zip -r ShellAgent_MacOS_portable.zip ShellAgent_MacOS_portable/
+          mv ShellAgent_MacOS_portable.zip ShellAgent/ShellAgent_MacOS_portable.zip
+
+          ls
+      
+      - name: Upload binaries to release
+        uses: svenstaro/upload-release-action@v2
+        with:
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          file: ShellAgent_MacOS_portable.zip
+          tag: ${{ inputs.version }}
+          overwrite: true
+
+      # - name: Install Hugging Face Hub SDK
+      #   run: pip install huggingface_hub
+
+      # - name: Upload binaries to Hugging Face
+      #   run: |
+      #     from huggingface_hub import HfApi
+      #     api = HfApi()
+
+      #     # Set repository and file paths
+      #     repo_id = "myshell-ai/ShellAgent"
+      #     file_path = "ShellAgent_MacOS_portable.zip"
+
+      #     # Upload the file to Hugging Face repository
+      #     api.upload_file(
+      #         path_or_fileobj=file_path,
+      #         # path_in_repo="ShellAgent_${{ inputs.version }}.zip",
+      #         path_in_repo="ShellAgent_macos_v1.0.0.zip",
+      #         repo_id=repo_id,
+      #         repo_type="model",  # or 'dataset' depending on your use case
+      #         token="${{ secrets.HF_TOKEN }}"
+      #     )
+      #   shell: python

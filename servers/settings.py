@@ -24,7 +24,9 @@ def save_env():
     # os.environ["MODEL_DIR"] = env.get("model_location", "models")
     # link the model into ./models
     target_models_dir = env.get("model_location", "models")
-    sync_folders(os.environ["MODEL_DIR"], target_models_dir)
+    
+    # do nothing here
+    # sync_folders(os.environ["MODEL_DIR"], target_models_dir)
 
     # os.environ["MODELS_STATUS_PATH"] = os.path.join(os.environ["MODEL_DIR"], "model_status.json")
     target_models_status_file = os.path.join(target_models_dir, "model_status.json")

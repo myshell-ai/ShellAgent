@@ -127,29 +127,7 @@ export const AModal = (
       }}
       width={360}
       footer={[footerRender]}
-      {...props}
-      title={
-        props.title ? (
-          <Flex
-            alignContent={'center'}
-            css={css`
-              .anticon {
-                color: ${token.colorTextSecondary};
-              }
-              .ant-typography {
-                margin-bottom: 0;
-                font-weight: normal;
-                position: relative;
-                top: -2px;
-              }
-            `}>
-            <Box mr={2}>
-              <ArrowLeftOutlined />
-            </Box>{' '}
-            <Typography.Title level={4}>{props.title}</Typography.Title>
-          </Flex>
-        ) : null
-      }>
+      {...props}>
       {props.children}
     </Modal>
   );
