@@ -1,5 +1,5 @@
 
-name: "Release To HF Mac"
+name: "Create GitHub Release for Linux"
 
 on:
   workflow_dispatch:
