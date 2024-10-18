@@ -93,9 +93,8 @@ const TasksConfig = ({
         display_name: task.display_name,
         name: uuid(), // 需要是key_xxx，作为ref引用
         mode: task.type === 'workflow' ? 'workflow' : 'widget',
-        // workflow_id: task.type === 'workflow' ? generateUUID() : undefined,
         workflow_id: undefined,
-        widget_name: task.type === 'widget' ? task.name : undefined,
+        widget_name: task.type === 'widget' ? task.widget_name : undefined,
         widget_class_name: task.type === 'widget' ? task.name : undefined,
         inputs: {},
         outputs: {},
