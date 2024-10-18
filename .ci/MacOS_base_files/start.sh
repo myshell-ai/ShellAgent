@@ -30,6 +30,7 @@ kill_server_on_port() {
 kill_server_on_port 8099
 
 # Start the server
+export MYSHELL_KEY=OPENSOURCE_FIXED
 python servers/main.py &
 
 sleep 10

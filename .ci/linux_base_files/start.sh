@@ -62,4 +62,5 @@ initialize_conda
 echo "activate python from $(which python)"
 
 cd ShellAgent
+export MYSHELL_KEY=OPENSOURCE_FIXED
 python servers/main.py
