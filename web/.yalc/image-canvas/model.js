@@ -206,12 +206,16 @@ function convertExportedJson(rawJson) {
                     if (o.type === 'image') {
                         o._src = o.src;
                         o.src = object.ref;
+                        object.ref = object.ref.replace('{{', '[[');
+                        object.ref = object.ref.replace('}}', ']]');
                     }
                 });
             }
             if (object.type === 'f-text') {
                 object._text = object.text;
                 object.text = object.ref;
+                object.ref = object.ref.replace('{{', '[[');
+                object.ref = object.ref.replace('}}', ']]');
             }
         }
     });

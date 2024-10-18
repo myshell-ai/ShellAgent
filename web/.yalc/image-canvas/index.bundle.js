@@ -6462,7 +6462,7 @@ function TextSetter() {
                                     } }) })), jsxRuntime.jsx(antd.Form.Item, Object.assign({ label: "Placeholder", name: "text" }, { children: jsxRuntime.jsx(antd.Input.TextArea, { placeholder: 'ref placeholder', onChange: e => {
                                         form.setFieldValue('text', e.target.value);
                                         object.set('text', e.target.value);
-                                    } }) }))] }) : null, jsxRuntime.jsx(FormItem$6, Object.assign({ name: "fontFamily", label: t('setter.text.font_family') }, { children: jsxRuntime.jsx(antd.Select, { options: FONT_PRESET_FAMILY_LIST_GOOGLE_FONT, onDropdownVisibleChange: open => {
+                                    } }) }))] }) : null, jsxRuntime.jsx(FormItem$6, Object.assign({ name: "fontFamily", label: t('setter.text.font_family') }, { children: jsxRuntime.jsx(antd.Select, { showSearch: true, options: FONT_PRESET_FAMILY_LIST_GOOGLE_FONT, onDropdownVisibleChange: open => {
                                 if (open) {
                                     void loadPresetGoogleFonts();
                                 }
