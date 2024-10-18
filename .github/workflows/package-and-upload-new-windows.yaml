@@ -142,25 +142,3 @@ jobs:
           file: web-build.zip
           tag: ${{ inputs.version }}
           overwrite: true
-
-      # - name: Install Hugging Face Hub SDK
-      #   run: pip install huggingface_hub
-
-      # - name: Upload binaries to Hugging Face
-      #   run: |
-      #     from huggingface_hub import HfApi
-      #     api = HfApi()
-
-      #     # Set repository and file paths
-      #     repo_id = "myshell-ai/ShellAgent"
-      #     file_path = "ShellAgent_windows_portable.7z"
-
-      #     # Upload the file to Hugging Face repository
-      #     api.upload_file(
-      #         path_or_fileobj=file_path,
-      #         path_in_repo="ShellAgent_${{ inputs.version }}.7z",
-      #         repo_id=repo_id,
-      #         repo_type="model",  # or 'dataset' depending on your use case
-      #         token="${{ secrets.HF_TOKEN }}"
-      #     )
-      #   shell: python
