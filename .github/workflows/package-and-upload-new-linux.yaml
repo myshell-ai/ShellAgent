@@ -88,7 +88,6 @@ jobs:
           mkdir ShellAgent_linux_release
           mv ShellAgent_copy ShellAgent_linux_release/ShellAgent
 
-
           cd ShellAgent_linux_release
           cp -r ShellAgent/.ci/linux_base_files/* ./
 
