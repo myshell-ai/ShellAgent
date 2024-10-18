@@ -1,7 +1,13 @@
-import { UploadOutlined, ReloadOutlined } from '@ant-design/icons';
+import {
+  UploadOutlined,
+  ReloadOutlined,
+  ExportOutlined,
+  FullscreenOutlined,
+  FullscreenExitOutlined,
+} from '@ant-design/icons';
 import { Button, useFormContext, Spinner } from '@shellagent/ui';
 import { useRequest } from 'ahooks';
-import { Modal, Upload } from 'antd';
+import { Modal, Upload, Tooltip } from 'antd';
 import { useInjection } from 'inversify-react';
 import React, {
   useState,
@@ -21,6 +27,8 @@ import { saveComfy, uploadComfy, getFile } from '../services';
 import type { SaveResponse } from '../services/type';
 import { isValidUrl, checkDependency } from '../utils';
 
+const settingsDisabled = process.env.NEXT_PUBLIC_DISABLE_SETTING === 'yes';
+
 export const ComfyUIEditor = ({
   value,
   onChange,
@@ -28,7 +36,7 @@ export const ComfyUIEditor = ({
   value: string;
   onChange: (value: string) => void;
 }) => {
-  const [isModalVisible, setIsModalVisible] = useState(false);
+  const [modalOpen, setModalOpen] = useState(false);
   const [checkDialogOpen, setCheckDialogOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string>('');
@@ -39,9 +47,10 @@ export const ComfyUIEditor = ({
   const iframeRef = useRef<HTMLIFrameElement>(null);
   const { getValues } = useFormContext();
   const model = useInjection(SettingsModel);
+  const [isFullscreen, setIsFullscreen] = useState(false);
 
   const showModal = () => {
-    setIsModalVisible(true);
+    setModalOpen(true);
   };
 
   const { run: getComfySchema } = useRequest(getFile, {
@@ -69,7 +78,7 @@ export const ComfyUIEditor = ({
   });
 
   const handleCancel = () => {
-    setIsModalVisible(false);
+    setModalOpen(false);
   };
 
   const { run: saveComfyRequest, loading: saveLoading } = useRequest(
@@ -83,20 +92,10 @@ export const ComfyUIEditor = ({
             data.dependencies,
           );
           if (hasMissingCustomNodes || hasMissingModels) {
-            toast.error(
-              'Dependencies missing, please check and submit the required dependencies',
-              {
-                position: 'top-center',
-                autoClose: 3000,
-                hideProgressBar: true,
-                pauseOnHover: true,
-                closeButton: false,
-              },
-            );
             setCheckDialogOpen(true);
             setDependencies(data.dependencies);
           } else {
-            setIsModalVisible(false);
+            setModalOpen(false);
             const comfy_workflow_id = getValues('comfy_workflow_id');
             emitter.emit(EventType.UPDATE_FORM, {
               data: result.data.schemas,
@@ -230,20 +229,29 @@ export const ComfyUIEditor = ({
   };
 
   const showSettingButton = useMemo(() => {
+    if (settingsDisabled) {
+      return false;
+    }
     if (!value) {
       return true;
     }
     return !isValidUrl(value);
-  }, [value]);
+  }, [value, settingsDisabled]);
 
   const reloadSettings = async () => {
     const settings = await model.loadSettingsEnv();
-    const api =
-      settings?.envs?.find(env => env.key === COMFYUI_API)?.value ||
-      DEFAULT_COMFYUI_API;
-    onChange(api);
+    const api = settings?.envs?.find(env => env.key === COMFYUI_API)?.value;
     if (api && isValidUrl(api)) {
+      onChange(api);
       setIsLoading(true);
+    } else {
+      toast.error('Invalid ComfyUI API settings', {
+        position: 'top-center',
+        autoClose: 3000,
+        hideProgressBar: true,
+        pauseOnHover: true,
+        closeButton: false,
+      });
     }
   };
 
@@ -251,6 +259,46 @@ export const ComfyUIEditor = ({
     () => showSettingButton || isLoading || !loaded,
     [showSettingButton, isLoading, loaded],
   );
+
+  const toggleFullscreen = () => {
+    setIsFullscreen(!isFullscreen);
+  };
+
+  const modalStyles = isFullscreen
+    ? {
+        mask: {
+          height: '100vh',
+          width: '100vw',
+          margin: 0,
+          top: 0,
+          paddingBottom: 0,
+        },
+        wrapper: {
+          height: '100vh',
+          width: '100vw',
+          margin: 0,
+          top: 0,
+          paddingBottom: 0,
+        },
+        content: {
+          padding: '12px 16px',
+          height: '100vh',
+          width: '100vw',
+          margin: 0,
+          top: 0,
+          paddingBottom: 0,
+        },
+        body: {
+          height: 'calc(100vh - 55px - 53px)',
+          padding: 0,
+          overflow: 'hidden',
+        },
+      }
+    : {
+        content: {
+          padding: '12px 16px',
+        },
+      };
 
   return (
     <div>
@@ -261,29 +309,47 @@ export const ComfyUIEditor = ({
         title={
           <div className="flex justify-between items-center">
             <div className="flex gap-2">
-              <span>ComfyUI Editor</span>
+              <span className="text-lg font-medium">ComfyUI Editor</span>
               {error && <div className="text-red-500 font-normal">{error}</div>}
+              <ExportOutlined
+                className="cursor-pointer text-primary"
+                onClick={() => {
+                  window.open(value, '_blank');
+                }}
+              />
             </div>
-            <Upload
-              accept=".json"
-              showUploadList={false}
-              beforeUpload={file => {
-                handleImport(file);
-                return false;
-              }}>
-              <Button size="sm" disabled={disabled}>
-                <UploadOutlined className="mr-2" />
-                Import
-              </Button>
-            </Upload>
+            <div className="flex items-center gap-2">
+              <Upload
+                accept=".json"
+                showUploadList={false}
+                beforeUpload={file => {
+                  handleImport(file);
+                  return false;
+                }}>
+                <Button size="sm" disabled={disabled}>
+                  <UploadOutlined className="mr-2" />
+                  Import
+                </Button>
+              </Upload>
+              <Tooltip title={isFullscreen ? 'Exit fullscreen' : 'Fullscreen'}>
+                <Button onClick={toggleFullscreen} variant="plain">
+                  {isFullscreen ? (
+                    <FullscreenExitOutlined />
+                  ) : (
+                    <FullscreenOutlined />
+                  )}
+                </Button>
+              </Tooltip>
+            </div>
           </div>
         }
+        styles={modalStyles}
         forceRender
-        open={isModalVisible}
+        open={modalOpen}
         onOk={handleSave}
         mask={false}
-        width="80%"
-        className="top-5"
+        width={isFullscreen ? '100%' : '80%'}
+        className={isFullscreen ? 'top-0 p-0 m-0' : 'top-5'}
         footer={
           <div className="flex justify-end gap-2">
             <Button size="sm" variant="outline" onClick={handleCancel}>
@@ -300,43 +366,42 @@ export const ComfyUIEditor = ({
         }
         closeIcon={null}>
         {isLoading && (
-          <div className="flex justify-center items-center h-[600px]">
+          <div className="flex justify-center items-center h-[80vh]">
             <Spinner size="lg" className="text-brand" />
           </div>
         )}
         {showSettingButton && (
-          <div className="flex flex-col gap-2 justify-center items-center h-[600px]">
-            <div>
-              There is an issue with the ComfyUI API settings, please reset them
-              <Button size="sm" onClick={showSettings} className="ml-2">
+          <div className="flex flex-col items-center justify-center h-[80vh]">
+            <div className="text-center mb-4">
+              Failed to connect to ComfyUI at {value || 'undefined address'}.
+              Please verify the address or update it in the environment
+              settings.
+              <Button
+                size="sm"
+                onClick={showSettings}
+                variant="outline"
+                className="ml-2">
                 Settings
               </Button>
             </div>
-            <div>
-              After completing the settings, please click
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={reloadSettings}
-                className="ml-2">
-                <ReloadOutlined className="mr-2" />
-                Reload
-              </Button>
-            </div>
+            <Button variant="primary" size="sm" onClick={reloadSettings}>
+              <ReloadOutlined className="mr-2" />
+              Reload
+            </Button>
           </div>
         )}
         <iframe
           title="comfyui"
           ref={iframeRef}
           src={value}
-          height="600px"
-          className={`w-full ${isLoading || showSettingButton ? 'hidden' : ''}`}
+          className={`w-full ${isFullscreen ? 'h-full' : 'h-[80vh]'} ${isLoading || showSettingButton ? 'hidden' : ''}`}
           onLoad={handleIframeLoad}
           onError={handleIframeError}
         />
       </Modal>
       <CheckDialog
         open={checkDialogOpen}
+        setModalOpen={setModalOpen}
         setOpen={setCheckDialogOpen}
         dependencies={dependencies}
         comfy_workflow_id={getValues('comfy_workflow_id')}
