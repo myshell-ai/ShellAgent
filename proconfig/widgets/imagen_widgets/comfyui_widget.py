@@ -8,7 +8,7 @@ import websocket
 import urllib
 
 
-NON_FILE_INPUT_TYPES = ["text", "number", "integer"]
+NON_FILE_INPUT_TYPES = ["text", "string", "number", "integer", "float"]
 
 
 def queue_prompt(prompt, server_address, client_id):
@@ -49,9 +49,11 @@ def comfyui_run(api, prompt, schemas, user_inputs):
         if node_schema["type"] not in NON_FILE_INPUT_TYPES: # file input
             if is_local:
                 input_value = os.path.join(os.getcwd(), input_value)
-            else:
+            elif os.path.isfile(input_value):
                 # upload to CDN
+                print(f"upload {input_value} to cdn:")
                 input_value = upload_file_to_myshell(input_value)
+                print(input_value)
             
         prompt[node_id]["inputs"]["default_value"] = input_value
         
