@@ -7,13 +7,11 @@ import {
   Cog8ToothIcon,
   QuestionMarkCircleIcon,
 } from '@heroicons/react/24/outline';
-import { Text, LegoSolid } from '@shellagent/ui';
+import { Text } from '@shellagent/ui';
 import clsx from 'clsx';
 import { useInjection } from 'inversify-react';
 import Link from 'next/link';
 import React from 'react';
-
-import { useGlobalStore } from '@/stores/global/global-provider';
 
 import { SettingsModel } from '../settings/settings.model';
 
@@ -56,9 +54,6 @@ const ItemFooter = ({
 
 export default function SideFooter() {
   const settingsModel = useInjection(SettingsModel);
-  const setManagerDialogOpen = useGlobalStore(
-    state => state.setManagerDialogOpen,
-  );
 
   const onOpenTab = (url: string) => {
     window.open(url, '__blank');
@@ -67,12 +62,6 @@ export default function SideFooter() {
   const settingsDisabled = process.env.NEXT_PUBLIC_DISABLE_SETTING === 'yes';
 
   const list: ItemType[] = [
-    {
-      title: 'Manager',
-      passHref: true,
-      icon: <LegoSolid className="w-6 h-6 text-icon-subtle" />,
-      onClick: () => setManagerDialogOpen(true),
-    },
     {
       title: 'Settings',
       passHref: true,
