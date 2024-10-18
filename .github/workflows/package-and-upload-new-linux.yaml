@@ -95,6 +95,6 @@ jobs:
         uses: svenstaro/upload-release-action@v2
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
-          file: ShellAgent_linux_release.7z
+          file: ShellAgent_linux_release.zip
           tag: ${{ inputs.version }}
           overwrite: true
