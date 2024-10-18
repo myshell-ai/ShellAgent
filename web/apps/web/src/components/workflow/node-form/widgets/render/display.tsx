@@ -4,8 +4,8 @@ import ReactPlayer from 'react-player';
 
 import { cn } from '@/utils/cn';
 
-export const ImageRex = /.(jpg|jpeg|png|apng|gif|bmp|tiff|webp)$/;
-export const VideoRex = /.(mp4|avi|mov|wmv|flv)$/;
+const ImageRex = /.(jpg|jpeg|png|apng|gif|bmp|tiff|webp)$/;
+const VideoRex = /.(mp4|avi|mov|wmv|flv)$/;
 
 interface CollapseProps {
   header: React.ReactNode;
@@ -17,17 +17,17 @@ interface CollapseProps {
 const Collapse = ({
   header,
   content,
-  defaultExpand = false,
+  defaultExpand,
   className,
 }: CollapseProps) => {
   const [isExpand, setIsExpand] = useState(defaultExpand);
   return (
     <div
       className={cn(
-        'w-full mt-2 px-2 py-1.5 border border-subtle bg-surface-hovered rounded-lg',
+        'grid gap-1.5 mt-2 px-2 py-1.5 border border-subtle bg-surface-hovered rounded-lg',
         className,
       )}>
-      <div className="w-full flex items-center">
+      <div className="flex items-center">
         <div
           className="w-6 h-6 flex items-center justify-center cursor-pointer mr-1"
           onClick={() => setIsExpand(!isExpand)}>
@@ -40,7 +40,7 @@ const Collapse = ({
         {header}
       </div>
       <div
-        className={cn('w-full', {
+        className={cn('flex-1', {
           hidden: !isExpand,
         })}>
         {content}
@@ -118,7 +118,7 @@ const ObjectLayout = ({ field, value }: ObjectLayoutProps) => {
           {field}
         </Text>
       }
-      content={<JSONView defaultValue={value} />}
+      content={value === null ? 'null' : <JSONView defaultValue={value} />}
     />
   );
 };
@@ -129,39 +129,19 @@ interface TextLayoutProps {
 }
 
 const TextLayout = ({ field, value }: TextLayoutProps) => {
+  const isError = field === 'error_message';
+  const color = isError ? 'critical' : 'default';
   return (
     <Collapse
+      defaultExpand={isError}
       header={
-        <Text weight="medium" size="sm" color="default">
+        <Text weight="medium" size="sm" color={color}>
           {field}
         </Text>
       }
       content={
-        <Text color="default" size="sm" className="break-words">
+        <Text color={color} size="sm" className="break-all">
           {value?.toString()}
-        </Text>
-      }
-    />
-  );
-};
-
-interface ErrorLayoutProps {
-  field: string;
-  error: any;
-}
-
-const ErrorLayout = ({ field, error }: ErrorLayoutProps) => {
-  return (
-    <Collapse
-      defaultExpand
-      header={
-        <Text weight="medium" size="sm" color="critical">
-          {field}
-        </Text>
-      }
-      content={
-        <Text color="critical" size="sm" className="break-words">
-          {error?.error_message}
         </Text>
       }
     />
@@ -198,12 +178,4 @@ const Display = ({ output, className }: DisplayProps) => {
   );
 };
 
-export {
-  Display,
-  Collapse,
-  ImageLayout,
-  VideoLayout,
-  ObjectLayout,
-  TextLayout,
-  ErrorLayout,
-};
+export { Display, Collapse };

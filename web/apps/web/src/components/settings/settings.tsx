@@ -80,7 +80,11 @@ export const SettingsForm = () => {
                         </Box>
                         <Flex mx={1} alignItems="center">
                           <Icon
-                            onClick={() => arrayHelpers.remove(index)}
+                            className="cursor-pointer"
+                            onClick={() => {
+                              arrayHelpers.remove(index);
+                              formikProps.submitForm();
+                            }}
                             component={TrashIcon}
                           />
                         </Flex>
@@ -149,6 +153,7 @@ export const SettingsDialog = observer(() => {
       width="900px"
       height="80%"
       onCancel={() => model.modal.close()}
+      zIndex={1500}
       footer={null}>
       <Flex height="100%">
         <SettingsSideBar />
