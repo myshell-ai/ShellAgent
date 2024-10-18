@@ -130,7 +130,9 @@ jobs:
           path: ./web-build
 
       - name: Zip web-build
-        run: Compress-Archive -Path ./web-build -DestinationPath web-build.zip
+        run: |
+          cd web-build
+          Compress-Archive -Path * -DestinationPath ../web-build.zip
         shell: pwsh
 
       - name: Upload web-build to release
