@@ -371,24 +371,23 @@ export const ComfyUIEditor = ({
           </div>
         )}
         {showSettingButton && (
-          <div className="flex flex-col gap-2 justify-center items-center h-[80vh]">
-            <div>
-              There is an issue with the ComfyUI API settings, please reset them
-              <Button size="sm" onClick={showSettings} className="ml-2">
+          <div className="flex flex-col items-center justify-center h-[80vh]">
+            <div className="text-center mb-4">
+              Failed to connect to ComfyUI at {value || 'undefined address'}.
+              Please verify the address or update it in the environment
+              settings.
+              <Button
+                size="sm"
+                onClick={showSettings}
+                variant="outline"
+                className="ml-2">
                 Settings
               </Button>
             </div>
-            <div>
-              After completing the settings, please click
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={reloadSettings}
-                className="ml-2">
-                <ReloadOutlined className="mr-2" />
-                Reload
-              </Button>
-            </div>
+            <Button variant="primary" size="sm" onClick={reloadSettings}>
+              <ReloadOutlined className="mr-2" />
+              Reload
+            </Button>
           </div>
         )}
         <iframe
