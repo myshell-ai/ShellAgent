@@ -8,7 +8,7 @@ import websocket
 import urllib
 
 
-NON_FILE_INPUT_TYPES = ["text", "string", "number", "integer", "float"]
+# NON_FILE_INPUT_TYPES = ["text", "string", "number", "integer", "float"]
 
 
 def queue_prompt(prompt, server_address, client_id):
@@ -46,7 +46,7 @@ def comfyui_run(api, prompt, schemas, user_inputs):
     
     for node_id, node_schema in schemas["inputs"].items():
         input_value = user_inputs[node_id]
-        if node_schema["type"] not in NON_FILE_INPUT_TYPES: # file input
+        if "url_type" in node_schema: # file input
             if is_local:
                 input_value = os.path.join(os.getcwd(), input_value)
             elif os.path.isfile(input_value):
