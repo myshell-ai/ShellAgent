@@ -79,10 +79,10 @@ jobs:
           cd ..
           cp -r ShellAgent ShellAgent_copy
 
-          mkdir ShellAgent_MacOS_portable
-          mv ShellAgent_copy ShellAgent_MacOS_portable/ShellAgent
+          mkdir ShellAgent_MacOS_release
+          mv ShellAgent_copy ShellAgent_MacOS_release/ShellAgent
 
-          cd ShellAgent_MacOS_portable
+          cd ShellAgent_MacOS_release
 
           # curl -o Miniconda3-latest-MacOSX-arm64.sh https://repo.anaconda.com/miniconda/Miniconda3-latest-MacOSX-arm64.sh
           # curl -o Miniconda3-latest-MacOSX-x86_64.sh https://repo.anaconda.com/miniconda/Miniconda3-latest-MacOSX-x86_64.sh
@@ -90,8 +90,8 @@ jobs:
 
           cd ..
           
-          zip -r ShellAgent_MacOS_portable.zip ShellAgent_MacOS_portable/
-          mv ShellAgent_MacOS_portable.zip ShellAgent/ShellAgent_MacOS_portable.zip
+          zip -r ShellAgent_MacOS_release.zip ShellAgent_MacOS_release/
+          mv ShellAgent_MacOS_release.zip ShellAgent/ShellAgent_MacOS_release.zip
 
           ls
       
@@ -99,6 +99,6 @@ jobs:
         uses: svenstaro/upload-release-action@v2
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
-          file: ShellAgent_MacOS_portable.zip
+          file: ShellAgent_MacOS_release.zip
           tag: ${{ inputs.version }}
           overwrite: true
