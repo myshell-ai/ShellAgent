@@ -7728,6 +7728,7 @@ const createFTextClass = () => {
         type: 'f-text',
         padding: 0,
         paintFirst: 'stroke',
+        objectCaching: false,
         initDimensions: function () {
             if (this.__skipDimension) {
                 return;
