@@ -1,5 +1,5 @@
 
-name: "Release To HF Win"
+name: "Create GitHub Release for Windows"
 
 on:
   workflow_dispatch:
@@ -130,7 +130,8 @@ jobs:
           path: ./web-build
 
       - name: Zip web-build
-        run: zip -r web-build.zip ./web-build
+        run: Compress-Archive -Path ./web-build -DestinationPath web-build.zip
+        shell: pwsh
 
       - name: Upload web-build to release
         uses: svenstaro/upload-release-action@v2
