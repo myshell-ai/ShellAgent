@@ -16,10 +16,9 @@ if '%errorlevel%' == '0' (
     exit /b
 )
 
+:start
 cd /d %~dp0
 cd ShellAgent
-
-del "proconfig\widgets\imagen_widgets\library\comfy_custom_nodes\ComfyUI_FizzNodes\javascript\Folder here to satisfy init, eventually I'll have stuff in here..txt"
 
 set PATH=..\git\bin;%PATH%
 set MYSHELL_KEY=OPENSOURCE_FIXED
@@ -30,15 +29,17 @@ if not exist "output" (
     mkdir "output"
 )
 
-if not exist "servers\web" (
-    mkdir "servers\web"
-)
-
-if not exist "models\model_status.json" (
-    echo {} > "models\model_status.json"
-)
-
 ..\python_embeded\python.exe -m pip install -e .
 ..\python_embeded\python.exe servers\main.py
+
+if %errorlevel% equ 42 (
+    echo Restart signal detected, program will restart in 3 seconds...
+    timeout /t 3 >nul
+    goto start
+) else (
+    echo Program has exited, press any key to close the window...
+    pause >nul
+    exit /b
+)
 
 pause

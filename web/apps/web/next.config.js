@@ -38,6 +38,10 @@ module.exports = {
         source: '/api/:path*',
         destination: `${process.env.NEXT_PUBLIC_API_URL}/api/:path*`,
       },
+      {
+        source: '/models_searcher/:path*',
+        destination: `${process.env.NEXT_PUBLIC_MODELS_SEARCHER || 'https://shellagent.myshell.ai/models_searcher'}/:path*`,
+      },
     ];
   },
   async redirects() {

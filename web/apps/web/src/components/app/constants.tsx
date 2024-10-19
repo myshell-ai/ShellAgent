@@ -126,6 +126,20 @@ export const materialList: MaterialListType = [
       },
     ],
   },
+  {
+    title: 'Plugins',
+    plain: true,
+    no_border: true,
+    items: [
+      {
+        name: 'ComfyUIWidget',
+        display_name: 'ComfyUI',
+        type: NodeTypeEnum.widget,
+        custom: true,
+        undraggable: true,
+      },
+    ],
+  },
 ];
 
 export const inputSourceHandle = 'custom_message-input-source-handle';

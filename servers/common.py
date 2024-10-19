@@ -4,6 +4,10 @@ import shutil
 import uuid
 import importlib
 import sys
+import pygit2
+import subprocess
+import requests
+from datetime import datetime
 
 from flask import request, jsonify, abort, send_from_directory, send_file
 
@@ -11,13 +15,15 @@ from proconfig.widgets.base import WIDGETS
 from proconfig.widgets import load_custom_widgets
 from proconfig.utils.misc import is_valid_url, _make_temp_file
 
-from servers.base import app, APP_SAVE_ROOT, WORKFLOW_SAVE_ROOT, get_file_times
+from servers.base import app, APP_SAVE_ROOT, WORKFLOW_SAVE_ROOT, PROJECT_ROOT, get_file_times
 
 
 SAVE_ROOTS = {
     "app": APP_SAVE_ROOT,
     "workflow": WORKFLOW_SAVE_ROOT
 }
+LAST_CHECK_FILE = os.path.join(PROJECT_ROOT, 'last_check_time.json')
+AUTO_UPDATE_FILE = os.path.join(PROJECT_ROOT, 'data', 'auto_update_settings.json')
 
 @app.route(f'/api/upload', methods=['POST'])
 def upload():
@@ -226,3 +232,142 @@ def delete_workflow():
             "message": "the workflow to delete does not exist"
         }
     return jsonify(result)
+
+
+@app.route('/api/check_repo_status')
+def check_repo_status():
+    # Record the current time at the beginning of the function
+    current_time = datetime.now().isoformat()
+
+    pygit2.option(pygit2.GIT_OPT_SET_OWNER_VALIDATION, 0)
+    repo = pygit2.Repository('../ShellAgent')
+
+    try:
+        remote = repo.remotes["origin"]
+        remote.fetch()
+        print("Successfully fetched the latest information from the remote repository")
+    except Exception as e:
+        print(f"Error fetching information from the remote repository: {str(e)}")
+
+    has_new_stable = False
+    current_tag = None
+    current_version = None
+    target_release_date = None
+
+    current_branch = repo.head.shorthand
+
+    latest_commit = repo.revparse_single(current_branch)
+    current_commit_id = str(latest_commit.id)
+
+    for reference in repo.references:
+        if reference.startswith('refs/tags/v'):
+            tag = repo.lookup_reference(reference)
+            if tag.peel().id == latest_commit.id:
+                current_tag = reference
+                current_version = reference.split('/')[-1]
+                break
+
+    if not current_version:
+        current_version = current_commit_id[:7]  # Use short commit id
+
+    print(f'current_version: {current_version}')
+
+    if current_tag:
+        latest_tag = max((ref for ref in repo.references if ref.startswith('refs/tags/v')), key=lambda x: [int(i) for i in x.split('/')[-1][1:].split('.')])
+        print(f"latest_tag: {latest_tag}")
+        has_new_stable = latest_tag != current_tag
+
+        if has_new_stable:
+            latest_tag_name = latest_tag.split('/')[-1]
+
+            # Get changelog and release date
+            github_api_url = f"https://api.github.com/repos/Cherwayway/ShellAgent/releases/tags/{latest_tag_name}"
+            response = requests.get(github_api_url)
+            if response.status_code == 200:
+                release_data = response.json()
+                changelog = release_data.get('body', 'No changelog found')
+                target_release_date = release_data.get('published_at', 'Unknown')
+            else:
+                changelog = f"Failed to get changelog. HTTP status code: {response.status_code}"
+                target_release_date = 'Unknown'
+
+            print(f"Latest tag: {latest_tag_name}")
+            print(f"Changelog:\n{changelog}")
+            print(f"Release date: {target_release_date}")
+
+    response = {
+        "has_new_stable": has_new_stable,
+        "current_version": current_version,
+        "target_release_date": target_release_date
+    }
+    if has_new_stable:
+        response["latest_tag_name"] = latest_tag_name
+        response["changelog"] = changelog
+    # Update the last check time before returning the response
+    os.makedirs(os.path.dirname(LAST_CHECK_FILE), exist_ok=True)
+    with open(LAST_CHECK_FILE, 'w') as f:
+        json.dump({"last_check_time": current_time}, f)
+
+    return jsonify(response)
+
+def update_stable():
+    try:
+        script_path = os.path.join('.ci', 'update_windows', 'update.py')
+        python_exe = sys.executable        
+        result = subprocess.run([python_exe, script_path, './', '--stable'], capture_output=True, text=True, check=True)
+        return result.stdout
+    except subprocess.CalledProcessError as e:
+        raise Exception(f"update failed: {e.stderr}")
+
+@app.route('/api/update/stable')
+def update_stable_route():
+    try:
+        result = update_stable()
+        return jsonify({"success": True, "message": result}), 200
+    except Exception as e:
+        return jsonify({"success": False, "error": str(e)}), 500
+
+@app.route('/api/restart')
+def restart():
+    print("Restart signal triggered")
+    # Return a response to the client
+    response = jsonify({"message": "Server is restarting"})
+    response.status_code = 200
+    # Use a thread to exit the program after a short delay
+    import threading
+    def delayed_exit():
+        import time
+        time.sleep(1)  # Wait for 1 second to ensure the response has been sent
+        os._exit(42)  # Use exit code 42 to indicate restart signal
+    threading.Thread(target=delayed_exit).start()
+    return response
+
+@app.route('/api/last_check_time')
+def get_last_check_time():
+    if os.path.exists(LAST_CHECK_FILE):
+        with open(LAST_CHECK_FILE, 'r') as f:
+            data = json.load(f)
+        return jsonify(data)
+    else:
+        return jsonify({"last_check_time": None})
+
+@app.route('/api/auto_update', methods=['GET'])
+def get_auto_update_setting():
+    if os.path.exists(AUTO_UPDATE_FILE):
+        with open(AUTO_UPDATE_FILE, 'r') as f:
+            settings = json.load(f)
+        return jsonify(settings)
+    else:
+        return jsonify({"auto_update": False})
+
+@app.route('/api/auto_update', methods=['POST'])
+def set_auto_update_setting():
+    data = request.get_json()
+    if 'auto_update' not in data or not isinstance(data['auto_update'], bool):
+        return jsonify({"error": "Invalid input. 'auto_update' must be a boolean value."}), 400
+
+    os.makedirs(os.path.dirname(AUTO_UPDATE_FILE), exist_ok=True)
+    with open(AUTO_UPDATE_FILE, 'w') as f:
+        json.dump({"auto_update": data['auto_update']}, f)
+
+    return jsonify({"success": True, "message": "Auto update setting updated successfully."})

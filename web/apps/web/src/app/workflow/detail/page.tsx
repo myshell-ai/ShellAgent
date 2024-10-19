@@ -1,14 +1,12 @@
 'use client';
 
 import { FlowEngine, FlowRef, NodeTypeEnum } from '@shellagent/flow-engine';
-import dynamic from 'next/dynamic';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { IconButton, Setting } from '@shellagent/ui';
+import { useSearchParams } from 'next/navigation';
 import { useEffect, useRef } from 'react';
 import { useShallow } from 'zustand/react/shallow';
 import '../../reflect-metadata-client-side';
 
-import { ListFooterExtra } from '@/components/common/list-footer-extra';
-import CustomEdge, { CustomEdgeType } from '@/components/workflow/custom-edge';
 import FlowHeader from '@/components/workflow/flow-header';
 import { Header } from '@/components/workflow/header';
 import { EndNode, StartNode, WidgetNode } from '@/components/workflow/nodes';
@@ -20,19 +18,11 @@ const nodeTypes = {
   [NodeTypeEnum.widget]: WidgetNode,
 };
 
-const edgeTypes = {
-  [CustomEdgeType]: CustomEdge,
-};
-
-const RunSheet = dynamic(() => import('@/components/workflow/run-sheet'), {
-  ssr: false,
-});
-
-export default function WorkflowDetail() {
-  const router = useRouter();
+export default function WorkflowPage() {
   const params = useSearchParams();
   const flowRef = useRef<FlowRef>(null);
   const flowInstance = flowRef.current?.getFlowInstance();
+  const conRef = useRef<HTMLDivElement>(null);
 
   const flowId = params.get('id') as string;
   const version = params.get('version') || undefined;
@@ -71,17 +61,13 @@ export default function WorkflowDetail() {
     getProConfig({ flow_id: flowId, version_name: version });
   }, [flowId, version]);
 
-  if (!flowId) {
-    router.push('/');
-    return null;
-  }
-
   return (
     <div className="h-full flex flex-col bg-surface">
       <header>
-        <Header />
+        <Header container={conRef.current} />
       </header>
       <main
+        ref={conRef}
         id="workflow"
         style={{ height: 'calc(100vh - 60px)', position: 'relative' }}>
         <FlowEngine
@@ -90,14 +76,12 @@ export default function WorkflowDetail() {
           ref={flowRef}
           nodeTypes={nodeTypes}
           materialList={widgetList}
-          edgeTypes={edgeTypes}
-          footerExtra={<ListFooterExtra />}
-          header={
-            <>
-              <FlowHeader flowId={flowId} version={version} />
-              <RunSheet />
-            </>
+          footerExtra={
+            <div className="ml-auto flex gap-1">
+              <IconButton variant="ghost" className="w-9 h-9" icon={Setting} />
+            </div>
           }
+          header={<FlowHeader flowId={flowId} version={version} />}
         />
       </main>
     </div>
