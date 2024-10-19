@@ -10,6 +10,7 @@ export type WidgetItem = {
   custom?: boolean; // 是否为自定义widget
   undraggable?: boolean; // 是否可以拖拽至画布中
   customRender?: () => JSX.Element;
+  widget_name?: string;
 };
 
 export type MaterialItem = {
