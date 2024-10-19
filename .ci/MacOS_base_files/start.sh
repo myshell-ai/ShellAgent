@@ -26,13 +26,30 @@ kill_server_on_port() {
     fi
 }
 
-# Check and kill any server running on port 8099
-kill_server_on_port 8099
+while true; do
+    # Check and kill any server running on port 8099
+    kill_server_on_port 8099
 
-# Start the server
-export MYSHELL_KEY=OPENSOURCE_FIXED
-python servers/main.py &
+    # Start the server
+    export MYSHELL_KEY=OPENSOURCE_FIXED
+    python servers/main.py &
 
-sleep 10
-echo "=========> Open Browser"
-open http://127.0.0.1:8099
+    # Wait for the server to start
+    sleep 10
+    echo "=========> Open Browser"
+    open http://127.0.0.1:8099
+
+    # Wait for the server process to finish
+    wait $!
+    
+    exit_code=$?
+    if [ $exit_code -eq 42 ]; then
+        echo "Restart signal detected, program will restart in 3 seconds..."
+        sleep 3
+    else
+        echo "Program exited normally with exit code: $exit_code"
+        break
+    fi
+done
+
+echo "=========> Program has exited"

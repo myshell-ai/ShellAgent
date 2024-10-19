@@ -57,10 +57,20 @@ initialize_conda() {
 }
 
 # Main script execution
-check_conda_installed
-initialize_conda
-echo "activate python from $(which python)"
+while true; do
+    check_conda_installed
+    initialize_conda
+    echo "activate python from $(which python)"
 
-cd ShellAgent
-export MYSHELL_KEY=OPENSOURCE_FIXED
-python servers/main.py
+    cd ShellAgent
+    export MYSHELL_KEY=OPENSOURCE_FIXED
+    python servers/main.py --port 8154
+    
+    exit_code=$?
+    if [ $exit_code -eq 42 ]; then
+        echo "Restart signal detected, program will restart in 3 seconds..."
+        sleep 3
+    else
+        exit 0
+    fi
+done

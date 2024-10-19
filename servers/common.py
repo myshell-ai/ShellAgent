@@ -272,28 +272,30 @@ def check_repo_status():
 
     print(f'current_version: {current_version}')
 
-    if current_tag:
-        latest_tag = max((ref for ref in repo.references if ref.startswith('refs/tags/v')), key=lambda x: [int(i) for i in x.split('/')[-1][1:].split('.')])
-        print(f"latest_tag: {latest_tag}")
-        has_new_stable = latest_tag != current_tag
+    latest_tag = max((ref for ref in repo.references if ref.startswith('refs/tags/v')), key=lambda x: [int(i) for i in x.split('/')[-1][1:].split('.')])
+    latest_tag_ref = repo.lookup_reference(latest_tag)
+    latest_tag_commit = latest_tag_ref.peel(pygit2.GIT_OBJECT_COMMIT)
+    print(f"latest_tag: {latest_tag}")
 
-        if has_new_stable:
-            latest_tag_name = latest_tag.split('/')[-1]
+    # Check if the latest stable version is newer than the current commit
+    has_new_stable = repo.merge_base(latest_tag_commit.id, latest_commit.id) == latest_commit.id and latest_tag_commit.id != latest_commit.id
+    latest_tag_name = latest_tag.split('/')[-1]
 
-            # Get changelog and release date
-            github_api_url = f"https://api.github.com/repos/Cherwayway/ShellAgent/releases/tags/{latest_tag_name}"
-            response = requests.get(github_api_url)
-            if response.status_code == 200:
-                release_data = response.json()
-                changelog = release_data.get('body', 'No changelog found')
-                target_release_date = release_data.get('published_at', 'Unknown')
-            else:
-                changelog = f"Failed to get changelog. HTTP status code: {response.status_code}"
-                target_release_date = 'Unknown'
+    if has_new_stable:
+        # Get changelog and release date
+        github_api_url = f"https://api.github.com/repos/myshell-ai/ShellAgent/releases/tags/{latest_tag_name}"
+        response = requests.get(github_api_url)
+        if response.status_code == 200:
+            release_data = response.json()
+            changelog = release_data.get('body', 'No changelog found')
+            target_release_date = release_data.get('published_at', 'Unknown')
+        else:
+            changelog = f"Failed to get changelog. HTTP status code: {response.status_code}"
+            target_release_date = 'Unknown'
 
-            print(f"Latest tag: {latest_tag_name}")
-            print(f"Changelog:\n{changelog}")
-            print(f"Release date: {target_release_date}")
+        print(f"Latest tag: {latest_tag_name}")
+        print(f"Changelog:\n{changelog}")
+        print(f"Release date: {target_release_date}")
 
     response = {
         "has_new_stable": has_new_stable,
@@ -303,6 +305,7 @@ def check_repo_status():
     if has_new_stable:
         response["latest_tag_name"] = latest_tag_name
         response["changelog"] = changelog
+
     # Update the last check time before returning the response
     os.makedirs(os.path.dirname(LAST_CHECK_FILE), exist_ok=True)
     with open(LAST_CHECK_FILE, 'w') as f:
@@ -312,7 +315,7 @@ def check_repo_status():
 
 def update_stable():
     try:
-        script_path = os.path.join('.ci', 'update_windows', 'update.py')
+        script_path = os.path.join('.ci', 'update', 'update.py')
         python_exe = sys.executable        
         result = subprocess.run([python_exe, script_path, './', '--stable'], capture_output=True, text=True, check=True)
         return result.stdout
