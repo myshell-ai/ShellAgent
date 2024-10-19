@@ -91,6 +91,13 @@ export const materialList: MaterialListType = [
         type: NodeTypeEnum.widget,
         undraggable: true,
       },
+      {
+        name: 'ClaudeWidget',
+        display_name: 'Claude',
+        type: NodeTypeEnum.widget,
+        undraggable: true,
+        widget_name: '@myshell_llm/1744218088699596812',
+      },
     ],
   },
   {
@@ -103,6 +110,13 @@ export const materialList: MaterialListType = [
         display_name: 'Image Canvas',
         type: NodeTypeEnum.widget,
         undraggable: true,
+      },
+      {
+        name: 'XWidget',
+        display_name: 'Twitter',
+        type: NodeTypeEnum.widget,
+        undraggable: true,
+        widget_name: '@myshell/1784206090390036480',
       },
       {
         name: 'ImageTextFuserWidget',
