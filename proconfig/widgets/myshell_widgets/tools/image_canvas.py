@@ -1,4 +1,5 @@
 from proconfig.widgets.base import BaseWidget, WIDGETS
+import torch
 import time
 from proconfig.utils.misc import upload_file_to_myshell
 import json
@@ -103,6 +104,7 @@ class ImageCanvasWidget(BaseWidget):
     class OutputsSchema(BaseWidget.OutputsSchema):
         image: str
         
+    @torch.no_grad()
     def execute(self, environ, config):
         return_dict = {}
 

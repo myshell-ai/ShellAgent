@@ -2,21 +2,22 @@ import { create } from 'zustand';
 
 type State = {
   runSheetOpen: boolean;
-  importDialogOpen: boolean;
   editing: boolean;
+  currentCopyId: string;
 };
 
 type Action = {
   setRunSheetOpen: (open: State['runSheetOpen']) => void;
-  setImportDialogOpen: (open: State['importDialogOpen']) => void;
   setEditing: (editing: State['editing']) => void;
+  setCurrentCopyId: (id: string) => void;
 };
 
 export const useWorkflowState = create<State & Action>(set => ({
   runSheetOpen: false,
   editing: false,
   importDialogOpen: false,
+  currentCopyId: '',
   setRunSheetOpen: runSheetOpen => set(() => ({ runSheetOpen })),
   setEditing: editing => set(() => ({ editing })),
-  setImportDialogOpen: importDialogOpen => set(() => ({ importDialogOpen })),
+  setCurrentCopyId: (id: string) => set(() => ({ currentCopyId: id })),
 }));

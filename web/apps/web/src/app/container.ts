@@ -1,13 +1,11 @@
 import './reflect-metadata-client-side';
 
 import { ChatNewModel } from '@shellagent/ui';
-import { ImageCanvasModel } from 'image-canvas/model';
 import { Container, interfaces } from 'inversify';
 import { toast } from 'react-toastify';
 
 import { AppBuilderChatModel } from '@/components/chat/app-builder-chat.model';
 import { DownloadModel } from '@/components/download/download.model';
-import { OpenImageCanvasModel } from '@/components/image-canvas/open-image-canvas.model';
 import { ModelsCommonModel } from '@/components/manager/manager-content/models/models-common.model';
 import { ModelsInstalledModel } from '@/components/manager/manager-content/models/models-installed.model';
 import { ModelsMarketplaceModel } from '@/components/manager/manager-content/models/models-marketplace.model';
@@ -18,6 +16,8 @@ import { SettingsModel } from '@/components/settings/settings.model';
 import { EmitterModel } from '@/utils/emitter.model';
 import { ModalModel } from '@/utils/modal.model';
 import { RequestModel } from '@/utils/request.model';
+import { OpenImageCanvasModel } from '@/components/image-canvas/open-image-canvas.model';
+import { ImageCanvasModel } from 'image-canvas/model';
 
 export const container = new Container();
 

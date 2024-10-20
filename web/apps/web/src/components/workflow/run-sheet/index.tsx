@@ -1,37 +1,47 @@
 'use client';
 
-import { NodeIdEnum } from '@shellagent/flow-engine';
+import { NodeIdEnum, IFlow } from '@shellagent/flow-engine';
 import { TValues, getDefaultValueBySchema } from '@shellagent/form-engine';
-import {
-  Sheet,
-  SheetTitle,
-  SheetContent,
-  SheetHeader,
-  SheetFooter,
-  Button,
-} from '@shellagent/ui';
+import { Button, Drawer, FormRef } from '@shellagent/ui';
 import { usePrevious } from 'ahooks';
 import { isEmpty, isEqual, difference, keys, omit } from 'lodash-es';
-import { useEffect } from 'react';
+import { useEffect, useCallback, useRef } from 'react';
 
 import NodeForm from '@/components/workflow/node-form';
+import { runWorkflow } from '@/services/workflow';
+import { useWorkflowState } from '@/stores/workflow/use-workflow-state';
+import { genWorkflow } from '@/stores/workflow/utils/data-transformer';
 import { getSchemaByInputs } from '@/stores/workflow/utils/get-run-schema';
 import { useWorkflowStore } from '@/stores/workflow/workflow-provider';
 
-const RunSheet: React.FC<{
-  onRun: () => void;
-  open: boolean;
-  onOpenChange: (open: boolean) => void;
-  container: HTMLElement | null;
-}> = ({ open, onOpenChange, onRun, container }) => {
-  const { userInputs, setUserInputs, nodeData, loading } = useWorkflowStore(
-    state => ({
-      userInputs: state.userInputs,
-      setUserInputs: state.setUserInputs,
-      nodeData: state.nodeData,
-      loading: state.loading,
-    }),
-  );
+const RunSheet: React.FC = () => {
+  const formRef = useRef<FormRef>(null);
+  const {
+    userInputs,
+    setUserInputs,
+    nodeData,
+    loading,
+    flowInstance,
+    widgetSchema,
+    config,
+    clearRuntimeData,
+    setRunLoading,
+    onWorkflowMessage,
+  } = useWorkflowStore(state => ({
+    userInputs: state.userInputs,
+    setUserInputs: state.setUserInputs,
+    nodeData: state.nodeData,
+    loading: state.loading,
+    flowInstance: state.flowInstance,
+    widgetSchema: state.widgetSchema,
+    config: state.config,
+    clearRuntimeData: state.clearRuntimeData,
+    setRunLoading: state.setRunLoading,
+    onWorkflowMessage: state.onWorkflowMessage,
+  }));
+
+  const { runSheetOpen, setRunSheetOpen } = useWorkflowState(state => state);
+
   const inputs = nodeData[NodeIdEnum.start]?.input as Record<string, TValues>;
   const runSchema = getSchemaByInputs(inputs);
   const prevInputs = usePrevious(inputs);
@@ -39,7 +49,9 @@ const RunSheet: React.FC<{
   useEffect(() => {
     if (!isEqual(prevInputs, inputs)) {
       const diffKeys = difference(keys(inputs), keys(prevInputs));
-      setUserInputs(omit(userInputs, diffKeys));
+      const values = omit(userInputs, diffKeys);
+      setUserInputs(values);
+      formRef.current?.reset(values);
     }
   }, [inputs, prevInputs]);
 
@@ -49,38 +61,67 @@ const RunSheet: React.FC<{
       !isEmpty(defaultValues) &&
       isEmpty(userInputs) &&
       !(loading.getProConfig || loading.getReactFlow) &&
-      open
+      runSheetOpen
     ) {
       setUserInputs(defaultValues);
+      formRef.current?.reset(defaultValues);
     }
-  }, [open, runSchema, loading]);
+  }, [runSheetOpen, runSchema, loading]);
+
+  const handleWorkflowRun = useCallback(() => {
+    const reactflow = flowInstance?.toObject() as IFlow;
+    const workflow = genWorkflow(
+      reactflow,
+      nodeData,
+      widgetSchema,
+      config?.schemaModeMap,
+    );
+
+    clearRuntimeData();
+    setRunSheetOpen(false);
+    setRunLoading(true);
+    runWorkflow(
+      { workflow, user_input: userInputs },
+      {
+        onMessage: onWorkflowMessage,
+      },
+    );
+  }, [userInputs, flowInstance, nodeData, config?.schemaModeMap, widgetSchema]);
 
   return (
-    <Sheet modal={false} open={open}>
-      <SheetContent
-        onClose={() => onOpenChange(false)}
-        container={container}
-        className="!w-[400px] !max-w-[400px] p-3 flex flex-col gap-y-2">
-        <SheetHeader className="flex justify-start">
-          <SheetTitle className="text-lg text-left">Test Run</SheetTitle>
-        </SheetHeader>
+    <Drawer
+      style={{
+        transform: 'translateX(-12px) translateY(12px)',
+        height: 'calc(100% - 24px)',
+      }}
+      className="rounded-lg"
+      placement="right"
+      width={375}
+      mask={false}
+      getContainer={false}
+      title="Test Run"
+      onClose={() => setRunSheetOpen(false)}
+      onClick={(e: any) => e.stopPropagation()}
+      open={runSheetOpen}
+      autoFocus={false}
+      push={false}>
+      <div className="flex flex-col gap-y-4">
         <NodeForm
+          ref={formRef}
           key={JSON.stringify(runSchema)}
           loading={loading.getProConfig || loading.getReactFlow}
           schema={runSchema}
           values={userInputs}
           onChange={setUserInputs}
         />
-        <SheetFooter>
-          <Button
-            className="w-full"
-            onClick={onRun}
-            loading={loading.workflowRunning}>
-            Run
-          </Button>
-        </SheetFooter>
-      </SheetContent>
-    </Sheet>
+        <Button
+          className="w-full"
+          onClick={handleWorkflowRun}
+          loading={loading.workflowRunning}>
+          Run
+        </Button>
+      </div>
+    </Drawer>
   );
 };
 

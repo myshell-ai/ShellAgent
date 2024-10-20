@@ -12,11 +12,15 @@ import {
 } from '@shellagent/flow-engine';
 import { TValues } from '@shellagent/form-engine';
 import { Workflow, Task } from '@shellagent/pro-config';
-import { get, isArray, isString, set, uniq } from 'lodash-es';
+import { get, isArray, isEmpty, set, uniq, uniqBy } from 'lodash-es';
 import { v4 as uuidv4 } from 'uuid';
 
 import { initState as defaultSchemaState } from '@/stores/workflow/schema-provider';
 import { removeNulls } from '@/utils/common-helper';
+import {
+  transformChoicesToValues,
+  transformValuesToChoices,
+} from '@/utils/data-transformer';
 
 import { getTypesFromSchema } from './get-widget-schema';
 import { WorkflowStore } from '../workflow-store';
@@ -28,7 +32,7 @@ export const genNodeData: (
     [NodeIdEnum.start]: {
       id: NodeIdEnum.start,
       type: NodeTypeEnum.start,
-      input: workflow?.inputs || {},
+      input: transformValuesToChoices(workflow?.inputs || {}),
       context: workflow?.context || {},
     },
     [NodeIdEnum.end]: {
@@ -48,10 +52,21 @@ export const genNodeData: (
 
       const input = schemaMode ? { [schemaMode]: block.inputs } : block.inputs;
 
+      const undefinedTask =
+        block.mode === 'undefined'
+          ? {
+              input_names: block.input_names,
+              input_types: block.input_types,
+              output_names: block.output_names,
+              output_types: block.output_types,
+              mode: 'undefined',
+            }
+          : {};
       nodeData[block.name] = {
         name: block.name,
         input,
         output: block.outputs,
+        ...undefinedTask,
       };
     }
   });
@@ -88,6 +103,20 @@ export const genWorkflow: (
   widgetSchema: Record<string, any>,
   schemaModeMap: WorkflowStore['config']['schemaModeMap'],
 ) => Workflow = (flow, nodeData, widgetSchema, schemaModeMap = {}) => {
+  flow.edges.forEach(({ source, sourceHandle, target, targetHandle }) => {
+    if (source && sourceHandle && target && targetHandle) {
+      let value = `{{${source}.${sourceHandle}}}`;
+      if (source === NodeIdEnum.start) {
+        value = `{{${sourceHandle.replace('input.', '').replace('.value', '')}}}`;
+      }
+      if (target === NodeIdEnum.end) {
+        set(nodeData, [target, ...targetHandle.split('.'), 'value'], value);
+      } else {
+        set(nodeData, [target, 'input', targetHandle], value);
+      }
+    }
+  });
+
   const workflow: Workflow = {
     type: 'workflow',
     blocks: flow?.nodes
@@ -109,22 +138,38 @@ export const genWorkflow: (
               }
             : nodeData[node.id]?.input || {},
         ) as any;
+        const undefinedTask =
+          nodeData[node.id].mode === 'undefined'
+            ? {
+                input_names: nodeData[node.id].input_names,
+                input_types: nodeData[node.id].input_types,
+                output_names: nodeData[node.id].output_names,
+                output_types: nodeData[node.id].output_types,
+                mode: 'undefined',
+              }
+            : {};
         return {
           type: 'task',
           mode: 'widget',
           name: node.data.id,
           widget_class_name: node.data.name,
           inputs,
+          ...undefinedTask,
           transitions: {
-            ALWAYS: flow.edges
-              .filter(edge => edge.source === node.id)
-              .map(edge => ({
-                target: edge.target,
-              })) as any,
+            ALWAYS: uniqBy(
+              flow.edges
+                .filter(edge => edge.source === node.id)
+                .map(edge => ({
+                  target: edge.target,
+                })),
+              'target',
+            ) as any,
           },
         };
       }) as any,
-    inputs: nodeData[NodeIdEnum.start]?.input || {},
+
+    inputs:
+      transformChoicesToValues(nodeData[NodeIdEnum.start]?.input || {}) || {},
     outputs: nodeData[NodeIdEnum.end]?.output || {},
     context: nodeData[NodeIdEnum.start]?.context || {},
   };
@@ -134,17 +179,17 @@ export const genWorkflow: (
 // 导入proconfig
 export const genReactFlow: (
   workflow: Workflow,
-  widgetSchema: Record<string, any>,
   setNodeData: WorkflowStore['setNodeData'],
-  setSchemaModeMap: WorkflowStore['setSchemaModeMap'],
-) => IFlow = (workflow, widgetSchema, setNodeData, setSchemaModeMap) => {
+  setFieldsModeMap: WorkflowStore['setFieldsModeMap'],
+  comfyui: any,
+) => IFlow = (workflow, setNodeData, setFieldsModeMap, comfyui) => {
   const STEP_SIZE = 600;
   const nodes: IFlow['nodes'] = [];
   const edges: IFlow['edges'] = [];
   if (workflow.type === 'workflow') {
     // start节点
     let x = 0;
-    const y = 0;
+    const y = 100;
     nodes.push({
       id: NodeIdEnum.start,
       type: NodeTypeEnum.start,
@@ -158,7 +203,6 @@ export const genReactFlow: (
       },
       position: { x, y },
     });
-    x += STEP_SIZE;
     // 写入input&context
     setNodeData({
       id: NodeIdEnum.start,
@@ -172,22 +216,24 @@ export const genReactFlow: (
 
     // widget节点
     if (workflow.blocks) {
-      const widgetIndexMap = new Map<string, number>();
       if (isArray(workflow.blocks)) {
-        workflow.blocks.forEach((block, idx) => {
+        workflow.blocks.forEach(block => {
           const id = block.name as NodeId;
           const type = NodeTypeEnum.widget;
           const widgetName = (block as any).widget_class_name;
-          const multiSchema =
-            widgetSchema[widgetName]?.multi_input_schema || false;
-          let widgetIndex: number;
-          if (widgetIndexMap.get(widgetName)) {
-            widgetIndex = widgetIndexMap.get(widgetName) || 1;
-          } else {
-            widgetIndex = 1;
-            widgetIndexMap.set(widgetName, widgetIndex);
+          const widgetIndex =
+            nodes.filter(item => item.data.name === widgetName).length + 1;
+          const idx = comfyui.nodes?.findIndex(
+            (item: any) => `node_${item.id}` === block.name,
+          );
+          const pos = get(comfyui, ['nodes', idx, 'pos']);
+          const size = get(comfyui, ['nodes', idx, 'size']);
+          let xScale = size[0] ? 500 / size[0] : 1.3;
+          if (xScale < 1) {
+            xScale = 1.3;
           }
-
+          const currentX = pos?.[0] ? pos[0] * 1.3 + 200 : x;
+          const currentY = pos?.[1] ? pos[1] * 1.3 : y;
           nodes.push({
             id,
             type,
@@ -200,60 +246,61 @@ export const genReactFlow: (
               display_name: getNodeName(widgetName, widgetIndex),
               name: widgetName,
             },
-            position: { x, y },
-          });
-          x += STEP_SIZE;
-          // 写入input&output
-          const schemaMode =
-            (block.inputs?.inputs_schema_mode as string) || 'advanced';
-
-          const input = multiSchema
-            ? {
-                [schemaMode]: block.inputs,
-              }
-            : block.inputs;
-
-          setNodeData({
-            id,
-            data: {
-              input,
-              output: block.outputs,
-              name: widgetName,
-              id,
+            position: {
+              x: currentX,
+              y: currentY,
             },
           });
+          x = Math.max(x, currentX);
+          const input = block.inputs;
+          if (block.mode === 'undefined') {
+            setNodeData({
+              id,
+              data: {
+                input,
+                output: block.outputs,
+                mode: block.mode,
+                input_names: block.input_names,
+                input_types: block.input_types,
+                output_names: block.output_names,
+                output_types: block.output_types,
+                name: widgetName,
+                id,
+              },
+            });
+          } else {
+            setNodeData({
+              id,
+              data: {
+                input,
+                output: block.outputs,
+                name: widgetName,
+                id,
+              },
+            });
+          }
 
-          setSchemaModeMap({ id, mode: schemaMode });
-          // 兼容不同数据结构
-          if (isString(block.transitions?.ALWAYS)) {
-            edges.push({
-              id: uuidv4(),
-              source: id,
-              target: block.transitions?.ALWAYS,
-              type: EdgeTypeEnum.default,
-              animated: false,
-              data: {},
-            });
-          } else if (isArray(block.transitions?.ALWAYS)) {
-            block.transitions?.ALWAYS.forEach(target => {
-              edges.push({
-                id: uuidv4(),
-                source: id,
-                target: target.target as string,
-                type: EdgeTypeEnum.default,
-                animated: false,
-                data: {},
-              });
-            });
-          } else if (!block.transitions) {
-            edges.push({
-              id: uuidv4(),
-              source: id,
-              target:
-                (workflow.blocks as any)?.[idx + 1]?.name || NodeIdEnum.end,
-              type: EdgeTypeEnum.default,
-              animated: false,
-              data: {},
+          if (!isEmpty(input) && block.name) {
+            Object.entries(input as object).forEach(([targetHandle, value]) => {
+              const match =
+                typeof value === 'string' ? value.match(/\{\{(.*?)\}\}/) : null; // 正则匹配 {{}} 中的内容
+              if (match) {
+                const [source, sourceHandle] = match[1].split('.'); // 以小数点分割 source 和 sourceHandle
+                edges.push({
+                  id: uuidv4(),
+                  source,
+                  sourceHandle,
+                  target: block.name!,
+                  targetHandle,
+                  type: 'custom_edge',
+                  animated: false,
+                });
+                setFieldsModeMap({
+                  id: block.name!,
+                  name: targetHandle,
+                  mode: 'ref',
+                });
+              }
             });
           }
         });
@@ -272,9 +319,8 @@ export const genReactFlow: (
         type: NodeTypeEnum.end,
         name: NodeTypeEnum.end,
       },
-      position: { x, y },
+      position: { x: x + STEP_SIZE, y },
     });
-    //
     setNodeData({
       id: NodeIdEnum.end,
       data: {
@@ -285,46 +331,13 @@ export const genReactFlow: (
     });
   }
 
-  // 将起始节点没有连线的widget节点连接到start节点
-  // 将target节点没有连线的widget节点连接到end节点
-  const widgetNodes = nodes.filter(
-    node =>
-      node.id !== NodeIdEnum.start &&
-      node.id !== NodeIdEnum.end &&
-      node.type === NodeTypeEnum.widget,
-  );
-
-  widgetNodes.forEach(node => {
-    // 找到target为node.id的edge
-    if (!edges.find(edge => edge.target === node.id)) {
-      edges.push({
-        id: uuidv4(),
-        source: NodeIdEnum.start,
-        target: node.id,
-        type: EdgeTypeEnum.default,
-        animated: false,
-        data: {},
-      });
-    }
-    if (!edges.find(edge => edge.source === node.id)) {
-      edges.push({
-        id: uuidv4(),
-        source: node.id,
-        target: NodeIdEnum.end,
-        type: EdgeTypeEnum.default,
-        animated: false,
-        data: {},
-      });
-    }
-  });
-
   return {
     nodes,
     edges,
     viewport: {
       x: 100,
       y: 100,
-      zoom: 0.5,
+      zoom: 0.4,
     },
   };
 };
@@ -441,13 +454,13 @@ export const getDelPathInfo = (
   input: TValues,
   id: string,
   basePath = '',
-): Record<string, string> => {
+): Record<string, string | undefined> => {
   if (typeof input !== 'object' || input === null) return {};
 
   const refReg = new RegExp(`{{.*(${id})(\\.)(.*)}}`, 'g');
   const rawReg = new RegExp(`{{.*(${id})(.*)}}`, 'g');
 
-  const paths: Record<string, string> = {};
+  const paths: Record<string, string | undefined> = {};
 
   Object.entries(input).forEach(([key, value]) => {
     const currentPath = basePath ? `${basePath}.${key}` : key;
@@ -455,7 +468,7 @@ export const getDelPathInfo = (
     if (typeof value === 'string' && rawReg.test(value)) {
       paths[currentPath] = value.replaceAll(rawReg, '');
     } else if (typeof value === 'string' && refReg.test(value)) {
-      paths[currentPath] = '';
+      paths[currentPath] = undefined;
     } else if (typeof value === 'object') {
       const nestedFirstLevelPaths = getDelPathInfo(value, id, currentPath);
       Object.assign(paths, nestedFirstLevelPaths);

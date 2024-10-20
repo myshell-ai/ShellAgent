@@ -9,7 +9,6 @@ import { ModalModel } from '@/utils/modal.model';
 import {
   loadSettingEnvFormUrl,
   saveSettingEnvFormUrl,
-  SettingEnvFormValue,
 } from './settings-definitions';
 
 export type SidebarValue = 'Environment' | 'SoftwareUpdate';
@@ -218,7 +217,7 @@ export class SettingsModel {
     const settingsDisabled = process.env.NEXT_PUBLIC_DISABLE_SETTING === 'yes';
     if (settingsDisabled) return null;
     try {
-      const res = await axios.get<SettingEnvFormValue>(loadSettingEnvFormUrl, {
+      const res = await axios.get(loadSettingEnvFormUrl, {
         headers: {
           'Content-Type': 'application/json',
         },
@@ -237,6 +236,7 @@ export class SettingsModel {
           'Content-Type': 'application/json',
         },
       });
+      this.emitter.emitter.emit('message.success', 'Saved.');
     } catch (e: any) {
       this.emitter.emitter.emit('message.error', e.message);
     }

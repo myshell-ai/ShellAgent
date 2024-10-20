@@ -24,6 +24,7 @@ const StartNode: React.FC<NodeProps<StartNodeType>> = ({
     fieldsModeMap,
     setFieldsModeMap,
     setResetData,
+    flowInstance,
   } = useWorkflowStore(state => ({
     setNodeData: state.setNodeData,
     nodeData: state.nodeData,
@@ -31,6 +32,7 @@ const StartNode: React.FC<NodeProps<StartNodeType>> = ({
     fieldsModeMap: state.config?.fieldsModeMap || {},
     setFieldsModeMap: state.setFieldsModeMap,
     setResetData: state.setResetData,
+    flowInstance: state.flowInstance,
   }));
 
   const preNodeData = useRef<TValues>(nodeData);
@@ -51,6 +53,16 @@ const StartNode: React.FC<NodeProps<StartNodeType>> = ({
             setResetData({ path, value });
           });
         });
+        flowInstance?.setEdges(state =>
+          state.filter(
+            edge =>
+              !(
+                edge.source === data.id &&
+                edge.sourceHandle &&
+                diffKeys.includes(edge.sourceHandle)
+              ),
+          ),
+        );
       }
       preNodeData.current[data.id] = values;
     },
@@ -65,7 +77,7 @@ const StartNode: React.FC<NodeProps<StartNodeType>> = ({
   );
 
   return (
-    <NodeCard sourceHandle={id} selected={selected} {...data}>
+    <NodeCard selected={selected} {...data}>
       <NodeForm
         loading={loading}
         values={nodeData[data.id]}

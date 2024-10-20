@@ -3,6 +3,7 @@ import hashlib
 import os
 import requests
 from proconfig.utils.pytree import tree_map
+import torch
 import logging
 import time
 import numpy as np
@@ -60,13 +61,9 @@ def convert_unserializable_display(var):
     if var is None:
         return None
     if not is_serializable_type(var):
-        try:
-            import torch
-            if isinstance(var, torch.Tensor):
-                return f"Tensor: {var.size()}".replace("torch.", "")
-        except:
-            pass
-        if isinstance(var, np.ndarray):
+        if isinstance(var, torch.Tensor):
+            return f"Tensor: {var.size()}".replace("torch.", "")
+        elif isinstance(var, np.ndarray):
             return f"Array: {var.shape}"
         elif isinstance(var, object):
             return var.__class__.__name__

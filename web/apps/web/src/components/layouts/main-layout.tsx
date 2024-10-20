@@ -11,6 +11,7 @@ import { SWRWrapper } from '@/components/common/swr';
 import { GlobalStoreProvider } from '@/stores/global/global-provider';
 
 import SideBar from './side-bar';
+import { Download } from '../download';
 
 export default function MainLayout({ children }: PropsWithChildren) {
   return (
@@ -23,6 +24,7 @@ export default function MainLayout({ children }: PropsWithChildren) {
               <div className="h-screen flex bg-surface-default">
                 <SideBar />
                 <main className="h-full w-full">{children}</main>
+                <Download />
               </div>
             </GlobalStoreProvider>
           </SWRWrapper>

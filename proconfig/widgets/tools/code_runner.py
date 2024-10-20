@@ -1,6 +1,7 @@
 from proconfig.widgets.base import BaseWidget, WIDGETS
 from proconfig.utils.code_runner import evaluate_js_code, evaluate_python_code
 from typing import Literal, Any, Dict
+import torch
 
 @WIDGETS.register_module()
 class CodeRunnerWidget(BaseWidget):
@@ -16,6 +17,7 @@ class CodeRunnerWidget(BaseWidget):
     class OutputsSchema(BaseWidget.OutputsSchema):
         result: Any
         
+    @torch.no_grad()
     def execute(self, environ, config):
         return_dict = {}
         if config.language == "javascript":

@@ -14,7 +14,6 @@ import {
 } from '@shellagent/ui';
 import { useHover } from 'ahooks';
 import clsx from 'clsx';
-import Image from 'next/image';
 import React, { useMemo, useRef, useState } from 'react';
 
 const TreeNode: React.FC<{
@@ -31,12 +30,10 @@ const TreeNode: React.FC<{
       onClick={onChange}>
       <div ref={nodeRef} className="!w-full flex items-center !justify-start">
         {data?.icon && (
-          <Image
+          <img
             alt="icon"
             src={data?.icon || ''}
-            width={32}
-            height={32}
-            className="flex-shrink-0 rounded-md"
+            className="flex-shrink-0 w-8 h-8 rounded-md "
           />
         )}
         <Text
