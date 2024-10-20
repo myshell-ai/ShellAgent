@@ -1,11 +1,12 @@
 import { PlusIcon } from '@heroicons/react/24/outline';
 import { XMarkIcon } from '@heroicons/react/24/solid';
-import { WidgetItem, uuid, NodeTypeEnum } from '@shellagent/flow-engine';
+import { WidgetItem, uuid } from '@shellagent/flow-engine';
 import { Button, useFormContext, Drag } from '@shellagent/ui';
 import { useClickAway } from 'ahooks';
 import { Dropdown } from 'antd';
 import { useState, useRef, useCallback } from 'react';
-import { useDrag, useDrop } from 'react-dnd';
+import { useDrag, useDrop, DndProvider } from 'react-dnd';
+import { HTML5Backend } from 'react-dnd-html5-backend';
 
 import { materialList } from '@/components/app/constants';
 import { TaskList } from '@/components/app/task-list';
@@ -16,7 +17,7 @@ export interface IWorkflowTask {
   type: 'task';
   display_name: string;
   name: string;
-  mode: NodeTypeEnum.workflow;
+  mode: 'workflow';
   workflow_id: string;
   key: string;
   inputs: {
@@ -31,7 +32,7 @@ export interface IWidgetTask {
   type: 'task';
   display_name: string;
   name: string;
-  mode: NodeTypeEnum.widget;
+  mode: 'widget';
   widget_name: string;
   widget_class_name: string;
   key: string;
@@ -42,6 +43,142 @@ export interface IWidgetTask {
     [key: string]: string;
   };
 }
+
+const TasksConfig = ({
+  name,
+  onChange,
+  draggable,
+}: {
+  name: string;
+  onChange: (value: (IWorkflowTask | IWidgetTask)[]) => void;
+  draggable?: boolean;
+}) => {
+  const btnRef = useRef<HTMLButtonElement>(null);
+  const [open, setOpen] = useState(false);
+  const { getValues } = useFormContext();
+  const values = getValues(name) as (IWorkflowTask | IWidgetTask)[];
+
+  const { currentStateId, setInsideSheetOpen } = useAppState(state => state);
+
+  const handleItemDelete = useCallback(
+    (idx: number) => {
+      const blocks = values.filter((_, index) => index !== idx);
+      onChange(blocks);
+    },
+    [values, onChange],
+  );
+
+  const handleItemClick = useCallback(
+    (currentTaskIndex: number) => {
+      setInsideSheetOpen({
+        stateId: currentStateId,
+        open: true,
+        mode: values[currentTaskIndex]?.mode,
+        currentTaskIndex,
+      });
+    },
+    [currentStateId, setInsideSheetOpen, values],
+  );
+
+  useClickAway(() => {
+    setOpen(false);
+  }, btnRef);
+
+  const handleSelect = useCallback(
+    (task: WidgetItem) => {
+      setOpen(false);
+
+      const newTask = {
+        type: 'task',
+        display_name: task.display_name,
+        name: uuid(), // 需要是key_xxx，作为ref引用
+        mode: task.type === 'workflow' ? 'workflow' : 'widget',
+        // workflow_id: task.type === 'workflow' ? generateUUID() : undefined,
+        workflow_id: undefined,
+        widget_name: task.type === 'widget' ? task.name : undefined,
+        widget_class_name: task.type === 'widget' ? task.name : undefined,
+        inputs: {},
+        outputs: {},
+      };
+
+      const blocks = Array.isArray(values) ? [...values, newTask] : [newTask];
+      onChange(blocks as (IWidgetTask | IWorkflowTask)[]);
+    },
+    [values, onChange],
+  );
+
+  const moveTask = useCallback(
+    (dragIndex: number, hoverIndex: number) => {
+      const draggedTask = values[dragIndex];
+      const updatedTasks = [...values];
+      updatedTasks.splice(dragIndex, 1);
+      updatedTasks.splice(hoverIndex, 0, draggedTask);
+
+      onChange(updatedTasks);
+    },
+    [values, onChange],
+  );
+
+  return (
+    <DndProvider backend={HTML5Backend} context={window}>
+      <div>
+        {values?.length > 0 && (
+          <div className="flex flex-col gap-2 mb-1.5">
+            {values.map((task, idx) => (
+              <TaskItem
+                key={task.name}
+                name={task.display_name}
+                onDelete={() => handleItemDelete(idx)}
+                onClick={() => handleItemClick(idx)}
+                index={idx}
+                moveTask={moveTask}
+                draggable={draggable} // 传递draggable参数
+              />
+            ))}
+          </div>
+        )}
+        <Dropdown
+          placement="bottomRight"
+          trigger={['click']}
+          overlayClassName="shadow-modal-default"
+          overlayStyle={{ borderRadius: 12, overflow: 'hidden' }}
+          getPopupContainer={() => btnRef.current || document.body}
+          open={open}
+          overlay={
+            <div
+              onWheelCapture={e => e.stopPropagation()}
+              className="w-[200px] max-h-[349px] overflow-y-auto"
+              onClick={e => e.stopPropagation()}>
+              <TaskList
+                className="rounded-xl"
+                data={materialList.slice(1)}
+                loading={false}
+                onChange={handleSelect}
+              />
+            </div>
+          }>
+          <Button
+            ref={btnRef}
+            icon={PlusIcon}
+            onClick={e => {
+              e.stopPropagation();
+              setOpen(true);
+            }}
+            variant="outline"
+            size="sm"
+            type="button"
+            className="rounded-lg w-18 border-default">
+            Add
+          </Button>
+        </Dropdown>
+      </div>
+    </DndProvider>
+  );
+};
+
+type DragItem = {
+  index: number;
+};
 
 const TaskItem = ({
   name,
@@ -135,141 +272,6 @@ const TaskItem = ({
       />
     </div>
   );
-};
-
-const TasksConfig = ({
-  name,
-  onChange,
-  draggable,
-}: {
-  name: string;
-  onChange: (value: (IWorkflowTask | IWidgetTask)[]) => void;
-  draggable?: boolean;
-}) => {
-  const btnRef = useRef<HTMLButtonElement>(null);
-  const [open, setOpen] = useState(false);
-  const { getValues } = useFormContext();
-  const values = getValues(name) as (IWorkflowTask | IWidgetTask)[];
-
-  const { currentStateId, setInsideSheetOpen } = useAppState(state => state);
-
-  const handleItemDelete = useCallback(
-    (idx: number) => {
-      const blocks = values.filter((_, index) => index !== idx);
-      onChange(blocks);
-    },
-    [values, onChange],
-  );
-
-  const handleItemClick = useCallback(
-    (currentTaskIndex: number) => {
-      setInsideSheetOpen({
-        stateId: currentStateId,
-        open: true,
-        mode: values[currentTaskIndex]?.mode,
-        currentTaskIndex,
-      });
-    },
-    [currentStateId, setInsideSheetOpen, values],
-  );
-
-  useClickAway(() => {
-    setOpen(false);
-  }, btnRef);
-
-  const handleSelect = useCallback(
-    (task: WidgetItem) => {
-      setOpen(false);
-      const newTask = {
-        type: 'task',
-        display_name: task.display_name,
-        name: uuid(), // 需要是key_xxx，作为ref引用
-        mode: task.type,
-        workflow_id:
-          task.type === NodeTypeEnum.workflow ? generateUUID() : undefined,
-        widget_name: task.type === NodeTypeEnum.widget ? task.name : undefined,
-        widget_class_name:
-          task.type === NodeTypeEnum.widget ? task.name : undefined,
-        inputs: {},
-        outputs: {},
-        custom: task.custom,
-      };
-
-      const blocks = Array.isArray(values) ? [...values, newTask] : [newTask];
-      onChange(blocks as (IWidgetTask | IWorkflowTask)[]);
-    },
-    [values, onChange],
-  );
-
-  const moveTask = useCallback(
-    (dragIndex: number, hoverIndex: number) => {
-      const draggedTask = values[dragIndex];
-      const updatedTasks = [...values];
-      updatedTasks.splice(dragIndex, 1);
-      updatedTasks.splice(hoverIndex, 0, draggedTask);
-
-      onChange(updatedTasks);
-    },
-    [values, onChange],
-  );
-
-  return (
-    <div>
-      {values?.length > 0 && (
-        <div className="flex flex-col gap-2 mb-1.5">
-          {values.map((task, idx) => (
-            <TaskItem
-              key={task.name}
-              name={task.display_name}
-              onDelete={() => handleItemDelete(idx)}
-              onClick={() => handleItemClick(idx)}
-              index={idx}
-              moveTask={moveTask}
-              draggable={draggable} // 传递draggable参数
-            />
-          ))}
-        </div>
-      )}
-      <Dropdown
-        placement="bottomRight"
-        trigger={['click']}
-        overlayClassName="shadow-modal-default"
-        overlayStyle={{ borderRadius: 12, overflow: 'hidden' }}
-        getPopupContainer={() => btnRef.current || document.body}
-        open={open}
-        overlay={
-          <div
-            onWheelCapture={e => e.stopPropagation()}
-            className="w-[200px] max-h-[349px] overflow-y-auto"
-            onClick={e => e.stopPropagation()}>
-            <TaskList
-              className="rounded-xl"
-              data={materialList.slice(1)}
-              loading={false}
-              onChange={handleSelect}
-            />
-          </div>
-        }>
-        <Button
-          ref={btnRef}
-          icon={PlusIcon}
-          onClick={e => {
-            e.stopPropagation();
-            setOpen(true);
-          }}
-          variant="outline"
-          size="sm"
-          type="button"
-          className="rounded-lg w-18 border-default">
-          Add
-        </Button>
-      </Dropdown>
-    </div>
-  );
-};
-
-type DragItem = {
-  index: number;
 };
 
 TasksConfig.displayName = 'TasksConfig';

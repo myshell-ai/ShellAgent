@@ -91,13 +91,6 @@ export const materialList: MaterialListType = [
         type: NodeTypeEnum.widget,
         undraggable: true,
       },
-      {
-        name: 'ClaudeWidget',
-        display_name: 'Claude',
-        type: NodeTypeEnum.widget,
-        undraggable: true,
-        widget_name: '@myshell_llm/1744218088699596812',
-      },
     ],
   },
   {
@@ -112,30 +105,9 @@ export const materialList: MaterialListType = [
         undraggable: true,
       },
       {
-        name: 'XWidget',
-        display_name: 'Twitter',
-        type: NodeTypeEnum.widget,
-        undraggable: true,
-        widget_name: '@myshell/1784206090390036480',
-      },
-      {
         name: 'ImageTextFuserWidget',
         display_name: 'Image Text Fuser (Deprecated)',
         type: NodeTypeEnum.widget,
-        undraggable: true,
-      },
-    ],
-  },
-  {
-    title: 'Plugins',
-    plain: true,
-    no_border: true,
-    items: [
-      {
-        name: 'ComfyUIWidget',
-        display_name: 'ComfyUI',
-        type: NodeTypeEnum.widget,
-        custom: true,
         undraggable: true,
       },
     ],

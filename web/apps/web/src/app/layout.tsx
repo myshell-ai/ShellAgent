@@ -1,4 +1,3 @@
-// import 'reflect-metadata';
 import './reflect-metadata-client-side';
 import './globals.css';
 import '@shellagent/ui/styles.css';
@@ -25,14 +24,6 @@ export default function RootLayout({
 }: PropsWithChildren): JSX.Element {
   return (
     <html lang="en">
-      <head>
-        <link
-          rel="preload"
-          href="/Reflect.min.js"
-          as="script"
-          fetchPriority="high"
-        />
-      </head>
       <body>
         <MainLayout>{children}</MainLayout>
       </body>

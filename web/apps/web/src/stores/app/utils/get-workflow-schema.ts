@@ -6,14 +6,14 @@ import { ENABLE_MIME } from '@/utils/file-types';
 export const getSchemaByInputs = (inputs: TValues): ISchema => {
   const properties: { [key: string]: ISchema } = {};
   Object.keys(inputs || {}).reduce<{ [key: string]: ISchema }>((prev, key) => {
-    const { description, name, type, value, choices, title } = inputs[key];
+    const { description, name, type, value, choices } = inputs[key];
     const defaultValue = value || inputs[key].default_value;
     switch (type) {
       case 'audio':
         prev[key] = {
           type: 'string',
           default: defaultValue,
-          title: name || title,
+          title: name,
           description,
           'x-layout': 'Vertical',
           'x-type': 'Control',
@@ -30,7 +30,7 @@ export const getSchemaByInputs = (inputs: TValues): ISchema => {
         prev[key] = {
           type: 'string',
           default: defaultValue,
-          title: name || title,
+          title: name,
           description,
           'x-layout': 'Vertical',
           'x-type': 'Control',
@@ -47,7 +47,7 @@ export const getSchemaByInputs = (inputs: TValues): ISchema => {
         prev[key] = {
           type: 'string',
           default: defaultValue,
-          title: name || title,
+          title: name,
           description,
           'x-layout': 'Vertical',
           'x-type': 'Control',
@@ -62,7 +62,7 @@ export const getSchemaByInputs = (inputs: TValues): ISchema => {
         prev[key] = {
           type: 'string',
           default: defaultValue,
-          title: name || title,
+          title: name,
           description,
           'x-layout': 'Vertical',
           'x-type': 'Control',
@@ -77,7 +77,7 @@ export const getSchemaByInputs = (inputs: TValues): ISchema => {
         prev[key] = {
           type: 'string',
           default: defaultValue,
-          title: name || title,
+          title: name,
           description,
           'x-layout': 'Vertical',
           'x-type': 'Control',
@@ -92,7 +92,7 @@ export const getSchemaByInputs = (inputs: TValues): ISchema => {
         prev[key] = {
           type: 'string',
           default: defaultValue,
-          title: name || title,
+          title: name,
           description,
           'x-layout': 'Vertical',
           'x-raw': true,
@@ -108,7 +108,7 @@ export const getSchemaByInputs = (inputs: TValues): ISchema => {
       prev[key] = {
         type: 'string',
         default: defaultValue,
-        title: name || title,
+        title: name,
         description,
         'x-raw': true,
         'x-component': 'Select',

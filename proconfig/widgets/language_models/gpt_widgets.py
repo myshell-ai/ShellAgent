@@ -1,3 +1,4 @@
+import torch
 from typing import Any, Literal, Optional, List
 from pydantic import Field, BaseModel
 
@@ -68,6 +69,7 @@ class GPTWidget(BaseWidget):
     class OutputsSchema(BaseWidget.OutputsSchema):
         reply: str
         
+    @torch.no_grad()
     def execute(self, environ, config):
         print("widget run id:", config.widget_run_id)
         

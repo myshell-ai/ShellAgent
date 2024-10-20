@@ -7,16 +7,15 @@ import {
   Cog8ToothIcon,
   QuestionMarkCircleIcon,
 } from '@heroicons/react/24/outline';
-import { Text } from '@shellagent/ui';
+import { Text, LegoSolid } from '@shellagent/ui';
 import clsx from 'clsx';
 import { useInjection } from 'inversify-react';
 import Link from 'next/link';
 import React from 'react';
 
+import { useGlobalStore } from '@/stores/global/global-provider';
+
 import { SettingsModel } from '../settings/settings.model';
-import { Badge } from 'antd';
-import { Flex } from 'react-system';
-import { observer } from 'mobx-react-lite';
 
 interface ItemType {
   href?: string;
@@ -50,26 +49,16 @@ const ItemFooter = ({
         'cursor-not-allowed': disabled,
       })}>
       {icon}
-      {title === 'Settings' ? (
-        <SettingsItem />
-      ) : (
-        <Text color={disabled ? 'disabled' : 'subtler'}>{title}</Text>
-      )}
+      <Text color={disabled ? 'disabled' : 'subtler'}>{title}</Text>
     </Link>
   );
 };
 
-const SettingsItem = observer(() => {
-  const model = useInjection(SettingsModel);
-  return (
-    <Badge dot={model.checkRet.has_new_stable} offset={[36, 12]}>
-      <Text color="subtler">Settings</Text>
-    </Badge>
-  );
-});
-
 export default function SideFooter() {
   const settingsModel = useInjection(SettingsModel);
+  const setManagerDialogOpen = useGlobalStore(
+    state => state.setManagerDialogOpen,
+  );
 
   const onOpenTab = (url: string) => {
     window.open(url, '__blank');
@@ -78,6 +67,12 @@ export default function SideFooter() {
   const settingsDisabled = process.env.NEXT_PUBLIC_DISABLE_SETTING === 'yes';
 
   const list: ItemType[] = [
+    {
+      title: 'Manager',
+      passHref: true,
+      icon: <LegoSolid className="w-6 h-6 text-icon-subtle" />,
+      onClick: () => setManagerDialogOpen(true),
+    },
     {
       title: 'Settings',
       passHref: true,

@@ -24,7 +24,6 @@ CURRENT_WORK_DIR = os.getcwd()
 
 class BaseWidget:
     exclusive_mode: bool = False
-    dynamic_schema: bool = False
     CATEGORY: str = None
 
     class InputsSchema(BaseModel):
@@ -87,27 +86,23 @@ class BaseWidget:
           }
         }
         '''
-        
-        if not self.dynamic_schema:
-            if INPUT_SCHEMA_MODE_KEY in inputs:
-                input_schema_mode = inputs.pop(INPUT_SCHEMA_MODE_KEY)
-                InputsSchemaClass = self.InputsSchemaDict.get(input_schema_mode, self.InputsSchema)
-                schema = InputsSchemaClass
-                ori_config = schema.model_validate(inputs)
-                if schema != self.InputsSchema:
-                    config = ori_config.convert()
-                else:
-                    config = ori_config
+        if INPUT_SCHEMA_MODE_KEY in inputs:
+            input_schema_mode = inputs.pop(INPUT_SCHEMA_MODE_KEY)
+            InputsSchemaClass = self.InputsSchemaDict.get(input_schema_mode, self.InputsSchema)
+            schema = InputsSchemaClass
+            ori_config = schema.model_validate(inputs)
+            if schema != self.InputsSchema:
+                config = ori_config.convert()
             else:
-                schema = self.InputsSchema
-                config = schema.model_validate(inputs)
-                
-            if hasattr(config, "callback"):
-                config.callback = inputs["callback"]
-                        
-            config = self.process_ckpt_paths(config, [])
+                config = ori_config
         else:
-            config = inputs
+            schema = self.InputsSchema
+            config = schema.model_validate(inputs)
+            
+        if hasattr(config, "callback"):
+            config.callback = inputs["callback"]
+                    
+        config = self.process_ckpt_paths(config, [])
         return_dict = self.execute(environ, config)
         
         return_dict = tree_map(lambda x: x[len(CURRENT_WORK_DIR) + 1:] if type(x) == str and x.startswith(CURRENT_WORK_DIR) else x, return_dict)
@@ -116,8 +111,7 @@ class BaseWidget:
             return_dict = tree_map(lambda x: process_local_file_path(x), return_dict)
         
         try:
-            if not self.dynamic_schema:
-                self.OutputsSchema.model_validate(return_dict)
+            self.OutputsSchema.model_validate(return_dict)
         except Exception as e:
             raise e
             

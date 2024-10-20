@@ -288,7 +288,6 @@ const Control: React.FC<IControlProps> = props => {
           const missOption =
             xComponentProps?.options?.length &&
             newField[valuePropsName] &&
-            !xRaw &&
             !xComponentProps?.options?.find(
               (item: { value: string }) =>
                 item.value === (newField[valuePropsName] as unknown as string),

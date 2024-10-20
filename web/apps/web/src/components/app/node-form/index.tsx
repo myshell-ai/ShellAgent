@@ -19,7 +19,6 @@ import {
   FormRef,
 } from '@shellagent/ui';
 import { isEmpty } from 'lodash-es';
-import dynamic from 'next/dynamic';
 import React, { useEffect, useMemo, forwardRef } from 'react';
 
 import FileUpload from '@/components/common/uploader';
@@ -40,6 +39,7 @@ import {
   VariableNameInput,
 } from './widgets';
 import { OpenImageCanvas } from '../../image-canvas/open-image-canvas';
+import dynamic from 'next/dynamic';
 
 const TasksConfig = dynamic(
   () => import('./widgets/tasks-config').then(module => module.TasksConfig),
@@ -54,21 +54,11 @@ interface NodeFormProps {
   parent?: string;
   modeMap?: Record<string, TFieldMode>;
   onModeChange?: (name: string, mode: TFieldMode) => void;
-  components?: Record<string, React.FC<any>>;
 }
 
 const NodeForm = forwardRef<FormRef, NodeFormProps>(
   (
-    {
-      values,
-      onChange,
-      schema,
-      loading,
-      onModeChange,
-      modeMap,
-      parent,
-      components = {},
-    },
+    { values, onChange, schema, loading, onModeChange, modeMap, parent },
     ref,
   ) => {
     const { schema: formSchema, formKey } = useSchemaContext(state => ({
@@ -126,7 +116,6 @@ const NodeForm = forwardRef<FormRef, NodeFormProps>(
           TransitionConditionEditor,
           VariableNameInput,
           OpenImageCanvas,
-          ...components,
         }}
       />
     );

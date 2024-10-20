@@ -10,7 +10,10 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 from filelock import FileLock
 import cloudpickle
 
+import torch
 import gc
+
+from comfy import model_management
 
 from proconfig.utils.pytree import tree_map
 import proconfig.utils.pytree as pytree
@@ -22,7 +25,10 @@ from proconfig.core.variables import Variable
 from proconfig.core.constant import return_breakpoint_cache_dir
 from proconfig.runners.utils import empty_callback_fn, _max_input_len_helper, _get_config_by_index_helper
 
+import comfy
+
 import psutil
+from pympler.tracker import SummaryTracker
 
 process = psutil.Process(os.getpid())
 
@@ -215,7 +221,8 @@ class Runner(BaseModel):
             self.process_comfy_extra_inputs(task)
             
         if task.mode == "widget":
-            return self.run_widget_task(container, task, environ, local_vars)
+            with torch.inference_mode():
+                return self.run_widget_task(container, task, environ, local_vars)
         elif task.mode == "workflow":
             return self.run_workflow_task(task, environ, local_vars)
         elif task.mode == "block":
@@ -358,6 +365,8 @@ class Runner(BaseModel):
     
 
     def run_workflow(self, workflow: Workflow, environ, payload, run_from_breakpoint=False):
+        print_memory()
+        tracker = SummaryTracker()
         gc.disable()
         if run_from_breakpoint: 
             local_vars = {}
@@ -412,6 +421,22 @@ class Runner(BaseModel):
             
             self.callback(event_type="workflow_end", outputs=outputs, create_time=workflow_start_time, finish_time=time.time(), task_status='succeeded')
         del local_vars
+        # for i, current_model in enumerate(model_management.current_loaded_models):
+        #     current_model.model_unload()
+        #     model_management.current_loaded_models.pop(i)
+        #     current_model.model.model = None
+        # print("tracker 1")
+        # tracker.print_diff()
+        # tracker2 = SummaryTracker()
+        comfy.model_management.unload_all_models()
+        gc.enable()
+        gc.collect()
+        torch.cuda.empty_cache()
+        comfy.model_management.cleanup_models()
+        gc.collect()
+        comfy.model_management.soft_empty_cache()
+        # print("tracker 2")
+        # tracker2.print_diff()
         return outputs
     
     def run_state(self, state: State, context: dict, environ: dict, payload: dict = {}):

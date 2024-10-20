@@ -6,11 +6,20 @@ import {
 import { TValues, TFieldMode } from '@shellagent/form-engine';
 import { FormRef } from '@shellagent/ui';
 import { useKeyPress } from 'ahooks';
-import React, { useCallback, useRef, useEffect } from 'react';
+import { some } from 'lodash-es';
+import React, { useCallback, useRef, useEffect, useState } from 'react';
+import { useShallow } from 'zustand/react/shallow';
 
+import { useWorkflowState } from '@/stores/workflow/use-workflow-state';
 import { getDelPathInfo } from '@/stores/workflow/utils/data-transformer';
 import { useWorkflowStore } from '@/stores/workflow/workflow-provider';
+import {
+  getKeyboardKeyCodeBySystem,
+  isEventTargetInputArea,
+} from '@/utils/common-helper';
 
+import { useDuplicateState } from './hook/use-duplicate-state';
+import { EventType, useEventEmitter } from '../../emitter';
 import NodeCard from '../../node-card';
 import NodeForm from '../../node-form';
 
@@ -21,9 +30,16 @@ const WidgetNode: React.FC<NodeProps<WidgetNodeType>> = ({
 }) => {
   const formRef = useRef<FormRef>(null);
   const nodeRef = useRef<HTMLElement | null>(null);
+  const statusRef = useRef({});
+  const { duplicateState } = useDuplicateState(id);
   const { onDelNode } = useReactFlowStore(state => ({
     onDelNode: state.onDelNode,
   }));
+  const { setCurrentCopyId } = useWorkflowState(state => ({
+    setCurrentCopyId: state.setCurrentCopyId,
+  }));
+
+  const [hasError, setHasError] = useState(false);
 
   const {
     setNodeData,
@@ -35,18 +51,20 @@ const WidgetNode: React.FC<NodeProps<WidgetNodeType>> = ({
     setResetData,
     clearResetData,
     delConfigMap,
-  } = useWorkflowStore(state => ({
-    widgetSchema: state.widgetSchema,
-    setNodeData: state.setNodeData,
-    nodeData: state.nodeData,
-    loading: state.loading,
-    fieldsModeMap: state.config?.fieldsModeMap || {},
-    setFieldsModeMap: state.setFieldsModeMap,
-    resetData: state.resetData,
-    setResetData: state.setResetData,
-    clearResetData: state.clearResetData,
-    delConfigMap: state.delConfigMap,
-  }));
+  } = useWorkflowStore(
+    useShallow(state => ({
+      widgetSchema: state.widgetSchema,
+      setNodeData: state.setNodeData,
+      nodeData: state.nodeData,
+      loading: state.loading,
+      fieldsModeMap: state.config?.fieldsModeMap || {},
+      setFieldsModeMap: state.setFieldsModeMap,
+      resetData: state.resetData,
+      setResetData: state.setResetData,
+      clearResetData: state.clearResetData,
+      delConfigMap: state.delConfigMap,
+    })),
+  );
 
   useEffect(() => {
     nodeRef.current = document.querySelector(`[data-id=${id}]`) as HTMLElement;
@@ -64,6 +82,37 @@ const WidgetNode: React.FC<NodeProps<WidgetNodeType>> = ({
         });
         onDelNode({ id: data.id });
         delConfigMap(id);
+      }
+    },
+    {
+      target: nodeRef,
+    },
+  );
+
+  useKeyPress(
+    `${getKeyboardKeyCodeBySystem('ctrl')}.c`,
+    e => {
+      if (isEventTargetInputArea(e.target as HTMLElement)) {
+        return;
+      }
+      if (selected) {
+        setCurrentCopyId(id);
+      }
+    },
+    {
+      target: nodeRef,
+    },
+  );
+
+  useKeyPress(
+    `${getKeyboardKeyCodeBySystem('ctrl')}.d`,
+    e => {
+      e.preventDefault();
+      if (isEventTargetInputArea(e.target as HTMLElement)) {
+        return;
+      }
+      if (selected) {
+        duplicateState();
       }
     },
     {
@@ -93,14 +142,30 @@ const WidgetNode: React.FC<NodeProps<WidgetNodeType>> = ({
     setNodeData({ id: data.id, data: values });
   };
 
+  useEventEmitter(EventType.DELETE_EDGE, edge => {
+    if (edge.target === id && edge.targetHandle) {
+      formRef.current?.setValue(`input.${edge.targetHandle}`, undefined);
+    }
+  });
+
+  const onStatusChange = (obj: { [key: string]: string }) => {
+    statusRef.current = { ...statusRef.current, ...obj };
+    setHasError(some(statusRef.current, value => value === 'missOption'));
+  };
+
   return (
-    <NodeCard sourceHandle={id} targetHandle={id} selected={selected} {...data}>
+    <NodeCard
+      selected={selected}
+      mode={nodeData[data.id]?.mode}
+      has_error={some(statusRef.current, value => value === 'missOption')}
+      {...data}>
       <NodeForm
         ref={formRef}
         loading={loading.getReactFlow}
         values={nodeData[data.id]}
         onChange={onChange}
         onModeChange={onModeChange}
+        onStatusChange={onStatusChange}
         modeMap={fieldsModeMap?.[data.id] || {}}
       />
     </NodeCard>
