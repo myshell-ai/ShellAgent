@@ -1,5 +1,4 @@
-import './reflect-metadata-client-side';
-
+import 'reflect-metadata';
 import { ChatNewModel } from '@shellagent/ui';
 import { Container, interfaces } from 'inversify';
 import { toast } from 'react-toastify';
