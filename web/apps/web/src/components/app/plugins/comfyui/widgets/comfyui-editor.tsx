@@ -80,7 +80,6 @@ export const ComfyUIEditor = () => {
 
   const handleCancel = () => {
     setModalOpen(false);
-    setIsLoading(true);
   };
 
   const { run: saveComfyRequest, loading: saveLoading } = useRequest(

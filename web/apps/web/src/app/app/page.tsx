@@ -1,4 +1,5 @@
 'use client';
+import '../reflect-metadata-client-side';
 
 import { Heading, Text, Spinner } from '@shellagent/ui';
 import { useScroll } from 'ahooks';
@@ -10,7 +11,6 @@ import { FlowCard } from '@/components/home/flow-card';
 import { fetchList } from '@/services/home';
 import { cn } from '@/utils/cn';
 
-import '../reflect-metadata-client-side';
 import { useInjection } from 'inversify-react';
 import { SettingsModel } from '@/components/settings/settings.model';
 
