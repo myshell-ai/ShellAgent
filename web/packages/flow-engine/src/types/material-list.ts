@@ -9,6 +9,7 @@ export type WidgetItem = {
   type?: NodeType;
   undraggable?: boolean; // 是否可以拖拽至画布中
   customRender?: () => JSX.Element;
+  widget_name?: string;
 };
 
 export type MaterialItem = {
