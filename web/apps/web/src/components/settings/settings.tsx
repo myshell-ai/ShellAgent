@@ -43,21 +43,6 @@ export const EnvForm = () => {
         model.setFormikProps(formikProps);
         return (
           <Form layout="vertical">
-            <Field name="model_location">
-              {({ field, form }: FieldProps) => (
-                <Form.Item label="Model Configration">
-                  <Input
-                    size="large"
-                    {...field}
-                    onBlur={() => form.submitForm()}
-                    placeholder="Location"
-                  />
-                </Form.Item>
-              )}
-            </Field>
-            <Box mb={2}>
-              <Typography.Text>Environment</Typography.Text>
-            </Box>
             <FieldArray
               name="envs"
               render={arrayHelpers => (

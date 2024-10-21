@@ -100,30 +100,25 @@ const FlowHeader: React.FC<{ flowId: string; version?: string }> = ({
   }, [debouncedValues]);
 
   return (
-    <>
-      <div className="absolute left-0 bottom-[120px] m-[15px] z-10">
-        <PerformanceMonitor />
+    <div className="absolute right-3 w-full text-right z-10">
+      <div className="h-5">
+        {autoSavedTime && !version && autoSavedSuccess ? (
+          <Text size="sm" color="subtlest">
+            Auto Saved {dayjs(autoSavedTime).format('HH:mm:ss')}
+          </Text>
+        ) : null}
+        {!autoSavedSuccess ? (
+          <Text size="sm" color="critical">
+            Auto Saved Error
+          </Text>
+        ) : null}
+        {version ? (
+          <Text size="sm" color="subtlest">
+            Current preview version: {version}
+          </Text>
+        ) : null}
       </div>
-      <div className="absolute right-3 w-full text-right z-10">
-        <div className="h-5">
-          {autoSavedTime && !version && autoSavedSuccess ? (
-            <Text size="sm" color="subtlest">
-              Auto Saved {dayjs(autoSavedTime).format('HH:mm:ss')}
-            </Text>
-          ) : null}
-          {!autoSavedSuccess ? (
-            <Text size="sm" color="critical">
-              Auto Saved Error
-            </Text>
-          ) : null}
-          {version ? (
-            <Text size="sm" color="subtlest">
-              Current preview version: {version}
-            </Text>
-          ) : null}
-        </div>
-      </div>
-    </>
+    </div>
   );
 };
 
