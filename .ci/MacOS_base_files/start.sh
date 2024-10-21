@@ -41,7 +41,7 @@ while true; do
 
     # Wait for the server process to finish
     wait $!
-    
+
     exit_code=$?
     if [ $exit_code -eq 42 ]; then
         echo "Restart signal detected, program will restart in 3 seconds..."
