@@ -144,11 +144,12 @@ def update_dependency():
         if len(item["urls"]):
             custom_dependencies["models"].update({model_id: item})
         
-    for index, item in enumerate(shellagent_json["dependencies"]["custom_nodes"]):
-        if item["name"] in missing_repos:
-            shellagent_json["dependencies"]["custom_nodes"][index] = missing_repos[item["name"]]
-            if item["repo"] != "":
-                custom_dependencies["custom_nodes"].update({item["name"]: item})
+    repos = [shellagent_json["dependencies"]["comfyui_version"]] + shellagent_json["dependencies"]["custom_nodes"]
+    for repo in repos:
+        if repo["name"] in missing_repos:
+            repo.update(missing_repos[item["name"]])
+            if repo["repo"] != "":
+                custom_dependencies["custom_nodes"].update({repo["name"]: repo})
             
     with open(COMFY_LOCAL_DEPS_PATH, "w") as f:
         json.dump(custom_dependencies, f, indent=2)
