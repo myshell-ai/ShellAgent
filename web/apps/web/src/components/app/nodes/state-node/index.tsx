@@ -17,7 +17,9 @@ import { TFieldMode, TValues } from '@shellagent/form-engine';
 import { FormRef } from '@shellagent/ui';
 import { useKeyPress } from 'ahooks';
 import { isEqual } from 'lodash-es';
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, { useCallback, useRef, useEffect, useState } from 'react';
+import { DndProvider } from 'react-dnd';
+import { HTML5Backend } from 'react-dnd-html5-backend';
 
 import { EdgeDataTypeEnum, EdgeTypeEnum } from '@/components/app/edges';
 import NodeCard from '@/components/app/node-card';
@@ -25,7 +27,6 @@ import NodeForm from '@/components/app/node-form';
 import { useAppStore } from '@/stores/app/app-provider';
 import { useAppState } from '@/stores/app/use-app-state';
 import {
-  generateUUID,
   getKeyboardKeyCodeBySystem,
   isEventTargetInputArea,
 } from '@/utils/common-helper';
@@ -207,32 +208,39 @@ const StateNode: React.FC<NodeProps<StateNodeType>> = ({
     () => ({
       accept: DRAGGABLE_NODE_ID,
       drop: item => {
-        const newTask = {
-          type: 'task',
-          display_name: item.display_name,
-          name: uuid(),
-          mode: item.nodeType === 'workflow' ? 'workflow' : 'widget',
-          workflow_id: undefined,
-          // item.nodeType === 'workflow' ? generateUUID() : undefined,
-          widget_name: item.nodeType === 'widget' ? item.name : undefined,
-          widget_class_name: item.nodeType === 'widget' ? item.name : undefined,
-          inputs: {},
-          outputs: {},
-        };
+        if (
+          item.nodeType === NodeTypeEnum.widget ||
+          item.nodeType === NodeTypeEnum.workflow
+        ) {
+          const newTask = {
+            type: 'task',
+            display_name: item.display_name,
+            name: uuid(),
+            mode: item.nodeType,
+            workflow_id: undefined,
+            widget_name:
+              item.nodeType === NodeTypeEnum.widget ? item.name : undefined,
+            widget_class_name:
+              item.nodeType === NodeTypeEnum.widget ? item.name : undefined,
+            inputs: {},
+            outputs: {},
+            custom: item.custom,
+          };
 
-        setNodeData({
-          id,
-          data: {
-            ...nodeData[id],
-            blocks: [...(nodeData[id]?.blocks || []), newTask],
-          },
-        });
-        setFormKey(uuid());
-        emitter.emit(EventType.STATE_FORM_CHANGE, {
-          id: data.id as NodeId,
-          data: `${new Date().valueOf()}`,
-          type: 'StateCard',
-        });
+          setNodeData({
+            id,
+            data: {
+              ...nodeData[id],
+              blocks: [...(nodeData[id]?.blocks || []), newTask],
+            },
+          });
+          setFormKey(uuid());
+          emitter.emit(EventType.STATE_FORM_CHANGE, {
+            id: data.id as NodeId,
+            data: `${new Date().valueOf()}`,
+            type: 'StateCard',
+          });
+        }
       },
     }),
     [setNodeData, nodeData, id],
@@ -243,19 +251,21 @@ const StateNode: React.FC<NodeProps<StateNodeType>> = ({
 
   return (
     <div ref={dropRef}>
-      <NodeCard selected={selected} {...data}>
-        <NodeForm
-          key={formKey}
-          ref={stateFormRef}
-          loading={loading}
-          values={nodeData[data.id]}
-          onChange={onChange}
-          onModeChange={onModeChange}
-          modeMap={fieldsModeMap?.[data.id] || {}}
-        />
-      </NodeCard>
-      <SourceHandle onConnect={handleConnect} id={`custom_${id}`} />
-      <TargetHandle id={id} />
+      <DndProvider backend={HTML5Backend}>
+        <NodeCard selected={selected} {...data}>
+          <NodeForm
+            key={formKey}
+            ref={stateFormRef}
+            loading={loading}
+            values={nodeData[data.id]}
+            onChange={onChange}
+            onModeChange={onModeChange}
+            modeMap={fieldsModeMap?.[data.id] || {}}
+          />
+        </NodeCard>
+        <SourceHandle onConnect={handleConnect} id={`custom_${id}`} />
+        <TargetHandle id={id} />
+      </DndProvider>
     </div>
   );
 };

@@ -1,7 +1,6 @@
 import { ISelectProps, Cascader, CascaderOption } from '@shellagent/ui';
 
 import { useVariableContext } from '@/stores/workflow/variable-provider';
-import { cn } from '@/utils/cn';
 
 interface IVariableValue {
   target: { value: string };
@@ -52,7 +51,6 @@ const VariableSelect = (props: VariableSelectProps) => {
       showParentLabel
       options={options}
       value={value}
-      className={cn('max-w-56', rest.className)}
       onValueChange={val => onChange?.({ target: { value: val } })}
     />
   );

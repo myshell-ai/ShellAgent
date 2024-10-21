@@ -1,0 +1,277 @@
+{
+  "type": "workflow",
+  "blocks": [
+    {
+      "type": "task",
+      "mode": "widget",
+      "name": "image_upscale",
+      "widget_class_name": "ImageResizeWidget",
+      "inputs": {
+        "image": "{{context.image_path}}",
+        "width": 512,
+        "scale_option": "width"
+      },
+      "transitions": {
+        "ALWAYS": [
+          {
+            "target": "depth"
+          }
+        ]
+      }
+    },
+    {
+      "type": "task",
+      "mode": "widget",
+      "name": "depth",
+      "widget_class_name": "LERESDepthMapWidget",
+      "inputs": {
+        "image": "{{context.image_path}}"
+      },
+      "transitions": {
+        "ALWAYS": [
+          {
+            "target": "openpose"
+          }
+        ]
+      }
+    },
+    {
+      "type": "task",
+      "mode": "widget",
+      "name": "openpose",
+      "widget_class_name": "DWPoseWidget",
+      "inputs": {
+        "image": "{{context.image_path}}"
+      },
+      "transitions": {
+        "ALWAYS": [
+          {
+            "target": "lineart"
+          }
+        ]
+      }
+    },
+    {
+      "type": "task",
+      "mode": "widget",
+      "name": "lineart",
+      "widget_class_name": "LineArtWidget",
+      "inputs": {
+        "image": "{{context.image_path}}"
+      },
+      "transitions": {
+        "ALWAYS": [
+          {
+            "target": "condition_chain"
+          }
+        ]
+      }
+    },
+    {
+      "type": "task",
+      "mode": "widget",
+      "name": "condition_chain",
+      "widget_class_name": "ConditionChainWidget",
+      "inputs": {
+        "conditions": [
+          {
+            "type": "clip_text_encode",
+            "ckpt_path": "{{context.ckpt_path}}",
+            "prompt": "boy in white shirt, masterpiece,best quality,(photorealistic:1.1),8k raw photo,a,detailed face\uff0cdetailed skin,depth of field,",
+            "negative_prompt": "drawing,paiting,crayon,sketch,graphite,impressionist,noisy,blurry,soft,deformed,ugly,lowers,bad anatomy,bad hands,text,error,missing fingers,extra digit,fewer digits,cropped,worst quality,low quality,normal quality,jpeg artifacts,signature,watermark,username,(monochrome,greyscale,old photo), text",
+            "embedding_dir": null,
+            "load_clip_vision": false
+          },
+          {
+            "type": "controlnet",
+            "ckpt_path": "{{context.controlnet_depth}}",
+            "image": "{{depth.image}}",
+            "strength": 0.4,
+            "start_percent": 0,
+            "end_percent": 1,
+            "mask_optional": null,
+            "timestep_kf": null,
+            "model_optional": null,
+            "vae_optional": null,
+            "control_apply_to_uncond": false
+          },
+          {
+            "type": "controlnet",
+            "ckpt_path": "{{context.controlnet_pose}}",
+            "image": "{{openpose.image}}",
+            "strength": 1,
+            "start_percent": 0,
+            "end_percent": 1,
+            "mask_optional": null,
+            "timestep_kf": null,
+            "model_optional": null,
+            "vae_optional": null,
+            "control_apply_to_uncond": false
+          },
+          {
+            "type": "controlnet",
+            "ckpt_path": "{{context.controlnet_lineart}}",
+            "image": "{{lineart.image}}",
+            "strength": 0.4,
+            "start_percent": 0,
+            "end_percent": 1,
+            "mask_optional": null,
+            "timestep_kf": null,
+            "model_optional": null,
+            "vae_optional": null,
+            "control_apply_to_uncond": true
+          }
+        ]
+      },
+      "transitions": {
+        "ALWAYS": [
+          {
+            "target": "imagen"
+          }
+        ]
+      }
+    },
+    {
+      "type": "task",
+      "mode": "widget",
+      "name": "imagen",
+      "widget_class_name": "StableDiffusionWidget",
+      "inputs": {
+        "inputs_schema_mode": "advanced",
+        "model_load_config": {
+          "ckpt_path": "{{context.ckpt_path}}",
+          "vae_path": "{{context.vae_path}}",
+          "embedding_dir": null
+        },
+        "image": "{{image_upscale.image}}",
+        "positive_condition": "{{condition_chain.positive}}",
+        "negative_condition": "{{condition_chain.negative}}",
+        "sampler_config": {
+          "steps": 20,
+          "cfg": 8,
+          "sampler_name": "euler",
+          "scheduler": "normal",
+          "denoise": 1,
+          "seed": 0,
+          "add_noise": true,
+          "start_at_step": 0,
+          "return_with_leftover_noise": true
+        },
+        "save_config": {
+          "filename_prefix": null,
+          "output_folder": "output",
+          "save_keys": [
+            "image"
+          ]
+        },
+        "prompt": "",
+        "negative_prompt": "",
+        "shape_config": {
+          "batch_size": 1,
+          "height": 512,
+          "width": 512
+        },
+        "sdxl_config": {
+          "width": 4096,
+          "height": 4096,
+          "crop_w": 0,
+          "crop_h": 0,
+          "target_width": 4096,
+          "target_height": 4096
+        },
+        "inpaint_condition": false,
+        "mask": null,
+        "enable_lcm": false
+      },
+      "transitions": {
+        "ALWAYS": [
+          {
+            "target": "face_swap"
+          }
+        ]
+      }
+    },
+    {
+      "type": "task",
+      "mode": "widget",
+      "name": "face_swap",
+      "widget_class_name": "ReActorFaceSwapWidget",
+      "inputs": {
+        "inputs_schema_mode": "advanced",
+        "input_image": "{{imagen.image}}",
+        "source_image": "{{context.image_path}}",
+        "save_config": {
+          "filename_prefix": null,
+          "output_folder": "output",
+          "save_keys": [
+            "image"
+          ]
+        },
+        "enabled": true,
+        "model_load_config": {
+          "swap_model": "inswapper_128.onnx",
+          "facedetection": "retinaface_resnet50",
+          "face_restore_model": "none",
+          "face_model": null
+        },
+        "face_swap_config": {
+          "faces_order": "FACES_ORDER",
+          "face_restore_visibility": 1,
+          "codeformer_weight": 0.5,
+          "detect_gender_input": "no",
+          "detect_gender_source": "no",
+          "input_faces_index": "0",
+          "source_faces_index": "0",
+          "console_log_level": 1
+        }
+      },
+      "transitions": {
+        "ALWAYS": [
+          {
+            "target": "@@@end"
+          }
+        ]
+      }
+    }
+  ],
+  "inputs": {},
+  "outputs": {
+    "output": {
+      "name": "image",
+      "type": "image",
+      "value": "{{face_swap.image}}"
+    }
+  },
+  "context": {
+    "image_path": {
+      "name": "image_path",
+      "type": "text",
+      "value": "assets/antique-photo-of-young-boy_medium.jpg"
+    },
+    "vae_path": {
+      "name": "vae_path",
+      "type": "text",
+      "value": "vae-ft-mse-840000-ema-pruned.safetensors"
+    },
+    "ckpt_path": {
+      "name": "ckpt_path",
+      "type": "text",
+      "value": "epicphotogasm_x.safetensors"
+    },
+    "controlnet_depth": {
+      "name": "controlnet_depth",
+      "type": "text",
+      "value": "control_v11f1p_sd15_depth_fp16.safetensors"
+    },
+    "controlnet_pose": {
+      "name": "controlnet_pose",
+      "type": "text",
+      "value": "control_v11p_sd15_openpose_fp16.safetensors"
+    },
+    "controlnet_lineart": {
+      "name": "controlnet_lineart",
+      "type": "text",
+      "value": "control_v11p_sd15_lineart_fp16.safetensors"
+    }
+  }
+}

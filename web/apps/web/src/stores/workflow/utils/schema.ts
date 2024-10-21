@@ -4,17 +4,20 @@ import { ENABLE_MIME } from '@/utils/file-types';
 
 const startSchema: ISchema = {
   title: 'Start',
+  description:
+    'The starting node of the workflow,used to set the information needed to initiate the workflow.',
   type: 'object',
   'x-type': 'Section',
   'x-title-size': 'h4',
   'x-title-icon': '/home.png',
-  // 'x-collapsible': true,
+  'x-collapsible': true,
   'x-title-copiable': false,
-  'x-class': 'mt-2 bg-surface-container-default rounded-lg p-1.5',
   properties: {
     input: {
       type: 'object',
       title: 'Input',
+      description:
+        'Variables allow users to introduce prompts or opening remarks into form inputs. You can try entering {input} in the prompt.',
       additionalProperties: {
         type: 'object',
         properties: {
@@ -38,16 +41,13 @@ const startSchema: ISchema = {
           type: {
             type: 'string',
             default: 'text',
-            enum: ['text', 'image', 'audio', 'video', 'text_file', 'file'],
+            enum: ['text', 'image', 'audio'],
             'x-component': 'Select',
             'x-component-props': {
               options: [
                 { label: 'text', value: 'text' },
                 { label: 'image', value: 'image' },
                 { label: 'audio', value: 'audio' },
-                { label: 'video', value: 'video' },
-                { label: 'text_file', value: 'text_file' },
-                { label: 'file', value: 'file' },
               ],
               triggerClassName: 'h-7 w-32',
             },
@@ -67,42 +67,20 @@ const startSchema: ISchema = {
         },
         'x-type': 'Inline',
         'x-deletable': true,
-        'x-suffix': 'SourceVariablePointer',
         'x-edit-dialog': {
           type: 'object',
           properties: {
-            name: {
-              type: 'string',
-              default: 'Untitled',
-              title: 'Variable Name',
-              'x-role': 'title',
-              'x-type': 'Control',
-              'x-component': 'Input',
-              'x-class': 'border-0 bg-inherit rounded-lg p-0 pt-3',
-              'x-component-props': {
-                maxLength: 30,
-                size: 'sm',
-                placeholder: 'Please name the event',
-              },
-              'x-validator': [
-                { required: true, message: 'Please name the event' },
-                { maxLength: 30, message: 'Cannot exceed 30 characters' },
-              ],
-            },
             type: {
               type: 'string',
               default: 'text',
-              title: 'Type',
-              enum: ['text', 'image', 'audio', 'video', 'text_file', 'file'],
+              title: 'Field Type',
+              enum: ['text', 'image', 'audio'],
               'x-component': 'Select',
               'x-component-props': {
                 options: [
                   { label: 'text', value: 'text' },
                   { label: 'image', value: 'image' },
                   { label: 'audio', value: 'audio' },
-                  { label: 'video', value: 'video' },
-                  { label: 'text_file', value: 'text_file' },
-                  { label: 'file', value: 'file' },
                 ],
               },
               'x-class': 'border-0 bg-inherit rounded-lg p-0 pt-3',
@@ -134,54 +112,24 @@ const startSchema: ISchema = {
                     },
                   },
                 },
-                {
-                  target: 'default_value',
-                  when: '$this.value === "video"',
-                  fullfill: {
-                    schema: {
-                      'x-layout': 'Vertical',
-                      'x-component': 'FileUpload',
-                      'x-component-props': {
-                        accept: ENABLE_MIME.video,
-                      },
-                    },
-                  },
-                },
-                {
-                  target: 'default_value',
-                  when: '$this.value === "text_file"',
-                  fullfill: {
-                    schema: {
-                      'x-layout': 'Vertical',
-                      'x-component': 'FileUpload',
-                      'x-component-props': {
-                        accept: ENABLE_MIME.other,
-                      },
-                    },
-                  },
-                },
-                {
-                  target: 'default_value',
-                  when: '$this.value === "file"',
-                  fullfill: {
-                    schema: {
-                      'x-layout': 'Vertical',
-                      'x-component': 'FileUpload',
-                      'x-component-props': {
-                        accept: ENABLE_MIME.all,
-                      },
-                    },
-                  },
-                },
-                {
-                  target: 'choices',
-                  when: '$this.value === "text"',
-                  fullfill: {
-                    schema: {
-                      'x-hidden': false,
-                    },
-                  },
-                },
+              ],
+            },
+            name: {
+              type: 'string',
+              default: 'Untitled',
+              title: 'Variable Name',
+              'x-role': 'title',
+              'x-type': 'Control',
+              'x-component': 'Input',
+              'x-class': 'border-0 bg-inherit rounded-lg p-0 pt-3',
+              'x-component-props': {
+                maxLength: 30,
+                size: 'sm',
+                placeholder: 'Please name the event',
+              },
+              'x-validator': [
+                { required: true, message: 'Please name the event' },
+                { maxLength: 30, message: 'Cannot exceed 30 characters' },
               ],
             },
             description: {
@@ -212,41 +160,10 @@ const startSchema: ISchema = {
                 size: 'sm',
                 placeholder: 'Please enter the default value',
               },
-              'x-class': 'border-0 bg-inherit rounded-lg p-0 pt-3 pb-3',
-            },
-            choices: {
-              type: 'array',
-              'x-title-size': 'h5',
-              title: 'Choices',
-              'x-raw': true,
-              'x-hidden': true,
-              additionalItems: {
-                // TODO 临时方案，非object会有render问题
-                type: 'object',
-                'x-type': 'Inline',
-                'x-role': 'core',
-                'x-deletable': true,
-                properties: {
-                  value: {
-                    type: 'string',
-                    'x-component': 'Input',
-                    'x-type': 'Control',
-                    'x-raw': true,
-                    'x-raw-disabled': true,
-                    'x-component-props': {
-                      size: 'sm',
-                    },
-                    'x-class': 'border-0 bg-inherit rounded-lg p-0',
-                  },
-                },
-              },
-              'x-type': 'Block',
-              'x-addable': true,
-              'x-class': 'border-0 bg-inherit rounded-lg p-0 pb-3',
+              'x-class': 'border-0 bg-inherit rounded-lg p-0 py-3',
             },
             validations: {
               type: 'array',
-              'x-title-size': 'h5',
               title: 'Validations',
               additionalItems: {
                 type: 'object',
@@ -404,7 +321,7 @@ const startSchema: ISchema = {
       },
       'x-type': 'Block',
       'x-title-size': 'h4',
-      // 'x-collapsible': true,
+      'x-collapsible': true,
       'x-addable': true,
     },
     context: {
@@ -416,8 +333,8 @@ const startSchema: ISchema = {
           type: {
             type: 'string',
             default: 'text',
-            enum: ['text', 'image', 'audio', 'video', 'text_file', 'file'],
-            title: 'Type',
+            enum: ['text', 'image', 'audio'],
+            title: 'Field Type',
             'x-component': 'Select',
             'x-class': 'border-0 bg-inherit rounded-lg p-0 pt-3',
             'x-component-props': {
@@ -425,9 +342,6 @@ const startSchema: ISchema = {
                 { label: 'text', value: 'text' },
                 { label: 'image', value: 'image' },
                 { label: 'audio', value: 'audio' },
-                { label: 'video', value: 'video' },
-                { label: 'text_file', value: 'text_file' },
-                { label: 'file', value: 'file' },
               ],
             },
             'x-hidden': true,
@@ -461,45 +375,6 @@ const startSchema: ISchema = {
                   },
                 },
               },
-              {
-                target: 'value',
-                when: '$this.value === "video"',
-                fullfill: {
-                  schema: {
-                    'x-layout': 'Vertical',
-                    'x-component': 'FileUpload',
-                    'x-component-props': {
-                      accept: ENABLE_MIME.video,
-                    },
-                  },
-                },
-              },
-              {
-                target: 'value',
-                when: '$this.value === "text_file"',
-                fullfill: {
-                  schema: {
-                    'x-layout': 'Vertical',
-                    'x-component': 'FileUpload',
-                    'x-component-props': {
-                      accept: ENABLE_MIME.other,
-                    },
-                  },
-                },
-              },
-              {
-                target: 'value',
-                when: '$this.value === "file"',
-                fullfill: {
-                  schema: {
-                    'x-layout': 'Vertical',
-                    'x-component': 'FileUpload',
-                    'x-component-props': {
-                      accept: ENABLE_MIME.all,
-                    },
-                  },
-                },
-              },
             ],
             'x-validator': [
               {
@@ -514,7 +389,6 @@ const startSchema: ISchema = {
             'x-type': 'Control',
             // 'x-class': 'border-0 bg-inherit rounded-lg p-0 w-full',
             'x-parent-deletable': true,
-            'x-suffix': 'SourceVariablePointer',
             'x-title-editable': true,
             'x-title-component-props': {
               showDialog: true,
@@ -532,10 +406,9 @@ const startSchema: ISchema = {
                       'x-component': 'Input',
                       'x-class': 'border-0 bg-inherit rounded-lg p-0',
                       'x-component-props': {
-                        // size: 'md',
+                        size: 'md',
                         maxLength: 30,
-                        placeholder:
-                          'The usage of the variable. It may be displayed to the users..',
+                        placeholder: 'The character you want to play.',
                       },
                       'x-validator': [
                         {
@@ -551,15 +424,8 @@ const startSchema: ISchema = {
                     type: {
                       type: 'string',
                       default: 'text',
-                      enum: [
-                        'text',
-                        'image',
-                        'audio',
-                        'video',
-                        'text_file',
-                        'file',
-                      ],
-                      title: 'Type',
+                      enum: ['text', 'image', 'audio'],
+                      title: 'Field Type',
                       'x-component': 'Select',
                       'x-class': 'border-0 bg-inherit rounded-lg p-0 pt-3',
                       'x-component-props': {
@@ -567,9 +433,6 @@ const startSchema: ISchema = {
                           { label: 'text', value: 'text' },
                           { label: 'image', value: 'image' },
                           { label: 'audio', value: 'audio' },
-                          { label: 'video', value: 'video' },
-                          { label: 'text_file', value: 'text_file' },
-                          { label: 'file', value: 'file' },
                         ],
                       },
                       'x-value-prop-name': 'defaultValue',
@@ -603,45 +466,6 @@ const startSchema: ISchema = {
                             },
                           },
                         },
-                        {
-                          target: 'value',
-                          when: '$this.value === "video"',
-                          fullfill: {
-                            schema: {
-                              'x-layout': 'Vertical',
-                              'x-component': 'FileUpload',
-                              'x-component-props': {
-                                accept: ENABLE_MIME.video,
-                              },
-                            },
-                          },
-                        },
-                        {
-                          target: 'value',
-                          when: '$this.value === "text_file"',
-                          fullfill: {
-                            schema: {
-                              'x-layout': 'Vertical',
-                              'x-component': 'FileUpload',
-                              'x-component-props': {
-                                accept: ENABLE_MIME.other,
-                              },
-                            },
-                          },
-                        },
-                        {
-                          target: 'value',
-                          when: '$this.value === "file"',
-                          fullfill: {
-                            schema: {
-                              'x-layout': 'Vertical',
-                              'x-component': 'FileUpload',
-                              'x-component-props': {
-                                accept: ENABLE_MIME.all,
-                              },
-                            },
-                          },
-                        },
                       ],
                       'x-validator': [
                         {
@@ -658,8 +482,7 @@ const startSchema: ISchema = {
                       'x-class': 'border-0 bg-inherit rounded-lg p-0 pt-3',
                       'x-component-props': {
                         maxLength: 300,
-                        placeholder:
-                          'The usage of the variable. It may be displayed to the users..',
+                        placeholder: 'The character you want to play.',
                       },
                       'x-validator': [
                         {
@@ -672,9 +495,6 @@ const startSchema: ISchema = {
                   },
                 },
               },
-            },
-            'x-component-props': {
-              size: '2xs',
             },
             'x-layout': 'Horizontal',
             'x-validator': [
@@ -689,18 +509,14 @@ const startSchema: ISchema = {
             'x-hidden': true,
             'x-class': 'border-0 bg-inherit rounded-lg p-0',
             title: 'Variable Name',
-            'x-component-props': {
-              size: '2xs',
-            },
           },
         },
         'x-type': 'Inline',
-        // 'x-suffix': 'SourceVariablePointer',
-        // 'x-collapsible': true,
+        'x-collapsible': true,
       },
       'x-type': 'Block',
       'x-title-size': 'h4',
-      // 'x-collapsible': true,
+      'x-collapsible': true,
       'x-addable': true,
     },
   },
@@ -708,79 +524,69 @@ const startSchema: ISchema = {
 
 const endSchema: ISchema = {
   title: 'End',
+  description:
+    'The starting node of the workflow,used to set the information needed to initiate the workflow.',
   type: 'object',
   'x-type': 'Section',
   'x-title-size': 'h4',
   'x-title-icon': '/flag.png',
   'x-title-copiable': false,
-  // 'x-collapsible': true,
-  'x-class': 'mt-2 bg-surface-container-default rounded-lg p-1.5',
+  'x-collapsible': true,
   properties: {
     output: {
       type: 'object',
-      title: 'Output',
+      title: 'Outputs',
       additionalProperties: {
         type: 'object',
         properties: {
           type: {
             type: 'string',
-            default: 'unknown',
-            enum: [
-              'unknown',
-              'text',
-              'image',
-              'audio',
-              'video',
-              'text_file',
-              'file',
-            ],
-            title: 'Type',
+            default: 'text',
+            enum: ['text', 'image', 'audio'],
+            title: 'Field Type',
             'x-component': 'Select',
             'x-class': 'border-0 bg-inherit rounded-lg p-0 pt-3',
             'x-component-props': {
-              disabled: true,
               options: [
-                { label: 'unknown', value: 'unknown' },
                 { label: 'text', value: 'text' },
                 { label: 'image', value: 'image' },
                 { label: 'audio', value: 'audio' },
-                { label: 'video', value: 'video' },
-                { label: 'text_file', value: 'text_file' },
-                { label: 'file', value: 'file' },
               ],
             },
             'x-hidden': true,
             'x-value-prop-name': 'defaultValue',
             'x-onchange-prop-name': 'onValueChange',
             'x-type': 'Control',
-            // 'x-reactions': [
-            //   {
-            //     target: 'value',
-            //     when: '$this.value === "image"',
-            //     fullfill: {
-            //       schema: {
-            //         'x-layout': 'Vertical',
-            //         'x-component': 'FileUpload',
-            //         'x-component-props': {
-            //           accept: ENABLE_MIME.image,
-            //         },
-            //       },
-            //     },
-            //   },
-            //   {
-            //     target: 'value',
-            //     when: '$this.value === "audio"',
-            //     fullfill: {
-            //       schema: {
-            //         'x-layout': 'Vertical',
-            //         'x-component': 'FileUpload',
-            //         'x-component-props': {
-            //           accept: ENABLE_MIME.audio,
-            //         },
-            //       },
-            //     },
-            //   },
-            // ],
+            'x-reactions': [
+              {
+                target: 'value',
+                when: '$this.value === "image"',
+                fullfill: {
+                  schema: {
+                    'x-raw': true,
+                    'x-layout': 'Vertical',
+                    'x-component': 'FileUpload',
+                    'x-component-props': {
+                      accept: ENABLE_MIME.image,
+                    },
+                  },
+                },
+              },
+              {
+                target: 'value',
+                when: '$this.value === "audio"',
+                fullfill: {
+                  schema: {
+                    'x-raw': true,
+                    'x-layout': 'Vertical',
+                    'x-component': 'FileUpload',
+                    'x-component-props': {
+                      accept: ENABLE_MIME.audio,
+                    },
+                  },
+                },
+              },
+            ],
             'x-validator': [
               {
                 required: true,
@@ -792,9 +598,8 @@ const endSchema: ISchema = {
             type: 'string',
             'x-component': 'Input',
             'x-type': 'Control',
-            // 'x-raw': true,
-            // 'x-raw-default': 'ref',
-            'x-hidden-control': true,
+            'x-raw': true,
+            'x-raw-default': 'ref',
             'x-parent-deletable': true,
             'x-title-editable': true,
             'x-title-component-props': {
@@ -813,12 +618,9 @@ const endSchema: ISchema = {
                       'x-component': 'Input',
                       'x-class': 'border-0 bg-inherit rounded-lg p-0',
                       'x-component-props': {
-                        type: 'text',
-                        pattern: '^[a-zA-Z0-9_]+$',
                         size: 'md',
                         maxLength: 30,
-                        placeholder:
-                          'The usage of the variable. It may be displayed to the users..',
+                        placeholder: 'The character you want to play.',
                       },
                       'x-validator': [
                         {
@@ -834,16 +636,8 @@ const endSchema: ISchema = {
                     type: {
                       type: 'string',
                       default: 'text',
-                      enum: [
-                        'text',
-                        'image',
-                        'audio',
-                        'video',
-                        'text_file',
-                        'file',
-                        'unknown',
-                      ],
-                      title: 'Type',
+                      enum: ['text', 'image', 'audio'],
+                      title: 'Field Type',
                       'x-component': 'Select',
                       'x-class': 'border-0 bg-inherit rounded-lg p-0 pt-3',
                       'x-component-props': {
@@ -851,16 +645,40 @@ const endSchema: ISchema = {
                           { label: 'text', value: 'text' },
                           { label: 'image', value: 'image' },
                           { label: 'audio', value: 'audio' },
-                          { label: 'video', value: 'video' },
-                          { label: 'text_file', value: 'text_file' },
-                          { label: 'file', value: 'file' },
-                          { label: 'unknown', value: 'unknown' },
                         ],
                       },
                       'x-value-prop-name': 'defaultValue',
                       'x-onchange-prop-name': 'onValueChange',
                       'x-type': 'Control',
                       'x-layout': 'Vertical',
+                      'x-reactions': [
+                        {
+                          target: 'value',
+                          when: '$this.value === "image"',
+                          fullfill: {
+                            schema: {
+                              'x-raw': true,
+                              'x-component': 'FileUpload',
+                              'x-component-props': {
+                                accept: ENABLE_MIME.audio,
+                              },
+                            },
+                          },
+                        },
+                        {
+                          target: 'value',
+                          when: '$this.value === "audio"',
+                          fullfill: {
+                            schema: {
+                              'x-raw': true,
+                              'x-component': 'FileUpload',
+                              'x-component-props': {
+                                accept: ENABLE_MIME.audio,
+                              },
+                            },
+                          },
+                        },
+                      ],
                       'x-validator': [
                         {
                           required: true,
@@ -877,8 +695,7 @@ const endSchema: ISchema = {
                       'x-class': 'border-0 bg-inherit rounded-lg p-0 pt-3',
                       'x-component-props': {
                         maxLength: 300,
-                        placeholder:
-                          'The usage of the variable. It may be displayed to the users..',
+                        placeholder: 'The character you want to play.',
                       },
                       'x-validator': [
                         {
@@ -910,21 +727,16 @@ const endSchema: ISchema = {
           },
         },
         'x-type': 'Inline',
-        'x-prefix': 'TargetVariablePointer',
-        // 'x-collapsible': true,
+        'x-collapsible': true,
       },
       'x-type': 'Block',
       'x-title-size': 'h4',
-      // 'x-collapsible': true,
+      'x-collapsible': true,
       'x-addable': true,
     },
     render: {
       'x-type': 'Render',
       'x-component': 'Render',
-    },
-    // 隐藏transition
-    transitions: {
-      'x-hidden': true,
     },
   },
 };
