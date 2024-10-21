@@ -80,13 +80,10 @@ const ModelForm: React.FC = () => (
     <p className="mb-4 text-sm text-gray-500">
       <ul>
         <li>
-          The following custom nodes lack Git information (.git files), likely
-          due to being unpublished or copied/unzipped without Git operations.
+          Public download links for the following models are unavailable,
+          possibly due to privacy or lack of popularity.
         </li>
-        <li>
-          Please update them via Git or ComfyUI-Manager, or provide public Git
-          links.
-        </li>
+        <li>Please provide valid public download links.</li>
       </ul>
     </p>
     <Form.List name="missing_models" initialValue={[]}>

@@ -231,6 +231,7 @@ export class SettingsModel {
         },
       });
       const ret: any = res.data;
+      this.envs = new Map();
       ret?.envs.forEach((item: any) => {
         this.envs.set(item.key, item.value);
       });
@@ -243,6 +244,7 @@ export class SettingsModel {
 
   async saveSettingsEnv(value: any) {
     try {
+      this.envs = new Map();
       value?.envs.forEach((item: any) => {
         this.envs.set(item.key, item.value);
       });

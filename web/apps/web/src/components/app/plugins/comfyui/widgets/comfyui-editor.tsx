@@ -21,7 +21,7 @@ import { toast } from 'react-toastify';
 import { SettingsModel } from '@/components/settings/settings.model';
 
 import { CheckDialog } from '../check-dialog';
-import { COMFYUI_API, DEFAULT_COMFYUI_API, MessageType } from '../constant';
+import { COMFYUI_API, MessageType, DEFAULT_COMFYUI_API } from '../constant';
 import emitter, { EventType } from '../emitter';
 import { saveComfy, uploadComfy, getFile } from '../services';
 import type { SaveResponse } from '../services/type';
@@ -29,13 +29,7 @@ import { isValidUrl, checkDependency } from '../utils';
 
 const settingsDisabled = process.env.NEXT_PUBLIC_DISABLE_SETTING === 'yes';
 
-export const ComfyUIEditor = ({
-  value,
-  onChange,
-}: {
-  value: string;
-  onChange: (value: string) => void;
-}) => {
+export const ComfyUIEditor = () => {
   const [modalOpen, setModalOpen] = useState(false);
   const [checkDialogOpen, setCheckDialogOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
@@ -45,9 +39,16 @@ export const ComfyUIEditor = ({
     SaveResponse['data']['dependencies'] | null
   >(null);
   const iframeRef = useRef<HTMLIFrameElement>(null);
-  const { getValues } = useFormContext();
+  const { getValues, setValue } = useFormContext();
   const model = useInjection(SettingsModel);
   const [isFullscreen, setIsFullscreen] = useState(false);
+
+  const value = useMemo(() => {
+    if (settingsDisabled) {
+      return DEFAULT_COMFYUI_API;
+    }
+    return model.envs.get(COMFYUI_API) || '';
+  }, [model.envs.get(COMFYUI_API), settingsDisabled]);
 
   const showModal = () => {
     setModalOpen(true);
@@ -79,6 +80,7 @@ export const ComfyUIEditor = ({
 
   const handleCancel = () => {
     setModalOpen(false);
+    setIsLoading(true);
   };
 
   const { run: saveComfyRequest, loading: saveLoading } = useRequest(
@@ -232,9 +234,6 @@ export const ComfyUIEditor = ({
     if (settingsDisabled) {
       return false;
     }
-    if (!value) {
-      return true;
-    }
     return !isValidUrl(value);
   }, [value, settingsDisabled]);
 
@@ -242,7 +241,7 @@ export const ComfyUIEditor = ({
     const settings = await model.loadSettingsEnv();
     const api = settings?.envs?.find(env => env.key === COMFYUI_API)?.value;
     if (api && isValidUrl(api)) {
-      onChange(api);
+      setValue('api', api);
       setIsLoading(true);
     } else {
       toast.error('Invalid ComfyUI API settings', {
@@ -365,7 +364,7 @@ export const ComfyUIEditor = ({
           </div>
         }
         closeIcon={null}>
-        {isLoading && (
+        {isLoading && !showSettingButton && (
           <div className="flex justify-center items-center h-[80vh]">
             <Spinner size="lg" className="text-brand" />
           </div>
