@@ -1,16 +1,15 @@
-
 name: "Create GitHub Release for Windows"
 
 on:
   workflow_dispatch:
     inputs:
       git_tag:
-        description: 'Git Branch Tag'
+        description: "Git Branch Tag"
         required: true
         type: string
         default: "main"
       version:
-        description: 'Release Version Tag'
+        description: "Release Version Tag"
         required: true
         type: string
         default: "beta"
@@ -47,13 +46,13 @@ jobs:
         with:
           name: web-build
           path: web/apps/web/dist
-    
+
   package_shellagent_windows:
     permissions:
       contents: "write"
       packages: "write"
       pull-requests: "read"
-    needs: build 
+    needs: build
     runs-on: windows-latest
     steps:
       - uses: actions/checkout@v4
@@ -82,7 +81,7 @@ jobs:
 
           curl https://www.python.org/ftp/python/3.10.10/python-3.10.10-embed-amd64.zip -o python_embeded.zip
           unzip python_embeded.zip -d python_embeded
-          
+
           cd python_embeded
 
           echo 'import site' >> ./python310._pth

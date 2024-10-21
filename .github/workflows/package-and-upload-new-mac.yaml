@@ -1,16 +1,15 @@
-
 name: "Create GitHub Release for Mac"
 
 on:
   workflow_dispatch:
     inputs:
       git_tag:
-        description: 'Git Branch Tag'
+        description: "Git Branch Tag"
         required: true
         type: string
         default: "main"
       version:
-        description: 'Release Version Tag'
+        description: "Release Version Tag"
         required: true
         type: string
         default: "beta"
@@ -47,13 +46,13 @@ jobs:
         with:
           name: web-build
           path: web/apps/web/dist
-    
+
   package_shellagent_mac:
     permissions:
       contents: "write"
       packages: "write"
       pull-requests: "read"
-    needs: build 
+    needs: build
     runs-on: macos-latest
     steps:
       - uses: actions/checkout@v4
@@ -89,12 +88,12 @@ jobs:
           cp -r ShellAgent/.ci/MacOS_base_files/* ./
 
           cd ..
-          
+
           zip -r ShellAgent_MacOS_release.zip ShellAgent_MacOS_release/
           mv ShellAgent_MacOS_release.zip ShellAgent/ShellAgent_MacOS_release.zip
 
           ls
-      
+
       - name: Upload binaries to release
         uses: svenstaro/upload-release-action@v2
         with:

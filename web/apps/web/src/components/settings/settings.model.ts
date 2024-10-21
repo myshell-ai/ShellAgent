@@ -109,7 +109,9 @@ export class SettingsModel {
 
   @action.bound
   async getAutoCheck() {
-    if (process.env.NEXT_PUBLIC_DISABLE_SOFTWARE_UPDATE === 'yes') return;
+    if (process.env.NEXT_PUBLIC_DISABLE_SOFTWARE_UPDATE === 'yes') {
+      return false;
+    }
     try {
       const res = await axios.get(`/api/auto_update`, {
         headers: {
@@ -120,7 +122,7 @@ export class SettingsModel {
       return this.isAutoCheck;
     } catch (e: any) {
       this.emitter.emitter.emit('message.error', e.message);
-      return null;
+      return false;
     }
   }
 
@@ -235,6 +237,7 @@ export class SettingsModel {
         },
       });
       const ret: any = res.data;
+      this.envs = new Map();
       ret?.envs.forEach((item: any) => {
         this.envs.set(item.key, item.value);
       });
@@ -247,6 +250,7 @@ export class SettingsModel {
 
   async saveSettingsEnv(value: any) {
     try {
+      this.envs = new Map();
       value?.envs.forEach((item: any) => {
         this.envs.set(item.key, item.value);
       });
