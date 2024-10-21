@@ -15,6 +15,26 @@ def queue_prompt(prompt, server_address, client_id):
     p = {"prompt": prompt, "client_id": client_id}
     data = json.dumps(p).encode('utf-8')
     req =  urllib.request.Request("{}/prompt".format(server_address), data=data)
+    try:
+        with urllib.request.urlopen(req) as response:
+            data = json.loads(response.read())
+            return data
+    except urllib.error.HTTPError as e:
+        if e.code == 400:
+            # Read the error response content
+            error_content = e.read().decode('utf-8')
+            # Parse the JSON error message
+            error_data = json.loads(error_content)
+            print(f"Error: {error_data['error']}")
+            if 'node_errors' in error_data:
+                print(f"Node Errors: {error_data['node_errors']}")
+            raise ValueError(json.dumps(error_data, indent=2, ensure_ascii=False))
+        else:
+            print(f"HTTP Error: {e.code} - {e.reason}")
+    except urllib.error.URLError as e:
+        print(f"URL Error: {e.reason}")
+    except Exception as e:
+        print(f"General Error: {str(e)}")
     return json.loads(urllib.request.urlopen(req).read())
 
 def get_history(server_address, prompt_id):
