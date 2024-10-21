@@ -5,17 +5,7 @@
 import { PlusOutlined } from '@ant-design/icons';
 import { css } from '@emotion/react';
 import { AButton, contentPadding, Icon, TrashIcon, Text } from '@shellagent/ui';
-import {
-  Button,
-  Card,
-  Divider,
-  Form,
-  Input,
-  Modal,
-  Switch,
-  theme,
-  Typography,
-} from 'antd';
+import { Button, Card, Divider, Form, Input, Modal, Switch, theme } from 'antd';
 import dayjs from 'dayjs';
 import { Field, FieldArray, FieldProps, Formik } from 'formik';
 import { useInjection } from 'inversify-react';
@@ -43,21 +33,6 @@ export const EnvForm = () => {
         model.setFormikProps(formikProps);
         return (
           <Form layout="vertical">
-            <Field name="model_location">
-              {({ field, form }: FieldProps) => (
-                <Form.Item label="Model Configration">
-                  <Input
-                    size="large"
-                    {...field}
-                    onBlur={() => form.submitForm()}
-                    placeholder="Location"
-                  />
-                </Form.Item>
-              )}
-            </Field>
-            <Box mb={2}>
-              <Typography.Text>Environment</Typography.Text>
-            </Box>
             <FieldArray
               name="envs"
               render={arrayHelpers => (
