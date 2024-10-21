@@ -230,6 +230,10 @@ export const SettingsDialog = observer(() => {
       model.loadSettingsEnvAndFillForm();
     }
   }, [model.modal.isOpen]);
+
+  const isDisableUpdate =
+    process.env.NEXT_PUBLIC_DISABLE_SOFTWARE_UPDATE === 'yes';
+
   return (
     <Modal
       className="settings-modal"
