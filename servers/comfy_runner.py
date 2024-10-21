@@ -147,7 +147,7 @@ def update_dependency():
     repos = [shellagent_json["dependencies"]["comfyui_version"]] + shellagent_json["dependencies"]["custom_nodes"]
     for repo in repos:
         if repo["name"] in missing_repos:
-            repo.update(missing_repos[item["name"]])
+            repo.update(missing_repos[repo["name"]])
             if repo["repo"] != "":
                 custom_dependencies["custom_nodes"].update({repo["name"]: repo})
             
