@@ -53,6 +53,10 @@ const ComfyUIPlugin: React.FC<CommonWidgetConfigProps> = ({
     [defaultValues, onChange],
   );
 
+  useEffect(() => {
+    onChange(merge({}, defaultValues, values));
+  }, [schema]);
+
   const { run: getComfySchema, loading: isLoading } = useRequest(getFile, {
     manual: true,
     onSuccess: result => {
