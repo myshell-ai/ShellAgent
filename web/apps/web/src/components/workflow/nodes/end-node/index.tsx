@@ -10,6 +10,9 @@ import React, { useCallback, useEffect, useRef } from 'react';
 import NodeCard from '@/components/workflow/node-card';
 import NodeForm from '@/components/workflow/node-form';
 import { useWorkflowStore } from '@/stores/workflow/workflow-provider';
+import { findDiffKeys } from '@/utils/common-helper';
+
+import { EventType, useEventEmitter } from '../../emitter';
 
 const EndNode: React.FC<NodeProps<EndNodeType>> = ({ id, data, selected }) => {
   const formRef = useRef<FormRef>(null);
@@ -21,6 +24,7 @@ const EndNode: React.FC<NodeProps<EndNodeType>> = ({ id, data, selected }) => {
     setFieldsModeMap,
     resetData,
     clearResetData,
+    flowInstance,
   } = useWorkflowStore(state => ({
     setNodeData: state.setNodeData,
     nodeData: state.nodeData,
@@ -29,10 +33,30 @@ const EndNode: React.FC<NodeProps<EndNodeType>> = ({ id, data, selected }) => {
     setFieldsModeMap: state.setFieldsModeMap,
     resetData: state.resetData,
     clearResetData: state.clearResetData,
+    flowInstance: state.flowInstance,
   }));
+
+  const preNodeData = useRef<TValues>(nodeData);
+
+  useEffect(() => {
+    preNodeData.current = nodeData;
+  }, [nodeData]);
 
   const onChange = (values: TValues) => {
     setNodeData({ id: NodeIdEnum.end, data: values });
+    const diffKeys = findDiffKeys(preNodeData.current[data.id], values);
+    if (diffKeys.length) {
+      flowInstance?.setEdges(state =>
+        state.filter(
+          edge =>
+            !(
+              edge.target === data.id &&
+              edge.targetHandle &&
+              diffKeys.includes(edge.targetHandle)
+            ),
+        ),
+      );
+    }
   };
 
   const onModeChange = useCallback(
@@ -52,8 +76,14 @@ const EndNode: React.FC<NodeProps<EndNodeType>> = ({ id, data, selected }) => {
     });
   }, [resetData]);
 
+  useEventEmitter(EventType.DELETE_EDGE, edge => {
+    if (edge.target === id && edge.targetHandle) {
+      formRef.current?.setValue(`${edge.targetHandle}.value`, undefined);
+    }
+  });
+
   return (
-    <NodeCard targetHandle={id} selected={selected} {...data}>
+    <NodeCard selected={selected} {...data}>
       <NodeForm
         ref={formRef}
         loading={loading}

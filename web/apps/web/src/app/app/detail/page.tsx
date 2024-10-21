@@ -14,10 +14,10 @@ import FlowHeader from '@/components/app/flow-header';
 import { Header } from '@/components/app/header';
 import { AppBuilderChatModel } from '@/components/chat/app-builder-chat.model';
 import { ListFooterExtra } from '@/components/common/list-footer-extra';
-import { ImageCanvasDialog } from '@/components/image-canvas/open-image-canvas';
 import { useAppStore } from '@/stores/app/app-provider';
 import { useAppState } from '@/stores/app/use-app-state';
 import { useWorkflowStore } from '@/stores/workflow/workflow-provider';
+import { ImageCanvasDialog } from '@/components/image-canvas/open-image-canvas';
 
 enableMapSet();
 

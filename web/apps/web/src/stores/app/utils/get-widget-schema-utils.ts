@@ -40,6 +40,9 @@ export const getTypesFromSchema = (
             properties: getTypesFromSchema(property),
           };
         }
+        if (property.anyOf) {
+          types[key] = property.anyOf.map(a => a.type).join('|');
+        }
       }
     });
   }

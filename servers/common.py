@@ -4,10 +4,6 @@ import shutil
 import uuid
 import importlib
 import sys
-import pygit2
-import subprocess
-import requests
-from datetime import datetime
 
 from flask import request, jsonify, abort, send_from_directory, send_file
 
@@ -15,15 +11,13 @@ from proconfig.widgets.base import WIDGETS
 from proconfig.widgets import load_custom_widgets
 from proconfig.utils.misc import is_valid_url, _make_temp_file
 
-from servers.base import app, APP_SAVE_ROOT, WORKFLOW_SAVE_ROOT, PROJECT_ROOT, get_file_times
+from servers.base import app, APP_SAVE_ROOT, WORKFLOW_SAVE_ROOT, get_file_times
 
 
 SAVE_ROOTS = {
     "app": APP_SAVE_ROOT,
     "workflow": WORKFLOW_SAVE_ROOT
 }
-LAST_CHECK_FILE = os.path.join(PROJECT_ROOT, 'last_check_time.json')
-AUTO_UPDATE_FILE = os.path.join(PROJECT_ROOT, 'data', 'auto_update_settings.json')
 
 @app.route(f'/api/upload', methods=['POST'])
 def upload():

@@ -12,6 +12,8 @@ import { genWorkflow } from '@/stores/workflow/utils/data-transformer';
 import { useWorkflowStore } from '@/stores/workflow/workflow-provider';
 import { isDeepEmpty } from '@/utils/common-helper';
 
+import { usePasteState } from '../nodes/widget-node/hook/use-paste-state';
+
 const relativeTime = require('dayjs/plugin/relativeTime');
 
 dayjs.extend(relativeTime);
@@ -49,6 +51,8 @@ const FlowHeader: React.FC<{ flowId: string; version?: string }> = ({
       viewport,
     };
   }, [flowId, nodeData, config, nodes, edges, viewport]);
+
+  usePasteState({ enabeKeyboard: true });
 
   const debouncedValues = useDebounce(values, {
     wait: 1500,
@@ -114,11 +118,6 @@ const FlowHeader: React.FC<{ flowId: string; version?: string }> = ({
           {!autoSavedSuccess ? (
             <Text size="sm" color="critical">
               Auto Saved Error
-            </Text>
-          ) : null}
-          {version ? (
-            <Text size="sm" color="subtlest">
-              Current preview version: {version}
             </Text>
           ) : null}
         </div>

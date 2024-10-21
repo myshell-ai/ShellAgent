@@ -8,7 +8,6 @@ import {
   ChatLuiButton,
   ChatNew,
   IconButton,
-  Title,
 } from '@shellagent/ui';
 import { useInjection } from 'inversify-react';
 import { isEmpty } from 'lodash-es';
@@ -202,7 +201,7 @@ export const AppBuilderChatLuiButtonModal = observer(() => {
     <AModal
       width="50%"
       open={model.isLuiButtonModalOpen}
-      title={<Title size="h3">Enter to run</Title>}
+      title="Enter to run"
       hideCancelButton
       onCancel={() => model.closeLuiButtonModal()}
       okDisabled={!model.isFormValid}
@@ -236,17 +235,17 @@ export const AppBuilderChat = () => {
         serverMessage.embedObjs.length > 0
       ) {
         displayMessage.text = `
-          ${displayMessage.text}
-          ${serverMessage.embedObjs
-            .map(i => {
-              const url =
-                typeof i.url === 'string' && i.url.indexOf('https://') > -1
-                  ? i.url
-                  : `/api/files/${i.url}`;
-              return `<img src="${url}" width="1024" />`;
-            })
-            .join('\n\n')}
-          `;
+${displayMessage.text}
+${serverMessage.embedObjs
+  .map(i => {
+    const url =
+      typeof i.url === 'string' && i.url.indexOf('https://') > -1
+        ? i.url
+        : `/api/files/${i.url}`;
+    return `<img src="${url}" width="1024" />`;
+  })
+  .join('\n\n')}
+`;
       }
       if (serverMessage.componentContainer) {
         const componentContainer =
