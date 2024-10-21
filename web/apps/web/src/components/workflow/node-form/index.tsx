@@ -21,20 +21,16 @@ import {
 import { isEmpty } from 'lodash-es';
 import React, { useEffect, useMemo, forwardRef } from 'react';
 
-import AudioSelector from '@/components/common/audio-selector';
-import ImageSelector from '@/components/common/image-selector';
 import FileUpload from '@/components/common/uploader';
-import VideoSelector from '@/components/common/video-selector';
 import { useSchemaContext } from '@/stores/workflow/schema-provider';
 
 import FormSkeleton from './form-skeleton';
 import {
+  ExpressionInput,
   ModeTabs,
+  VariableSelect,
   ModeSelect,
   Render,
-  VariableNode,
-  TargetVariablePointer,
-  SourceVariablePointer,
 } from './widgets';
 
 interface NodeFormProps {
@@ -44,25 +40,13 @@ interface NodeFormProps {
   loading?: boolean;
   modeMap?: Record<string, TFieldMode>;
   onModeChange?: (name: string, mode: TFieldMode) => void;
-  onStatusChange?: (status: { [key: string]: string }) => void;
 }
 
 const NodeForm = forwardRef<FormRef, NodeFormProps>(
-  (
-    {
-      values,
-      onChange,
-      schema,
-      loading,
-      onModeChange,
-      onStatusChange,
-      modeMap,
-    },
-    ref,
-  ) => {
-    const { schema: formSchema, formKey } = useSchemaContext(state => ({
+  ({ values, onChange, schema, loading, onModeChange, modeMap }, ref) => {
+    const { schemaMode, schema: formSchema } = useSchemaContext(state => ({
+      schemaMode: state.schemaMode,
       schema: state.schema,
-      formKey: state.formKey,
     }));
 
     const currentSchema = schema || formSchema;
@@ -83,14 +67,13 @@ const NodeForm = forwardRef<FormRef, NodeFormProps>(
     return (
       <MemoizedFormEngine
         ref={ref}
-        key={formKey}
+        key={schemaMode}
         onChange={onChange}
         mode="onChange"
         values={values || defaultValues}
         schema={currentSchema}
         modeMap={modeMap}
         onModeChange={onModeChange}
-        onStatusChange={onStatusChange}
         components={{
           Input,
           Select,
@@ -101,17 +84,13 @@ const NodeForm = forwardRef<FormRef, NodeFormProps>(
           Textarea,
           Slider,
           SliderSingle,
+          ExpressionInput,
+          VariableSelect,
           JSONView,
           FileUpload,
           ModeTabs,
           ModeSelect,
           Render,
-          VariableNode,
-          TargetVariablePointer,
-          SourceVariablePointer,
-          ImageSelector,
-          VideoSelector,
-          AudioSelector,
         }}
       />
     );

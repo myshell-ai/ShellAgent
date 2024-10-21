@@ -13,7 +13,7 @@ export enum NodeTypeEnum {
   workflow = 'workflow',
 }
 
-export type NodeType = 'start' | 'end' | 'widget' | 'state' | 'workflow';
+export type NodeType = keyof typeof NodeTypeEnum;
 
 export type DataType = keyof typeof DataTypeEnum;
 
