@@ -17,6 +17,17 @@ export function checkDependency(
     [];
   const missingModels: UpdateDependencyRequest['missing_models'] = {};
 
+  if (!data?.comfyui_version?.repo) {
+    missingCustomNodes.push({
+      ...(data?.comfyui_version || {
+        name: 'ComfyUI',
+        repo: '',
+        commit: '',
+      }),
+      name: 'ComfyUI',
+    });
+  }
+
   // 检查custom_nodes的repo参数是否为空
   data?.custom_nodes?.forEach(node => {
     if (node?.require_recheck) {

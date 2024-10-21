@@ -28,6 +28,7 @@ export interface SaveResponse {
         name: string;
         repo: string;
         commit: string;
+        require_recheck: boolean;
       };
       custom_nodes: Array<{
         name: string;
