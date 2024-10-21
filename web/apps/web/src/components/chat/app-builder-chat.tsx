@@ -170,7 +170,7 @@ export const OkButton = observer(() => {
     <AButton
       size="large"
       type="primary"
-      style={{ width: '100%' }}
+      style={{ width: '100%', color: '#fff' }}
       onClick={() => {
         setTimeout(() => model.onClickModalRun(), 350);
       }}>

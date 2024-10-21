@@ -19,8 +19,16 @@ export enum CheckTypeEnum {
 const CustomNodeForm: React.FC = () => (
   <>
     <p className="mb-4 text-sm text-gray-500">
-      Repo must be valid public Git repositories. Node version can be specified
-      by Commit.
+      <ul>
+        <li>
+          The following custom nodes lack Git information (.git files), likely
+          due to being unpublished or copied/unzipped without Git operations.
+        </li>
+        <li>
+          Please update them via Git or ComfyUI-Manager, or provide public Git
+          links.
+        </li>
+      </ul>
     </p>
     <Form.List name="missing_custom_nodes">
       {fields => (
@@ -70,7 +78,13 @@ const CustomNodeForm: React.FC = () => (
 const ModelForm: React.FC = () => (
   <>
     <p className="mb-4 text-sm text-gray-500">
-      URL must be valid public download links.
+      <ul>
+        <li>
+          Public download links for the following models are unavailable,
+          possibly due to privacy or lack of popularity.
+        </li>
+        <li>Please provide valid public download links.</li>
+      </ul>
     </p>
     <Form.List name="missing_models" initialValue={[]}>
       {fields => (
@@ -229,7 +243,6 @@ export const CheckerContent: React.FC<CheckerContentProps> = ({
         form={form}
         layout="vertical"
         ref={formRef}
-        disabled={type === CheckTypeEnum.customNode}
         initialValues={initialValues}>
         <Tabs
           activeKey={type}

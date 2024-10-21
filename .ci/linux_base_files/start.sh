@@ -11,7 +11,7 @@ find_conda_sh() {
         "$HOME/opt/anaconda3/etc/profile.d/conda.sh"
         "$CONDA_PREFIX/../../etc/profile.d/conda.sh"
     )
-    
+
     for path in "${possible_paths[@]}"; do
         if [ -f "$path" ]; then
             echo "Conda.sh found at $path"
@@ -35,7 +35,7 @@ check_conda_installed() {
             echo "Parse conda info failed. Try to search it in some regular path"
             find_conda_sh
         fi
-        
+
         return 0
     else
         echo "Conda is not installed. Installing Miniconda..."
@@ -57,9 +57,20 @@ initialize_conda() {
 }
 
 # Main script execution
-check_conda_installed
-initialize_conda
-echo "activate python from $(which python)"
+while true; do
+    check_conda_installed
+    initialize_conda
+    echo "activate python from $(which python)"
 
-cd ShellAgent
-python servers/main.py
+    cd ShellAgent
+    export MYSHELL_KEY=OPENSOURCE_FIXED
+    python servers/main.py --port 8154
+
+    exit_code=$?
+    if [ $exit_code -eq 42 ]; then
+        echo "Restart signal detected, program will restart in 3 seconds..."
+        sleep 3
+    else
+        exit 0
+    fi
+done

@@ -1,25 +1,18 @@
-
-name: "Release To HF Mac"
+name: "Create GitHub Release for Linux"
 
 on:
-  push:
-    branches:
-      - dev_comfyui_v2
-    paths:
-      - ".github/workflows/package-and-upload-new-linux.yaml"
-      - "proconfig/**"
-  # workflow_dispatch:
-  #   inputs:
-  #     git_tag:
-  #       description: 'Git Branch Tag'
-  #       required: true
-  #       type: string
-  #       default: "main"
-      # version:
-      #   description: 'Release Version Tag'
-      #   required: true
-      #   type: string
-      #   default: "beta"
+  workflow_dispatch:
+    inputs:
+      git_tag:
+        description: "Git Branch Tag"
+        required: true
+        type: string
+        default: "main"
+      version:
+        description: "Release Version Tag"
+        required: true
+        type: string
+        default: "beta"
 
 jobs:
   build:
@@ -53,19 +46,18 @@ jobs:
         with:
           name: web-build
           path: web/apps/web/dist
-    
+
   package_shellagent_linux:
     permissions:
       contents: "write"
       packages: "write"
       pull-requests: "read"
-    needs: build 
+    needs: build
     runs-on: macos-latest
     steps:
       - uses: actions/checkout@v4
         with:
-          # ref: ${{ inputs.git_tag }}
-          ref: dev_comfyui_v2
+          ref: ${{ inputs.git_tag }}
           fetch-depth: 0
           persist-credentials: false
           submodules: recursive
@@ -91,7 +83,6 @@ jobs:
 
           cd ShellAgent_linux_release
           cp -r ShellAgent/.ci/linux_base_files/* ./
-
           cd ..
 
           zip -r ShellAgent_linux_release.zip ShellAgent_linux_release/
@@ -99,25 +90,10 @@ jobs:
 
           ls
 
-      - name: Install Hugging Face Hub SDK
-        run: pip install huggingface_hub
-
-      - name: Upload binaries to Hugging Face
-        run: |
-          from huggingface_hub import HfApi
-          api = HfApi()
-
-          # Set repository and file paths
-          repo_id = "myshell-ai/ShellAgent"
-          file_path = "ShellAgent_linux_release.zip"
-
-          # Upload the file to Hugging Face repository
-          api.upload_file(
-              path_or_fileobj=file_path,
-              # path_in_repo="ShellAgent_${{ inputs.version }}.zip",
-              path_in_repo="ShellAgent_linux_v1.0.0.zip",
-              repo_id=repo_id,
-              repo_type="model",
-              token="${{ secrets.HF_TOKEN }}"
-          )
-        shell: python
+      - name: Upload binaries to release
+        uses: svenstaro/upload-release-action@v2
+        with:
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          file: ShellAgent_linux_release.zip
+          tag: ${{ inputs.version }}
+          overwrite: true

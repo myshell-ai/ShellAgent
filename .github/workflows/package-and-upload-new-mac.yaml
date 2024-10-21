@@ -1,25 +1,18 @@
-
-name: "Release To HF Mac"
+name: "Create GitHub Release for Mac"
 
 on:
-  push:
-    branches:
-      - dev_comfyui_v2
-    paths:
-      - ".github/workflows/package-and-upload-new-mac.yaml"
-      - "proconfig/**"
-  # workflow_dispatch:
-  #   inputs:
-  #     git_tag:
-  #       description: 'Git Branch Tag'
-  #       required: true
-  #       type: string
-  #       default: "main"
-      # version:
-      #   description: 'Release Version Tag'
-      #   required: true
-      #   type: string
-      #   default: "beta"
+  workflow_dispatch:
+    inputs:
+      git_tag:
+        description: "Git Branch Tag"
+        required: true
+        type: string
+        default: "main"
+      version:
+        description: "Release Version Tag"
+        required: true
+        type: string
+        default: "beta"
 
 jobs:
   build:
@@ -53,19 +46,18 @@ jobs:
         with:
           name: web-build
           path: web/apps/web/dist
-    
-  package_shellagent_linux:
+
+  package_shellagent_mac:
     permissions:
       contents: "write"
       packages: "write"
       pull-requests: "read"
-    needs: build 
+    needs: build
     runs-on: macos-latest
     steps:
       - uses: actions/checkout@v4
         with:
-          # ref: ${{ inputs.git_tag }}
-          ref: dev_comfyui_v2
+          ref: ${{ inputs.git_tag }}
           fetch-depth: 0
           persist-credentials: false
           submodules: recursive
@@ -86,42 +78,26 @@ jobs:
           cd ..
           cp -r ShellAgent ShellAgent_copy
 
-          mkdir ShellAgent_MacOS_portable
-          mv ShellAgent_copy ShellAgent_MacOS_portable/ShellAgent
+          mkdir ShellAgent_MacOS_release
+          mv ShellAgent_copy ShellAgent_MacOS_release/ShellAgent
 
-          cd ShellAgent_MacOS_portable
+          cd ShellAgent_MacOS_release
 
           # curl -o Miniconda3-latest-MacOSX-arm64.sh https://repo.anaconda.com/miniconda/Miniconda3-latest-MacOSX-arm64.sh
           # curl -o Miniconda3-latest-MacOSX-x86_64.sh https://repo.anaconda.com/miniconda/Miniconda3-latest-MacOSX-x86_64.sh
-
           cp -r ShellAgent/.ci/MacOS_base_files/* ./
 
           cd ..
-          
-          zip -r ShellAgent_MacOS_portable.zip ShellAgent_MacOS_portable/
-          mv ShellAgent_MacOS_portable.zip ShellAgent/ShellAgent_MacOS_portable.zip
+
+          zip -r ShellAgent_MacOS_release.zip ShellAgent_MacOS_release/
+          mv ShellAgent_MacOS_release.zip ShellAgent/ShellAgent_MacOS_release.zip
 
           ls
 
-      - name: Install Hugging Face Hub SDK
-        run: pip install huggingface_hub
-
-      - name: Upload binaries to Hugging Face
-        run: |
-          from huggingface_hub import HfApi
-          api = HfApi()
-
-          # Set repository and file paths
-          repo_id = "myshell-ai/ShellAgent"
-          file_path = "ShellAgent_MacOS_portable.zip"
-
-          # Upload the file to Hugging Face repository
-          api.upload_file(
-              path_or_fileobj=file_path,
-              # path_in_repo="ShellAgent_${{ inputs.version }}.zip",
-              path_in_repo="ShellAgent_macos_v1.0.0.zip",
-              repo_id=repo_id,
-              repo_type="model",  # or 'dataset' depending on your use case
-              token="${{ secrets.HF_TOKEN }}"
-          )
-        shell: python
+      - name: Upload binaries to release
+        uses: svenstaro/upload-release-action@v2
+        with:
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          file: ShellAgent_MacOS_release.zip
+          tag: ${{ inputs.version }}
+          overwrite: true

@@ -1,7 +1,7 @@
 'use client';
 
 import { FlowEngine, FlowRef, NodeTypeEnum } from '@shellagent/flow-engine';
-import { IconButton, Lego, Setting } from '@shellagent/ui';
+import { IconButton, Setting } from '@shellagent/ui';
 import { useSearchParams } from 'next/navigation';
 import { useEffect, useRef } from 'react';
 import { useShallow } from 'zustand/react/shallow';
@@ -10,7 +10,6 @@ import '../../reflect-metadata-client-side';
 import FlowHeader from '@/components/workflow/flow-header';
 import { Header } from '@/components/workflow/header';
 import { EndNode, StartNode, WidgetNode } from '@/components/workflow/nodes';
-import { useGlobalStore } from '@/stores/global/global-provider';
 import { useWorkflowStore } from '@/stores/workflow/workflow-provider';
 
 const nodeTypes = {
@@ -27,10 +26,6 @@ export default function WorkflowPage() {
 
   const flowId = params.get('id') as string;
   const version = params.get('version') || undefined;
-
-  const setManagerDialogOpen = useGlobalStore(
-    state => state.setManagerDialogOpen,
-  );
 
   const {
     setFlowInstance,
@@ -83,12 +78,6 @@ export default function WorkflowPage() {
           materialList={widgetList}
           footerExtra={
             <div className="ml-auto flex gap-1">
-              <IconButton
-                variant="ghost"
-                className="w-9 h-9"
-                icon={Lego}
-                onClick={() => setManagerDialogOpen(true)}
-              />
               <IconButton variant="ghost" className="w-9 h-9" icon={Setting} />
             </div>
           }
