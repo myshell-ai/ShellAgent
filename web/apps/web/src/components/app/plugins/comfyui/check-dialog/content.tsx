@@ -59,10 +59,7 @@ const CustomNodeForm: React.FC = () => (
                     message: 'Please input the repository URL',
                   },
                 ]}>
-                <Input
-                  readOnly={false}
-                  placeholder="Enter Git repository URL"
-                />
+                <Input placeholder="Enter Git repository URL" />
               </Form.Item>
               <Form.Item
                 {...field}

@@ -1,4 +1,3 @@
-import torch
 from typing import Any, Literal, Optional, List
 from pydantic import Field, BaseModel
 
@@ -55,7 +54,6 @@ class GPTWidget(BaseWidget):
         user_prompt: str = ""
         input_image: Optional[str] = None
         memory: List[MemoryItem] = []
-        function_parameters: List[FunctionParameter] = []
         memory_mode: Literal["auto", "manual"] = "auto"
         temperature: float = 0.7
         top_p: float = 1.0
@@ -70,7 +68,6 @@ class GPTWidget(BaseWidget):
     class OutputsSchema(BaseWidget.OutputsSchema):
         reply: str
         
-    @torch.no_grad()
     def execute(self, environ, config):
         print("widget run id:", config.widget_run_id)
         
@@ -105,30 +102,6 @@ class GPTWidget(BaseWidget):
             
         messages.append({"role": "user", "content": user_prompt})
             
-        tools = {
-            "type": "function",
-            "function": {
-                "name": "any_function_name",
-                "strict": True,
-                "description": "any description",
-                "parameters": {
-                    "type": "object",
-                    "properties": {},
-                    "required": [],
-                    "additionalProperties": False
-                }
-            }
-        }
-        # add parameters to the tools
-        for function_parameter in config.function_parameters:
-            tools["function"]["parameters"]["properties"][function_parameter.name] = {
-                "type": function_parameter.type,
-                "description": function_parameter.description
-            }
-            tools["function"]["parameters"]["required"].append(function_parameter.name)
-
-        print('tools:', [tools])
-
         output = client.chat.completions.create(
             model=config.model,
             temperature=config.temperature,
@@ -137,9 +110,7 @@ class GPTWidget(BaseWidget):
             stream=config.stream,
             presence_penalty=config.presence_penalty,
             frequency_penalty=config.frequency_penalty,
-            messages=messages,
-            tools=[tools] if config.function_parameters else None,
-            tool_choice="required" if config.function_parameters else None
+            messages=messages
         )
         
         if config.stream:
@@ -154,10 +125,6 @@ class GPTWidget(BaseWidget):
         else:
             result = output.model_dump()
             return_dict = {'reply': result['choices'][0]['message']['content']}
-            if result['choices'][0]['message']['tool_calls'] is not None:
-                arguments = result['choices'][0]['message']['tool_calls'][0]['function']['arguments']
-                return_dict = {'reply': arguments}
-                
         
         if config.memory_mode == "auto":
             

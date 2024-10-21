@@ -12,7 +12,6 @@ from typing import Dict, Any, Literal, List
 from flask import Response, request, jsonify
 from filelock import FileLock
 
-import torch
 import re
 
 from pydantic import BaseModel
@@ -284,7 +283,6 @@ def app_run():
                 message = client_queue.get(timeout=1)
                 yield message
                 if message.split('\n')[0].startswith("event: state_exit"):
-                    torch.cuda.empty_cache()
                     break
             except queue.Empty:
                 data = json.dumps({})
@@ -366,6 +364,7 @@ def process_text_embeded_uri(text):
         file_uri = re.search(r'src=["\']([^"\']+)["\']', attributes).groups()[0]
         
         new_file_uri = file_uri.strip()
+        print("file_uri:", file_uri)
         if os.path.isfile(file_uri):
             new_file_uri = "/api/files/" + new_file_uri
         new_attributes = attributes.replace(file_uri, new_file_uri)

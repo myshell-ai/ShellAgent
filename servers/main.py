@@ -59,11 +59,7 @@ if __name__ == '__main__':
     import servers.comfy_runner
     
     import GPUtil
-    
-    import comfy
-    
-    if args.cpu:
-        comfy.model_management.cpu_state = comfy.model_management.CPUState.CPU
+
 
     # Start the watchdog thread
     if os.environ.get("ENABLE_WATCHDOG") == "1":

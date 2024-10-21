@@ -1,5 +1,5 @@
 
-name: "Release To HF"
+name: "Create GitHub Release for Windows"
 
 on:
   workflow_dispatch:
@@ -9,21 +9,6 @@ on:
         required: true
         type: string
         default: "main"
-      cu:
-        description: 'CUDA Version'
-        required: true
-        type: string
-        default: "124"
-      python_minor:
-        description: 'Python Minor Version'
-        required: true
-        type: string
-        default: "10"
-      python_patch:
-        description: 'Python Patch Version'
-        required: true
-        type: string
-        default: "10"
       version:
         description: 'Release Version Tag'
         required: true
@@ -55,6 +40,8 @@ jobs:
 
       - working-directory: "./web"
         run: pnpm turbo run build --filter=web
+        env:
+          NEXT_PUBLIC_API_URL: ${{ secrets.NEXT_PUBLIC_API_URL }}
 
       - uses: actions/upload-artifact@v3
         with:
@@ -77,7 +64,7 @@ jobs:
           submodules: recursive
       - uses: actions/setup-python@v5
         with:
-          python-version: 3.${{ inputs.python_minor }}.${{ inputs.python_patch }}
+          python-version: 3.10.10
 
       - name: Download web-build artifact
         uses: actions/download-artifact@v3
@@ -93,23 +80,18 @@ jobs:
           curl -L https://huggingface.co/XuminYu/git_embed/resolve/main/git.7z?download=true -o git.7z
           "C:\Program Files\7-Zip\7z.exe" x git.7z -ogit
 
-          curl https://www.python.org/ftp/python/3.${{ inputs.python_minor }}.${{ inputs.python_patch }}/python-3.${{ inputs.python_minor }}.${{ inputs.python_patch }}-embed-amd64.zip -o python_embeded.zip
+          curl https://www.python.org/ftp/python/3.10.10/python-3.10.10-embed-amd64.zip -o python_embeded.zip
           unzip python_embeded.zip -d python_embeded
           
           cd python_embeded
 
-          echo 'import site' >> ./python3${{ inputs.python_minor }}._pth
+          echo 'import site' >> ./python310._pth
           curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py
           ./python.exe get-pip.py
           cp -r ../ShellAgent/.ci/python_dependencies_wins/include ./include
           cp -r ../ShellAgent/.ci/python_dependencies_wins/Library ./Library
           cp -r ../ShellAgent/.ci/python_dependencies_wins/libs ./libs
-          ./python.exe -s -m pip install xformers torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu${{ inputs.cu }}
-          ./python.exe -s -m pip install --use-pep517 pygit2 Cython scikit_build_core enscons pytoml cmake==3.21
-          ./python.exe -s -m pip install --use-pep517 -r ../ShellAgent/requirements.txt
-          ./python.exe -s -m pip install onnx==1.16.1 flask PyExecJS docx2txt fuzzywuzzy cloudpickle
-          sed -i '1i../ShellAgent' ./python3${{ inputs.python_minor }}._pth
-          
+          sed -i '1i../ShellAgent' ./python310._pth
           cd ..
 
           mkdir ShellAgent_windows_portable
@@ -122,20 +104,8 @@ jobs:
 
           cd ShellAgent
 
-          mkdir -p models/insightface/models
-          ls models/insightface/
-          curl -L https://huggingface.co/MonsterMMORPG/tools/resolve/main/antelopev2.zip -o models/insightface/models/antelopev2.zip
-          ls models/insightface/models/
-          unzip models/insightface/models/antelopev2.zip -d models/insightface/models/
-
-          mkdir -p models/vae_approx
-          ls models
-          git clone --depth 1 https://github.com/comfyanonymous/taesd
-          cp taesd/*.pth models/vae_approx
-
+          ../python_embeded/python.exe -m pip install poetry
           ../python_embeded/python.exe -m pip install -e .
-          ../python_embeded/python.exe -m pip show proconfig 
-          # ../python_embeded/python.exe servers/main.py
 
           cd ..
           cd ..
@@ -145,24 +115,30 @@ jobs:
 
           ls
 
-      - name: Install Hugging Face Hub SDK
-        run: pip install huggingface_hub
+      - name: Upload binaries to release
+        uses: svenstaro/upload-release-action@v2
+        with:
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          file: ShellAgent_windows_portable.7z
+          tag: ${{ inputs.version }}
+          overwrite: true
 
-      - name: Upload binaries to Hugging Face
+      - name: Download web-build artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: web-build
+          path: ./web-build
+
+      - name: Zip web-build
         run: |
-          from huggingface_hub import HfApi
-          api = HfApi()
+          cd web-build
+          Compress-Archive -Path * -DestinationPath ../web-build.zip
+        shell: pwsh
 
-          # Set repository and file paths
-          repo_id = "myshell-ai/ShellAgent"
-          file_path = "ShellAgent_windows_portable.7z"
-
-          # Upload the file to Hugging Face repository
-          api.upload_file(
-              path_or_fileobj=file_path,
-              path_in_repo="ShellAgent_${{ inputs.version }}.7z",
-              repo_id=repo_id,
-              repo_type="model",  # or 'dataset' depending on your use case
-              token="${{ secrets.HF_TOKEN }}"
-          )
-        shell: python
+      - name: Upload web-build to release
+        uses: svenstaro/upload-release-action@v2
+        with:
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          file: web-build.zip
+          tag: ${{ inputs.version }}
+          overwrite: true

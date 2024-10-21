@@ -17,6 +17,7 @@ export function checkDependency(
     [];
   const missingModels: UpdateDependencyRequest['missing_models'] = {};
 
+  // 检查comfyui_version的repo参数是否为空
   if (!data?.comfyui_version?.repo) {
     missingCustomNodes.push({
       ...(data?.comfyui_version || {
