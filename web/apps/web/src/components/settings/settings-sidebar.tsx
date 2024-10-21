@@ -4,11 +4,11 @@
 
 import { css } from '@emotion/react';
 import { Heading, Tabs, TabsList, TabsTrigger } from '@shellagent/ui';
+import { Badge } from 'antd';
 import { useInjection } from 'inversify-react';
 import { observer } from 'mobx-react-lite';
 
 import { SettingsModel, SidebarValue } from './settings.model';
-import { Badge } from 'antd';
 
 export const SettingsSideBar = observer(() => {
   const model = useInjection(SettingsModel);

@@ -16,16 +16,17 @@ import {
   theme,
   Typography,
 } from 'antd';
+import dayjs from 'dayjs';
 import { Field, FieldArray, FieldProps, Formik } from 'formik';
 import { useInjection } from 'inversify-react';
 import { observer } from 'mobx-react-lite';
 import { useEffect } from 'react';
-import { Box, Flex } from 'react-system';
 import Markdown from 'react-markdown';
+import { Box, Flex } from 'react-system';
+
 import { SettingEnvFormValue } from './settings-definitions';
 import { SettingsSideBar } from './settings-sidebar';
 import { SettingsModel } from './settings.model';
-import dayjs from 'dayjs';
 
 export const EnvForm = () => {
   const model = useInjection(SettingsModel);
@@ -231,8 +232,8 @@ export const SettingsDialog = observer(() => {
     }
   }, [model.modal.isOpen]);
 
-  const isDisableUpdate =
-    process.env.NEXT_PUBLIC_DISABLE_SOFTWARE_UPDATE === 'yes';
+  // const isDisableUpdate =
+  //   process.env.NEXT_PUBLIC_DISABLE_SOFTWARE_UPDATE === 'yes';
 
   return (
     <Modal

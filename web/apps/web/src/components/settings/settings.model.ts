@@ -130,7 +130,7 @@ export class SettingsModel {
   async setAutoCheck(isAutoCheck: boolean) {
     try {
       this.isAutoCheckLoading = true;
-      const res = await axios.post(
+      await axios.post(
         `/api/auto_update`,
         {
           auto_update: isAutoCheck,
@@ -190,7 +190,7 @@ export class SettingsModel {
   @action.bound
   async restart() {
     this.isRestarting = true;
-    const res = await axios.get(`/api/restart`, {
+    await axios.get(`/api/restart`, {
       headers: {
         'Content-Type': 'application/json',
       },
@@ -214,7 +214,7 @@ export class SettingsModel {
   async updateNow() {
     try {
       this.isUpdating = true;
-      const res = await axios.get(`/api/update/stable`, {
+      await axios.get(`/api/update/stable`, {
         headers: {
           'Content-Type': 'application/json',
         },

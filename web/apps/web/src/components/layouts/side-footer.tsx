@@ -8,15 +8,14 @@ import {
   QuestionMarkCircleIcon,
 } from '@heroicons/react/24/outline';
 import { Text } from '@shellagent/ui';
+import { Badge } from 'antd';
 import clsx from 'clsx';
 import { useInjection } from 'inversify-react';
+import { observer } from 'mobx-react-lite';
 import Link from 'next/link';
 import React from 'react';
 
 import { SettingsModel } from '../settings/settings.model';
-import { Badge } from 'antd';
-import { Flex } from 'react-system';
-import { observer } from 'mobx-react-lite';
 
 interface ItemType {
   href?: string;
@@ -26,6 +25,15 @@ interface ItemType {
   onClick?: () => void;
   disabled?: boolean;
 }
+
+const SettingsItem = observer(() => {
+  const model = useInjection(SettingsModel);
+  return (
+    <Badge dot={model.checkRet.has_new_stable} offset={[36, 12]}>
+      <Text color="subtler">Settings</Text>
+    </Badge>
+  );
+});
 
 const ItemFooter = ({
   href,
@@ -58,15 +66,6 @@ const ItemFooter = ({
     </Link>
   );
 };
-
-const SettingsItem = observer(() => {
-  const model = useInjection(SettingsModel);
-  return (
-    <Badge dot={model.checkRet.has_new_stable} offset={[36, 12]}>
-      <Text color="subtler">Settings</Text>
-    </Badge>
-  );
-});
 
 export default function SideFooter() {
   const settingsModel = useInjection(SettingsModel);
