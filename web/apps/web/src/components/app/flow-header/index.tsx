@@ -7,7 +7,6 @@ import React, { useCallback, useMemo, useState, useEffect, memo } from 'react';
 import { useShallow } from 'zustand/react/shallow';
 
 import { usePasteState } from '@/components/app/nodes/state-node/hook/use-paste-state';
-import PerformanceMonitor from '@/components/common/performance-monitor';
 import { saveApp } from '@/services/app';
 import { useAppStore } from '@/stores/app/app-provider';
 import { genAutomata } from '@/stores/app/utils/data-transformer';

@@ -5,17 +5,7 @@
 import { PlusOutlined } from '@ant-design/icons';
 import { css } from '@emotion/react';
 import { AButton, contentPadding, Icon, TrashIcon, Text } from '@shellagent/ui';
-import {
-  Button,
-  Card,
-  Divider,
-  Form,
-  Input,
-  Modal,
-  Switch,
-  theme,
-  Typography,
-} from 'antd';
+import { Button, Card, Divider, Form, Input, Modal, Switch, theme } from 'antd';
 import dayjs from 'dayjs';
 import { Field, FieldArray, FieldProps, Formik } from 'formik';
 import { useInjection } from 'inversify-react';

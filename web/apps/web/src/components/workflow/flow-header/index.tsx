@@ -6,7 +6,6 @@ import { isEmpty, pick } from 'lodash-es';
 import React, { useCallback, useMemo, useState, memo } from 'react';
 import { useShallow } from 'zustand/react/shallow';
 
-import PerformanceMonitor from '@/components/common/performance-monitor';
 import { saveWorkflow } from '@/services/workflow';
 import { genWorkflow } from '@/stores/workflow/utils/data-transformer';
 import { useWorkflowStore } from '@/stores/workflow/workflow-provider';
