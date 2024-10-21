@@ -40,33 +40,6 @@ def upload():
     return jsonify(response)
 
 
-@app.route(f'/api/reload', methods=['POST'])
-def reload():
-    data = request.get_json()
-    
-    # first reload all the custom widgets
-    load_custom_widgets()
-    
-    if "widget_name" in data:
-        widget_names = [data["widget_name"]]
-    else:
-        widget_names = list(WIDGETS.module_dict.keys())
-    
-    # useful for update the schema
-    modules_to_reload = []
-    for widget_name in widget_names:
-        widget_class = WIDGETS.module_dict[widget_name]
-        if widget_class.__module__ not in modules_to_reload:
-            modules_to_reload.append(widget_class.__module__)
-            
-    for module_to_reload in modules_to_reload:
-        print("ready to reload module:", module_to_reload)
-        importlib.reload(sys.modules[widget_class.__module__])
-        
-    response = {
-        "success": True
-    }
-    return jsonify(response)
        
 BASE_DIR = os.getcwd()
 @app.route('/api/files/<path:filename>')
@@ -104,7 +77,7 @@ def get_file(filename):
 def fetch_workflow_list():
     params = request.get_json()
     SAVE_ROOT = SAVE_ROOTS[params["type"]]
-    
+
     workflow_ids = os.listdir(SAVE_ROOT)[::-1]
     data = []
     for workflow_id in workflow_ids:
@@ -113,12 +86,12 @@ def fetch_workflow_list():
         metadata = {}
         if os.path.isfile(metadata_file):
             metadata.update(json.load(open(metadata_file)))
-            
+
         if os.path.isfile(reactflow_file):
             create_time, update_time, update_timestamp = get_file_times(reactflow_file)
             metadata['create_time'] = create_time
             metadata['update_time'] = update_time
-            
+
         item = dict(
             id=workflow_id,
             metadata=metadata,
@@ -148,11 +121,11 @@ def get_unique_workflow_id(SAVE_ROOT):
 def create_workflow():
     params = request.get_json()
     SAVE_ROOT = SAVE_ROOTS[params["type"]]
-    
+
     data = params
 
     workflow_id = get_unique_workflow_id(SAVE_ROOT)
-    
+
     metadata_file = os.path.join(SAVE_ROOT, workflow_id, "latest", "metadata.json")
     os.makedirs(os.path.dirname(metadata_file), exist_ok=True)
     with open(metadata_file, "w") as f:
@@ -161,7 +134,7 @@ def create_workflow():
     for filename in ["proconfig.json", "reactflow.json"]:
         filepath = os.path.join(SAVE_ROOT, workflow_id, "latest", filename)
         json.dump({}, open(filepath, "w"))
-        
+
     result = {
         "data": {
             "id": workflow_id,
@@ -178,9 +151,9 @@ def edit_workflow():
     SAVE_ROOT = SAVE_ROOTS[data.pop("type")]
     workflow_id = data.pop("id")
     metadata_file = os.path.join(SAVE_ROOT, workflow_id, "latest", "metadata.json")
-    
+
     assert os.path.isfile(metadata_file)
-    
+
     with open(metadata_file, "w") as f:
         json.dump(data, f, indent=2)
     result = {
@@ -195,15 +168,15 @@ def duplicate_workflow():
     data = request.get_json()
     SAVE_ROOT = SAVE_ROOTS[data.pop("type")]
     new_workflow_id = get_unique_workflow_id(SAVE_ROOT)
-    
+
     src_folder = os.path.join(SAVE_ROOT, data["id"])
     tgt_folder = os.path.join(SAVE_ROOT, new_workflow_id)
-    
+
     # first copy the folder
     shutil.copytree(src_folder, tgt_folder)
     metadata = json.load(open(os.path.join(src_folder, "latest", "metadata.json")))
     metadata["name"] = data["name"]
-    
+
     json.dump(metadata, open(os.path.join(tgt_folder, "latest", "metadata.json"), "w"))
     result = {
         "data": {
@@ -305,7 +278,6 @@ def check_repo_status():
     if has_new_stable:
         response["latest_tag_name"] = latest_tag_name
         response["changelog"] = changelog
-
     # Update the last check time before returning the response
     os.makedirs(os.path.dirname(LAST_CHECK_FILE), exist_ok=True)
     with open(LAST_CHECK_FILE, 'w') as f:
@@ -316,7 +288,7 @@ def check_repo_status():
 def update_stable():
     try:
         script_path = os.path.join('.ci', 'update', 'update.py')
-        python_exe = sys.executable        
+        python_exe = sys.executable
         result = subprocess.run([python_exe, script_path, './', '--stable'], capture_output=True, text=True, check=True)
         return result.stdout
     except subprocess.CalledProcessError as e:
