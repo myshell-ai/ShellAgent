@@ -39,7 +39,10 @@ export class SettingsModel {
 
   private formikProps: FormikProps<any> | undefined;
 
-  @observable sidebar: SidebarValue = 'SoftwareUpdate';
+  @observable sidebar: SidebarValue =
+    process.env.NEXT_PUBLIC_DISABLE_SOFTWARE_UPDATE === 'yes'
+      ? 'Environment'
+      : 'SoftwareUpdate';
 
   @observable isAutoCheck = true;
 
@@ -106,6 +109,7 @@ export class SettingsModel {
 
   @action.bound
   async getAutoCheck() {
+    if (process.env.NEXT_PUBLIC_DISABLE_SOFTWARE_UPDATE === 'yes') return;
     try {
       const res = await axios.get(`/api/auto_update`, {
         headers: {
