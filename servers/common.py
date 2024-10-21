@@ -40,34 +40,7 @@ def upload():
     return jsonify(response)
 
 
-@app.route(f'/api/reload', methods=['POST'])
-def reload():
-    data = request.get_json()
-
-    # first reload all the custom widgets
-    load_custom_widgets()
-
-    if "widget_name" in data:
-        widget_names = [data["widget_name"]]
-    else:
-        widget_names = list(WIDGETS.module_dict.keys())
-
-    # useful for update the schema
-    modules_to_reload = []
-    for widget_name in widget_names:
-        widget_class = WIDGETS.module_dict[widget_name]
-        if widget_class.__module__ not in modules_to_reload:
-            modules_to_reload.append(widget_class.__module__)
-
-    for module_to_reload in modules_to_reload:
-        print("ready to reload module:", module_to_reload)
-        importlib.reload(sys.modules[widget_class.__module__])
-
-    response = {
-        "success": True
-    }
-    return jsonify(response)
-
+       
 BASE_DIR = os.getcwd()
 @app.route('/api/files/<path:filename>')
 def get_file(filename):
