@@ -1,6 +1,6 @@
 import axios from 'axios';
 import { FormikProps } from 'formik';
-import { inject, injectable } from 'inversify';
+import { inject, injectable, postConstruct } from 'inversify';
 import { action, makeObservable, observable } from 'mobx';
 
 import { EmitterModel } from '@/utils/emitter.model';
@@ -27,6 +27,11 @@ export class SettingsModel {
     });
   }
 
+  @postConstruct()
+  init() {
+    this.loadSettingsEnv();
+  }
+
   isFormikReadyPromise: Promise<unknown>;
 
   private isFormikReadyPromiseResolve: ((value: unknown) => void) | undefined;
@@ -34,6 +39,8 @@ export class SettingsModel {
   private formikProps: FormikProps<any> | undefined;
 
   @observable sidebar: SidebarValue = 'Environment';
+
+  @observable envs: Map<string, string> = new Map();
 
   @action.bound
   setSidebar(v: SidebarValue) {
@@ -60,6 +67,10 @@ export class SettingsModel {
           'Content-Type': 'application/json',
         },
       });
+      const ret: any = res.data;
+      ret?.envs.forEach((item: any) => {
+        this.envs.set(item.key, item.value);
+      });
       return res.data;
     } catch (e: any) {
       this.emitter.emitter.emit('message.error', e.message);
@@ -69,6 +80,9 @@ export class SettingsModel {
 
   async saveSettingsEnv(value: any) {
     try {
+      value?.envs.forEach((item: any) => {
+        this.envs.set(item.key, item.value);
+      });
       await axios.post(saveSettingEnvFormUrl, value, {
         headers: {
           'Content-Type': 'application/json',

@@ -49,8 +49,9 @@ const ComfyUIPlugin: React.FC<CommonWidgetConfigProps> = ({
 
       if (!settingsDisabled) {
         // 本地版
-        const settings = await model.loadSettingsEnv();
-        const api = settings?.envs?.find(env => env.key === COMFYUI_API)?.value;
+        // const settings = await model.loadSettingsEnv();
+        // const api = settings?.envs?.find(env => env.key === COMFYUI_API)?.value;
+        const api = model.envs.get(COMFYUI_API);
         onChange({
           ...values,
           api,
@@ -65,7 +66,7 @@ const ComfyUIPlugin: React.FC<CommonWidgetConfigProps> = ({
     };
 
     initializeForm();
-  }, [model]);
+  }, [model.envs.get(COMFYUI_API)]);
 
   const defaultValues = useMemo(
     () => getDefaultValueBySchema(schema, false),
