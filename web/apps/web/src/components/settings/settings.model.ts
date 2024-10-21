@@ -109,7 +109,9 @@ export class SettingsModel {
 
   @action.bound
   async getAutoCheck() {
-    if (process.env.NEXT_PUBLIC_DISABLE_SOFTWARE_UPDATE === 'yes') return;
+    if (process.env.NEXT_PUBLIC_DISABLE_SOFTWARE_UPDATE === 'yes') {
+      return false;
+    }
     try {
       const res = await axios.get(`/api/auto_update`, {
         headers: {
@@ -120,7 +122,7 @@ export class SettingsModel {
       return this.isAutoCheck;
     } catch (e: any) {
       this.emitter.emitter.emit('message.error', e.message);
-      return null;
+      return false;
     }
   }
 
