@@ -53,6 +53,7 @@ continue_script() {
     echo "=========>   Install dependencies using Poetry"
     pip install poetry
     pip install -e .
+    playwright install
 }
 
 # Start the script
