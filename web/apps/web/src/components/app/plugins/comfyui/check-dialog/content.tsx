@@ -243,8 +243,7 @@ export const CheckerContent: React.FC<CheckerContentProps> = ({
         layout="vertical"
         ref={formRef}
         initialValues={initialValues}
-        // 添加 preserve 属性，以保留未显示字段的值
-        preserve={true}>
+        preserve>
         <Tabs
           activeKey={type}
           onChange={handleTabChange}
