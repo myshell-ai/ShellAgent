@@ -22,6 +22,7 @@ cd ShellAgent
 
 set PATH=..\git\bin;%PATH%
 set MYSHELL_KEY=OPENSOURCE_FIXED
+set PLAYWRIGHT_BROWSERS_PATH=..\python_embeded\playwright_browsers
 
 git config --global core.longpaths true
 
