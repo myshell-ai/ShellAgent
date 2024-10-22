@@ -90,6 +90,7 @@ activate_and_install() {
     cd ShellAgent
     pip install poetry 
     pip install --use-pep517 -e . 
+    playwright install
     echo "Package installed."
 }
 
