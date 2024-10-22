@@ -59,7 +59,7 @@ export function formatDependencyData2Form(
       id: key,
       filename: value.filename,
       save_path: value.save_path,
-      urls: value.urls,
+      urls: value.urls.length ? value.urls : [''],
     })),
   };
 }

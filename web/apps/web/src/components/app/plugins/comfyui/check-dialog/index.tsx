@@ -3,6 +3,7 @@
 import { AModal, Button, Title } from '@shellagent/ui';
 import { useRequest } from 'ahooks';
 import { FormInstance } from 'antd';
+import { toast } from 'react-toastify';
 import React, { useRef, useCallback } from 'react';
 
 import { CheckerContent } from './content';
@@ -49,8 +50,14 @@ export const CheckDialog: React.FC<CheckDialogProps> = ({
         ...formattedValues,
         comfy_workflow_id,
       });
-    } catch (error) {
-      console.error('Form validation failed:', error);
+    } catch (error: any) {
+      toast.error('Required fields are not filled', {
+        position: 'top-center',
+        autoClose: 1000,
+        hideProgressBar: true,
+        pauseOnHover: true,
+        closeButton: false,
+      });
     }
   }, [comfy_workflow_id, setOpen, setModalOpen, updateDependencyRequest]);
 
