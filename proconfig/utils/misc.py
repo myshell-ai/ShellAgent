@@ -7,10 +7,10 @@ import logging
 import time
 import numpy as np
 from concurrent.futures import ThreadPoolExecutor, as_completed
-from pathlib import PurePosixPath, Path
 from urllib.parse import urlparse
 from typing import Any, IO
 import tempfile
+from pathlib import PurePosixPath, Path, PureWindowsPath
 
 
 def is_valid_url(candidate_str: Any) -> bool:
@@ -42,7 +42,7 @@ def _make_temp_file(file_path: str) -> IO:
     return f
 
 def windows_to_linux_path(windows_path):
-    return str(PurePosixPath(Path(windows_path)))
+    return PureWindowsPath(windows_path).as_posix()
 
 def is_serializable_type(variable):
     native_types = (int, float, str, bool, list, tuple, dict, set)

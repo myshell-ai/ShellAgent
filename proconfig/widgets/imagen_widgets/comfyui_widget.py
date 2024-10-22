@@ -6,7 +6,7 @@ import json
 import uuid
 import websocket
 import urllib
-
+from proconfig.utils.misc import windows_to_linux_path
 
 # NON_FILE_INPUT_TYPES = ["text", "string", "number", "integer", "float"]
 
@@ -98,55 +98,53 @@ def comfyui_run(api, prompt, schemas, user_inputs):
             continue
         node_output = history['outputs'][node_id]
         
-    # "outputs": {
-    #   "18": {
-    #     "title": "output_image",
-    #     "type": "array",
-    #     "items": {
-    #       "type": "string",
-    #       "url_type": "image"
-    #     }
-    #   }
-        # if 'images' in node_output:
         node_output_schema = schemas["outputs"][node_id]
-        if node_output_schema["type"] == "array" and node_output_schema["items"].get("url_type") == "image":
-            images_output = []
-            for image in node_output['images']:
+        if node_output_schema["type"] == "array":
+            if node_output_schema["items"].get("url_type") == "image":
+                images_output = []
+                for image in node_output['images']:
+                    image_data = get_media(http_address, image['filename'], image['subfolder'], image['type'])
+                    save_path = os.path.join(image["type"], image['subfolder'], image['filename'])
+                    os.makedirs(os.path.dirname(save_path), exist_ok=True)
+                    save_path = windows_to_linux_path(save_path)
+                    with open(save_path, "wb") as f:
+                        f.write(image_data)
+                    images_output.append(save_path)
+                outputs[schemas["outputs"][node_id]["title"]] = images_output
+            elif node_output_schema["items"].get("url_type") == "video":
+                videos_output = []
+                for video_path in node_output['video']:
+                    output_dir, filename = os.path.split(video_path)
+                    video_data = get_media(http_address, filename, "", output_dir)
+                    save_path = windows_to_linux_path(video_path)
+                    os.makedirs(os.path.dirname(save_path), exist_ok=True)
+                    with open(save_path, "wb") as f:
+                        f.write(video_data)
+                    videos_output.append(save_path)
+                outputs[schemas["outputs"][node_id]["title"]] = videos_output
+        elif node_output_schema["type"] == "string":
+            if node_output_schema.get("url_type") == "image":
+                image = node_output['images'][0]
                 image_data = get_media(http_address, image['filename'], image['subfolder'], image['type'])
                 save_path = os.path.join(image["type"], image['subfolder'], image['filename'])
+                save_path = windows_to_linux_path(save_path)
                 os.makedirs(os.path.dirname(save_path), exist_ok=True)
                 with open(save_path, "wb") as f:
                     f.write(image_data)
-                images_output.append(save_path)
-            outputs[schemas["outputs"][node_id]["title"]] = images_output
-        elif node_output_schema["type"] == "string" and node_output_schema.get("url_type") == "image":
-            image = node_output['images'][0]
-            image_data = get_media(http_address, image['filename'], image['subfolder'], image['type'])
-            save_path = os.path.join(image["type"], image['subfolder'], image['filename'])
-            os.makedirs(os.path.dirname(save_path), exist_ok=True)
-            with open(save_path, "wb") as f:
-                f.write(image_data)
-            outputs[schemas["outputs"][node_id]["title"]] = save_path  
-        elif node_output_schema["type"] == "array" and node_output_schema["items"].get("url_type") == "video":
-            videos_output = []
-            for video_path in node_output['video']:
+                outputs[schemas["outputs"][node_id]["title"]] = save_path  
+            elif node_output_schema.get("url_type") == "video":
+                video_path = node_output['video'][0]
                 output_dir, filename = os.path.split(video_path)
                 video_data = get_media(http_address, filename, "", output_dir)
-                save_path = video_path
+                save_path = windows_to_linux_path(video_path)
                 os.makedirs(os.path.dirname(save_path), exist_ok=True)
                 with open(save_path, "wb") as f:
                     f.write(video_data)
-                videos_output.append(save_path)
-            outputs[schemas["outputs"][node_id]["title"]] = videos_output
-        elif node_output_schema["type"] == "string" and node_output_schema.get("url_type") == "video":
-            video_path = node_output['video'][0]
-            output_dir, filename = os.path.split(video_path)
-            video_data = get_media(http_address, filename, "", output_dir)
-            save_path = video_path
-            os.makedirs(os.path.dirname(save_path), exist_ok=True)
-            with open(save_path, "wb") as f:
-                f.write(video_data)
-            outputs[schemas["outputs"][node_id]["title"]] = save_path
+                outputs[schemas["outputs"][node_id]["title"]] = save_path
+            else:
+                outputs[schemas["outputs"][node_id]["title"]] = node_output["output"][0]
+        else:
+            outputs[schemas["outputs"][node_id]["title"]] = node_output["output"][0]
     return outputs
 
 
