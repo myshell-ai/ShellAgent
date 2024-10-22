@@ -201,7 +201,7 @@ export class SettingsModel {
         await this.getLastChecktime();
         this.emitter.emitter.emit(
           'message.success',
-          'Server restarted successfully, reloading web UI..',
+          'Server restarted successfully, the web UI will reload automatically in 15s..',
         );
         this.isRestarting = false;
         setTimeout(() => window.location.reload(), 15000);
