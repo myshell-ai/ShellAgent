@@ -204,7 +204,7 @@ export class SettingsModel {
           'Server restarted successfully, reloading web UI..',
         );
         this.isRestarting = false;
-        setTimeout(() => window.location.reload(), 5000);
+        setTimeout(() => window.location.reload(), 15000);
       } catch (e: any) {
         // noop
       } finally {
