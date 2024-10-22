@@ -198,9 +198,13 @@ export class SettingsModel {
     const pollInterval = 3000;
     const poll = async () => {
       try {
-        this.getLastChecktime();
+        await this.getLastChecktime();
+        this.emitter.emitter.emit(
+          'message.success',
+          'Server restarted successfully, the web UI will reload automatically in 15s..',
+        );
         this.isRestarting = false;
-        window.location.reload();
+        setTimeout(() => window.location.reload(), 15000);
       } catch (e: any) {
         // noop
       } finally {

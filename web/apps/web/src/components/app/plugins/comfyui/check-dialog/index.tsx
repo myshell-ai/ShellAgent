@@ -9,6 +9,7 @@ import { CheckerContent } from './content';
 import { updateDependency } from '../services';
 import type { SaveResponse } from '../services/type';
 import { formatFormData2Dependency } from '../utils';
+import { toast } from 'react-toastify';
 
 interface CheckDialogProps {
   open: boolean;
@@ -49,8 +50,14 @@ export const CheckDialog: React.FC<CheckDialogProps> = ({
         ...formattedValues,
         comfy_workflow_id,
       });
-    } catch (error) {
-      console.error('Form validation failed:', error);
+    } catch (error: any) {
+      toast.error('Required fields are not filled', {
+        position: 'top-center',
+        autoClose: 1000,
+        hideProgressBar: true,
+        pauseOnHover: true,
+        closeButton: false,
+      });
     }
   }, [comfy_workflow_id, setOpen, setModalOpen, updateDependencyRequest]);
 
