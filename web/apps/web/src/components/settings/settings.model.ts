@@ -12,7 +12,7 @@ import {
   SettingEnvFormValue,
 } from './settings-definitions';
 
-export type SidebarValue = 'Environment' | 'SoftwareUpdate' | null;
+export type SidebarValue = 'Environment' | 'SoftwareUpdate';
 
 @injectable()
 export class SettingsModel {
@@ -39,7 +39,7 @@ export class SettingsModel {
 
   private formikProps: FormikProps<any> | undefined;
 
-  @observable sidebar: SidebarValue = null;
+  @observable sidebar?: SidebarValue = undefined;
 
   @observable isAutoCheck = true;
 
