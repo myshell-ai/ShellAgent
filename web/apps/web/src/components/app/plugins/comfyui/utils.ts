@@ -1,4 +1,6 @@
 import type { SaveResponse, UpdateDependencyRequest } from './services/type';
+import SHA256 from 'crypto-js/sha256';
+import encHex from 'crypto-js/enc-hex';
 
 export function isValidUrl(url: string) {
   if (!url) {
@@ -81,5 +83,16 @@ export function formatFormData2Dependency(
 }
 
 export function generateHash() {
-  return crypto.randomUUID().replace(/-/g, '');
+  if (
+    typeof crypto !== 'undefined' &&
+    typeof crypto.randomUUID === 'function'
+  ) {
+    return crypto.randomUUID().replace(/-/g, '');
+  } else {
+    const timestamp = new Date().getTime().toString();
+    const random = Math.random().toString();
+    const data = timestamp + random;
+    const hash = SHA256(data);
+    return hash.toString(encHex).slice(0, 32);
+  }
 }
