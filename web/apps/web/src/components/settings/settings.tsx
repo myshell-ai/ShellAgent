@@ -10,16 +10,22 @@ import dayjs from 'dayjs';
 import { Field, FieldArray, FieldProps, Formik } from 'formik';
 import { useInjection } from 'inversify-react';
 import { observer } from 'mobx-react-lite';
-import { useEffect } from 'react';
 import Markdown from 'react-markdown';
 import { Box, Flex } from 'react-system';
 
 import { SettingEnvFormValue } from './settings-definitions';
 import { SettingsSideBar } from './settings-sidebar';
 import { SettingsModel } from './settings.model';
+import { useEffect } from 'react';
 
-export const EnvForm = () => {
+export const EnvForm = observer(() => {
   const model = useInjection(SettingsModel);
+  useEffect(() => {
+    if (model.modal.isOpen && model.sidebar === 'Environment') {
+      model.loadSettingsEnvAndFillForm();
+    }
+  }, [model.modal.isOpen, model.sidebar]);
+
   return (
     <Formik<SettingEnvFormValue>
       initialValues={{
@@ -99,13 +105,15 @@ export const EnvForm = () => {
       }}
     </Formik>
   );
-};
+});
 
 export const Update = observer(() => {
   const model = useInjection(SettingsModel);
   useEffect(() => {
-    model.getCurrentVersion();
-  }, [model.checkedStatus]);
+    if (model.sidebar === 'SoftwareUpdate' && model.modal.isOpen) {
+      model.getCurrentVersion();
+    }
+  }, [model.checkedStatus, model.modal.isOpen, model.sidebar]);
   return (
     <Flex
       flexDirection="column"
@@ -203,12 +211,13 @@ export const SettingsDialog = observer(() => {
   const { token } = theme.useToken();
   useEffect(() => {
     if (model.modal.isOpen) {
-      model.loadSettingsEnvAndFillForm();
+      model.setSidebar(
+        process.env.NEXT_PUBLIC_DISABLE_SOFTWARE_UPDATE === 'yes'
+          ? 'Environment'
+          : 'SoftwareUpdate',
+      );
     }
   }, [model.modal.isOpen]);
-
-  // const isDisableUpdate =
-  //   process.env.NEXT_PUBLIC_DISABLE_SOFTWARE_UPDATE === 'yes';
 
   return (
     <Modal
@@ -328,7 +337,7 @@ export const ChangelogDialog = observer(() => {
           height: '100%',
         },
       }}>
-      <Markdown>{model.checkRet.changelog}</Markdown>
+      <Markdown className="markdown-body">{model.checkRet.changelog}</Markdown>
     </Modal>
   );
 });
