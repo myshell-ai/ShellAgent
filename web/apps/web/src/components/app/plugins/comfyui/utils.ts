@@ -84,10 +84,11 @@ export function formatFormData2Dependency(
 
 export function generateHash() {
   if (
-    typeof crypto !== 'undefined' &&
-    typeof crypto.randomUUID === 'function'
+    typeof window !== 'undefined' &&
+    window.crypto &&
+    typeof window.crypto.randomUUID === 'function'
   ) {
-    return crypto.randomUUID().replace(/-/g, '');
+    return window.crypto.randomUUID().replace(/-/g, '');
   } else {
     const timestamp = new Date().getTime().toString();
     const random = Math.random().toString();
