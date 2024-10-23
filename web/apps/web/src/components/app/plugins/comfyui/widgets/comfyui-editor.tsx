@@ -29,7 +29,11 @@ import { isValidUrl, checkDependency } from '../utils';
 
 const settingsDisabled = process.env.NEXT_PUBLIC_DISABLE_SETTING === 'yes';
 
-export const ComfyUIEditor = () => {
+export const ComfyUIEditor = ({
+  onChange,
+}: {
+  onChange: (value: string) => void;
+}) => {
   const [modalOpen, setModalOpen] = useState(false);
   const [checkDialogOpen, setCheckDialogOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
@@ -53,6 +57,10 @@ export const ComfyUIEditor = () => {
   const showModal = () => {
     setModalOpen(true);
   };
+
+  useEffect(() => {
+    onChange(value);
+  }, [value]);
 
   const { run: getComfySchema } = useRequest(getFile, {
     manual: true,
