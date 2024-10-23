@@ -38,6 +38,7 @@ const DraggableTreeNode: React.FC<{ data: WidgetItem }> = ({ data }) => {
       nodeType: data.type || NodeTypeEnum.widget,
       display_name: data.display_name,
       undraggable: data.undraggable,
+      custom: data.custom,
     },
   }));
 

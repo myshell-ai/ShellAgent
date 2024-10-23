@@ -118,7 +118,7 @@ exports.ImageCanvasModel = class ImageCanvasModel {
     }
     processWorkflowRunnerOutput(keyPath) {
         keyPath = keyPath.slice(0);
-        if (keyPath.indexOf(WORKFLOW_RUNNER) > -1) {
+        if (keyPath.some(v => v.indexOf(WORKFLOW_RUNNER) > -1)) {
             return keyPath[0].replace('}}', '[0]}}');
         }
         return keyPath[0];
@@ -206,12 +206,16 @@ function convertExportedJson(rawJson) {
                     if (o.type === 'image') {
                         o._src = o.src;
                         o.src = object.ref;
+                        object.ref = object.ref.replace('{{', '[[');
+                        object.ref = object.ref.replace('}}', ']]');
                     }
                 });
             }
             if (object.type === 'f-text') {
                 object._text = object.text;
                 object.text = object.ref;
+                object.ref = object.ref.replace('{{', '[[');
+                object.ref = object.ref.replace('}}', ']]');
             }
         }
     });

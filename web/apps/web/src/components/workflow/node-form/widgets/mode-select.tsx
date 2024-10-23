@@ -15,7 +15,9 @@ import {
   Text,
   HeroIcon,
 } from '@shellagent/ui';
-import { useState, useMemo, useCallback } from 'react';
+import { useState } from 'react';
+
+// import { useVariableContext } from '@/stores/workflow/variable-provider';
 
 const ModeOptions: Array<{
   label: string;
@@ -42,35 +44,19 @@ const ModeOptions: Array<{
 interface IModeSelectProps {
   defaultValue: TFieldMode;
   onChange?: (value: TFieldMode) => void;
-  defaultOptions?: string[];
 }
 
-export function ModeSelect({
-  defaultValue,
-  onChange,
-  defaultOptions,
-}: IModeSelectProps) {
+export function ModeSelect({ defaultValue, onChange }: IModeSelectProps) {
   const [value, setValue] = useState<TFieldMode>(defaultValue);
 
-  const options = useMemo(() => {
-    if (!defaultOptions) {
-      return ModeOptions;
-    }
-    return ModeOptions.filter(option => defaultOptions?.includes(option.value));
-  }, [defaultOptions]);
+  const IconMode = ModeOptions.find(
+    item => item.value === (value || 'ui'),
+  )?.icon!;
 
-  const IconMode = useMemo(
-    () => options.find(item => item.value === (value || 'ui'))?.icon!,
-    [options, value],
-  );
-
-  const handleChange = useCallback(
-    (value: TFieldMode) => {
-      setValue(value);
-      onChange?.(value);
-    },
-    [onChange],
-  );
+  const handleChange = (value: TFieldMode) => {
+    setValue(value);
+    onChange?.(value);
+  };
 
   return (
     <DropdownMenu>
@@ -85,7 +71,7 @@ export function ModeSelect({
       </DropdownMenuTrigger>
       <DropdownMenuPortal>
         <DropdownMenuContent className="w-44" sideOffset={5}>
-          {options.map(item => (
+          {ModeOptions.map(item => (
             <DropdownMenuItem
               key={item.label}
               className="flex justify-between hover:bg-surface-container rounded-lg py-1 px-2 mt-1"
@@ -94,9 +80,9 @@ export function ModeSelect({
                 <item.icon className="w-5 h-5" />
                 <Text className="ml-1.5">{item.label}</Text>
               </div>
-              {value === item.value && (
+              {value === item.value ? (
                 <CheckIcon className="w-5 h-5 text-primary" />
-              )}
+              ) : null}
             </DropdownMenuItem>
           ))}
         </DropdownMenuContent>

@@ -23,6 +23,23 @@ import { generateUUID } from '@/utils/common-helper';
 
 import { IButtonType } from './button-editor';
 
+const CustomPoint: React.FC<{
+  className?: string;
+  style?: React.CSSProperties;
+}> = ({ className, style }) => {
+  return (
+    <div
+      style={{
+        ...style,
+      }}
+      className={clsx(
+        'w-full h-full pointer-events-none rounded-full',
+        className,
+      )}
+    />
+  );
+};
+
 const InputPreview = () => {
   const onConnect = useReactFlowStore(state => state.onConnect);
   const id = useSchemaContext(state => state.id);
@@ -159,23 +176,6 @@ const ButtonPreview = ({
         />
       </CustomHandle>
     </Button>
-  );
-};
-
-const CustomPoint: React.FC<{
-  className?: string;
-  style?: React.CSSProperties;
-}> = ({ className, style }) => {
-  return (
-    <div
-      style={{
-        ...style,
-      }}
-      className={clsx(
-        'w-full h-full pointer-events-none rounded-full',
-        className,
-      )}
-    />
   );
 };
 

@@ -1,8 +1,9 @@
 'use client';
 
+import '../reflect-metadata-client-side';
 import { Heading, Text, Spinner } from '@shellagent/ui';
 import { useScroll } from 'ahooks';
-import { useRef } from 'react';
+import { useEffect, useRef } from 'react';
 import useSWR from 'swr';
 
 import { CreateDialog } from '@/components/home/create-dialog';
@@ -10,11 +11,22 @@ import { FlowCard } from '@/components/home/flow-card';
 import { fetchList } from '@/services/home';
 import { cn } from '@/utils/cn';
 
-import '../reflect-metadata-client-side';
+import { useInjection } from 'inversify-react';
+import { SettingsModel } from '@/components/settings/settings.model';
 
 export default function AppPage() {
   const contentRef = useRef(null);
   const position = useScroll(contentRef);
+
+  const settingsModel = useInjection(SettingsModel);
+  useEffect(() => {
+    (async function () {
+      const isAutoCheck = await settingsModel.getAutoCheck();
+      if (isAutoCheck) {
+        settingsModel.autoCheck();
+      }
+    })();
+  }, []);
 
   const { data, isLoading, mutate } = useSWR('/api/list?type=app', () =>
     fetchList({ type: 'app' }),
