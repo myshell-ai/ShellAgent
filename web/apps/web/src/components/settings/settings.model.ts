@@ -12,7 +12,7 @@ import {
   SettingEnvFormValue,
 } from './settings-definitions';
 
-export type SidebarValue = 'Environment' | 'SoftwareUpdate';
+export type SidebarValue = 'Environment' | 'SoftwareUpdate' | null;
 
 @injectable()
 export class SettingsModel {
@@ -30,7 +30,7 @@ export class SettingsModel {
 
   @postConstruct()
   init() {
-    this.loadSettingsEnv();
+    this.loadSettingsEnv(); // @joe compatible
   }
 
   isFormikReadyPromise: Promise<unknown>;
@@ -39,10 +39,7 @@ export class SettingsModel {
 
   private formikProps: FormikProps<any> | undefined;
 
-  @observable sidebar: SidebarValue =
-    process.env.NEXT_PUBLIC_DISABLE_SOFTWARE_UPDATE === 'yes'
-      ? 'Environment'
-      : 'SoftwareUpdate';
+  @observable sidebar: SidebarValue = null;
 
   @observable isAutoCheck = true;
 
@@ -79,6 +76,10 @@ export class SettingsModel {
 
   @action.bound
   setSidebar(v: SidebarValue) {
+    // onBlur + leave and save
+    if (this.sidebar === 'Environment') {
+      this.formikProps?.submitForm();
+    }
     this.sidebar = v;
   }
 
