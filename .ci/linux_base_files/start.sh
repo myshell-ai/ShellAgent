@@ -1,5 +1,22 @@
 #!/bin/bash
 
+# Function to check and update files
+check_and_update_file() {
+    local source_file="$1"
+    local target_file="$2"
+    if [ -f "$source_file" ]; then
+        if ! cmp -s "$source_file" "$target_file"; then
+            echo "Detected new version of $target_file, updating..."
+            cp "$source_file" "$target_file"
+            echo "Update complete for $target_file"
+            return 0
+        else
+            echo "$target_file is already up to date. No update needed."
+        fi
+    fi
+    return 1
+}
+
 SHELLAGENT_ENV=shell_agent
 
 # Function to check if conda is installed and find conda.sh
@@ -56,13 +73,37 @@ initialize_conda() {
     conda activate $SHELLAGENT_ENV
 }
 
+check_conda_installed
+initialize_conda
+echo "activate python from $(which python)"
+cd ShellAgent
+
 # Main script execution
 while true; do
-    check_conda_installed
-    initialize_conda
-    echo "activate python from $(which python)"
+    # Check and update start.sh and install.sh
+    cd ..
+    update_required=false
+    install_updated=false
+    if check_and_update_file "ShellAgent/.ci/linux_base_files/start.sh" "${BASH_SOURCE[0]}"; then
+        update_required=true
+    fi
+    if check_and_update_file "ShellAgent/.ci/linux_base_files/install.sh" "install.sh"; then
+        update_required=true
+        install_updated=true
+    fi
 
+    if [ "$install_updated" = true ]; then
+        echo "install.sh was updated. Running it to update the environment..."
+        bash install.sh
+        echo "Environment update complete."
+    fi
+
+    if [ "$update_required" = true ]; then
+        echo "Updates applied. Restarting..."
+        exec bash "${BASH_SOURCE[0]}"
+    fi
     cd ShellAgent
+
     export MYSHELL_KEY=OPENSOURCE_FIXED
     python servers/main.py --port 8154
 
