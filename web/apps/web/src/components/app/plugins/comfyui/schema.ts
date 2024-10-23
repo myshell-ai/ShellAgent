@@ -162,6 +162,7 @@ export const defaultSchema: ISchema = {
       'x-layout': 'Vertical',
       'x-type': 'Block',
       'x-component': 'ComfyUIEditor',
+      'x-onchange-prop-name': 'onChange',
       'x-title-size': 'h4',
     },
     comfy_workflow_id: {
@@ -207,6 +208,7 @@ export const getComfyuiSchema = ({
         'x-layout': 'Vertical',
         'x-type': 'Block',
         'x-component': 'ComfyUIEditor',
+        'x-onchange-prop-name': 'onChange',
         'x-title-size': 'h4',
       },
       comfy_workflow_id: {
