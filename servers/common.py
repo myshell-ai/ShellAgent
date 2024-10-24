@@ -44,6 +44,7 @@ def upload():
 BASE_DIR = os.getcwd()
 @app.route('/api/files/<path:filename>')
 def get_file(filename):
+    filename = filename.strip()
     try:
         if is_valid_url(filename):
             src = _make_temp_file(filename)
@@ -64,7 +65,7 @@ def get_file(filename):
         if os.path.isfile(file_path):
             # Send the file to the client
             print("ready to send", filename)
-            return send_from_directory(BASE_DIR, filename)
+            return send_from_directory(BASE_DIR, filename)            
         else:
             print("fail file_path:", file_path)
             # If the file doesn't exist, return a 404 error

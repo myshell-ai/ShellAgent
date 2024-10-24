@@ -55,7 +55,7 @@ def initialize_envs():
         json.dump({"model_location": "models", "envs": {}}, open("settings.json", "w"))
     env = json.load(open("settings.json"))
     os.makedirs(os.environ["MODEL_DIR"], exist_ok=True)
-    os.makedirs(os.path.join(os.path.dirname(__main__.__file__), "web", "extensions"), exist_ok=True)
+    os.makedirs(os.path.join(os.path.dirname(__file__), "web", "extensions"), exist_ok=True)
     if not os.path.isfile(os.environ["MODELS_STATUS_PATH"]):
         json.dump({}, open(os.environ["MODELS_STATUS_PATH"], "w"))
     if not os.path.isfile(CUSTOM_WIDGETS_STATUS_PATH):

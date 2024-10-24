@@ -149,8 +149,6 @@ def export_app():
         exported_data = {
             "automata": automata,
             "workflows": workflows,
-            "comfyui_workflows": comfyui_workflows,
-            "comfyui_dependencies": comfyui_dependencies
         }
         logging.info("ready to upload")
         exported_data = process_local_file_path_async(exported_data, data.get("max_workers", 20))
@@ -158,6 +156,8 @@ def export_app():
         results = {
             "data": {
                 **exported_data,
+                "comfyui_workflows": comfyui_workflows,
+                "comfyui_dependencies": comfyui_dependencies,
                 "metadata": metadata,
                 "dependency": {
                     "models": dependency_results["models"],
