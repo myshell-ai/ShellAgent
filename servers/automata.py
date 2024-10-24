@@ -134,6 +134,7 @@ def export_app():
             shellagent_json_path = os.path.join(PROJECT_ROOT, "comfy_workflow", comfyui_workflow_id, "workflow.shellagent.json")
             shellagent_json = json.load(open(shellagent_json_path))
             comfyui_workflows[comfyui_workflow_id] = {
+                "workflow": shellagent_json["workflow"],
                 "workflow_api": shellagent_json["workflow_api"],
                 "schemas": shellagent_json["schemas"],
             }
