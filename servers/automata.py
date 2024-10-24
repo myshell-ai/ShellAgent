@@ -372,7 +372,7 @@ def process_text_embeded_uri(text):
         return f"<{tag} {new_attributes}>"
     
     # Regular expression to match <img>, <video>, or <audio> tags with attributes
-    pattern = r'<(img|video|audio)\s([^>]*src=["\'][^"\']+["\'][^>]*)>'
+    pattern = r'<(img|video|audio|source)\s([^>]*src=["\'][^"\']+["\'][^>]*)>'
     
     # Replace the src attribute in all matches
     text = re.sub(pattern, replace_src, text)
