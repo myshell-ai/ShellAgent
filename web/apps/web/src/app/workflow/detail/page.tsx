@@ -1,7 +1,7 @@
 'use client';
 
 import { FlowEngine, FlowRef, NodeTypeEnum } from '@shellagent/flow-engine';
-import { IconButton, Lego, Setting } from '@shellagent/ui';
+import { IconButton, Setting } from '@shellagent/ui';
 import { useSearchParams } from 'next/navigation';
 import { useEffect, useRef } from 'react';
 import { useShallow } from 'zustand/react/shallow';
@@ -83,12 +83,6 @@ export default function WorkflowPage() {
           materialList={widgetList}
           footerExtra={
             <div className="ml-auto flex gap-1">
-              <IconButton
-                variant="ghost"
-                className="w-9 h-9"
-                icon={Lego}
-                onClick={() => setManagerDialogOpen(true)}
-              />
               <IconButton variant="ghost" className="w-9 h-9" icon={Setting} />
             </div>
           }

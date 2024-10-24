@@ -1,4 +1,5 @@
 import { DeleteOutlined } from '@ant-design/icons';
+import { Text } from '@shellagent/ui';
 import { Form, Input, Button, FormInstance, Tabs } from 'antd';
 import React, { useState, useMemo, useEffect } from 'react';
 
@@ -18,8 +19,16 @@ export enum CheckTypeEnum {
 const CustomNodeForm: React.FC = () => (
   <>
     <p className="mb-4 text-sm text-gray-500">
-      The following components are currently untracked. Please provide
-      additional details to ensure proper import for users.
+      <ul>
+        <li>
+          The following custom nodes lack Git information (.git files), likely
+          due to being unpublished or copied/unzipped without Git operations.
+        </li>
+        <li>
+          Please update them via Git or ComfyUI-Manager, or provide public Git
+          links.
+        </li>
+      </ul>
     </p>
     <Form.List name="missing_custom_nodes">
       {fields => (
@@ -33,7 +42,11 @@ const CustomNodeForm: React.FC = () => (
                 required
                 name={[field.name, 'name']}
                 label="Name">
-                <Input readOnly placeholder="Enter custom node name" />
+                <Input
+                  variant="filled"
+                  readOnly
+                  placeholder="Enter custom node name"
+                />
               </Form.Item>
               <Form.Item
                 {...field}
@@ -65,7 +78,13 @@ const CustomNodeForm: React.FC = () => (
 const ModelForm: React.FC = () => (
   <>
     <p className="mb-4 text-sm text-gray-500">
-      Please provide URLs for the missing models to ensure proper import.
+      <ul>
+        <li>
+          Public download links for the following models are unavailable,
+          possibly due to privacy or lack of popularity.
+        </li>
+        <li>Please provide valid public download links.</li>
+      </ul>
     </p>
     <Form.List name="missing_models" initialValue={[]}>
       {fields => (
@@ -82,16 +101,17 @@ const ModelForm: React.FC = () => (
                 required
                 name={[field.name, 'filename']}
                 label="Filename">
-                <Input readOnly placeholder="Filename" />
+                <Input variant="filled" readOnly placeholder="Filename" />
               </Form.Item>
               <Form.Item
                 {...field}
                 required
                 name={[field.name, 'save_path']}
                 label="Save Path">
-                <Input readOnly placeholder="Save path" />
+                <Input variant="filled" readOnly placeholder="Save path" />
               </Form.Item>
               <Form.List
+                initialValue={['']}
                 name={[field.name, 'urls']}
                 rules={[
                   {
@@ -129,7 +149,7 @@ const ModelForm: React.FC = () => (
                               placeholder="Enter URL"
                             />
                           </Form.Item>
-                          {urlFields.length > 1 && (
+                          {urlFields.length && (
                             <Button
                               onClick={() => removeUrl(urlField.name)}
                               icon={<DeleteOutlined />}
@@ -201,7 +221,6 @@ export const CheckerContent: React.FC<CheckerContentProps> = ({
 
   const handleTabChange = (activeKey: string) => {
     setType(activeKey as CheckTypeEnum);
-    form.resetFields();
   };
 
   const initialValues = useMemo(
@@ -214,18 +233,24 @@ export const CheckerContent: React.FC<CheckerContentProps> = ({
   );
 
   return (
-    <Form
-      form={form}
-      layout="vertical"
-      ref={formRef}
-      disabled={type === CheckTypeEnum.customNode}
-      initialValues={initialValues}>
-      <Tabs
-        activeKey={type}
-        onChange={handleTabChange}
-        className="w-full px-4"
-        items={tabItems}
-      />
-    </Form>
+    <>
+      <Text className="text-sm text-gray-500 px-4 pt-2">
+        Dependency metadata is required for other environments like MyShell to
+        run the workflow correctly.
+      </Text>
+      <Form
+        form={form}
+        layout="vertical"
+        ref={formRef}
+        initialValues={initialValues}
+        preserve>
+        <Tabs
+          activeKey={type}
+          onChange={handleTabChange}
+          className="w-full px-4"
+          items={tabItems}
+        />
+      </Form>
+    </>
   );
 };

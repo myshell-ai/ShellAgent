@@ -1,6 +1,9 @@
 import type { SaveResponse, UpdateDependencyRequest } from './services/type';
 
 export function isValidUrl(url: string) {
+  if (!url) {
+    return false;
+  }
   try {
     // eslint-disable-next-line no-new
     new URL(url);
@@ -16,6 +19,11 @@ export function checkDependency(
   const missingCustomNodes: UpdateDependencyRequest['missing_custom_nodes'] =
     [];
   const missingModels: UpdateDependencyRequest['missing_models'] = {};
+
+  // 检查comfyui_version的repo参数是否为空
+  if (data?.comfyui_version?.require_recheck) {
+    missingCustomNodes.push(data?.comfyui_version);
+  }
 
   // 检查custom_nodes的repo参数是否为空
   data?.custom_nodes?.forEach(node => {
@@ -51,7 +59,7 @@ export function formatDependencyData2Form(
       id: key,
       filename: value.filename,
       save_path: value.save_path,
-      urls: value.urls,
+      urls: value.urls.length ? value.urls : [''],
     })),
   };
 }
@@ -61,7 +69,7 @@ export function formatFormData2Dependency(
 ) {
   return {
     ...data,
-    missing_models: data.missing_models.reduce(
+    missing_models: data?.missing_models?.reduce(
       (acc, curr) => {
         const { id, ...rest } = curr;
         acc[id] = rest;

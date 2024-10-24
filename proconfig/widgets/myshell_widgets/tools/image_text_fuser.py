@@ -1,7 +1,6 @@
 import os
 from proconfig.widgets.base import BaseWidget, WIDGETS
 from typing import Literal, Any, Dict
-import torch
 from proconfig.utils.misc import upload_file_to_myshell
 from PIL import Image, ImageDraw, ImageFont
 import json
@@ -329,7 +328,6 @@ class ImageTextFuserWidget(BaseWidget):
     class OutputsSchema(BaseWidget.OutputsSchema):
         url: str
         
-    @torch.no_grad()
     def execute(self, environ, config):
         return_dict = {}
 

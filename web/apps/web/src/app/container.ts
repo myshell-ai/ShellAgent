@@ -1,4 +1,5 @@
-import 'reflect-metadata';
+import './reflect-metadata-client-side';
+
 import { ChatNewModel } from '@shellagent/ui';
 import { ImageCanvasModel } from 'image-canvas/model';
 import { Container, interfaces } from 'inversify';

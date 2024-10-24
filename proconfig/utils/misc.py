@@ -3,15 +3,14 @@ import hashlib
 import os
 import requests
 from proconfig.utils.pytree import tree_map
-import torch
 import logging
 import time
 import numpy as np
 from concurrent.futures import ThreadPoolExecutor, as_completed
-from pathlib import PurePosixPath, Path
 from urllib.parse import urlparse
 from typing import Any, IO
 import tempfile
+from pathlib import PurePosixPath, Path, PureWindowsPath
 
 
 def is_valid_url(candidate_str: Any) -> bool:
@@ -43,7 +42,7 @@ def _make_temp_file(file_path: str) -> IO:
     return f
 
 def windows_to_linux_path(windows_path):
-    return str(PurePosixPath(Path(windows_path)))
+    return PureWindowsPath(windows_path).as_posix()
 
 def is_serializable_type(variable):
     native_types = (int, float, str, bool, list, tuple, dict, set)
@@ -61,9 +60,13 @@ def convert_unserializable_display(var):
     if var is None:
         return None
     if not is_serializable_type(var):
-        if isinstance(var, torch.Tensor):
-            return f"Tensor: {var.size()}".replace("torch.", "")
-        elif isinstance(var, np.ndarray):
+        try:
+            import torch
+            if isinstance(var, torch.Tensor):
+                return f"Tensor: {var.size()}".replace("torch.", "")
+        except:
+            pass
+        if isinstance(var, np.ndarray):
             return f"Array: {var.shape}"
         elif isinstance(var, object):
             return var.__class__.__name__

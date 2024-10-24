@@ -7,7 +7,6 @@ import React, { useCallback, useMemo, useState, useEffect, memo } from 'react';
 import { useShallow } from 'zustand/react/shallow';
 
 import { usePasteState } from '@/components/app/nodes/state-node/hook/use-paste-state';
-import PerformanceMonitor from '@/components/common/performance-monitor';
 import { saveApp } from '@/services/app';
 import { useAppStore } from '@/stores/app/app-provider';
 import { genAutomata } from '@/stores/app/utils/data-transformer';
@@ -90,25 +89,20 @@ const FlowHeader: React.FC<{ appId: string }> = ({ appId }) => {
   }, [debouncedValues]);
 
   return (
-    <>
-      <div className="absolute left-0 bottom-[120px] m-[15px] z-10">
-        <PerformanceMonitor />
+    <div className="absolute right-3 w-full text-right z-10">
+      <div className="h-5">
+        {autoSavedTime && autoSavedSuccess ? (
+          <Text size="sm" color="subtlest">
+            Auto Saved {dayjs(autoSavedTime).format('HH:mm:ss')}
+          </Text>
+        ) : null}
+        {!autoSavedSuccess ? (
+          <Text size="sm" color="critical">
+            Auto Saved Error
+          </Text>
+        ) : null}
       </div>
-      <div className="absolute right-3 w-full text-right z-10">
-        <div className="h-5">
-          {autoSavedTime && autoSavedSuccess ? (
-            <Text size="sm" color="subtlest">
-              Auto Saved {dayjs(autoSavedTime).format('HH:mm:ss')}
-            </Text>
-          ) : null}
-          {!autoSavedSuccess ? (
-            <Text size="sm" color="critical">
-              Auto Saved Error
-            </Text>
-          ) : null}
-        </div>
-      </div>
-    </>
+    </div>
   );
 };
 

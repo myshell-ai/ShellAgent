@@ -1,22 +1,28 @@
-import { getDefaultValueBySchema, ISchema } from '@shellagent/form-engine';
+import {
+  getDefaultValueBySchema,
+  ISchema,
+  TValues,
+} from '@shellagent/form-engine';
 import { FormRef } from '@shellagent/ui';
 import { useRequest } from 'ahooks';
-import { useInjection } from 'inversify-react';
 import { merge } from 'lodash-es';
-import React, { useRef, useEffect, useState, useMemo } from 'react';
+import { observer } from 'mobx-react-lite';
+import React, {
+  useRef,
+  useEffect,
+  useState,
+  useMemo,
+  useCallback,
+} from 'react';
 
 import { CommonWidgetConfigProps } from '@/components/app/config-form/widget-config';
 import NodeForm from '@/components/app/node-form';
-import { SettingsModel } from '@/components/settings/settings.model';
 
-import { COMFYUI_API, DEFAULT_COMFYUI_API } from './constant';
 import { useEventEmitter, EventType } from './emitter';
 import { getComfyuiSchema, defaultSchema } from './schema';
 import { getFile } from './services';
 import { generateHash } from './utils';
 import { ComfyUIEditor } from './widgets/comfyui-editor';
-
-const settingsDisabled = process.env.NEXT_PUBLIC_DISABLE_SETTING === 'yes';
 
 const ComfyUIPlugin: React.FC<CommonWidgetConfigProps> = ({
   values,
@@ -28,37 +34,28 @@ const ComfyUIPlugin: React.FC<CommonWidgetConfigProps> = ({
   const formRef = useRef<FormRef>(null);
   const [schema, setSchema] = useState<ISchema>(defaultSchema);
 
-  const model = useInjection(SettingsModel);
-
   useEffect(() => {
-    const initializeForm = async () => {
-      const values = formRef.current?.getValues();
-      if (!values?.comfy_workflow_id) {
-        formRef.current?.setValue('comfy_workflow_id', generateHash());
-      }
-
-      if (!settingsDisabled) {
-        // 本地版
-        const settings = await model.loadSettingsEnv();
-        const api = settings?.envs?.find(env => env.key === COMFYUI_API)?.value;
-        formRef.current?.setValue('api', api);
-      } else {
-        // 线上版
-        formRef.current?.setValue('api', DEFAULT_COMFYUI_API);
-      }
-    };
-
-    initializeForm();
-  }, [model]);
+    const values = formRef.current?.getValues();
+    if (!values?.comfy_workflow_id) {
+      formRef.current?.setValue('comfy_workflow_id', generateHash());
+    }
+  }, []);
 
   const defaultValues = useMemo(
     () => getDefaultValueBySchema(schema, false),
     [schema],
   );
 
+  const handleOnChange = useCallback(
+    (newValues: TValues) => {
+      onChange(merge({}, defaultValues, newValues));
+    },
+    [defaultValues, onChange],
+  );
+
   useEffect(() => {
     onChange(merge({}, defaultValues, values));
-  }, [defaultValues]);
+  }, [schema]);
 
   const { run: getComfySchema, loading: isLoading } = useRequest(getFile, {
     manual: true,
@@ -109,7 +106,7 @@ const ComfyUIPlugin: React.FC<CommonWidgetConfigProps> = ({
         key={JSON.stringify(schema)}
         schema={schema}
         values={values}
-        onChange={onChange}
+        onChange={handleOnChange}
         onModeChange={onModeChange}
         loading={isLoading}
         modeMap={modeMap}
@@ -121,4 +118,4 @@ const ComfyUIPlugin: React.FC<CommonWidgetConfigProps> = ({
   );
 };
 
-export default ComfyUIPlugin;
+export default observer(ComfyUIPlugin);

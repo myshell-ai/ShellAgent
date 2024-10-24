@@ -1,5 +1,5 @@
 @echo off
-setlocal
+setlocal enabledelayedexpansion
 chcp 65001 >nul
 :: Check for administrator privileges
 
@@ -16,13 +16,27 @@ if '%errorlevel%' == '0' (
     exit /b
 )
 
+:start
 cd /d %~dp0
 cd ShellAgent
 
-del "proconfig\widgets\imagen_widgets\library\comfy_custom_nodes\ComfyUI_FizzNodes\javascript\Folder here to satisfy init, eventually I'll have stuff in here..txt"
+:: Add self-update functionality
+if exist ".ci\windows_base_files\run.bat" (
+    fc /b "%~f0" ".ci\windows_base_files\run.bat" > nul
+    if errorlevel 1 (
+        echo Detected new version of run.bat, updating...
+        copy /Y ".ci\windows_base_files\run.bat" "%~f0"
+        echo Update complete. Restarting...
+        start "" "%~f0"
+        exit
+    ) else (
+        echo run.bat is already up to date. No update needed.
+    )
+)
 
 set PATH=..\git\bin;%PATH%
 set MYSHELL_KEY=OPENSOURCE_FIXED
+set PLAYWRIGHT_BROWSERS_PATH=..\python_embeded\playwright_browsers
 
 git config --global core.longpaths true
 
@@ -30,15 +44,18 @@ if not exist "output" (
     mkdir "output"
 )
 
-if not exist "servers\web" (
-    mkdir "servers\web"
-)
-
-if not exist "models\model_status.json" (
-    echo {} > "models\model_status.json"
-)
-
 ..\python_embeded\python.exe -m pip install -e .
+..\python_embeded\python.exe -m playwright install chromium
 ..\python_embeded\python.exe servers\main.py
+
+if %errorlevel% equ 42 (
+    echo Restart signal detected, program will restart in 3 seconds...
+    timeout /t 3 >nul
+    goto start
+) else (
+    echo Program has exited, press any key to close the window...
+    pause >nul
+    exit /b
+)
 
 pause
