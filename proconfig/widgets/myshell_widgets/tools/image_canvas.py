@@ -110,7 +110,7 @@ class ImageCanvasWidget(BaseWidget):
         regex = re.compile(r'\\(?![/u"])')
         fixed = regex.sub(r"\\\\", config.config)
 
-        parsed_config = json.loads(fixed)
+        parsed_config = json.loads(fixed, strict=False)
 
         # Define a recursive function to process nested objects
         def process_objects(objects):
