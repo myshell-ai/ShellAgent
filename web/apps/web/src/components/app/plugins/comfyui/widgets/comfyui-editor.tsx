@@ -111,6 +111,15 @@ export const ComfyUIEditor = ({
               id: comfy_workflow_id,
             });
           }
+          if (result.warning_message) {
+            toast.warning(result.warning_message, {
+              position: 'top-center',
+              autoClose: 3000,
+              hideProgressBar: true,
+              pauseOnHover: true,
+              closeButton: false,
+            });
+          }
         } else {
           toast.error(result?.message, {
             position: 'top-center',
