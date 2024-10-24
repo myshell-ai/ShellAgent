@@ -72,6 +72,7 @@ export interface SaveResponse {
   };
   success: boolean;
   message?: string;
+  warning_message?: string;
 }
 
 export interface GetFileRequest {
