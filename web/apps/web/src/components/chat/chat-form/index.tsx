@@ -66,7 +66,7 @@ const ChatForm = forwardRef<FormRef, ChatFormProps>(
     return (
       <MemoizedFormEngine
         ref={ref}
-        key={generateUUID()}
+        key={JSON.stringify(currentSchema)}
         onChange={onChange}
         mode="onChange"
         values={values || defaultValues}
