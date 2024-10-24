@@ -134,6 +134,7 @@ def export_app():
             shellagent_json_path = os.path.join(PROJECT_ROOT, "comfy_workflow", comfyui_workflow_id, "workflow.shellagent.json")
             shellagent_json = json.load(open(shellagent_json_path))
             comfyui_workflows[comfyui_workflow_id] = {
+                "workflow": shellagent_json["workflow"],
                 "workflow_api": shellagent_json["workflow_api"],
                 "schemas": shellagent_json["schemas"],
             }
@@ -371,7 +372,7 @@ def process_text_embeded_uri(text):
         return f"<{tag} {new_attributes}>"
     
     # Regular expression to match <img>, <video>, or <audio> tags with attributes
-    pattern = r'<(img|video|audio)\s([^>]*src=["\'][^"\']+["\'][^>]*)>'
+    pattern = r'<(img|video|audio|source)\s([^>]*src=["\'][^"\']+["\'][^>]*)>'
     
     # Replace the src attribute in all matches
     text = re.sub(pattern, replace_src, text)

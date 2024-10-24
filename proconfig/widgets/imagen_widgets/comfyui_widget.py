@@ -11,8 +11,8 @@ from proconfig.utils.misc import windows_to_linux_path
 # NON_FILE_INPUT_TYPES = ["text", "string", "number", "integer", "float"]
 
 
-def queue_prompt(prompt, server_address, client_id):
-    p = {"prompt": prompt, "client_id": client_id}
+def queue_prompt(workflow, prompt, server_address, client_id):
+    p = {"prompt": prompt, "client_id": client_id, "extra_data": {"extra_pnginfo": {"workflow": workflow}}}
     data = json.dumps(p).encode('utf-8')
     req =  urllib.request.Request("{}/prompt".format(server_address), data=data)
     try:
@@ -47,7 +47,7 @@ def get_media(server_address, filename, subfolder, folder_type):
     with urllib.request.urlopen("{}/view?{}".format(server_address, url_values)) as response:
         return response.read()
 
-def comfyui_run(api, prompt, schemas, user_inputs):
+def comfyui_run(api, workflow, prompt, schemas, user_inputs):
     server_address = api.split("//")[-1]
     if server_address.endswith("/"):
         server_address = server_address[:-1]
@@ -77,7 +77,7 @@ def comfyui_run(api, prompt, schemas, user_inputs):
             
         prompt[node_id]["inputs"]["default_value"] = input_value
         
-    prompt_id = queue_prompt(prompt, http_address, client_id)['prompt_id']
+    prompt_id = queue_prompt(workflow, prompt, http_address, client_id)['prompt_id']
 
     while True:
         out = ws.recv()
@@ -163,6 +163,7 @@ class ComfyUIWidget(BaseWidget):
         
         outputs = comfyui_run(
             comfy_extra_inputs["api"],
+            shellagent_json["workflow"],
             shellagent_json["workflow_api"],
             shellagent_json["schemas"],
             config
