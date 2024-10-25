@@ -187,7 +187,8 @@ const TasksConfig = ({
         mode: task.type,
         workflow_id:
           task.type === NodeTypeEnum.workflow ? generateUUID() : undefined,
-        widget_name: task.type === NodeTypeEnum.widget ? task.name : undefined,
+        widget_name:
+          task.type === NodeTypeEnum.widget ? task.widget_name : undefined,
         widget_class_name:
           task.type === NodeTypeEnum.widget ? task.name : undefined,
         inputs: {},
