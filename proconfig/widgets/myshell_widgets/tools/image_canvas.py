@@ -38,7 +38,6 @@ def export_as_png(page, output_png_path, max_retries=3):
 
             png_button = page.locator('text="Export as PNG"')
             png_button.wait_for(state='visible', timeout=5000)
-            page.wait_for_timeout(500)
 
             if png_button.is_visible():
                 with page.expect_download() as download_info:
@@ -82,11 +81,12 @@ def automate_fabritor(json_file_path, output_png_path):
                 # Set the file path to upload, ensure the path is correct
                 file_chooser.set_files(json_file_path)
                 print("Successfully uploaded JSON file")
+                page.wait_for_function(
+                    "() => document.querySelector('.ant-spin').getAttribute('aria-busy') === 'false'",
+                    timeout=10000
+                )
         except Exception as e:
             print(f"Error clicking Import button: {e}")
-        
-        # Wait for loading to complete
-        # page.wait_for_selector('//*[@id="ice-container"]/div/div[3]/aside[2]/div/div[1]/div[3]/span[2]', state='visible', timeout=10000)
         
         export_as_png(page, output_png_path)
         
@@ -106,7 +106,11 @@ class ImageCanvasWidget(BaseWidget):
     def execute(self, environ, config):
         return_dict = {}
 
-        parsed_config = json.loads(config.config)
+        import re
+        regex = re.compile(r'\\(?![/u"])')
+        fixed = regex.sub(r"\\\\", config.config)
+
+        parsed_config = json.loads(fixed, strict=False)
 
         # Define a recursive function to process nested objects
         def process_objects(objects):

@@ -105,6 +105,8 @@ jobs:
 
           ../python_embeded/python.exe -m pip install poetry
           ../python_embeded/python.exe -m pip install -e .
+          export PLAYWRIGHT_BROWSERS_PATH=../python_embeded/playwright_browsers
+          ../python_embeded/python.exe -m playwright install chromium
 
           cd ..
           cd ..
