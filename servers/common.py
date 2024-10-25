@@ -44,6 +44,7 @@ def upload():
 BASE_DIR = os.getcwd()
 @app.route('/api/files/<path:filename>')
 def get_file(filename):
+    filename = filename.strip()
     try:
         if is_valid_url(filename):
             src = _make_temp_file(filename)
@@ -64,7 +65,7 @@ def get_file(filename):
         if os.path.isfile(file_path):
             # Send the file to the client
             print("ready to send", filename)
-            return send_from_directory(BASE_DIR, filename)
+            return send_from_directory(BASE_DIR, filename)            
         else:
             print("fail file_path:", file_path)
             # If the file doesn't exist, return a 404 error
@@ -78,7 +79,7 @@ def fetch_workflow_list():
     params = request.get_json()
     SAVE_ROOT = SAVE_ROOTS[params["type"]]
 
-    workflow_ids = os.listdir(SAVE_ROOT)[::-1]
+    workflow_ids = [item for item in os.listdir(SAVE_ROOT) if not item.startswith(".")][::-1]
     data = []
     for workflow_id in workflow_ids:
         reactflow_file = os.path.join(SAVE_ROOT, workflow_id, "latest", "reactflow.json")
