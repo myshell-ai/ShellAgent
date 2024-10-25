@@ -24,7 +24,6 @@ import React, { useEffect, useMemo, forwardRef } from 'react';
 import FileUpload from '@/components/common/uploader';
 
 import FormSkeleton from './form-skeleton';
-import { generateUUID } from '../../../utils/common-helper';
 
 interface ChatFormProps {
   values: TValues;
