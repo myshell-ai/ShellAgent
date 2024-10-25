@@ -10,6 +10,7 @@ import '../../reflect-metadata-client-side';
 import FlowHeader from '@/components/workflow/flow-header';
 import { Header } from '@/components/workflow/header';
 import { EndNode, StartNode, WidgetNode } from '@/components/workflow/nodes';
+import { useGlobalStore } from '@/stores/global/global-provider';
 import { useWorkflowStore } from '@/stores/workflow/workflow-provider';
 
 const nodeTypes = {
@@ -26,6 +27,10 @@ export default function WorkflowPage() {
 
   const flowId = params.get('id') as string;
   const version = params.get('version') || undefined;
+
+  const setManagerDialogOpen = useGlobalStore(
+    state => state.setManagerDialogOpen,
+  );
 
   const {
     setFlowInstance,
