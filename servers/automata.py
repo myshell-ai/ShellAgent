@@ -369,8 +369,8 @@ def process_text_embeded_uri(text):
         file_uri = re.search(r'src=["\']([^"\']+)["\']', attributes).groups()[0]
         
         new_file_uri = file_uri.strip()
-        print("file_uri:", file_uri)
-        if os.path.isfile(file_uri):
+        print("file_uri:", new_file_uri)
+        if os.path.isfile(new_file_uri):
             new_file_uri = "/api/files/" + new_file_uri
         new_attributes = attributes.replace(file_uri, new_file_uri)
         return f"<{tag} {new_attributes}>"
