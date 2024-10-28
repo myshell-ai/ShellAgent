@@ -188,26 +188,26 @@ def comfyui_get_file():
     return jsonify(return_dict)
     
 
-@app.route(f'/comfyui/list_workflow', methods=['POST'])
-def comfyui_list_workflow():
-    data = request.get_json()
-    host = data["host"]
-    port = data["port"]
-    workflow_lists = requests.get(f"{host}:{port}/shellagent/list_workflow").json()
-    return jsonify(workflow_lists)
+# @app.route(f'/comfyui/list_workflow', methods=['POST'])
+# def comfyui_list_workflow():
+#     data = request.get_json()
+#     host = data["host"]
+#     port = data["port"]
+#     workflow_lists = requests.get(f"{host}:{port}/shellagent/list_workflow").json()
+#     return jsonify(workflow_lists)
 
 
-@app.route(f'/comfyui/get_schema', methods=['POST'])
-def comfyui_get_schema():
-    data = request.get_json()
-    host = data["host"]
-    port = data["port"]
-    post_data = {
-        "filename": "schemas.json",
-        "workflow_id": data["workflow_id"]
-    }
-    schemas = requests.post(f"{host}:{port}/shellagent/get_file", json=post_data).json()
-    return jsonify(schemas)
+# @app.route(f'/comfyui/get_schema', methods=['POST'])
+# def comfyui_get_schema():
+#     data = request.get_json()
+#     host = data["host"]
+#     port = data["port"]
+#     post_data = {
+#         "filename": "schemas.json",
+#         "workflow_id": data["workflow_id"]
+#     }
+#     schemas = requests.post(f"{host}:{port}/shellagent/get_file", json=post_data).json()
+#     return jsonify(schemas)
 
 
 # def queue_prompt(prompt, server_address, client_id):
