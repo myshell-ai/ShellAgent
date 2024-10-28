@@ -219,7 +219,9 @@ const StateNode: React.FC<NodeProps<StateNodeType>> = ({
             mode: item.nodeType,
             workflow_id: undefined,
             widget_name:
-              item.nodeType === NodeTypeEnum.widget ? item.name : undefined,
+              item.nodeType === NodeTypeEnum.widget
+                ? item.widget_name
+                : undefined,
             widget_class_name:
               item.nodeType === NodeTypeEnum.widget ? item.name : undefined,
             inputs: {},

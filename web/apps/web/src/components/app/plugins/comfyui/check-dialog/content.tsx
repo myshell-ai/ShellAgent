@@ -111,7 +111,7 @@ const ModelForm: React.FC = () => (
                 <Input variant="filled" readOnly placeholder="Save path" />
               </Form.Item>
               <Form.List
-                initialValue={[]}
+                initialValue={['']}
                 name={[field.name, 'urls']}
                 rules={[
                   {
@@ -221,7 +221,6 @@ export const CheckerContent: React.FC<CheckerContentProps> = ({
 
   const handleTabChange = (activeKey: string) => {
     setType(activeKey as CheckTypeEnum);
-    form.resetFields();
   };
 
   const initialValues = useMemo(
@@ -243,7 +242,8 @@ export const CheckerContent: React.FC<CheckerContentProps> = ({
         form={form}
         layout="vertical"
         ref={formRef}
-        initialValues={initialValues}>
+        initialValues={initialValues}
+        preserve>
         <Tabs
           activeKey={type}
           onChange={handleTabChange}

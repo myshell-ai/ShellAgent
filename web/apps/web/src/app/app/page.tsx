@@ -1,5 +1,4 @@
 'use client';
-import '../reflect-metadata-client-side';
 
 import '../reflect-metadata-client-side';
 import { Heading, Text, Spinner } from '@shellagent/ui';

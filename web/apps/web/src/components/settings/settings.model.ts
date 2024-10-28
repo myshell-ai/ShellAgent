@@ -30,7 +30,7 @@ export class SettingsModel {
 
   @postConstruct()
   init() {
-    this.loadSettingsEnv();
+    this.loadSettingsEnv(); // @joe compatible
   }
 
   isFormikReadyPromise: Promise<unknown>;
@@ -39,10 +39,7 @@ export class SettingsModel {
 
   private formikProps: FormikProps<any> | undefined;
 
-  @observable sidebar: SidebarValue =
-    process.env.NEXT_PUBLIC_DISABLE_SOFTWARE_UPDATE === 'yes'
-      ? 'Environment'
-      : 'SoftwareUpdate';
+  @observable sidebar?: SidebarValue = undefined;
 
   @observable isAutoCheck = true;
 
@@ -79,6 +76,10 @@ export class SettingsModel {
 
   @action.bound
   setSidebar(v: SidebarValue) {
+    // onBlur + leave and save
+    if (this.sidebar === 'Environment') {
+      this.formikProps?.submitForm();
+    }
     this.sidebar = v;
   }
 
@@ -198,9 +199,13 @@ export class SettingsModel {
     const pollInterval = 3000;
     const poll = async () => {
       try {
-        this.getLastChecktime();
+        await this.getLastChecktime();
+        this.emitter.emitter.emit(
+          'message.success',
+          'Server restarted successfully, the web UI will reload automatically in 15s..',
+        );
         this.isRestarting = false;
-        window.location.reload();
+        setTimeout(() => window.location.reload(), 15000);
       } catch (e: any) {
         // noop
       } finally {

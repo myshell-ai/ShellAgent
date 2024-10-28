@@ -1,4 +1,6 @@
 import type { SaveResponse, UpdateDependencyRequest } from './services/type';
+import SHA256 from 'crypto-js/sha256';
+import encHex from 'crypto-js/enc-hex';
 
 export function isValidUrl(url: string) {
   if (!url) {
@@ -59,7 +61,7 @@ export function formatDependencyData2Form(
       id: key,
       filename: value.filename,
       save_path: value.save_path,
-      urls: value.urls,
+      urls: value.urls.length ? value.urls : [''],
     })),
   };
 }
@@ -81,5 +83,17 @@ export function formatFormData2Dependency(
 }
 
 export function generateHash() {
-  return crypto.randomUUID().replace(/-/g, '');
+  if (
+    typeof window !== 'undefined' &&
+    window.crypto &&
+    typeof window.crypto.randomUUID === 'function'
+  ) {
+    return window.crypto.randomUUID().replace(/-/g, '');
+  } else {
+    const timestamp = new Date().getTime().toString();
+    const random = Math.random().toString();
+    const data = timestamp + random;
+    const hash = SHA256(data);
+    return hash.toString(encHex).slice(0, 32);
+  }
 }

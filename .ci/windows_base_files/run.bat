@@ -1,5 +1,5 @@
 @echo off
-setlocal
+setlocal enabledelayedexpansion
 chcp 65001 >nul
 :: Check for administrator privileges
 
@@ -20,8 +20,23 @@ if '%errorlevel%' == '0' (
 cd /d %~dp0
 cd ShellAgent
 
+:: Add self-update functionality
+if exist ".ci\windows_base_files\run.bat" (
+    fc /b "%~f0" ".ci\windows_base_files\run.bat" > nul
+    if errorlevel 1 (
+        echo Detected new version of run.bat, updating...
+        copy /Y ".ci\windows_base_files\run.bat" "%~f0"
+        echo Update complete. Restarting...
+        start "" "%~f0"
+        exit
+    ) else (
+        echo run.bat is already up to date. No update needed.
+    )
+)
+
 set PATH=..\git\bin;%PATH%
 set MYSHELL_KEY=OPENSOURCE_FIXED
+set PLAYWRIGHT_BROWSERS_PATH=..\python_embeded\playwright_browsers
 
 git config --global core.longpaths true
 
@@ -30,6 +45,7 @@ if not exist "output" (
 )
 
 ..\python_embeded\python.exe -m pip install -e .
+..\python_embeded\python.exe -m playwright install chromium
 ..\python_embeded\python.exe servers\main.py
 
 if %errorlevel% equ 42 (

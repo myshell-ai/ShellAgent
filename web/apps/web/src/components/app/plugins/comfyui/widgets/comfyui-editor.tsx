@@ -29,7 +29,11 @@ import { isValidUrl, checkDependency } from '../utils';
 
 const settingsDisabled = process.env.NEXT_PUBLIC_DISABLE_SETTING === 'yes';
 
-export const ComfyUIEditor = () => {
+export const ComfyUIEditor = ({
+  onChange,
+}: {
+  onChange: (value: string) => void;
+}) => {
   const [modalOpen, setModalOpen] = useState(false);
   const [checkDialogOpen, setCheckDialogOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
@@ -53,6 +57,10 @@ export const ComfyUIEditor = () => {
   const showModal = () => {
     setModalOpen(true);
   };
+
+  useEffect(() => {
+    onChange(value);
+  }, [value]);
 
   const { run: getComfySchema } = useRequest(getFile, {
     manual: true,
@@ -101,6 +109,15 @@ export const ComfyUIEditor = () => {
             emitter.emit(EventType.UPDATE_FORM, {
               data: result.data.schemas,
               id: comfy_workflow_id,
+            });
+          }
+          if (result.warning_message) {
+            toast.warning(result.warning_message, {
+              position: 'top-center',
+              autoClose: 3000,
+              hideProgressBar: true,
+              pauseOnHover: true,
+              closeButton: false,
             });
           }
         } else {
