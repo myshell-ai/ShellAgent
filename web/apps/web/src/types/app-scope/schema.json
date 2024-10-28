@@ -1,0 +1,237 @@
+{
+  "type": "object",
+  "properties": {
+    "scopes": {
+      "type": "object",
+      "properties": {
+        "context": {
+          "type": "object",
+          "properties": {
+            "scopeType": {
+              "type": "string"
+            },
+            "variables": {
+              "type": "object",
+              "additionalProperties": {
+                "type": "object",
+                "properties": {
+                  "scope": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  },
+                  "type": {
+                    "type": "string"
+                  },
+                  "value": {
+                    "type": [
+                      "string",
+                      "number",
+                      "object"
+                    ]
+                  }
+                },
+                "required": [
+                  "type",
+                  "value"
+                ]
+              }
+            }
+          },
+          "required": [
+            "scopeType",
+            "variables"
+          ]
+        },
+        "states": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "object",
+            "properties": {
+              "scopeType": {
+                "type": "string"
+              },
+              "variables": {
+                "type": "object"
+              },
+              "children": {
+                "type": "object",
+                "properties": {
+                  "inputs": {
+                    "type": "object",
+                    "properties": {
+                      "scopeType": {
+                        "type": "string"
+                      },
+                      "variables": {
+                        "type": "object",
+                        "additionalProperties": {
+                          "type": "object",
+                          "properties": {
+                            "type": {
+                              "type": "string"
+                            },
+                            "scope": {
+                              "type": "array",
+                              "items": {
+                                "type": "string"
+                              }
+                            },
+                            "value": {
+                              "type": [
+                                "string",
+                                "number",
+                                "object"
+                              ]
+                            }
+                          },
+                          "required": [
+                            "type",
+                            "scope",
+                            "value"
+                          ]
+                        }
+                      }
+                    },
+                    "required": [
+                      "scopeType",
+                      "variables"
+                    ]
+                  },
+                  "tasks": {
+                    "type": "object",
+                    "properties": {
+                      "scopeType": {
+                        "type": "string"
+                      },
+                      "scope": {
+                        "type": "array",
+                        "items": {
+                          "type": "string"
+                        }
+                      },
+                      "variables": {
+                        "type": "object",
+                        "additionalProperties": {
+                          "type": "object",
+                          "properties": {
+                            "type": {
+                              "type": "string"
+                            },
+                            "scope": {
+                              "type": "array",
+                              "items": {
+                                "type": "string"
+                              }
+                            },
+                            "value": {
+                              "type": "object"
+                            }
+                          },
+                          "required": [
+                            "type",
+                            "scope",
+                            "value"
+                          ]
+                        }
+                      }
+                    },
+                    "required": [
+                      "scopeType",
+                      "scope",
+                      "variables"
+                    ]
+                  },
+                  "outputs": {
+                    "type": "object",
+                    "properties": {
+                      "scopeType": {
+                        "type": "string"
+                      },
+                      "scope": {
+                        "type": "array",
+                        "items": {
+                          "type": "string"
+                        }
+                      },
+                      "variables": {
+                        "type": "object",
+                        "additionalProperties": {
+                          "type": [
+                            "string",
+                            "number"
+                          ]
+                        }
+                      },
+                      "render": {
+                        "type": "object",
+                        "properties": {
+                          "scopeType": {
+                            "type": "string"
+                          },
+                          "scope": {
+                            "type": "array",
+                            "items": {
+                              "type": "string"
+                            }
+                          },
+                          "buttons": {
+                            "type": "object",
+                            "additionalProperties": {
+                              "type": "object",
+                              "properties": {
+                                "event": {
+                                  "type": "string"
+                                },
+                                "payload": {
+                                  "type": "object"
+                                }
+                              },
+                              "required": [
+                                "event",
+                                "payload"
+                              ]
+                            }
+                          }
+                        },
+                        "required": [
+                          "scopeType",
+                          "scope",
+                          "buttons"
+                        ]
+                      }
+                    },
+                    "required": [
+                      "scopeType",
+                      "scope",
+                      "variables",
+                      "render"
+                    ]
+                  }
+                },
+                "required": [
+                  "inputs",
+                  "tasks",
+                  "outputs"
+                ]
+              }
+            },
+            "required": [
+              "scopeType",
+              "variables",
+              "children"
+            ]
+          }
+        }
+      },
+      "required": [
+        "context",
+        "states"
+      ]
+    }
+  },
+  "required": [
+    "scopes"
+  ]
+}
