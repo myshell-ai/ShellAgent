@@ -266,6 +266,10 @@ def app_run():
         event_name = None
     
     target_state = automata.initial if event_name is None else sess_state[EVENT_MAPPING_KEY][event_name]["target_state"]
+    payload = {}
+    if event_name is not None:
+        payload.update(sess_state[EVENT_MAPPING_KEY][event_name].get("target_inputs_transition", {}))
+    payload.update(event_data.form_data)
     
     sess_state["current_state"] = target_state
     
@@ -293,7 +297,7 @@ def app_run():
             
     client_queue = queue.Queue()
         
-    threading.Thread(target=execute_automata, args=(task_id, client_queue, automata, environ, event_data.form_data, sess_id, sess_state)).start()
+    threading.Thread(target=execute_automata, args=(task_id, client_queue, automata, environ, payload, sess_id, sess_state)).start()
     resp = Response(generate(client_queue), mimetype='text/event-stream')
     headers = [
         ('Connection', 'keep-alive'),
@@ -446,7 +450,7 @@ def parse_server_message(session_id, render, event_mapping, message_count):
                 objs.append(media_obj)
             
     current_time = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-    render_text = process_text_embeded_uri(render.get("text", ""))
+    render_text = process_text_embeded_uri(str(render.get("text", "")))
     
     server_message = ServerMessage(
         session_id=session_id,
