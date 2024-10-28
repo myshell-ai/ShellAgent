@@ -50,7 +50,7 @@ class Html2ImgWidget(BaseWidget):
         
         # Extract the 'result' field and return it as a string
         if json_response.get('success') and 'result' in json_response:
-            return {"image": json.dumps(json.loads(json_response['result'])['image'])}
+            return {"image": json.loads(json_response['result'])['image']}
         else:
             # If 'result' is not found, return the entire response as a string
             return {"image": json.dumps(json_response)}
