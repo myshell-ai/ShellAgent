@@ -5,7 +5,7 @@ import {
   SnakeCaseName,
 } from '@shellagent/pro-config';
 import { z } from 'zod';
-import { snakeCase, lowerCase } from 'lodash-es';
+import { snakeCase } from 'lodash-es';
 
 export const variableTypeSchema = z.enum([
   'text',
@@ -15,6 +15,8 @@ export const variableTypeSchema = z.enum([
   'file',
   'text_file',
 ]);
+
+export type VariableType = z.infer<typeof variableTypeSchema>;
 
 // https://github.com/colinhacks/zod/discussions/2245
 // https://github.com/colinhacks/zod?tab=readme-ov-file#recursive-types
