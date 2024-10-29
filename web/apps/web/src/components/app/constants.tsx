@@ -119,8 +119,15 @@ export const materialList: MaterialListType = [
         widget_name: '@myshell/1784206090390036480',
       },
       {
+        name: 'Html2ImgWidget',
+        display_name: 'HTML to Image',
+        type: NodeTypeEnum.widget,
+        undraggable: true,
+        widget_name: '@myshell/1850127954369142784',
+      },
+      {
         name: 'ImageTextFuserWidget',
-        display_name: 'Image Text Fuser (Deprecated)',
+        display_name: 'Image Text Fuser',
         type: NodeTypeEnum.widget,
         undraggable: true,
       },

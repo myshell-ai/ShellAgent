@@ -32,7 +32,7 @@ def print_memory():
 
 class Runner(BaseModel):
     callback: Callable = empty_callback_fn
-    as_list: bool = True
+    as_list: bool = False
     parallel: bool = False
     debug_mode: bool = False
     
@@ -536,20 +536,23 @@ class Runner(BaseModel):
                 
             # get the target_inputs from transition
             target_inputs_transition = {}
-            if "target_inputs" in transition_case:
-                for k, v in transition_case["target_inputs"].items():
-                    target_inputs_transition[k] = calc_expression(v, {'payload': payload, **local_vars}) # the target_inputs defined by the transition
+            for k, v in transition_case.target_inputs.items():
+                target_inputs_transition[k] = calc_expression(v, {'payload': payload, **local_vars}) # the target_inputs defined by the transition
             
             # get the target inputs
             target_inputs = automata.blocks[target_state].inputs
             
             visible_variables = {"context": context, **local_vars, **sess_state["state_outputs"]}
             if event_name == "CHAT":
-                target_inputs = {k: calc_expression(v, visible_variables) for k, v in target_inputs.items() if v.user_input and v.source == "IM"}
+                target_inputs = {k: v for k, v in target_inputs.items() if v.user_input and v.source == "IM"}
             else:
-                target_inputs = {k: calc_expression(v, visible_variables) for k, v in target_inputs.items() if v.user_input and v.source != "IM"}
+                target_inputs = {k: v for k, v in target_inputs.items() if v.user_input and v.source != "IM"}
+            
+            for input_var in target_inputs.values():
+                for k in input_var.model_dump():
+                    setattr(input_var, k, calc_expression(getattr(input_var, k), visible_variables))
                 
-            target_inputs = tree_map(lambda x: calc_expression(x, local_vars), target_inputs)
+            # target_inputs = tree_map(lambda x: calc_expression(x, local_vars), target_inputs)
             event_mapping[event_item["event_key"]] = {
                 "target_state": target_state,
                 "target_inputs": target_inputs,

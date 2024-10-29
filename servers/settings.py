@@ -1,42 +1,43 @@
-from flask import request, jsonify
 import os
 import json
-
+from fastapi.responses import JSONResponse
+from typing import Dict
 from servers.base import app
 
 
-@app.route(f'/api/settings/env/load', methods=["POST", "GET"])
-def load_env():
-    env = json.load(open("settings.json"))
+
+@app.api_route("/api/settings/env/load", methods=["POST", "GET"])
+async def load_env():
+    with open("settings.json") as f:
+        env = json.load(f)
     env["envs"] = [{"key": k, "value": v} for k, v in env["envs"].items()]
-    return jsonify(env)
+    return JSONResponse(content=env)
 
-
-@app.route(f'/api/settings/env/save', methods=["POST"])
-def save_env():
-    env = request.get_json()
+@app.post("/api/settings/env/save")
+async def save_env(env: Dict):
     env["envs"] = {item["key"]: item["value"] for item in env["envs"]}
     json.dump(env, open("settings.json", "w"))
-    result = {
-        "success": True
-    }
+    # result = {
+    #     "success": True
+    # }
 
     # os.environ["MODEL_DIR"] = env.get("model_location", "models")
     # link the model into ./models
-    target_models_dir = env.get("model_location", "models")
+    # target_models_dir = env.get("model_location", "models")
     
     # do nothing here
     # sync_folders(os.environ["MODEL_DIR"], target_models_dir)
 
     # os.environ["MODELS_STATUS_PATH"] = os.path.join(os.environ["MODEL_DIR"], "model_status.json")
-    target_models_status_file = os.path.join(target_models_dir, "model_status.json")
-    if os.path.isfile(target_models_status_file):
-        # json.dump({}, open(os.environ["MODELS_STATUS_PATH"], "w"))
-        merge_json_files([os.environ["MODELS_STATUS_PATH"], target_models_status_file], os.environ["MODELS_STATUS_PATH"])
+    # target_models_status_file = os.path.join(target_models_dir, "model_status.json")
+    # if os.path.isfile(target_models_status_file):
+    #     # json.dump({}, open(os.environ["MODELS_STATUS_PATH"], "w"))
+    #     merge_json_files([os.environ["MODELS_STATUS_PATH"], target_models_status_file], os.environ["MODELS_STATUS_PATH"])
 
     for k, v in env["envs"].items():
-        os.environ[k] = str(v)
-    return jsonify(result)
+        if k != "":
+            os.environ[k] = str(v)
+    return JSONResponse(content={"success": True})
 
 def create_symlinks(src, dest):
     """

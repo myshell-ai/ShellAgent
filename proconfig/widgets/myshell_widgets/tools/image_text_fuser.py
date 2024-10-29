@@ -335,10 +335,11 @@ class ImageTextFuserWidget(BaseWidget):
         template_path = parsed_config['template_path']
 
         image = add_content_to_image(template_path, parsed_config)
-        with tempfile.NamedTemporaryFile(suffix=".png") as f:
-            image.save(f.name)
-            f.flush()
-            f.seek(0)
-            return_dict['url'] = upload_file_to_myshell(f.name)
+
+        with tempfile.NamedTemporaryFile(delete=False, suffix='.png') as f:
+            temp_file_path = f.name
+            image.save(temp_file_path)
+        return_dict['url'] = upload_file_to_myshell(temp_file_path)
+        os.unlink(temp_file_path)
 
         return return_dict
