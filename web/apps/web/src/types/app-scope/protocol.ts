@@ -40,9 +40,24 @@ export const reservedKeySchema = z.enum([
 ]);
 
 export const customKeySchema = z
-  .string()
-  .refine(val => !reservedKeySchema.safeParse(val).success, {
-    message: `Is a reserved key`,
+  .custom<Lowercase<string>>()
+  .superRefine((arg, ctx) => {
+    if (typeof arg !== 'string') {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: `${arg} is not a string`,
+      });
+    } else if (arg !== arg.toLowerCase()) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: `${arg} is not lowercase`,
+      });
+    } else if (reservedKeySchema.safeParse(arg).success) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: `${arg} is a reserved key`,
+      });
+    }
   }) satisfies z.Schema<CustomKey>;
 
 export const variablesSchema = z.record(customKeySchema, variableSchema);
