@@ -1,8 +1,8 @@
-import { useReactFlowStore, NodeIdEnum } from '@shellagent/flow-engine';
+import { NodeIdEnum, useReactFlowStore } from '@shellagent/flow-engine';
 import { TValues } from '@shellagent/form-engine';
 import { isEmpty } from 'lodash-es';
 import { useMemo } from 'react';
-import { useContextSelector, createContext } from 'use-context-selector';
+import { createContext, useContextSelector } from 'use-context-selector';
 
 import { IButtonType } from '@/components/app/node-form/widgets/button-editor';
 import { useAppStore } from '@/stores/app/app-provider';
@@ -17,7 +17,7 @@ interface TVariable {
 
 export type TScope = TVariable[];
 
-interface VariableProps {
+export interface VariableProps {
   input?: TScope;
   context?: TScope;
   output?: TScope;
@@ -40,6 +40,110 @@ export interface VariableProviderProps {
   children: React.ReactNode | React.ReactNode[];
 }
 
+export function getInput(nodeData: Record<string, TValues>, id: string) {
+  const inputDataMap: Record<string, TValues> = nodeData[id]?.input || {};
+
+  if (isEmpty(inputDataMap)) return [];
+  return [
+    {
+      label: 'Input',
+      value: '',
+      children: Object.entries(inputDataMap).map(([key, data]) => ({
+        label: data?.name || key,
+        value: key,
+        field_type: 'string',
+      })),
+    },
+  ];
+}
+
+export function getOutput(nodeData: Record<string, TValues>, id: string) {
+  const outputDataMap: Record<string, TValues> = nodeData[id]?.output || {};
+  if (isEmpty(outputDataMap)) return [];
+  return [
+    {
+      label: 'Output',
+      value: '',
+      children: Object.entries(outputDataMap).map(([key, data]) => ({
+        label: data?.name || key,
+        value: key,
+        field_type: 'string',
+      })),
+    },
+  ];
+}
+
+function getTasks(nodeData: Record<string, TValues>, id: string) {
+  const tasksData: TValues[] = nodeData[id]?.blocks || [];
+  if (!tasksData.length) return [];
+  return [
+    {
+      label: 'Task',
+      value: '',
+      children: tasksData.map(data => {
+        return {
+          label: data?.display_name || '',
+          value: data?.name,
+          children: Object.entries(
+            (data?.outputs?.display || {}) as Record<string, string>,
+          ).map(([label, value]) => ({
+            label,
+            value: `${data?.name}.${label}`,
+            field_type: value || 'string',
+          })),
+        };
+      }),
+    },
+  ];
+}
+
+export function getContext(nodeData: Record<string, TValues>) {
+  const contextDataMap: Record<string, TValues> =
+    nodeData[NodeIdEnum.start]?.context || {};
+
+  if (isEmpty(contextDataMap)) return [];
+
+  return [
+    {
+      label: 'Start-Context',
+      value: '',
+      children: Object.entries(contextDataMap).map(([key, data]) => ({
+        label: data?.name || key,
+        value: `__context__${key}__`,
+        field_type: 'string',
+      })),
+    },
+  ];
+}
+
+function getPayloads(
+  nodeData: Record<string, TValues>,
+  id: string,
+  eventKey: string | undefined,
+) {
+  const buttons: IButtonType[] = nodeData[id]?.render?.buttons || [];
+  const button = buttons.find(
+    button => (button.on_click as any)?.event === eventKey,
+  ) || { on_click: {} };
+  const payload = (button?.on_click as any)?.payload || {};
+
+  if (isEmpty(payload)) {
+    return [];
+  }
+
+  return [
+    {
+      label: 'Payload',
+      value: '',
+      children: Object.entries(payload).map(([value, data]: [string, any]) => ({
+        label: data?.name,
+        value,
+        field_type: 'string',
+      })),
+    },
+  ];
+}
+
 export const VariableProvider: React.FC<VariableProviderProps> = ({
   id,
   eventKey,
@@ -49,80 +153,21 @@ export const VariableProvider: React.FC<VariableProviderProps> = ({
   const nodes = useReactFlowStore(state => state.nodes);
 
   const nodeData = useAppStore(state => state.nodeData);
-  const input = useMemo<TScope>(() => {
-    const inputDataMap: Record<string, TValues> = nodeData[id]?.input || {};
 
-    if (isEmpty(inputDataMap)) return [];
-    return [
-      {
-        label: 'Input',
-        value: '',
-        children: Object.entries(inputDataMap).map(([key, data]) => ({
-          label: data?.name || key,
-          value: key,
-          field_type: 'string',
-        })),
-      },
-    ];
+  const input = useMemo<TScope>(() => {
+    return getInput(nodeData, id);
   }, [nodeData, id]);
 
   const output = useMemo<TScope>(() => {
-    const outputDataMap: Record<string, TValues> = nodeData[id]?.output || {};
-    if (isEmpty(outputDataMap)) return [];
-    return [
-      {
-        label: 'Output',
-        value: '',
-        children: Object.entries(outputDataMap).map(([key, data]) => ({
-          label: data?.name || key,
-          value: key,
-          field_type: 'string',
-        })),
-      },
-    ];
+    return getOutput(nodeData, id);
   }, [nodeData, id]);
 
   const tasks = useMemo<TScope>(() => {
-    const tasksData: TValues[] = nodeData[id]?.blocks || [];
-    if (!tasksData.length) return [];
-    return [
-      {
-        label: 'Task',
-        value: '',
-        children: tasksData.map(data => {
-          return {
-            label: data?.display_name || '',
-            value: data?.name,
-            children: Object.entries(
-              (data?.outputs?.display || {}) as Record<string, string>,
-            ).map(([label, value]) => ({
-              label,
-              value: `${data?.name}.${label}`,
-              field_type: value || 'string',
-            })),
-          };
-        }),
-      },
-    ];
+    return getTasks(nodeData, id);
   }, [nodeData, id]);
 
   const context = useMemo<TScope>(() => {
-    const contextDataMap: Record<string, TValues> =
-      nodeData[NodeIdEnum.start]?.context || {};
-
-    if (isEmpty(contextDataMap)) return [];
-
-    return [
-      {
-        label: 'Start-Context',
-        value: '',
-        children: Object.entries(contextDataMap).map(([key, data]) => ({
-          label: data?.name || key,
-          value: `__context__${key}__`,
-          field_type: 'string',
-        })),
-      },
-    ];
+    return getContext(nodeData);
   }, [nodeData]);
 
   const states = useMemo(() => {
@@ -130,29 +175,7 @@ export const VariableProvider: React.FC<VariableProviderProps> = ({
   }, [edges, id, nodes, nodeData]);
 
   const payloads = useMemo<TScope>(() => {
-    const buttons: IButtonType[] = nodeData[id]?.render?.buttons || [];
-    const button = buttons.find(
-      button => (button.on_click as any)?.event === eventKey,
-    ) || { on_click: {} };
-    const payload = (button?.on_click as any)?.payload || {};
-
-    if (isEmpty(payload)) {
-      return [];
-    }
-
-    return [
-      {
-        label: 'Payload',
-        value: '',
-        children: Object.entries(payload).map(
-          ([value, data]: [string, any]) => ({
-            label: data?.name,
-            value,
-            field_type: 'string',
-          }),
-        ),
-      },
-    ];
+    return getPayloads(nodeData, id, eventKey);
   }, [nodeData, id, eventKey]);
 
   const values = useMemo(

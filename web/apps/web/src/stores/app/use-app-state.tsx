@@ -4,7 +4,7 @@ import { create } from 'zustand';
 
 import { EdgeDataTypeEnum, CustomEdgeData } from '@/components/app/edges';
 
-type State = {
+export type State = {
   editing: boolean;
   currentStateId: string;
   stateConfigSheetOpen: boolean;
