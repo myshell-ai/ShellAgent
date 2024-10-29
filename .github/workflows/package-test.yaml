@@ -112,7 +112,7 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: ShellAgent-Windows-Test
-          path: ShellAgent/ShellAgent_windows_portable.7z
+          path: ShellAgent_windows_portable.7z
 
   package_shellagent_linux:
     needs: build
@@ -154,7 +154,7 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: ShellAgent-Linux-Test
-          path: ShellAgent/ShellAgent_linux_release.zip
+          path: ShellAgent_linux_release.zip
 
   package_shellagent_mac:
     needs: build
@@ -196,4 +196,4 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: ShellAgent-MacOS-Test
-          path: ShellAgent/ShellAgent_MacOS_release.zip
+          path: ShellAgent_MacOS_release.zip
