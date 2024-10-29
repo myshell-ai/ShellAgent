@@ -46,6 +46,8 @@ export const ComfyUIEditor = ({
   const { getValues, setValue } = useFormContext();
   const model = useInjection(SettingsModel);
   const [isFullscreen, setIsFullscreen] = useState(false);
+  const [messageDetailOpen, setMessageDetailOpen] = useState(false);
+  const [messageDetail, setMessageDetail] = useState<string | null>(null);
 
   const value = useMemo(() => {
     if (settingsDisabled) {
@@ -121,13 +123,24 @@ export const ComfyUIEditor = ({
             });
           }
         } else {
-          toast.error(result?.message, {
-            position: 'top-center',
-            autoClose: 3000,
-            hideProgressBar: true,
-            pauseOnHover: true,
-            closeButton: false,
-          });
+          toast.warning(
+            <div>
+              {result?.message}
+              {result?.message_detail ? (
+                <button
+                  onClick={() => showMessageDetail(result?.message_detail)}>
+                  View Detail
+                </button>
+              ) : null}
+            </div>,
+            {
+              position: 'top-center',
+              autoClose: 3000,
+              hideProgressBar: true,
+              pauseOnHover: true,
+              closeButton: false,
+            },
+          );
         }
       },
     },
@@ -315,6 +328,11 @@ export const ComfyUIEditor = ({
         },
       };
 
+  const showMessageDetail = (detail?: string) => {
+    setMessageDetail(detail || '');
+    setMessageDetailOpen(true);
+  };
+
   return (
     <div>
       <Button size="sm" className="w-full" onClick={showModal}>
@@ -413,6 +431,19 @@ export const ComfyUIEditor = ({
           onLoad={handleIframeLoad}
           onError={handleIframeError}
         />
+        <Modal
+          title="Error Detail"
+          open={messageDetailOpen}
+          onCancel={() => setMessageDetailOpen(false)}
+          footer={[
+            <Button onClick={() => setMessageDetailOpen(false)}>Close</Button>,
+          ]}>
+          <div
+            dangerouslySetInnerHTML={{
+              __html: messageDetail?.replaceAll('\n', '<br />') || '',
+            }}
+          />
+        </Modal>
       </Modal>
       <CheckDialog
         open={checkDialogOpen}
