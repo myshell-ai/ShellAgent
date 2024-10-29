@@ -19,7 +19,7 @@ class RemoveDoubleSlashMiddleware(BaseHTTPMiddleware):
         return response
 
 # Add the middleware to the FastAPI app
-# app.add_middleware(RemoveDoubleSlashMiddleware)
+app.add_middleware(RemoveDoubleSlashMiddleware)
 
 # Serve static files
 app.mount("/static", StaticFiles(directory=os.path.join(os.path.dirname(__file__), "web-build")), name="static")

@@ -13,7 +13,7 @@ from proconfig.widgets.base import WIDGETS
 from proconfig.widgets import load_custom_widgets
 from proconfig.utils.misc import is_valid_url, _make_temp_file
 
-from servers.base import app, APP_SAVE_ROOT, WORKFLOW_SAVE_ROOT, PROJECT_ROOT, get_file_times
+from servers.base import app, APP_SAVE_ROOT, WORKFLOW_SAVE_ROOT, PROJECT_ROOT, get_file_times, UPLOAD_FOLDER
 
 from fastapi import FastAPI, UploadFile, File, HTTPException
 from fastapi.responses import JSONResponse, FileResponse
@@ -28,9 +28,10 @@ SAVE_ROOTS = {
 LAST_CHECK_FILE = os.path.join(PROJECT_ROOT, 'last_check_time.json')
 AUTO_UPDATE_FILE = os.path.join(PROJECT_ROOT, 'data', 'auto_update_settings.json')
 
+@app.post('/api/upload')
 async def upload(file: UploadFile = File(...)):
     filename = file.filename
-    root_folder = app.config['UPLOAD_FOLDER']
+    root_folder = UPLOAD_FOLDER
     save_path = os.path.join(root_folder, filename)
 
     # Create the directory if it doesn't exist
