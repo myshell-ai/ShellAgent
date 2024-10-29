@@ -127,10 +127,12 @@ export const ComfyUIEditor = ({
             <div>
               {result?.message}
               {result?.message_detail ? (
-                <button
+                <Button
+                  color="error"
+                  size="sm"
                   onClick={() => showMessageDetail(result?.message_detail)}>
                   View Detail
-                </button>
+                </Button>
               ) : null}
             </div>,
             {
