@@ -73,6 +73,7 @@ export interface SaveResponse {
   success: boolean;
   message?: string;
   warning_message?: string;
+  message_detail?: string;
 }
 
 export interface GetFileRequest {
