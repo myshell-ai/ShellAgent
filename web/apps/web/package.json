@@ -10,6 +10,7 @@
     "lint": "next lint --fix",
     "type-check": "tsc --noEmit",
     "test:ci": "jest",
+    "test:u": "jest -u",
     "test": "jest --watch"
   },
   "dependencies": {
