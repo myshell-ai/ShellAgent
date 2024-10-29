@@ -78,13 +78,9 @@ const FormEngine = forwardRef<FormRef, IFormEngineProps>((props, ref) => {
   }, []);
 
   useEffect(() => {
-    const subscription = watch(
-      debounce(values => {
-        if (onChange) {
-          onChange(values);
-        }
-      }, 300),
-    );
+    const subscription = watch(values => {
+      onChange?.(values);
+    });
 
     return () => subscription.unsubscribe();
   }, []);
