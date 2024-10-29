@@ -128,6 +128,7 @@ export const ComfyUIEditor = ({
               {result?.message}
               {result?.message_detail ? (
                 <Button
+                  className="ml-2"
                   color="error"
                   size="sm"
                   onClick={() => showMessageDetail(result?.message_detail)}>
@@ -429,7 +430,9 @@ export const ComfyUIEditor = ({
           title="comfyui"
           ref={iframeRef}
           src={value}
-          className={`w-full ${isFullscreen ? 'h-full' : 'h-[80vh]'} ${isLoading || showSettingButton ? 'hidden' : ''}`}
+          className={`w-full ${isFullscreen ? 'h-full' : 'h-[80vh]'} ${
+            isLoading || showSettingButton ? 'hidden' : ''
+          }`}
           onLoad={handleIframeLoad}
           onError={handleIframeError}
         />
