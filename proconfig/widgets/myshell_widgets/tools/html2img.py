@@ -16,8 +16,8 @@ class Html2ImgWidget(BaseWidget):
     
     class InputsSchema(BaseWidget.InputsSchema):
         html_str: str = Field(default="", description="The HTML string to convert to an image")
-        width: int = Field(default=800, description="The width of the image")
-        height: int = Field(default=600, description="The height of the image")
+        width: int = Field(default=800, ge=16, le=8192, description="The width of the image")
+        height: int = Field(default=600, ge=16, le=8192, description="The height of the image")
 
     class OutputsSchema(BaseWidget.OutputsSchema):
         image: str
