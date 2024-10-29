@@ -27,6 +27,14 @@ if __name__ == '__main__':
 
     
     from servers.base import app
-
-    app.run(port=args.port, host="0.0.0.0", debug=False)
-
+    import uvicorn
+    
+    config = uvicorn.Config(
+        app,
+        host="0.0.0.0",
+        port=args.port,
+        proxy_headers=True,
+        forwarded_allow_ips="*",
+    )
+    uvicorn_server = uvicorn.Server(config=config)
+    uvicorn_server.run()

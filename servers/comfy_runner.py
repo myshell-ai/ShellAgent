@@ -1,11 +1,11 @@
 import requests
-from flask import request, jsonify, abort, send_from_directory, send_file
 import websocket
 import uuid
 import json
 import urllib
 import os
 from datetime import datetime
+from typing import Dict
 
 from servers.base import app, PROJECT_ROOT
 
@@ -20,24 +20,24 @@ if not os.path.isfile(COMFY_LOCAL_DEPS_PATH):
     }
     json.dump(empty_data, open(COMFY_LOCAL_DEPS_PATH, "w"))
 
-@app.route(f'/api/comfyui/upload', methods=['POST'])
-def upload_workflow():
-    data = request.get_json()
-    workflow_id = data["comfy_workflow_id"]
-    workflow = data["workflow"]
-    
-    # step 1: decide workflow type
+
+@app.post("/api/comfyui/upload")
+async def upload_workflow(data: Dict):
+    workflow_id = data.get("comfy_workflow_id")
+    workflow = data.get("workflow")
+
+    # Step 1: Decide workflow type
     if all([k in workflow for k in ["schemas", "dependencies", "workflow", "workflow_api"]]):
-        # is shellagent workflow
+        # Is shellagent workflow
         return_dict = {
             "success": True,
             "comfy_workflow": workflow["workflow"],
             "message": ""
         }
-        # save both
+        # Save both
         fname_mapping = {
-            "workflow.shellagent.json": workflow, # with dependency
-            "workflow.json": workflow["workflow"],
+            "workflow.shellagent.json": workflow,  # with dependency
+            "workflow.json": workflow["workflow"]
         }
         save_root = os.path.join(COMFY_ROOT, workflow_id)
         os.makedirs(save_root, exist_ok=True)
@@ -46,7 +46,7 @@ def upload_workflow():
                 json.dump(dict_to_save, f, indent=2)
         
     elif isinstance(workflow, dict) and all([key in workflow for key in ["last_node_id", "last_link_id", "nodes", "links"]]):
-        # save both
+        # Save both
         fname_mapping = {
             "workflow.json": workflow,
         }
@@ -66,12 +66,12 @@ def upload_workflow():
             "comfy_workflow": None,
             "message": "invalid json"
         }
-    return jsonify(return_dict)
+    
+    return return_dict
 
     
-@app.route(f'/api/comfyui/save', methods=['POST'])
-def save_comfyui_workflow():
-    data = request.get_json()
+@app.post("/api/comfyui/save")
+async def save_comfyui_workflow(data: Dict):
     api = data["comfyui_api"]
     workflow_api = data["prompt"]
     workflow = data["workflow"]
@@ -79,20 +79,23 @@ def save_comfyui_workflow():
     
     # metadata.json
     metadata = {
-        # "name": data["name"],
         "workflow_id": workflow_id,
         "create_time": datetime.now().strftime('%Y-%m-%d %H:%M:%S')
     }
     
-    # here we add the dependencies previously provided by the user
-    custom_dependencies = json.load(open(COMFY_LOCAL_DEPS_PATH))
+    # Add the dependencies previously provided by the user
+    with open(COMFY_LOCAL_DEPS_PATH, "r") as deps_file:
+        custom_dependencies = json.load(deps_file)
     
     post_data = {
         "prompt": workflow_api,
         "custom_dependencies": custom_dependencies,
     }
     
-    results = requests.post(f"{api}/shellagent/export", json=post_data).json()
+    # Make the POST request to shellagent/export API
+    response = requests.post(f"{api}/shellagent/export", json=post_data)
+    results = response.json()
+
     if results["success"]:
         shellagent_json = {
             "workflow": workflow,
@@ -100,12 +103,14 @@ def save_comfyui_workflow():
             "dependencies": results["dependencies"],
             "schemas": results["schemas"],
         }
+        
         return_dict = {
             "success": True,
             "data": shellagent_json,
             "warning_message": results.get("warning_message", "")
         }
         
+        # Save the data to the filesystem
         save_root = os.path.join(COMFY_ROOT, workflow_id)
         os.makedirs(save_root, exist_ok=True)
         
@@ -121,56 +126,62 @@ def save_comfyui_workflow():
     else:
         return_dict = {
             "success": False,
-            "message": results["message"]
+            "message": results["message"],
+            "message_detail": results.get("message_detail", "")
         }
-    return jsonify(return_dict)
+    
+    return return_dict
 
 
-@app.route(f'/api/comfyui/update_dependency', methods=['POST'])
-def update_dependency():
-    data = request.get_json()
+@app.post("/api/comfyui/update_dependency")
+async def update_dependency(data: Dict):
     workflow_id = data["comfy_workflow_id"]
-    missing_repos = data.get("missing_custom_nodes", [])
-    missing_repos = {item["name"]: item for item in missing_repos}
+    missing_repos = {item["name"]: item for item in data.get("missing_custom_nodes", [])}
     missing_models = data.get("missing_models", {})
     
-    # read the local file
-    custom_dependencies = json.load(open(COMFY_LOCAL_DEPS_PATH))
+    # Read the local custom dependencies file
+    with open(COMFY_LOCAL_DEPS_PATH, "r") as deps_file:
+        custom_dependencies = json.load(deps_file)
     
-    # read
+    # Read the shellagent JSON
     shellagent_json_path = os.path.join(COMFY_ROOT, workflow_id, "workflow.shellagent.json")
-    shellagent_json = json.load(open(shellagent_json_path))
+    with open(shellagent_json_path, "r") as shellagent_file:
+        shellagent_json = json.load(shellagent_file)
+    
+    # Update the dependencies with missing models
     shellagent_json["dependencies"]["models"].update(missing_models)
     for model_id, item in missing_models.items():
         if len(item["urls"]):
             custom_dependencies["models"].update({model_id: item})
-        
+    
+    # Update the custom nodes (repos)
     repos = [shellagent_json["dependencies"]["comfyui_version"]] + shellagent_json["dependencies"]["custom_nodes"]
     for repo in repos:
         if repo["name"] in missing_repos:
             repo.update(missing_repos[repo["name"]])
             if repo["repo"] != "":
                 custom_dependencies["custom_nodes"].update({repo["name"]: repo})
-            
-    with open(COMFY_LOCAL_DEPS_PATH, "w") as f:
-        json.dump(custom_dependencies, f, indent=2)
-        
-    with open(shellagent_json_path, "w") as f:
-        json.dump(shellagent_json, f, indent=2)
-        
+    
+    # Save the updated custom dependencies
+    with open(COMFY_LOCAL_DEPS_PATH, "w") as deps_file:
+        json.dump(custom_dependencies, deps_file, indent=2)
+    
+    # Save the updated shellagent JSON
+    with open(shellagent_json_path, "w") as shellagent_file:
+        json.dump(shellagent_json, shellagent_file, indent=2)
+    
+    # Prepare the response
     return_dict = {
         "success": True,
         "data": shellagent_json
     }
-    # update
-    return jsonify(return_dict)
     
+    return return_dict
 
 
 
-@app.route(f'/api/comfyui/get_file', methods=['POST'])
-def comfyui_get_file():
-    data = request.get_json()
+@app.post(f'/api/comfyui/get_file')
+async def comfyui_get_file(data: Dict):
     filename = data["filename"]
     workflow_id = data["comfy_workflow_id"]
     json_path = os.path.join(COMFY_ROOT, workflow_id, filename)
@@ -185,125 +196,4 @@ def comfyui_get_file():
         return_dict["success"] = False
         return_dict["message"] = f"{json_path} does not exists"
     
-    return jsonify(return_dict)
-    
-
-# @app.route(f'/comfyui/list_workflow', methods=['POST'])
-# def comfyui_list_workflow():
-#     data = request.get_json()
-#     host = data["host"]
-#     port = data["port"]
-#     workflow_lists = requests.get(f"{host}:{port}/shellagent/list_workflow").json()
-#     return jsonify(workflow_lists)
-
-
-# @app.route(f'/comfyui/get_schema', methods=['POST'])
-# def comfyui_get_schema():
-#     data = request.get_json()
-#     host = data["host"]
-#     port = data["port"]
-#     post_data = {
-#         "filename": "schemas.json",
-#         "workflow_id": data["workflow_id"]
-#     }
-#     schemas = requests.post(f"{host}:{port}/shellagent/get_file", json=post_data).json()
-#     return jsonify(schemas)
-
-
-# def queue_prompt(prompt, server_address, client_id):
-#     p = {"prompt": prompt, "client_id": client_id}
-#     data = json.dumps(p).encode('utf-8')
-#     req =  urllib.request.Request("http://{}/prompt".format(server_address), data=data)
-#     return json.loads(urllib.request.urlopen(req).read())
-
-# def get_history(server_address, prompt_id):
-#     with urllib.request.urlopen("http://{}/history/{}".format(server_address, prompt_id)) as response:
-#         return json.loads(response.read())
-
-# def get_media(server_address, filename, subfolder, folder_type):
-#     data = {"filename": filename, "subfolder": subfolder, "type": folder_type}
-#     url_values = urllib.parse.urlencode(data)
-#     with urllib.request.urlopen("http://{}/view?{}".format(server_address, url_values)) as response:
-#         return response.read()
-    
-# NON_FILE_INPUT_TYPES = ["text", "number", "integer"]
-# @app.route(f'/comfyui/run', methods=['POST'])
-# def comfyui_run():
-#     data = request.get_json()
-    
-#     host = data["host"]
-#     port = data["port"]
-#     user_inputs = data["user_input"]
-    
-#     server_address = f"{host}:{port}"
-    
-#     prompt = requests.post(f"http://{host}:{port}/shellagent/get_file", json={
-#         "filename": "workflow_api.json",
-#         "workflow_id": data["workflow_id"]
-#     }).json()
-    
-#     schemas = requests.post(f"http://{host}:{port}/shellagent/get_file", json={
-#         "filename": "schemas.json",
-#         "workflow_id": data["workflow_id"]
-#     }).json()
-    
-#     client_id = str(uuid.uuid4())
-#     ws = websocket.WebSocket()
-#     ws.connect("ws://{}/ws?clientId={}".format(server_address, client_id))
-#     # first replace the prompt
-#     for node_id, node_schema in schemas["inputs"].items():
-#         input_value = user_inputs[node_schema["name"]]
-#         if node_schema["type"] not in NON_FILE_INPUT_TYPES: # file input
-#             input_value = os.path.join(os.getcwd(), input_value)
-            
-#         prompt[node_id]["inputs"]["default_value"] = input_value
-        
-#     prompt_id = queue_prompt(prompt, server_address, client_id)['prompt_id']
-
-#     while True:
-#         out = ws.recv()
-#         if isinstance(out, str):
-#             message = json.loads(out)
-#             print(message)
-#             if message['type'] == 'executing':
-#                 data = message['data']
-#                 if data['node'] is None and data['prompt_id'] == prompt_id:
-#                     break #Execution is done
-#         else:
-#             continue #previews are binary data
-
-#     history = get_history(server_address, prompt_id)[prompt_id]
-#     outputs = {}
-#     for node_id in history['outputs']:
-#         if node_id not in schemas["outputs"]:
-#             continue
-#         node_output = history['outputs'][node_id]
-        
-#         # if 'images' in node_output:
-#         if schemas["outputs"][node_id]["type"] == "image":
-#             images_output = []
-#             for image in node_output['images']:
-#                 image_data = get_media(server_address, image['filename'], image['subfolder'], image['type'])
-#                 save_path = os.path.join(image["type"], image['subfolder'], image['filename'])
-#                 os.makedirs(os.path.dirname(save_path), exist_ok=True)
-#                 with open(save_path, "wb") as f:
-#                     f.write(image_data)
-#                 images_output.append(save_path)
-#             outputs[schemas["outputs"][node_id]["name"]] = images_output
-#         elif schemas["outputs"][node_id]["type"] == "video":
-#             videos_output = []
-#             for video_path in node_output['video']:
-#                 output_dir, filename = os.path.split(video_path)
-#                 video_data = get_media(server_address, filename, "", output_dir)
-#                 save_path = video_path
-#                 os.makedirs(os.path.dirname(save_path), exist_ok=True)
-#                 with open(save_path, "wb") as f:
-#                     f.write(video_data)
-#                 videos_output.append(save_path)
-#             outputs[schemas["outputs"][node_id]["name"]] = videos_output
-#     return_dict = {
-#         "outputs": outputs
-#     }
-#     return jsonify(return_dict)
-
-
+    return return_dict

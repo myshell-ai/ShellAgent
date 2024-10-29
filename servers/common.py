@@ -9,14 +9,17 @@ import subprocess
 import requests
 from datetime import datetime
 
-from flask import request, jsonify, abort, send_from_directory, send_file
-
 from proconfig.widgets.base import WIDGETS
 from proconfig.widgets import load_custom_widgets
 from proconfig.utils.misc import is_valid_url, _make_temp_file
 
 from servers.base import app, APP_SAVE_ROOT, WORKFLOW_SAVE_ROOT, PROJECT_ROOT, get_file_times
 
+from fastapi import FastAPI, UploadFile, File, HTTPException
+from fastapi.responses import JSONResponse, FileResponse
+from typing import Dict
+import time
+import threading
 
 SAVE_ROOTS = {
     "app": APP_SAVE_ROOT,
@@ -25,80 +28,85 @@ SAVE_ROOTS = {
 LAST_CHECK_FILE = os.path.join(PROJECT_ROOT, 'last_check_time.json')
 AUTO_UPDATE_FILE = os.path.join(PROJECT_ROOT, 'data', 'auto_update_settings.json')
 
-@app.route(f'/api/upload', methods=['POST'])
-def upload():
-    file = request.files['file']
+async def upload(file: UploadFile = File(...)):
     filename = file.filename
     root_folder = app.config['UPLOAD_FOLDER']
-    save_path = f"{root_folder}/{filename}"
+    save_path = os.path.join(root_folder, filename)
+
+    # Create the directory if it doesn't exist
     os.makedirs(os.path.dirname(save_path), exist_ok=True)
-    file.save(save_path)
+
+    # Save the uploaded file
+    with open(save_path, "wb") as f:
+        content = await file.read()
+        f.write(content)
+
     print("save_path:", save_path)
+    
     response = {
         "file_path": save_path
     }
-    return jsonify(response)
+    
+    return JSONResponse(content=response)
 
 
        
 BASE_DIR = os.getcwd()
-@app.route('/api/files/<path:filename>')
-def get_file(filename):
+@app.get('/api/files/{filename:path}')
+async def get_file(filename: str):
     filename = filename.strip()
+    
     try:
         if is_valid_url(filename):
             src = _make_temp_file(filename)
-            filename = src.name
-            return send_file(filename)
-        else:
-            # Ensure the file path is safe
-            print("base dir:", BASE_DIR)
-            print("filename:", filename)
-            # if filename.startswith(BASE_DIR):
-            #     file_path = filename
-            # elif filename.startswith(BASE_DIR[1:]):
-            #     file_path = "/" + filename
-            # else:
-            file_path = os.path.join(BASE_DIR, filename)
-            file_path = os.path.normpath(file_path)
+            return FileResponse(src.name)  # Send the temporary file
+
+        # Construct the full file path
+        file_path = os.path.join(BASE_DIR, filename)
+        file_path = os.path.normpath(file_path)
 
         if os.path.isfile(file_path):
-            # Send the file to the client
-            print("ready to send", filename)
-            return send_from_directory(BASE_DIR, filename)            
+            return FileResponse(file_path)  # Send the file to the client
         else:
-            print("fail file_path:", file_path)
-            # If the file doesn't exist, return a 404 error
-            abort(404)
+            # If the file doesn't exist, raise a 404 error
+            raise HTTPException(status_code=404, detail="File not found")
     except Exception as e:
         # Handle unexpected errors
-        abort(500, description=str(e))
+        raise HTTPException(status_code=500, detail=str(e))
 
-@app.route('/api/list', methods=['POST']) # tested
-def fetch_workflow_list():
-    params = request.get_json()
-    SAVE_ROOT = SAVE_ROOTS[params["type"]]
+@app.post('/api/list')
+async def fetch_workflow_list(params: Dict):
+    SAVE_ROOT = SAVE_ROOTS.get(params["type"])
 
+    if not SAVE_ROOT:
+        raise HTTPException(status_code=400, detail="Invalid type specified")
+
+    # List workflow IDs
     workflow_ids = [item for item in os.listdir(SAVE_ROOT) if not item.startswith(".")][::-1]
     data = []
+
     for workflow_id in workflow_ids:
         reactflow_file = os.path.join(SAVE_ROOT, workflow_id, "latest", "reactflow.json")
         metadata_file = os.path.join(SAVE_ROOT, workflow_id, "latest", "metadata.json")
         metadata = {}
+
         if os.path.isfile(metadata_file):
-            metadata.update(json.load(open(metadata_file)))
+            with open(metadata_file) as f:
+                metadata.update(json.load(f))
 
         if os.path.isfile(reactflow_file):
             create_time, update_time, update_timestamp = get_file_times(reactflow_file)
             metadata['create_time'] = create_time
             metadata['update_time'] = update_time
 
-        item = dict(
-            id=workflow_id,
-            metadata=metadata,
-            timestamp=os.path.getmtime(reactflow_file)
-        )
+        item = {
+            'id': workflow_id,
+            'metadata': metadata,
+            'timestamp': os.path.getmtime(reactflow_file)
+        }
         data.append(item)
+
+    # Sort data by timestamp in descending order
     data = sorted(data, key=lambda x: x['timestamp'], reverse=True)
     result = {
         "data": data,
@@ -106,7 +114,8 @@ def fetch_workflow_list():
         "success": True,
         "message": ""
     }
-    return jsonify(result)
+
+    return JSONResponse(content=result)
 
 
 def get_unique_workflow_id(SAVE_ROOT):
@@ -118,23 +127,27 @@ def get_unique_workflow_id(SAVE_ROOT):
     return workflow_id
 
 
-@app.route(f'/api/create', methods=['POST']) # tested
-def create_workflow():
-    params = request.get_json()
-    SAVE_ROOT = SAVE_ROOTS[params["type"]]
+@app.post('/api/create')
+async def create_workflow(params: Dict):
+    SAVE_ROOT = SAVE_ROOTS.get(params["type"])
 
-    data = params
+    if not SAVE_ROOT:
+        raise HTTPException(status_code=400, detail="Invalid type specified")
 
     workflow_id = get_unique_workflow_id(SAVE_ROOT)
 
     metadata_file = os.path.join(SAVE_ROOT, workflow_id, "latest", "metadata.json")
     os.makedirs(os.path.dirname(metadata_file), exist_ok=True)
+
+    # Write metadata to file
     with open(metadata_file, "w") as f:
-        json.dump(data, f, indent=2)
-    # init reactflow and proconfig
+        json.dump(params, f, indent=2)
+
+    # Initialize reactflow and proconfig
     for filename in ["proconfig.json", "reactflow.json"]:
         filepath = os.path.join(SAVE_ROOT, workflow_id, "latest", filename)
-        json.dump({}, open(filepath, "w"))
+        with open(filepath, "w") as f:
+            json.dump({}, f)
 
     result = {
         "data": {
@@ -143,42 +156,66 @@ def create_workflow():
         "success": True,
         "message": ""
     }
-    return jsonify(result)
+    return JSONResponse(content=result)
 
 
-@app.route(f'/api/edit', methods=['POST']) # tested
-def edit_workflow():
-    data = request.get_json()
-    SAVE_ROOT = SAVE_ROOTS[data.pop("type")]
+@app.post('/api/edit')
+async def edit_workflow(data: Dict):
+    SAVE_ROOT = SAVE_ROOTS.get(data.pop("type"))
+
+    if SAVE_ROOT is None:
+        raise HTTPException(status_code=400, detail="Invalid type specified")
+
     workflow_id = data.pop("id")
     metadata_file = os.path.join(SAVE_ROOT, workflow_id, "latest", "metadata.json")
 
-    assert os.path.isfile(metadata_file)
+    if not os.path.isfile(metadata_file):
+        raise HTTPException(status_code=404, detail="Metadata file not found")
 
+    # Write updated metadata to file
     with open(metadata_file, "w") as f:
         json.dump(data, f, indent=2)
+
     result = {
         "success": True,
         "message": ""
     }
-    return jsonify(result)
+    return JSONResponse(content=result)
 
 
-@app.route(f'/api/duplicate', methods=['POST']) # tested
-def duplicate_workflow():
-    data = request.get_json()
-    SAVE_ROOT = SAVE_ROOTS[data.pop("type")]
-    new_workflow_id = get_unique_workflow_id(SAVE_ROOT)
+@app.post('/api/duplicate')
+async def duplicate_workflow(data: Dict):
+    SAVE_ROOT = SAVE_ROOTS.get(data.pop("type"))
+
+    if SAVE_ROOT is None:
+        raise HTTPException(status_code=400, detail="Invalid type specified")
 
     src_folder = os.path.join(SAVE_ROOT, data["id"])
+    new_workflow_id = get_unique_workflow_id(SAVE_ROOT)
     tgt_folder = os.path.join(SAVE_ROOT, new_workflow_id)
 
-    # first copy the folder
+    # Check if source folder exists
+    if not os.path.exists(src_folder):
+        raise HTTPException(status_code=404, detail="Source workflow not found")
+
+    # First copy the folder
     shutil.copytree(src_folder, tgt_folder)
-    metadata = json.load(open(os.path.join(src_folder, "latest", "metadata.json")))
+
+    # Load and modify the metadata
+    metadata_file_path = os.path.join(src_folder, "latest", "metadata.json")
+    if not os.path.isfile(metadata_file_path):
+        raise HTTPException(status_code=404, detail="Metadata file not found")
+
+    with open(metadata_file_path, 'r') as f:
+        metadata = json.load(f)
+
     metadata["name"] = data["name"]
 
-    json.dump(metadata, open(os.path.join(tgt_folder, "latest", "metadata.json"), "w"))
+    # Write updated metadata to the new location
+    new_metadata_file_path = os.path.join(tgt_folder, "latest", "metadata.json")
+    with open(new_metadata_file_path, 'w') as f:
+        json.dump(metadata, f, indent=2)
+
     result = {
         "data": {
             "id": new_workflow_id
@@ -186,14 +223,18 @@ def duplicate_workflow():
         "success": True,
         "message": ""
     }
-    return jsonify(result)
+    return JSONResponse(content=result)
 
 
-@app.route(f'/api/delete', methods=['POST']) # tested
-def delete_workflow():
-    data = request.get_json()
-    SAVE_ROOT = SAVE_ROOTS[data.pop("type")]
+@app.post('/api/delete')
+async def delete_workflow(data: Dict):
+    SAVE_ROOT = SAVE_ROOTS.get(data.pop("type"))
+
+    if SAVE_ROOT is None:
+        raise HTTPException(status_code=400, detail="Invalid type specified")
+
     folder_path = os.path.join(SAVE_ROOT, data["id"])
+
     if os.path.isdir(folder_path):
         shutil.rmtree(folder_path)
         result = {
@@ -201,15 +242,13 @@ def delete_workflow():
             "message": ""
         }
     else:
-        result = {
-            "success": False,
-            "message": "the workflow to delete does not exist"
-        }
-    return jsonify(result)
+        raise HTTPException(status_code=404, detail="The workflow to delete does not exist")
+
+    return JSONResponse(content=result)
 
 
-@app.route('/api/check_repo_status')
-def check_repo_status():
+@app.get('/api/check_repo_status')
+async def check_repo_status():
     # Record the current time at the beginning of the function
     current_time = datetime.now().isoformat()
 
@@ -246,7 +285,10 @@ def check_repo_status():
 
     print(f'current_version: {current_version}')
 
-    latest_tag = max((ref for ref in repo.references if ref.startswith('refs/tags/v')), key=lambda x: [int(i) for i in x.split('/')[-1][1:].split('.')])
+    latest_tag = max(
+        (ref for ref in repo.references if ref.startswith('refs/tags/v')),
+        key=lambda x: [int(i) for i in x.split('/')[-1][1:].split('.')]
+    )
     latest_tag_ref = repo.lookup_reference(latest_tag)
     latest_tag_commit = latest_tag_ref.peel(pygit2.GIT_OBJECT_COMMIT)
     print(f"latest_tag: {latest_tag}")
@@ -255,6 +297,8 @@ def check_repo_status():
     has_new_stable = repo.merge_base(latest_tag_commit.id, latest_commit.id) == latest_commit.id and latest_tag_commit.id != latest_commit.id
     latest_tag_name = latest_tag.split('/')[-1]
 
+    changelog = ""
+    
     if has_new_stable:
         # Get changelog and release date
         github_api_url = f"https://api.github.com/repos/myshell-ai/ShellAgent/releases/tags/{latest_tag_name}"
@@ -271,20 +315,21 @@ def check_repo_status():
         print(f"Changelog:\n{changelog}")
         print(f"Release date: {target_release_date}")
 
-    response = {
+    response_data = {
         "has_new_stable": has_new_stable,
         "current_version": current_version,
         "target_release_date": target_release_date
     }
     if has_new_stable:
-        response["latest_tag_name"] = latest_tag_name
-        response["changelog"] = changelog
+        response_data["latest_tag_name"] = latest_tag_name
+        response_data["changelog"] = changelog
+
     # Update the last check time before returning the response
     os.makedirs(os.path.dirname(LAST_CHECK_FILE), exist_ok=True)
     with open(LAST_CHECK_FILE, 'w') as f:
         json.dump({"last_check_time": current_time}, f)
 
-    return jsonify(response)
+    return JSONResponse(content=response_data)
 
 def update_stable():
     try:
@@ -295,55 +340,54 @@ def update_stable():
     except subprocess.CalledProcessError as e:
         raise Exception(f"update failed: {e.stderr}")
 
-@app.route('/api/update/stable')
-def update_stable_route():
+@app.get('/api/update/stable')
+async def update_stable_route():
     try:
         result = update_stable()
-        return jsonify({"success": True, "message": result}), 200
+        return JSONResponse(content={"success": True, "message": result}, status_code=200)
     except Exception as e:
-        return jsonify({"success": False, "error": str(e)}), 500
+        raise HTTPException(status_code=500, detail={"success": False, "error": str(e)})
 
-@app.route('/api/restart')
-def restart():
+@app.get('/api/restart')
+async def restart():
     print("Restart signal triggered")
-    # Return a response to the client
-    response = jsonify({"message": "Server is restarting"})
-    response.status_code = 200
+    
+    # Create a response
+    response = JSONResponse(content={"message": "Server is restarting"}, status_code=200)
+    
     # Use a thread to exit the program after a short delay
-    import threading
     def delayed_exit():
-        import time
         time.sleep(1)  # Wait for 1 second to ensure the response has been sent
         os._exit(42)  # Use exit code 42 to indicate restart signal
+
     threading.Thread(target=delayed_exit).start()
+    
     return response
 
-@app.route('/api/last_check_time')
+@app.get('/api/last_check_time')
 def get_last_check_time():
     if os.path.exists(LAST_CHECK_FILE):
         with open(LAST_CHECK_FILE, 'r') as f:
             data = json.load(f)
-        return jsonify(data)
+        return JSONResponse(content=data)
     else:
-        return jsonify({"last_check_time": None})
+        return JSONResponse(content={"last_check_time": None})
 
-@app.route('/api/auto_update', methods=['GET'])
+@app.get('/api/auto_update')
 def get_auto_update_setting():
     if os.path.exists(AUTO_UPDATE_FILE):
         with open(AUTO_UPDATE_FILE, 'r') as f:
             settings = json.load(f)
-        return jsonify(settings)
+        return JSONResponse(content=settings)
     else:
-        return jsonify({"auto_update": False})
+        return JSONResponse(content={"auto_update": False})
 
-@app.route('/api/auto_update', methods=['POST'])
-def set_auto_update_setting():
-    data = request.get_json()
-    if 'auto_update' not in data or not isinstance(data['auto_update'], bool):
-        return jsonify({"error": "Invalid input. 'auto_update' must be a boolean value."}), 400
-
+@app.post('/api/auto_update')
+def set_auto_update_setting(settings: Dict):
     os.makedirs(os.path.dirname(AUTO_UPDATE_FILE), exist_ok=True)
+    
+    # Update auto update settings
     with open(AUTO_UPDATE_FILE, 'w') as f:
-        json.dump({"auto_update": data['auto_update']}, f)
+        json.dump({"auto_update": settings["auto_update"]}, f)
 
-    return jsonify({"success": True, "message": "Auto update setting updated successfully."})
+    return JSONResponse(content={"success": True, "message": "Auto update setting updated successfully."})
