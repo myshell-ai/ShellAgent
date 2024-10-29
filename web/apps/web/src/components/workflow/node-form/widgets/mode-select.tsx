@@ -49,9 +49,8 @@ interface IModeSelectProps {
 export function ModeSelect({ defaultValue, onChange }: IModeSelectProps) {
   const [value, setValue] = useState<TFieldMode>(defaultValue);
 
-  const IconMode = ModeOptions.find(
-    item => item.value === (value || 'ui'),
-  )?.icon!;
+  const IconMode = ModeOptions.find(item => item.value === (value || 'ui'))
+    ?.icon!;
 
   const handleChange = (value: TFieldMode) => {
     setValue(value);

@@ -149,8 +149,8 @@ const Control: React.FC<IControlProps> = props => {
     schemaTypes: anyOf
       ? (anyOf as ISchema[]).map(item => item['x-field-type'])
       : xFieldType
-        ? [xFieldType]
-        : null,
+      ? [xFieldType]
+      : null,
     ...xComponentProps,
   };
 
@@ -158,8 +158,8 @@ const Control: React.FC<IControlProps> = props => {
     mode === 'raw'
       ? 'Vertical'
       : xLayout === 'Horizontal' || mode === 'ref'
-        ? 'Horizontal'
-        : undefined;
+      ? 'Horizontal'
+      : undefined;
 
   if (title) {
     titleControl = (

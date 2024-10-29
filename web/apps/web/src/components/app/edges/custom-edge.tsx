@@ -121,7 +121,9 @@ export const CustomEdge = ({
         <EventButton
           ref={buttonRef}
           style={{
-            transform: `translate(${sourceX + 24}px,${sourceY}px) translateY(-50%)`,
+            transform: `translate(${
+              sourceX + 24
+            }px,${sourceY}px) translateY(-50%)`,
           }}
           onClick={handleEditEvent}
         />

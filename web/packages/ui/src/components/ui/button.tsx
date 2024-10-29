@@ -358,8 +358,8 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
                 size === 'lg'
                   ? 'w-6 h-6'
                   : size === 'md'
-                    ? 'w-5 h-5'
-                    : 'w-4.5 h-4.5',
+                  ? 'w-5 h-5'
+                  : 'w-4.5 h-4.5',
               )}
             />
           </span>
@@ -444,8 +444,8 @@ const renderIcon = (
                 ? 'mr-0.5'
                 : 'ml-0.5'
               : direction === 'left'
-                ? 'mr-1.5'
-                : 'ml-1.5',
+              ? 'mr-1.5'
+              : 'ml-1.5',
 
             iconClassName,
             loading ? 'opacity-0' : 'opacity-100',
