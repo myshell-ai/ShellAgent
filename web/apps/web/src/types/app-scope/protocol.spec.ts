@@ -1,7 +1,60 @@
-import { z } from 'zod';
-import { customKeySchema, variableSchema, variablesSchema } from './protocol';
+import {
+  customKeySchema,
+  outputContextNameSchema,
+  outputNameSchema,
+  reservedKeySchema,
+  taskVariableSchema,
+  variableSchema,
+  variablesSchema,
+} from './protocol';
 
 describe('protocol', () => {
+  describe('reserved key', () => {
+    it('valid', () => {
+      reservedKeySchema.parse('type');
+      reservedKeySchema.parse('id');
+      reservedKeySchema.parse('properties');
+      reservedKeySchema.parse('inputs');
+      reservedKeySchema.parse('outputs');
+      reservedKeySchema.parse('tasks');
+      reservedKeySchema.parse('render');
+      reservedKeySchema.parse('transitions');
+      reservedKeySchema.parse('states');
+      reservedKeySchema.parse('context');
+      reservedKeySchema.parse('payload');
+    });
+
+    describe('invalid', () => {
+      it('not', () => {
+        expect(() => {
+          reservedKeySchema.parse('type1');
+        }).toThrowErrorMatchingInlineSnapshot(`
+          "[
+            {
+              "received": "type1",
+              "code": "invalid_enum_value",
+              "options": [
+                "type",
+                "id",
+                "properties",
+                "inputs",
+                "outputs",
+                "tasks",
+                "render",
+                "transitions",
+                "states",
+                "context",
+                "payload"
+              ],
+              "path": [],
+              "message": "Invalid enum value. Expected 'type' | 'id' | 'properties' | 'inputs' | 'outputs' | 'tasks' | 'render' | 'transitions' | 'states' | 'context' | 'payload', received 'type1'"
+            }
+          ]"
+        `);
+      });
+    });
+  });
+
   describe('variable', () => {
     it('simple', () => {
       variableSchema.parse({
@@ -46,6 +99,25 @@ describe('protocol', () => {
               }
             ]"
           `);
+    });
+  });
+
+  describe('task variable', () => {
+    it('simple', () => {
+      taskVariableSchema.parse({
+        type: 'task',
+        value: 'hello',
+      });
+    });
+
+    it('recursive', () => {
+      taskVariableSchema.parse({
+        type: 'task',
+        value: {
+          type: 'text',
+          value: 'hello',
+        },
+      });
     });
   });
 
@@ -114,18 +186,23 @@ describe('protocol', () => {
       customKeySchema.parse('a.1a');
     });
 
-    it('lowercase', () => {
+    it('to lowercase', () => {
       expect(() => {
         customKeySchema.parse('Payload');
       }).toThrowErrorMatchingInlineSnapshot(`
         "[
           {
             "code": "custom",
-            "message": "Payload is not lowercase",
+            "message": "payload is a reserved key",
             "path": []
           }
         ]"
       `);
+    });
+
+    it('to snakecase', () => {
+      const o = customKeySchema.parse('Hello world');
+      expect(o).toMatchInlineSnapshot(`"hello_world"`);
     });
   });
 
@@ -160,7 +237,7 @@ describe('protocol', () => {
       `);
     });
 
-    it('lowercase', () => {
+    it('to lowercase', () => {
       expect(() => {
         variablesSchema.parse({
           Properties: {
@@ -172,13 +249,53 @@ describe('protocol', () => {
             "[
               {
                 "code": "custom",
-                "message": "Properties is not lowercase",
+                "message": "properties is a reserved key",
                 "path": [
                   "Properties"
                 ]
               }
             ]"
           `);
+    });
+  });
+
+  describe('output context', () => {
+    it('valid', () => {
+      outputContextNameSchema.parse('context.a');
+    });
+
+    it('invalid', () => {
+      expect(() => outputContextNameSchema.parse('Context.a'))
+        .toThrowErrorMatchingInlineSnapshot(`
+        "[
+          {
+            "code": "custom",
+            "message": "Context.a is invalid, should start with context.",
+            "path": []
+          }
+        ]"
+      `);
+
+      expect(() => outputContextNameSchema.parse('hello.a'))
+        .toThrowErrorMatchingInlineSnapshot(`
+        "[
+          {
+            "code": "custom",
+            "message": "hello.a is invalid, should start with context.",
+            "path": []
+          }
+        ]"
+      `);
+    });
+  });
+
+  describe('output name', () => {
+    it('simple', () => {
+      outputNameSchema.parse('context.a');
+      outputNameSchema.parse('hello');
+      expect(
+        outputNameSchema.parse('context.Hello world'),
+      ).toMatchInlineSnapshot(`"context_hello_world"`);
     });
   });
 

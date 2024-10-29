@@ -1,5 +1,6 @@
-import { CustomKey } from '@shellagent/pro-config';
+import { CustomKey, ReservedKey, SnakeCaseName } from '@shellagent/pro-config';
 import { z } from 'zod';
+import { snakeCase, lowerCase } from 'lodash-es';
 
 export const variableTypeSchema = z.enum([
   'text',
@@ -24,7 +25,11 @@ export const variableSchema: z.ZodType<Variable> = baseVariableSchema.extend({
   value: z.union([z.lazy(() => variableSchema), z.string()]),
 });
 
-// pro-config-type/common.ts#7
+export const taskVariableSchema = z.object({
+  type: z.literal('task'),
+  value: z.union([variableSchema, z.string()]),
+});
+
 export const reservedKeySchema = z.enum([
   'type',
   'id',
@@ -37,10 +42,13 @@ export const reservedKeySchema = z.enum([
   'states',
   'context',
   'payload',
-]);
+]) satisfies z.Schema<ReservedKey>;
 
 export const customKeySchema = z
-  .custom<Lowercase<string>>()
+  .custom<Lowercase<SnakeCaseName>>()
+  .transform(val => {
+    return snakeCase(val).toLowerCase() as Lowercase<SnakeCaseName>;
+  })
   .superRefine((arg, ctx) => {
     if (typeof arg !== 'string') {
       ctx.addIssue({
@@ -60,9 +68,23 @@ export const customKeySchema = z
     }
   }) satisfies z.Schema<CustomKey>;
 
-export const variablesSchema = z.record(customKeySchema, variableSchema);
+export const outputContextNameSchema = z
+  .custom<`context.${CustomKey}`>()
+  .superRefine((arg, ctx) => {
+    if (!arg.startsWith('context.')) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: `${arg} is invalid, should start with context.`,
+      });
+    }
+  });
 
-export const ouputNameSchema = z.union([customKeySchema, z.string()]);
+export const outputNameSchema = z.union([
+  customKeySchema,
+  outputContextNameSchema,
+]);
+
+export const variablesSchema = z.record(customKeySchema, variableSchema);
 
 export const stateSchema = z.object({
   variables: variablesSchema,
@@ -71,7 +93,7 @@ export const stateSchema = z.object({
       variables: variablesSchema,
     }),
     tasks: z.object({
-      variables: variablesSchema,
+      variables: taskVariableSchema,
     }),
     outputs: z.object({}),
   }),
