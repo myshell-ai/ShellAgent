@@ -9,7 +9,6 @@ import uuid
 from datetime import datetime
 from typing import Dict, Any, Literal, List
 
-from flask import Response, request, jsonify
 from filelock import FileLock
 
 import re
@@ -27,125 +26,137 @@ from proconfig.core.chat import (
     EmbedObj, EmbedObjStatus, EmbedObjType
 )
 
+from fastapi import FastAPI, HTTPException
+from fastapi.responses import JSONResponse, StreamingResponse
+
 from servers.base import app, APP_SAVE_ROOT, WORKFLOW_SAVE_ROOT, APP_RUNS_SAVE_ROOT, PROJECT_ROOT
 
 
 # app related
-@app.route(f'/api/app/save', methods=['POST'])
-def save_app():
-    data = request.get_json()
-    
+@app.post("/api/app/save")
+async def save_app(data: Dict):
     try:
         flow_id = data["app_id"]
         backend = data["automata"]
-        
+
+        # Check if backend is empty
         if all([len(backend.get(key, {})) == 0 for key in ["blocks", "context"]]):
-            response = {
-                "success": False,
-                "message": "empty proconfig"
-            }
+            return {"success": False, "message": "empty proconfig"}
         else:
             frontend = {
-                k: data[k]
-                for k in ["config", "reactflow"] 
+                "config": data["config"],
+                "reactflow": data["reactflow"]
             }
+            
             save_root = f"{APP_SAVE_ROOT}/{flow_id}/latest"
             os.makedirs(save_root, exist_ok=True)
             
+            # Lock and save files
             with FileLock(os.path.join(save_root, "lock.lock")):
                 json.dump(backend, open(f"{save_root}/automata.json", "w"), indent=2)
                 json.dump(frontend, open(f"{save_root}/reactflow.json", "w"), indent=2)
-        
-            response = {
-                "success": True
-            }
+            
+            return {"success": True}
     except Exception as e:
-        response = {
-            "success": False,
-            "message": str(e)
-        }
-    return jsonify(response)
+        raise HTTPException(status_code=500, detail=str(e))
 
-@app.route('/api/app/get_automata', methods=['POST'])
-def get_automata():
-    data = request.get_json()
-    flow_id = data["app_id"]
-    version = data.get("version_name", "latest")
-    save_root = os.path.join(APP_SAVE_ROOT, flow_id, version)
-    proconfig_file = os.path.join(save_root, "automata.json")
-    if os.path.isfile(proconfig_file):
-        proconfig = json.load(open(proconfig_file))
-    else:
-        proconfig = {}
-    response = {
-        "data": proconfig
-    }
-    return jsonify(response)
+@app.post("/api/app/get_automata")
+async def get_automata(data: Dict):
+    try:
+        flow_id = data["app_id"]
+        version = data.get("version_name", "latest")
+        save_root = os.path.join(APP_SAVE_ROOT, flow_id, version)
+        proconfig_file = os.path.join(save_root, "automata.json")
 
-@app.route('/api/app/get_flow', methods=['POST'])
-def get_app_flow():
-    data = request.get_json()
-    flow_id = data["app_id"]
-    version = data.get("version_name", "latest")
-    save_root = os.path.join(APP_SAVE_ROOT, flow_id, version)
-    flow_file = os.path.join(save_root, "reactflow.json")
-    if os.path.isfile(flow_file):
-        response = json.load(open(flow_file))
-    else:
-        response = {}
-    # get the metadata
-    metadata_file = os.path.join(save_root, "metadata.json")
-    if os.path.isfile(metadata_file):
-        metadata = json.load(open(metadata_file))
-    else:
-        metadata = {}
-    response["metadata"] = metadata
-    return jsonify(response)
+        # Check if the automata file exists
+        if os.path.isfile(proconfig_file):
+            proconfig = json.load(open(proconfig_file))
+        else:
+            proconfig = {}
+
+        return {"data": proconfig}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.post("/api/app/get_flow")
+async def get_app_flow(data: Dict):
+    try:
+        flow_id = data["app_id"]
+        version = data.get("version_name", "latest")
+        save_root = os.path.join(APP_SAVE_ROOT, flow_id, version)
+
+        # Load flow file (reactflow.json)
+        flow_file = os.path.join(save_root, "reactflow.json")
+        if os.path.isfile(flow_file):
+            response = json.load(open(flow_file))
+        else:
+            response = {}
+
+        # Load metadata file (metadata.json)
+        metadata_file = os.path.join(save_root, "metadata.json")
+        if os.path.isfile(metadata_file):
+            metadata = json.load(open(metadata_file))
+        else:
+            metadata = {}
+
+        # Add metadata to the response
+        response["metadata"] = metadata
+
+        return response
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
 
 
 # export
-@app.route('/api/app/export', methods=['POST'])
-def export_app():
-    data = request.get_json()
-    
+@app.post('/api/app/export')
+async def export_app(data: dict):
     try:
         automata_path = os.path.join(APP_SAVE_ROOT, data["app_id"], data["version_name"], "automata.json")
         metadata_path = os.path.join(APP_SAVE_ROOT, data["app_id"], data["version_name"], "metadata.json")
-        metadata = json.load(open(metadata_path))
-        automata = json.load(open(automata_path))
+        
+        with open(metadata_path) as f:
+            metadata = json.load(f)
+        
+        with open(automata_path) as f:
+            automata = json.load(f)
+        
         dependency_results, automata = check_dependency(automata)
-        # get the workflows
+        
+        # Get the workflows
         workflows = {}
         for workflow_id in dependency_results["workflow_ids"]:
-            workflow_path = os.path.join(WORKFLOW_SAVE_ROOT, workflow_id, "proconfig.json") # NOTE: the workflow_id includes the version_name
-            workflow = json.load(open(workflow_path))
+            workflow_path = os.path.join(WORKFLOW_SAVE_ROOT, workflow_id, "proconfig.json")
+            with open(workflow_path) as f:
+                workflow = json.load(f)
             workflows[workflow_id] = workflow
             
-        # get the comfyui workflows
+        # Get the comfyui workflows
         comfyui_workflows = {}
         comfyui_dependencies = {
             "comfyui_version": {},
             "custom_nodes": [],
             "models": {},
-            "files": {}
+            "files": {},
+            "pypi": {}
         }
         custom_node_names = []
+        
         for comfyui_workflow_id in dependency_results["comfyui_workflow_ids"]:
             shellagent_json_path = os.path.join(PROJECT_ROOT, "comfy_workflow", comfyui_workflow_id, "workflow.shellagent.json")
-            shellagent_json = json.load(open(shellagent_json_path))
+            with open(shellagent_json_path) as f:
+                shellagent_json = json.load(f)
             comfyui_workflows[comfyui_workflow_id] = {
                 "workflow": shellagent_json["workflow"],
                 "workflow_api": shellagent_json["workflow_api"],
                 "schemas": shellagent_json["schemas"],
             }
-            for k in ["comfyui_version", "models", "files"]:
+            for k in ["comfyui_version", "models", "files", "pypi"]:
                 comfyui_dependencies[k].update(shellagent_json["dependencies"][k])
             for custom_node in shellagent_json["dependencies"]["custom_nodes"]:
                 if custom_node["name"] not in custom_node_names:
                     comfyui_dependencies["custom_nodes"].append(custom_node)
                     custom_node_names.append(custom_node["name"])
                     
-            
         exported_data = {
             "automata": automata,
             "workflows": workflows,
@@ -177,7 +188,7 @@ def export_app():
             "message": str(e),
         }
 
-    return jsonify(results)
+    return results
 
 
 # app run
@@ -218,13 +229,12 @@ def generate_sess_id():
 EVENT_MAPPING_KEY = "EVENT_MAPPING"
 CHAT_MESSAGE = "CHAT_MESSAGE"
 
-@app.route('/api/app/init_bot', methods=['POST'])
-def init_bot():
-    data = request.get_json()
+@app.post('/api/app/init_bot')
+async def init_bot(data: dict):
     try:
-        automata = Automata.model_validate(data['automata'])
+        automata = Automata.model_validate(data['automata'])  # Validate input
         session_id = generate_sess_id()
-        sess_id_to_automata[session_id] = automata
+        sess_id_to_automata[session_id] = automata  # Store in session
         
         return_data = {
             "session_id": session_id
@@ -236,37 +246,41 @@ def init_bot():
             "message": error_message
         }
 
-    return jsonify(return_data)
-    
+    return JSONResponse(content=return_data)
     
 # SSE
 clients = []
 tasks_queue = []
-@app.route('/api/app/run', methods=['POST', 'GET'])
-def app_run():
-    event_data = request.get_data()
-    event_data = json.loads(event_data)
-    event_data = RunAppRequest.model_validate(event_data)
-    
+@app.post('/api/app/run')
+@app.get('/api/app/run')
+async def app_run(event_data: RunAppRequest):
+    # import pdb; pdb.set_trace()
+    # event_data = await request.json()  # Get JSON data from request
+    # event_data = RunAppRequest(**event_data)  # Validate with Pydantic model
+
     automata = sess_id_to_automata[event_data.session_id]
-        
+    
     sess_id = event_data.session_id
     sess_state = sess_states.get(sess_id, {})
     sess_state["message_count"] = sess_state.get("message_count", 0)
     sess_state[EVENT_MAPPING_KEY] = sess_state.get(EVENT_MAPPING_KEY, {})
     
-    # decide the event_name
+    # Decide the event_name
     if event_data.messageType == 15:
         event_name = event_data.buttonId
     elif event_data.messageType == 1:
         event_name = "CHAT"
-        # build the form data
+        # Build the form data
         event_data.form_data[CHAT_MESSAGE] = event_data.text
     else:
         event_name = None
     
     target_state = automata.initial if event_name is None else sess_state[EVENT_MAPPING_KEY][event_name]["target_state"]
-    
+    payload = {}
+    if event_name is not None:
+        payload.update(sess_state[EVENT_MAPPING_KEY][event_name].get("target_inputs_transition", {}))
+    payload.update(event_data.form_data)
+        
     sess_state["current_state"] = target_state
     
     task_id = str(uuid.uuid4().hex)
@@ -277,7 +291,8 @@ def app_run():
     sess_state["environ"] = sess_state.get("environ", {})
     environ = sess_state["environ"]
     environ["CURRENT_TASK_ID"] = sess_id
-        
+
+    # Define generator for streaming
     def generate(client_queue):
         while True:
             try:
@@ -292,20 +307,26 @@ def app_run():
                 continue
             
     client_queue = queue.Queue()
-        
-    threading.Thread(target=execute_automata, args=(task_id, client_queue, automata, environ, event_data.form_data, sess_id, sess_state)).start()
-    resp = Response(generate(client_queue), mimetype='text/event-stream')
-    headers = [
-        ('Connection', 'keep-alive'),
-        ('Content-Encoding', 'none'),
-        ('Cache-Control', 'no-cache'),
-        ('Access-Control-Allow-Origin', '*'),
-        ('Access-Control-Allow-Methods', '*'),
-        ('Access-Control-Allow-Headers', '*'),
-        ('Access-Control-Allow-Credentials', 'true')
-    ]
-    for k, v in headers:
+    
+    # Start the thread to execute automata
+    threading.Thread(target=execute_automata, args=(task_id, client_queue, automata, environ, payload, sess_id, sess_state)).start()
+    
+    # Create StreamingResponse for SSE
+    resp = StreamingResponse(generate(client_queue), media_type='text/event-stream')
+    headers = {
+        'Connection': 'keep-alive',
+        'Content-Encoding': 'none',
+        'Cache-Control': 'no-cache',
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Methods': '*',
+        'Access-Control-Allow-Headers': '*',
+        'Access-Control-Allow-Credentials': 'true'
+    }
+    
+    # Add headers to response
+    for k, v in headers.items():
         resp.headers[k] = v
+
     return resp
 
 
@@ -446,7 +467,7 @@ def parse_server_message(session_id, render, event_mapping, message_count):
                 objs.append(media_obj)
             
     current_time = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-    render_text = process_text_embeded_uri(render.get("text", ""))
+    render_text = process_text_embeded_uri(str(render.get("text", "")))
     
     server_message = ServerMessage(
         session_id=session_id,

@@ -24,6 +24,9 @@ openai = "^1.51.2"
 gputil = "^1.4.0"
 websocket-client = "^1.8.0"
 setuptools = "^75.1.0"
+fastapi = "^0.115.4"
+uvicorn = "^0.32.0"
+python-multipart = "^0.0.16"
 
 
 [build-system]
