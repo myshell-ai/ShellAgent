@@ -15,7 +15,6 @@ async def load_env():
 
 @app.post("/api/settings/env/save")
 async def save_env(env: Dict):
-    env = request.get_json()
     env["envs"] = {item["key"]: item["value"] for item in env["envs"]}
     json.dump(env, open("settings.json", "w"))
     # result = {
