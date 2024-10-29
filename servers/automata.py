@@ -151,7 +151,11 @@ async def export_app(data: dict):
                 "schemas": shellagent_json["schemas"],
             }
             for k in ["comfyui_version", "models", "files", "pypi"]:
+<<<<<<< HEAD
+                comfyui_dependencies[k].update(shellagent_json["dependencies"].get(k, {}))
+=======
                 comfyui_dependencies[k].update(shellagent_json["dependencies"][k])
+>>>>>>> 37a1bbbad7c2cda57a29cc10ea9fd16c5e7b2184
             for custom_node in shellagent_json["dependencies"]["custom_nodes"]:
                 if custom_node["name"] not in custom_node_names:
                     comfyui_dependencies["custom_nodes"].append(custom_node)
