@@ -1,8 +1,14 @@
 import {
+  buttonSchema,
+  buttonsSchema,
+  customEventSchema,
   customKeySchema,
   outputContextNameSchema,
   outputNameSchema,
+  outputVariablesSchema,
+  renderSchema,
   reservedKeySchema,
+  stateSchema,
   taskVariableSchema,
   variableSchema,
   variablesSchema,
@@ -25,7 +31,7 @@ describe('protocol', () => {
     });
 
     describe('invalid', () => {
-      it('not', () => {
+      it('not reserved', () => {
         expect(() => {
           reservedKeySchema.parse('type1');
         }).toThrowErrorMatchingInlineSnapshot(`
@@ -56,49 +62,53 @@ describe('protocol', () => {
   });
 
   describe('variable', () => {
-    it('simple', () => {
-      variableSchema.parse({
-        type: 'text',
-        value: 'hello',
-      });
-    });
-
-    it('recursive', () => {
-      variableSchema.parse({
-        type: 'text',
-        value: {
+    describe('valid', () => {
+      it('simple', () => {
+        variableSchema.parse({
           type: 'text',
           value: 'hello',
-        },
+        });
+      });
+
+      it('recursive', () => {
+        variableSchema.parse({
+          type: 'text',
+          value: {
+            type: 'text',
+            value: 'hello',
+          },
+        });
       });
     });
 
-    it('type value', () => {
-      expect(() => {
-        variableSchema.parse({
-          type: 'text_not',
-          value: 'hello',
-        });
-      }).toThrowErrorMatchingInlineSnapshot(`
-            "[
-              {
-                "received": "text_not",
-                "code": "invalid_enum_value",
-                "options": [
-                  "text",
-                  "image",
-                  "audio",
-                  "video",
-                  "file",
-                  "text_file"
-                ],
-                "path": [
-                  "type"
-                ],
-                "message": "Invalid enum value. Expected 'text' | 'image' | 'audio' | 'video' | 'file' | 'text_file', received 'text_not'"
-              }
-            ]"
-          `);
+    describe('not valid', () => {
+      it('type not right', () => {
+        expect(() => {
+          variableSchema.parse({
+            type: 'text_not',
+            value: 'hello',
+          });
+        }).toThrowErrorMatchingInlineSnapshot(`
+              "[
+                {
+                  "received": "text_not",
+                  "code": "invalid_enum_value",
+                  "options": [
+                    "text",
+                    "image",
+                    "audio",
+                    "video",
+                    "file",
+                    "text_file"
+                  ],
+                  "path": [
+                    "type"
+                  ],
+                  "message": "Invalid enum value. Expected 'text' | 'image' | 'audio' | 'video' | 'file' | 'text_file', received 'text_not'"
+                }
+              ]"
+            `);
+      });
     });
   });
 
@@ -264,28 +274,43 @@ describe('protocol', () => {
       outputContextNameSchema.parse('context.a');
     });
 
-    it('invalid', () => {
-      expect(() => outputContextNameSchema.parse('Context.a'))
-        .toThrowErrorMatchingInlineSnapshot(`
-        "[
-          {
-            "code": "custom",
-            "message": "Context.a is invalid, should start with context.",
-            "path": []
-          }
-        ]"
-      `);
+    describe('invalid', () => {
+      it('not start context.', () => {
+        expect(() => outputContextNameSchema.parse('Context.a'))
+          .toThrowErrorMatchingInlineSnapshot(`
+          "[
+            {
+              "code": "custom",
+              "message": "Context.a is invalid, should start with context.",
+              "path": []
+            }
+          ]"
+        `);
 
-      expect(() => outputContextNameSchema.parse('hello.a'))
-        .toThrowErrorMatchingInlineSnapshot(`
-        "[
-          {
-            "code": "custom",
-            "message": "hello.a is invalid, should start with context.",
-            "path": []
-          }
-        ]"
-      `);
+        expect(() => outputContextNameSchema.parse('hello.a'))
+          .toThrowErrorMatchingInlineSnapshot(`
+          "[
+            {
+              "code": "custom",
+              "message": "hello.a is invalid, should start with context.",
+              "path": []
+            }
+          ]"
+        `);
+      });
+
+      it('hit reserved', () => {
+        expect(() => outputContextNameSchema.parse('context.type'))
+          .toThrowErrorMatchingInlineSnapshot(`
+          "[
+            {
+              "code": "custom",
+              "message": "type is a reserved key",
+              "path": []
+            }
+          ]"
+        `);
+      });
     });
   });
 
@@ -293,11 +318,237 @@ describe('protocol', () => {
     it('simple', () => {
       outputNameSchema.parse('context.a');
       outputNameSchema.parse('hello');
+    });
+
+    it('snakecase', () => {
+      expect(outputNameSchema.parse('Hello world')).toMatchInlineSnapshot(
+        `"hello_world"`,
+      );
+
       expect(
         outputNameSchema.parse('context.Hello world'),
-      ).toMatchInlineSnapshot(`"context_hello_world"`);
+      ).toMatchInlineSnapshot(`"context.hello_world"`);
     });
   });
 
-  it('test state', () => {});
+  describe('output variables', () => {
+    it('valid', () => {
+      outputVariablesSchema.parse({
+        a: {
+          type: 'text',
+          value: 'hi',
+        },
+      });
+    });
+  });
+
+  describe('custom event name', () => {
+    describe('invalid', () => {
+      it('not concatenated with dots', () => {
+        expect(() => {
+          customEventSchema.parse('hello');
+        }).toThrowErrorMatchingInlineSnapshot(`
+          "[
+            {
+              "code": "custom",
+              "message": "hello should concatenated by dots",
+              "path": []
+            }
+          ]"
+        `);
+      });
+
+      it('hit reserved', () => {
+        expect(() => {
+          customEventSchema.parse('hello.type');
+        }).toThrowErrorMatchingInlineSnapshot(`
+          "[
+            {
+              "code": "custom",
+              "message": "type is a reserved key",
+              "path": []
+            }
+          ]"
+        `);
+      });
+    });
+
+    it('valid', () => {
+      customEventSchema.parse('hello.a');
+    });
+  });
+
+  describe('button', () => {
+    it('valid', () => {
+      buttonSchema.parse({
+        event: 'hello.a',
+        payload: {
+          b: {
+            type: 'text',
+            value: 'hi',
+          },
+        },
+      });
+    });
+
+    it('invalid', () => {
+      expect(() => {
+        buttonSchema.parse({
+          event: 'hello',
+          payload: {
+            id: {
+              type: 'text_not',
+              value: 'hi',
+            },
+          },
+        });
+      }).toThrowErrorMatchingInlineSnapshot(`
+        "[
+          {
+            "code": "custom",
+            "message": "hello should concatenated by dots",
+            "path": [
+              "event"
+            ]
+          },
+          {
+            "code": "custom",
+            "message": "id is a reserved key",
+            "path": [
+              "payload",
+              "id"
+            ]
+          },
+          {
+            "received": "text_not",
+            "code": "invalid_enum_value",
+            "options": [
+              "text",
+              "image",
+              "audio",
+              "video",
+              "file",
+              "text_file"
+            ],
+            "path": [
+              "payload",
+              "id",
+              "type"
+            ],
+            "message": "Invalid enum value. Expected 'text' | 'image' | 'audio' | 'video' | 'file' | 'text_file', received 'text_not'"
+          }
+        ]"
+      `);
+    });
+  });
+
+  describe('buttons', () => {
+    it('valid', () => {
+      buttonsSchema.parse({
+        a: {
+          event: 'hello.a',
+          payload: {
+            b: {
+              type: 'text',
+              value: 'hi',
+            },
+          },
+        },
+      });
+    });
+
+    it('invalid', () => {
+      expect(() => {
+        buttonsSchema.parse({
+          id: {
+            event: 'hello.a',
+            payload: {
+              b: {
+                type: 'text',
+                value: 'hi',
+              },
+            },
+          },
+        });
+      }).toThrowErrorMatchingInlineSnapshot(`
+        "[
+          {
+            "code": "custom",
+            "message": "id is a reserved key",
+            "path": [
+              "id"
+            ]
+          }
+        ]"
+      `);
+    });
+  });
+
+  describe('render', () => {
+    it('valid', () => {
+      renderSchema.parse({
+        buttons: {
+          a: {
+            event: 'hello.a',
+            payload: {
+              b: {
+                type: 'text',
+                value: 'hi',
+              },
+            },
+          },
+        },
+      });
+    });
+  });
+
+  it('state', () => {
+    stateSchema.parse({
+      variables: {
+        a: {
+          type: 'text',
+          value: 'a',
+        },
+      },
+      children: {
+        inputs: {
+          variables: {
+            a: {
+              type: 'text',
+              value: 'a',
+            },
+          },
+        },
+        tasks: {
+          variables: {
+            a: {
+              type: 'task',
+              value: 'a',
+            },
+          },
+        },
+        outputs: {
+          variables: {
+            a: {
+              type: 'text',
+              value: 'hi',
+            },
+          },
+          render: {
+            buttons: {
+              a: {
+                event: 'hello.a',
+                payload: {
+                  b: {
+                    type: 'text',
+                    value: 'hi',
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    });
+  });
 });
