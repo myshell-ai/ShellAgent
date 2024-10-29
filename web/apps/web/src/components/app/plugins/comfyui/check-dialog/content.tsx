@@ -86,7 +86,7 @@ const ModelForm: React.FC = () => (
         <li>Please provide valid public download links.</li>
       </ul>
     </p>
-    <Form.List name="missing_models" initialValue={[]}>
+    <Form.List name="missing_models">
       {fields => (
         <>
           {fields.map(field => (
@@ -111,7 +111,6 @@ const ModelForm: React.FC = () => (
                 <Input variant="filled" readOnly placeholder="Save path" />
               </Form.Item>
               <Form.List
-                initialValue={['']}
                 name={[field.name, 'urls']}
                 rules={[
                   {
