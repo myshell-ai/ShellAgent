@@ -1,12 +1,14 @@
 import { NodeIdEnum, useReactFlowStore } from '@shellagent/flow-engine';
 import { TValues } from '@shellagent/form-engine';
 import { isEmpty } from 'lodash-es';
-import { useMemo } from 'react';
+import { useEffect, useMemo } from 'react';
 import { createContext, useContextSelector } from 'use-context-selector';
 
 import { IButtonType } from '@/components/app/node-form/widgets/button-editor';
 import { useAppStore } from '@/stores/app/app-provider';
 import { getRefNodes } from '@/stores/app/utils/data-transformer';
+import { AppBuilderModel } from '@/components/app/app-builder.model.ts';
+import { useInjection } from 'inversify-react';
 
 interface TVariable {
   label: string;
@@ -73,7 +75,7 @@ export function getOutput(nodeData: Record<string, TValues>, id: string) {
   ];
 }
 
-function getTasks(nodeData: Record<string, TValues>, id: string) {
+export function getTasks(nodeData: Record<string, TValues>, id: string) {
   const tasksData: TValues[] = nodeData[id]?.blocks || [];
   if (!tasksData.length) return [];
   return [
@@ -116,7 +118,7 @@ export function getContext(nodeData: Record<string, TValues>) {
   ];
 }
 
-function getPayloads(
+export function getPayloads(
   nodeData: Record<string, TValues>,
   id: string,
   eventKey: string | undefined,
@@ -151,8 +153,17 @@ export const VariableProvider: React.FC<VariableProviderProps> = ({
 }) => {
   const edges = useReactFlowStore(state => state.edges);
   const nodes = useReactFlowStore(state => state.nodes);
-
   const nodeData = useAppStore(state => state.nodeData);
+
+  const appBuilder = useInjection(AppBuilderModel);
+
+  useEffect(() => {
+    appBuilder.setVariables(id, eventKey, {
+      edges: edges,
+      nodes: nodes,
+      nodeData: nodeData,
+    });
+  }, [nodeData]);
 
   const input = useMemo<TScope>(() => {
     return getInput(nodeData, id);
