@@ -3,10 +3,9 @@ import time
 import json
 from fastapi import FastAPI, Request
 from fastapi.responses import HTMLResponse
-from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from starlette.middleware.base import BaseHTTPMiddleware
-
+from pathlib import Path
 # Create FastAPI app instance
 app = FastAPI()
 
@@ -21,11 +20,12 @@ class RemoveDoubleSlashMiddleware(BaseHTTPMiddleware):
 # Add the middleware to the FastAPI app
 app.add_middleware(RemoveDoubleSlashMiddleware)
 
+current_file_path = Path(__file__).resolve()
+web_build_path = current_file_path.parent / "web-build"
 # Serve static files
-app.mount("/static", StaticFiles(directory=os.path.join(os.path.dirname(__file__), "web-build")), name="static")
 
 # Setup template directory
-templates = Jinja2Templates(directory="web-build")
+templates = Jinja2Templates(directory=str(web_build_path))
 
 # Set environment variables and directories
 os.environ["PROCONFIG_PROJECT_ROOT"] = os.environ.get("PROCONFIG_PROJECT_ROOT", "data")
