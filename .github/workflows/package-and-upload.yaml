@@ -1,21 +1,18 @@
 name: "Create GitHub Release for All Platforms"
 
 on:
-  # workflow_dispatch:
-  #   inputs:
-  #     git_tag:
-  #       description: "Git Branch Tag"
-  #       required: true
-  #       type: string
-  #       default: "main"
-  #     version:
-  #       description: "Release Version Tag"
-  #       required: true
-  #       type: string
-  #       default: "beta"
-  push:
-    branches:
-      - update_package
+  workflow_dispatch:
+    inputs:
+      git_tag:
+        description: "Git Branch Tag"
+        required: true
+        type: string
+        default: "main"
+      version:
+        description: "Release Version Tag"
+        required: true
+        type: string
+        default: "beta"
 
 jobs:
   build:
@@ -24,7 +21,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          ref: update_package
+          ref: ${{ inputs.git_tag }}
 
       - uses: pnpm/action-setup@v2
         with:
@@ -74,7 +71,7 @@ jobs:
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           file: web-build.zip
-          tag: beta
+          tag: ${{ inputs.version }}
           overwrite: true
 
   package_shellagent_windows:
@@ -87,7 +84,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          ref: update_package
+          ref: ${{ inputs.git_tag }}
           fetch-depth: 0
           persist-credentials: false
           submodules: recursive
@@ -152,7 +149,7 @@ jobs:
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           file: ShellAgent_windows_portable.7z
-          tag: beta
+          tag: ${{ inputs.version }}
           overwrite: true
 
   package_shellagent_linux:
@@ -165,7 +162,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          ref: update_package
+          ref: ${{ inputs.git_tag }}
           fetch-depth: 0
           persist-credentials: false
           submodules: recursive
@@ -202,7 +199,7 @@ jobs:
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           file: ShellAgent_linux_release.zip
-          tag: beta
+          tag: ${{ inputs.version }}
           overwrite: true
 
   package_shellagent_mac:
@@ -215,7 +212,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          ref: update_package
+          ref: ${{ inputs.git_tag }}
           fetch-depth: 0
           persist-credentials: false
           submodules: recursive
@@ -254,5 +251,5 @@ jobs:
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           file: ShellAgent_MacOS_release.zip
-          tag: beta
+          tag: ${{ inputs.version }}
           overwrite: true
