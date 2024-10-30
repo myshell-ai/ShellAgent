@@ -293,6 +293,9 @@ export class AppBuilderChatModel {
   }
 
   async onClickModalRun() {
+    const text2 = Object.keys(this.formValue)
+      .map(key => `${key}: ${this.formValue[key]}`)
+      .join('<br/>');
     const message: any = {
       id: generateUUID(),
       userId: testUserId,
@@ -301,9 +304,9 @@ export class AppBuilderChatModel {
       status: 'DONE',
       createdDateUnix: Date.now().toString(),
       updatedDateUnix: Date.now().toString(),
-      text: `Clicked ${this.currentLuiButton!.buttonText}, ${JSON.stringify(
-        this.formValue,
-      )}`,
+      text: `<span style="color: #3e5cfa;">/${
+        this.currentLuiButton!.buttonText
+      }</span><br/>${text2}`,
     };
     this.chatNew.innerMethods.addMessage!(message);
     const appReq: RunAppRequest = {
