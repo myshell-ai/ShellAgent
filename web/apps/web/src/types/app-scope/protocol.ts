@@ -5,7 +5,8 @@ import {
   SnakeCaseName,
 } from '@shellagent/pro-config';
 import { z } from 'zod';
-import { snakeCase } from 'lodash-es';
+// import { snakeCase } from 'lodash-es';
+import { snakeCase } from 'change-case';
 
 export const variableTypeSchema = z.enum([
   'text',
@@ -48,14 +49,16 @@ export const reservedKeySchema = z.enum([
 
 export const customKeySchema = z
   .custom<Lowercase<SnakeCaseName>>()
-  .transform(val => {
-    return snakeCase(val).toLowerCase() as Lowercase<SnakeCaseName>;
-  })
   .superRefine((arg, ctx) => {
     if (typeof arg !== 'string') {
       ctx.addIssue({
         code: z.ZodIssueCode.custom,
         message: `${arg} is not a string`,
+      });
+    } else if (arg !== snakeCase(arg)) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: `${arg} is not snake_case`,
       });
     } else if (arg !== arg.toLowerCase()) {
       ctx.addIssue({

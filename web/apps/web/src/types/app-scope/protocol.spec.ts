@@ -13,8 +13,18 @@ import {
   variableSchema,
   variablesSchema,
 } from './protocol';
+import { snakeCase } from 'change-case';
+// import { snakeCase } from 'lodash-es';
 
 describe('protocol', () => {
+  it('customSnakeCase', () => {
+    expect(snakeCase('123')).toBe('123');
+    expect(snakeCase('123a')).toBe('123a');
+    expect(snakeCase('123a123')).toBe('123a123');
+    expect(snakeCase('123a123b')).toBe('123a123b');
+    expect(snakeCase('a_1')).toBe('a_1');
+  });
+
   describe('reserved key', () => {
     it('valid', () => {
       reservedKeySchema.parse('type');
@@ -71,7 +81,7 @@ describe('protocol', () => {
       });
 
       it('recursive', () => {
-        variableSchema.parse({
+        const a = variableSchema.parse({
           type: 'text',
           value: {
             type: 'text',
@@ -189,11 +199,11 @@ describe('protocol', () => {
       customKeySchema.parse('ttt');
       customKeySchema.parse('1a');
       customKeySchema.parse('a_1');
-      customKeySchema.parse('1.a');
-      customKeySchema.parse('type.a');
-      customKeySchema.parse('a.1a');
-      customKeySchema.parse('.a');
-      customKeySchema.parse('a.1a');
+      // customKeySchema.parse('1.a');
+      // customKeySchema.parse('type.a');
+      // customKeySchema.parse('a.1a');
+      // customKeySchema.parse('.a');
+      // customKeySchema.parse('a.1a');
     });
 
     it('to lowercase', () => {
@@ -203,16 +213,25 @@ describe('protocol', () => {
         "[
           {
             "code": "custom",
-            "message": "payload is a reserved key",
+            "message": "Payload is not snake_case",
             "path": []
           }
         ]"
       `);
     });
 
-    it('to snakecase', () => {
-      const o = customKeySchema.parse('Hello world');
-      expect(o).toMatchInlineSnapshot(`"hello_world"`);
+    it('not snakecase', () => {
+      expect(() => {
+        customKeySchema.parse('Hello world');
+      }).toThrowErrorMatchingInlineSnapshot(`
+        "[
+          {
+            "code": "custom",
+            "message": "Hello world is not snake_case",
+            "path": []
+          }
+        ]"
+      `);
     });
   });
 
@@ -247,7 +266,7 @@ describe('protocol', () => {
       `);
     });
 
-    it('to lowercase', () => {
+    it('not lowercase', () => {
       expect(() => {
         variablesSchema.parse({
           Properties: {
@@ -256,16 +275,16 @@ describe('protocol', () => {
           },
         });
       }).toThrowErrorMatchingInlineSnapshot(`
-            "[
-              {
-                "code": "custom",
-                "message": "properties is a reserved key",
-                "path": [
-                  "Properties"
-                ]
-              }
-            ]"
-          `);
+        "[
+          {
+            "code": "custom",
+            "message": "Properties is not snake_case",
+            "path": [
+              "Properties"
+            ]
+          }
+        ]"
+      `);
     });
   });
 
@@ -320,14 +339,28 @@ describe('protocol', () => {
       outputNameSchema.parse('hello');
     });
 
-    it('snakecase', () => {
-      expect(outputNameSchema.parse('Hello world')).toMatchInlineSnapshot(
-        `"hello_world"`,
-      );
+    it('not snakecase', () => {
+      expect(() => outputNameSchema.parse('Hello world'))
+        .toThrowErrorMatchingInlineSnapshot(`
+        "[
+          {
+            "code": "custom",
+            "message": "Hello world is invalid, should start with context.",
+            "path": []
+          }
+        ]"
+      `);
 
-      expect(
-        outputNameSchema.parse('context.Hello world'),
-      ).toMatchInlineSnapshot(`"context.hello_world"`);
+      expect(() => outputNameSchema.parse('context.Hello world'))
+        .toThrowErrorMatchingInlineSnapshot(`
+        "[
+          {
+            "code": "custom",
+            "message": "Hello world is not snake_case",
+            "path": []
+          }
+        ]"
+      `);
     });
   });
 
@@ -503,7 +536,7 @@ describe('protocol', () => {
   });
 
   it('state', () => {
-    stateSchema.parse({
+    const a = stateSchema.parse({
       variables: {
         a: {
           type: 'text',
