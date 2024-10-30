@@ -50,12 +50,39 @@ jobs:
           name: web-build
           path: web/apps/web/dist
 
-  package_shellagent_windows:
+  package_web_build:
     permissions:
       contents: "write"
       packages: "write"
       pull-requests: "read"
     needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download web-build artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: web-build
+          path: ./web-build
+
+      - name: Zip web-build
+        run: |
+          cd web-build
+          zip -r ../web-build.zip ./*
+
+      - name: Upload web-build to release
+        uses: svenstaro/upload-release-action@v2
+        with:
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          file: web-build.zip
+          tag: beta
+          overwrite: true
+
+  package_shellagent_windows:
+    permissions:
+      contents: "write"
+      packages: "write"
+      pull-requests: "read"
+    needs: [build, package_web_build]
     runs-on: windows-latest
     steps:
       - uses: actions/checkout@v4
@@ -128,32 +155,12 @@ jobs:
           tag: beta
           overwrite: true
 
-      - name: Download web-build artifact
-        uses: actions/download-artifact@v3
-        with:
-          name: web-build
-          path: ./web-build
-
-      - name: Zip web-build
-        run: |
-          cd web-build
-          Compress-Archive -Path * -DestinationPath ../web-build.zip
-        shell: pwsh
-
-      - name: Upload web-build to release
-        uses: svenstaro/upload-release-action@v2
-        with:
-          repo_token: ${{ secrets.GITHUB_TOKEN }}
-          file: web-build.zip
-          tag: beta
-          overwrite: true
-
   package_shellagent_linux:
     permissions:
       contents: "write"
       packages: "write"
       pull-requests: "read"
-    needs: build
+    needs: [build, package_web_build]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -203,7 +210,7 @@ jobs:
       contents: "write"
       packages: "write"
       pull-requests: "read"
-    needs: build
+    needs: [build, package_web_build]
     runs-on: macos-latest
     steps:
       - uses: actions/checkout@v4
