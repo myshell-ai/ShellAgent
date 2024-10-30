@@ -1,16 +1,13 @@
 name: "Test Package Build for All Platforms"
 
 on:
-  # workflow_dispatch:
-  #   inputs:
-  #     git_tag:
-  #       description: "Git Branch Tag"
-  #       required: true
-  #       type: string
-  #       default: "main"
-  push:
-    branches:
-      - update_package
+  workflow_dispatch:
+    inputs:
+      git_tag:
+        description: "Git Branch Tag"
+        required: true
+        type: string
+        default: "main"
 
 jobs:
   build:

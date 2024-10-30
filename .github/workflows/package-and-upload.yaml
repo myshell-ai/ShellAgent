@@ -1,18 +1,21 @@
 name: "Create GitHub Release for All Platforms"
 
 on:
-  workflow_dispatch:
-    inputs:
-      git_tag:
-        description: "Git Branch Tag"
-        required: true
-        type: string
-        default: "main"
-      version:
-        description: "Release Version Tag"
-        required: true
-        type: string
-        default: "beta"
+  # workflow_dispatch:
+  #   inputs:
+  #     git_tag:
+  #       description: "Git Branch Tag"
+  #       required: true
+  #       type: string
+  #       default: "main"
+  #     version:
+  #       description: "Release Version Tag"
+  #       required: true
+  #       type: string
+  #       default: "beta"
+  push:
+    branches:
+      - update_package
 
 jobs:
   build:
@@ -21,7 +24,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          ref: ${{ inputs.git_tag }}
+          ref: update_package
 
       - uses: pnpm/action-setup@v2
         with:
@@ -57,7 +60,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          ref: ${{ inputs.git_tag }}
+          ref: update_package
           fetch-depth: 0
           persist-credentials: false
           submodules: recursive
@@ -122,7 +125,27 @@ jobs:
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           file: ShellAgent_windows_portable.7z
-          tag: ${{ inputs.version }}
+          tag: beta
+          overwrite: true
+
+      - name: Download web-build artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: web-build
+          path: ./web-build
+
+      - name: Zip web-build
+        run: |
+          cd web-build
+          Compress-Archive -Path * -DestinationPath ../web-build.zip
+        shell: pwsh
+
+      - name: Upload web-build to release
+        uses: svenstaro/upload-release-action@v2
+        with:
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          file: web-build.zip
+          tag: beta
           overwrite: true
 
   package_shellagent_linux:
@@ -135,7 +158,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          ref: ${{ inputs.git_tag }}
+          ref: update_package
           fetch-depth: 0
           persist-credentials: false
           submodules: recursive
@@ -172,7 +195,7 @@ jobs:
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           file: ShellAgent_linux_release.zip
-          tag: ${{ inputs.version }}
+          tag: beta
           overwrite: true
 
   package_shellagent_mac:
@@ -185,7 +208,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          ref: ${{ inputs.git_tag }}
+          ref: update_package
           fetch-depth: 0
           persist-credentials: false
           submodules: recursive
@@ -224,5 +247,5 @@ jobs:
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           file: ShellAgent_MacOS_release.zip
-          tag: ${{ inputs.version }}
+          tag: beta
           overwrite: true
