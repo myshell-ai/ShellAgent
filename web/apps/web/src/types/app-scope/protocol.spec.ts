@@ -3,6 +3,7 @@ import {
   buttonsSchema,
   customEventSchema,
   customKeySchema,
+  customSnakeCase,
   outputContextNameSchema,
   outputNameSchema,
   outputVariablesSchema,
@@ -13,16 +14,20 @@ import {
   variableSchema,
   variablesSchema,
 } from './protocol';
-import { snakeCase } from 'change-case';
-// import { snakeCase } from 'lodash-es';
 
 describe('protocol', () => {
-  it('customSnakeCase', () => {
-    expect(snakeCase('123')).toBe('123');
-    expect(snakeCase('123a')).toBe('123a');
-    expect(snakeCase('123a123')).toBe('123a123');
-    expect(snakeCase('123a123b')).toBe('123a123b');
-    expect(snakeCase('a_1')).toBe('a_1');
+  describe('customSnakeCase', () => {
+    it('customSnakeCase', () => {
+      expect(customSnakeCase('123')).toBe('123');
+      expect(customSnakeCase('123a')).toBe('123a');
+      expect(customSnakeCase('123a123')).toBe('123a123');
+      expect(customSnakeCase('123a123b')).toBe('123a123b');
+      expect(customSnakeCase('a_1')).toBe('a_1');
+      expect(customSnakeCase('GPT2')).toBe('gpt2');
+      expect(customSnakeCase('state#2')).toBe('state#2');
+      // use a mask input
+      expect(customSnakeCase('Image Canvas')).toBe('image_canvas');
+    });
   });
 
   describe('reserved key', () => {
@@ -76,17 +81,17 @@ describe('protocol', () => {
       it('simple', () => {
         variableSchema.parse({
           type: 'text',
-          value: 'hello',
+          // value: 'hello',
         });
       });
 
       it('recursive', () => {
         const a = variableSchema.parse({
           type: 'text',
-          value: {
-            type: 'text',
-            value: 'hello',
-          },
+          // value: {
+          //   type: 'text',
+          //   // value: 'hello',
+          // },
         });
       });
     });
@@ -96,7 +101,7 @@ describe('protocol', () => {
         expect(() => {
           variableSchema.parse({
             type: 'text_not',
-            value: 'hello',
+            // value: 'hello',
           });
         }).toThrowErrorMatchingInlineSnapshot(`
               "[
@@ -126,17 +131,32 @@ describe('protocol', () => {
     it('simple', () => {
       taskVariableSchema.parse({
         type: 'task',
-        value: 'hello',
+        // output
+        // value: {
+        //   type: 'object',
+        //   value: {
+        //     image: 'https://',
+        //     image_type: {
+        //       type: 'string',
+        //       value: 'gif'
+        //     }
+        //   }
+        // },
+      });
+
+      taskVariableSchema.parse({
+        type: 'task',
+        // value: 'hello',
       });
     });
 
     it('recursive', () => {
       taskVariableSchema.parse({
         type: 'task',
-        value: {
-          type: 'text',
-          value: 'hello',
-        },
+        // value: {
+        //   type: 'text',
+        //   value: 'hello',
+        // },
       });
     });
   });
@@ -240,7 +260,7 @@ describe('protocol', () => {
       variablesSchema.parse({
         test: {
           type: 'text',
-          value: 'test',
+          // value: 'test',
         },
       });
     });
@@ -250,7 +270,7 @@ describe('protocol', () => {
         variablesSchema.parse({
           properties: {
             type: 'text',
-            value: 'test',
+            // value: 'test',
           },
         });
       }).toThrowErrorMatchingInlineSnapshot(`
@@ -271,7 +291,7 @@ describe('protocol', () => {
         variablesSchema.parse({
           Properties: {
             type: 'text',
-            value: 'test',
+            // value: 'test',
           },
         });
       }).toThrowErrorMatchingInlineSnapshot(`
@@ -371,7 +391,7 @@ describe('protocol', () => {
       outputVariablesSchema.parse({
         a: {
           type: 'text',
-          value: 'hi',
+          // value: 'hi',
         },
       });
     });
@@ -420,7 +440,7 @@ describe('protocol', () => {
         payload: {
           b: {
             type: 'text',
-            value: 'hi',
+            // value: 'hi',
           },
         },
       });
@@ -433,7 +453,7 @@ describe('protocol', () => {
           payload: {
             id: {
               type: 'text_not',
-              value: 'hi',
+              // value: 'hi',
             },
           },
         });
@@ -485,7 +505,7 @@ describe('protocol', () => {
           payload: {
             b: {
               type: 'text',
-              value: 'hi',
+              // value: 'hi',
             },
           },
         },
@@ -500,7 +520,7 @@ describe('protocol', () => {
             payload: {
               b: {
                 type: 'text',
-                value: 'hi',
+                // value: 'hi',
               },
             },
           },
@@ -528,7 +548,7 @@ describe('protocol', () => {
             payload: {
               b: {
                 type: 'text',
-                value: 'hi',
+                // value: 'hi',
               },
             },
           },
@@ -539,18 +559,18 @@ describe('protocol', () => {
 
   it('state', () => {
     const a = stateSchema.parse({
-      variables: {
-        a: {
-          type: 'text',
-          value: 'a',
-        },
-      },
+      // variables: {
+      //   a: {
+      //     type: 'text',
+      //     value: 'a',
+      //   },
+      // },
       children: {
         inputs: {
           variables: {
             a: {
               type: 'text',
-              value: 'a',
+              // value: 'a',
             },
           },
         },
@@ -558,7 +578,7 @@ describe('protocol', () => {
           variables: {
             a: {
               type: 'task',
-              value: 'a',
+              // value: 'a',
             },
           },
         },
@@ -566,7 +586,7 @@ describe('protocol', () => {
           variables: {
             a: {
               type: 'text',
-              value: 'hi',
+              // value: 'hi',
             },
           },
           render: {
@@ -576,7 +596,7 @@ describe('protocol', () => {
                 payload: {
                   b: {
                     type: 'text',
-                    value: 'hi',
+                    // value: 'hi',
                   },
                 },
               },

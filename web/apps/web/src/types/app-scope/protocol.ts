@@ -5,8 +5,16 @@ import {
   SnakeCaseName,
 } from '@shellagent/pro-config';
 import { z } from 'zod';
-// import { snakeCase } from 'lodash-es';
-import { snakeCase } from 'change-case';
+
+/**
+ * only process Space, not continous Uppercase letters
+ * examples see test cases
+ */
+export function customSnakeCase(s: unknown) {
+  if (typeof s !== 'string') return s;
+  const r = s.split(/(?<![A-Z])(?=[A-Z])|\s+/);
+  return r.map(i => i.toLowerCase()).join('_');
+}
 
 export const variableTypeSchema = z.enum([
   'text',
@@ -19,19 +27,27 @@ export const variableTypeSchema = z.enum([
 
 export type VariableType = z.infer<typeof variableTypeSchema>;
 
+// FIX: Primitive variables cannot recurse.
 // https://github.com/colinhacks/zod/discussions/2245
 // https://github.com/colinhacks/zod?tab=readme-ov-file#recursive-types
-const baseVariableSchema = z.object({
-  type: variableTypeSchema,
-});
+// const baseVariableSchema = z.object({
+//   type: variableTypeSchema,
+// }).strict();
 
-export type Variable = z.infer<typeof baseVariableSchema> & {
-  value: Variable | string;
-};
+// export type Variable = z.infer<typeof baseVariableSchema> & {
+//   value: Variable | string;
+// };
 
-export const variableSchema: z.ZodType<Variable> = baseVariableSchema.extend({
-  value: z.union([z.lazy(() => variableSchema), z.string()]),
-});
+// export const variableSchema: z.ZodType<Variable> = baseVariableSchema.extend({
+//   value: z.union([z.lazy(() => variableSchema), z.string()]),
+// });
+
+export const variableSchema = z
+  .object({
+    type: variableTypeSchema,
+    // value: z.string()
+  })
+  .strict();
 
 export const reservedKeySchema = z.enum([
   'type',
@@ -55,7 +71,7 @@ export const customKeySchema = z
         code: z.ZodIssueCode.custom,
         message: `${arg} is not a string`,
       });
-    } else if (arg !== snakeCase(arg)) {
+    } else if (arg !== customSnakeCase(arg)) {
       ctx.addIssue({
         code: z.ZodIssueCode.custom,
         message: `${arg} is not snake_case`,
@@ -82,7 +98,6 @@ export const customEventSchema = z
         message: `${arg} should concatenated by dots`,
       });
     } else {
-      // TODO: customKey validate or transform
       arg.split('.').forEach(a => {
         const ret = customKeySchema.safeParse(a);
         if (!ret.success) {
@@ -92,10 +107,15 @@ export const customEventSchema = z
     }
   }) satisfies z.Schema<CustomEventName>;
 
-export const taskVariableSchema = z.object({
-  type: z.literal('task'),
-  value: z.union([variableSchema, z.string()]),
-});
+// FIX: Currently, ⁠variables should not contain a value as role of a subview.
+// But the root issue is that type and data info are mixed within the subview.
+// This should be refactored in Q4.
+export const taskVariableSchema = z
+  .object({
+    type: z.literal('task'),
+    // value: z.union([variableSchema, z.string()]),
+  })
+  .strict();
 
 export const taskVariablesSchema = z.record(
   customKeySchema,
@@ -132,29 +152,37 @@ export const variablesSchema = z.record(customKeySchema, variableSchema);
 
 export const outputVariablesSchema = z.record(outputNameSchema, variableSchema);
 
-export const buttonSchema = z.object({
-  event: customEventSchema,
-  payload: z.record(customKeySchema, variableSchema),
-});
+export const buttonSchema = z
+  .object({
+    event: customEventSchema,
+    payload: z.record(customKeySchema, variableSchema),
+  })
+  .strict();
 
 export const buttonsSchema = z.record(customKeySchema, buttonSchema);
 
-export const renderSchema = z.object({
-  buttons: buttonsSchema,
-});
+export const renderSchema = z
+  .object({
+    buttons: buttonsSchema,
+  })
+  .strict();
 
-export const stateSchema = z.object({
-  variables: z.record(customKeySchema, variableSchema),
-  children: z.object({
-    inputs: z.object({
-      variables: variablesSchema,
+export const stateSchema = z
+  .object({
+    // variables: z.record(customKeySchema, variableSchema), // TO REMOVE: redundant with outputs variables
+    children: z.object({
+      inputs: z.object({
+        variables: variablesSchema,
+      }),
+      tasks: z.object({
+        variables: taskVariablesSchema,
+      }),
+      outputs: z.object({
+        variables: outputVariablesSchema.describe(
+          'Actually represents state output',
+        ),
+        render: renderSchema,
+      }),
     }),
-    tasks: z.object({
-      variables: taskVariablesSchema,
-    }),
-    outputs: z.object({
-      variables: outputVariablesSchema,
-      render: renderSchema,
-    }),
-  }),
-});
+  })
+  .strict();
