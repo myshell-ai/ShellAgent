@@ -1,7 +1,7 @@
 import { stateSchema } from './protocol';
 
 describe('scope', () => {
-  it('state', () => {
+  it('a valid state', () => {
     const s1 = stateSchema.parse({
       children: {
         inputs: {

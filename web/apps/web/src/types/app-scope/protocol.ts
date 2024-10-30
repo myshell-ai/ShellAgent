@@ -27,7 +27,7 @@ export const variableTypeSchema = z.enum([
 
 export type VariableType = z.infer<typeof variableTypeSchema>;
 
-// FIX: Primitive variables cannot recurse.
+// FIX: Primitive variables cannot be nested.
 // https://github.com/colinhacks/zod/discussions/2245
 // https://github.com/colinhacks/zod?tab=readme-ov-file#recursive-types
 // const baseVariableSchema = z.object({
