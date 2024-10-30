@@ -305,7 +305,9 @@ describe('protocol', () => {
             }
           ]"
         `);
+      });
 
+      it('not start context.', () => {
         expect(() => outputContextNameSchema.parse('hello.a'))
           .toThrowErrorMatchingInlineSnapshot(`
           "[

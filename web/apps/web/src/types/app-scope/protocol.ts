@@ -114,7 +114,7 @@ export const outputContextNameSchema = z
       const [a, b] = arg.split('context.');
       const ret = customKeySchema.safeParse(b);
       if (!ret.success) {
-        ret.error?.issues.forEach(iss => ctx.addIssue(iss));
+        ret.error.issues.forEach(iss => ctx.addIssue(iss));
       }
     }
   })
