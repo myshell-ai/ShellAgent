@@ -6,42 +6,12 @@ import { useClickAway } from 'ahooks';
 import { Dropdown } from 'antd';
 import { useState, useRef, useCallback } from 'react';
 import { useDrag, useDrop } from 'react-dnd';
+import { Task, TaskSchema } from '@/types/task/protocol';
 
 import { materialList } from '@/components/app/constants';
 import { TaskList } from '@/components/app/task-list';
 import { useAppState } from '@/stores/app/use-app-state';
 import { generateUUID } from '@/utils/common-helper';
-
-export interface IWorkflowTask {
-  type: 'task';
-  display_name: string;
-  name: string;
-  mode: NodeTypeEnum.workflow;
-  workflow_id: string;
-  key: string;
-  inputs: {
-    [key: string]: string;
-  };
-  outputs: {
-    [key: string]: string;
-  };
-}
-
-export interface IWidgetTask {
-  type: 'task';
-  display_name: string;
-  name: string;
-  mode: NodeTypeEnum.widget;
-  widget_name: string;
-  widget_class_name: string;
-  key: string;
-  inputs: {
-    [key: string]: string;
-  };
-  outputs: {
-    [key: string]: string;
-  };
-}
 
 const TaskItem = ({
   name,
@@ -112,7 +82,9 @@ const TaskItem = ({
         e.stopPropagation();
         onClick(e);
       }}
-      className={`relative group h-8 flex items-center bg-surface-container-default rounded-lg p-2 text-default font-medium cursor-pointer ${isDragging ? 'opacity-50' : ''}`}>
+      className={`relative group h-8 flex items-center bg-surface-container-default rounded-lg p-2 text-default font-medium cursor-pointer ${
+        isDragging ? 'opacity-50' : ''
+      }`}>
       {draggable && (
         <div
           ref={dragRef}
@@ -143,13 +115,13 @@ const TasksConfig = ({
   draggable,
 }: {
   name: string;
-  onChange: (value: (IWorkflowTask | IWidgetTask)[]) => void;
+  onChange: (value: Task[]) => void;
   draggable?: boolean;
 }) => {
   const btnRef = useRef<HTMLButtonElement>(null);
   const [open, setOpen] = useState(false);
   const { getValues } = useFormContext();
-  const values = getValues(name) as (IWorkflowTask | IWidgetTask)[];
+  const values = getValues(name) as Task[];
 
   const { currentStateId, setInsideSheetOpen } = useAppState(state => state);
 
@@ -180,24 +152,27 @@ const TasksConfig = ({
   const handleSelect = useCallback(
     (task: WidgetItem) => {
       setOpen(false);
-      const newTask = {
-        type: 'task',
-        display_name: task.display_name,
-        name: uuid(), // 需要是key_xxx，作为ref引用
-        mode: task.type,
-        workflow_id:
-          task.type === NodeTypeEnum.workflow ? generateUUID() : undefined,
-        widget_name:
-          task.type === NodeTypeEnum.widget ? task.widget_name : undefined,
-        widget_class_name:
-          task.type === NodeTypeEnum.widget ? task.name : undefined,
-        inputs: {},
-        outputs: {},
-        custom: task.custom,
-      };
+      try {
+        const newTask = TaskSchema.parse({
+          type: 'task',
+          display_name: task.display_name,
+          name: task.display_name,
+          mode: task.type,
+          ...(task.type === NodeTypeEnum.widget && {
+            widget_name: task.widget_name,
+            widget_class_name: task.name,
+          }),
+          inputs: {},
+          outputs: {},
+          custom: task.custom,
+        });
 
-      const blocks = Array.isArray(values) ? [...values, newTask] : [newTask];
-      onChange(blocks as (IWidgetTask | IWorkflowTask)[]);
+        const blocks = Array.isArray(values) ? [...values, newTask] : [newTask];
+        onChange(blocks);
+      } catch (error) {
+        console.error('Task parse error:', error);
+        return;
+      }
     },
     [values, onChange],
   );
