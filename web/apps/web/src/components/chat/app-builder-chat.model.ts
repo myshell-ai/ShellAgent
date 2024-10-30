@@ -301,7 +301,9 @@ export class AppBuilderChatModel {
       status: 'DONE',
       createdDateUnix: Date.now().toString(),
       updatedDateUnix: Date.now().toString(),
-      text: `Clicked ${this.currentLuiButton!.buttonText}, ${JSON.stringify(this.formValue)}`,
+      text: `Clicked ${this.currentLuiButton!.buttonText}, ${JSON.stringify(
+        this.formValue,
+      )}`,
     };
     this.chatNew.innerMethods.addMessage!(message);
     const appReq: RunAppRequest = {

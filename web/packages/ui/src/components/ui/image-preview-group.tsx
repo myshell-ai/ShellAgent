@@ -140,7 +140,9 @@ const ImageProviewGroup = ({
           ),
       }}
       {...previewGroupProps}>
-      {images?.map(item => <CustomImage key={item.src} {...item} />)}
+      {images?.map(item => (
+        <CustomImage key={item.src} {...item} />
+      ))}
     </Image.PreviewGroup>
   );
 };

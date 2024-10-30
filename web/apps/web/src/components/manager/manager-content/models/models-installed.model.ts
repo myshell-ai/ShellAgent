@@ -50,7 +50,9 @@ export class ModelsInstalledModel {
     if (location == null) {
       this.emitter.emitter.emit(
         'message.error',
-        `model_location is null ${settingsDisabled ? '' : ' ,go to Settings to set a value'}`,
+        `model_location is null ${
+          settingsDisabled ? '' : ' ,go to Settings to set a value'
+        }`,
       );
     }
     try {

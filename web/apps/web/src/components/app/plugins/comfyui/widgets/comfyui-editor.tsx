@@ -409,7 +409,9 @@ export const ComfyUIEditor = ({
           title="comfyui"
           ref={iframeRef}
           src={value}
-          className={`w-full ${isFullscreen ? 'h-full' : 'h-[80vh]'} ${isLoading || showSettingButton ? 'hidden' : ''}`}
+          className={`w-full ${isFullscreen ? 'h-full' : 'h-[80vh]'} ${
+            isLoading || showSettingButton ? 'hidden' : ''
+          }`}
           onLoad={handleIframeLoad}
           onError={handleIframeError}
         />
