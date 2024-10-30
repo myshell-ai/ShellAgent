@@ -11,6 +11,7 @@ import {
 import { IEdge, INode } from '@shellagent/flow-engine';
 import { TValues } from '@shellagent/form-engine';
 import { getRefNodes } from '@/stores/app/utils/data-transformer';
+import { State } from '@/types/app-scope/protocol';
 
 @injectable()
 export class AppBuilderModel {
@@ -51,3 +52,5 @@ export class AppBuilderModel {
     };
   }
 }
+
+function copyState(state: State) {}

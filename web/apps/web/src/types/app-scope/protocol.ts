@@ -169,6 +169,7 @@ export const renderSchema = z
 
 export const stateSchema = z
   .object({
+    name: z.string(),
     // variables: z.record(customKeySchema, variableSchema), // TO REMOVE: redundant with outputs variables
     children: z.object({
       inputs: z.object({
@@ -186,3 +187,5 @@ export const stateSchema = z
     }),
   })
   .strict();
+
+export type State = z.infer<typeof stateSchema>;

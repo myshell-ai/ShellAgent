@@ -559,6 +559,7 @@ describe('protocol', () => {
 
   it('state', () => {
     const a = stateSchema.parse({
+      name: 'state#1',
       // variables: {
       //   a: {
       //     type: 'text',
