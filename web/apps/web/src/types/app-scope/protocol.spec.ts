@@ -9,6 +9,7 @@ import {
   outputVariablesSchema,
   renderSchema,
   reservedKeySchema,
+  scopesSchema,
   stateSchema,
   taskVariableSchema,
   variableSchema,
@@ -246,26 +247,26 @@ describe('protocol', () => {
         ]"
       `);
     });
-    })
+  });
+});
+
+describe('state variables', () => {
+  it('valid', () => {
+    variablesSchema.parse({
+      test: {
+        type: 'text',
+      },
+    });
   });
 
-  describe('state variables', () => {
-    it('valid', () => {
+  it('reserved', () => {
+    expect(() => {
       variablesSchema.parse({
-        test: {
+        properties: {
           type: 'text',
         },
       });
-    });
-
-    it('reserved', () => {
-      expect(() => {
-        variablesSchema.parse({
-          properties: {
-            type: 'text',
-          },
-        });
-      }).toThrowErrorMatchingInlineSnapshot(`
+    }).toThrowErrorMatchingInlineSnapshot(`
         "[
           {
             "code": "custom",
@@ -276,16 +277,16 @@ describe('protocol', () => {
           }
         ]"
       `);
-    });
+  });
 
-    it('not lowercase', () => {
-      expect(() => {
-        variablesSchema.parse({
-          Properties: {
-            type: 'text',
-          },
-        });
-      }).toThrowErrorMatchingInlineSnapshot(`
+  it('not lowercase', () => {
+    expect(() => {
+      variablesSchema.parse({
+        Properties: {
+          type: 'text',
+        },
+      });
+    }).toThrowErrorMatchingInlineSnapshot(`
         "[
           {
             "code": "custom",
@@ -296,18 +297,18 @@ describe('protocol', () => {
           }
         ]"
       `);
-    });
+  });
+});
+
+describe('output context', () => {
+  it('valid', () => {
+    outputContextNameSchema.parse('context.a');
   });
 
-  describe('output context', () => {
-    it('valid', () => {
-      outputContextNameSchema.parse('context.a');
-    });
-
-    describe('invalid', () => {
-      it('not start context.', () => {
-        expect(() => outputContextNameSchema.parse('Context.a'))
-          .toThrowErrorMatchingInlineSnapshot(`
+  describe('invalid', () => {
+    it('not start context.', () => {
+      expect(() => outputContextNameSchema.parse('Context.a'))
+        .toThrowErrorMatchingInlineSnapshot(`
           "[
             {
               "code": "custom",
@@ -316,11 +317,11 @@ describe('protocol', () => {
             }
           ]"
         `);
-      });
+    });
 
-      it('not start context.', () => {
-        expect(() => outputContextNameSchema.parse('hello.a'))
-          .toThrowErrorMatchingInlineSnapshot(`
+    it('not start context.', () => {
+      expect(() => outputContextNameSchema.parse('hello.a'))
+        .toThrowErrorMatchingInlineSnapshot(`
           "[
             {
               "code": "custom",
@@ -329,11 +330,11 @@ describe('protocol', () => {
             }
           ]"
         `);
-      });
+    });
 
-      it('hit reserved', () => {
-        expect(() => outputContextNameSchema.parse('context.type'))
-          .toThrowErrorMatchingInlineSnapshot(`
+    it('hit reserved', () => {
+      expect(() => outputContextNameSchema.parse('context.type'))
+        .toThrowErrorMatchingInlineSnapshot(`
           "[
             {
               "code": "custom",
@@ -342,19 +343,19 @@ describe('protocol', () => {
             }
           ]"
         `);
-      });
     });
   });
+});
 
-  describe('output name', () => {
-    it('simple', () => {
-      outputNameSchema.parse('context.a');
-      outputNameSchema.parse('hello');
-    });
+describe('output name', () => {
+  it('simple', () => {
+    outputNameSchema.parse('context.a');
+    outputNameSchema.parse('hello');
+  });
 
-    it('not snakecase', () => {
-      expect(() => outputNameSchema.parse('Hello world'))
-        .toThrowErrorMatchingInlineSnapshot(`
+  it('not snakecase', () => {
+    expect(() => outputNameSchema.parse('Hello world'))
+      .toThrowErrorMatchingInlineSnapshot(`
         "[
           {
             "code": "custom",
@@ -364,8 +365,8 @@ describe('protocol', () => {
         ]"
       `);
 
-      expect(() => outputNameSchema.parse('context.Hello world'))
-        .toThrowErrorMatchingInlineSnapshot(`
+    expect(() => outputNameSchema.parse('context.Hello world'))
+      .toThrowErrorMatchingInlineSnapshot(`
         "[
           {
             "code": "custom",
@@ -374,25 +375,25 @@ describe('protocol', () => {
           }
         ]"
       `);
+  });
+});
+
+describe('output variables', () => {
+  it('valid', () => {
+    outputVariablesSchema.parse({
+      a: {
+        type: 'text',
+      },
     });
   });
+});
 
-  describe('output variables', () => {
-    it('valid', () => {
-      outputVariablesSchema.parse({
-        a: {
-          type: 'text',
-        },
-      });
-    });
-  });
-
-  describe('custom event name', () => {
-    describe('invalid', () => {
-      it('not concatenated with dots', () => {
-        expect(() => {
-          customEventSchema.parse('hello');
-        }).toThrowErrorMatchingInlineSnapshot(`
+describe('custom event name', () => {
+  describe('invalid', () => {
+    it('not concatenated with dots', () => {
+      expect(() => {
+        customEventSchema.parse('hello');
+      }).toThrowErrorMatchingInlineSnapshot(`
           "[
             {
               "code": "custom",
@@ -401,12 +402,12 @@ describe('protocol', () => {
             }
           ]"
         `);
-      });
+    });
 
-      it('hit reserved', () => {
-        expect(() => {
-          customEventSchema.parse('hello.type');
-        }).toThrowErrorMatchingInlineSnapshot(`
+    it('hit reserved', () => {
+      expect(() => {
+        customEventSchema.parse('hello.type');
+      }).toThrowErrorMatchingInlineSnapshot(`
           "[
             {
               "code": "custom",
@@ -415,37 +416,37 @@ describe('protocol', () => {
             }
           ]"
         `);
-      });
-    });
-
-    it('valid', () => {
-      customEventSchema.parse('hello.a');
     });
   });
 
-  describe('button', () => {
-    it('valid', () => {
+  it('valid', () => {
+    customEventSchema.parse('hello.a');
+  });
+});
+
+describe('button', () => {
+  it('valid', () => {
+    buttonSchema.parse({
+      event: 'hello.a',
+      payload: {
+        b: {
+          type: 'text',
+        },
+      },
+    });
+  });
+
+  it('invalid', () => {
+    expect(() => {
       buttonSchema.parse({
-        event: 'hello.a',
+        event: 'hello',
         payload: {
-          b: {
-            type: 'text',
+          id: {
+            type: 'text_not',
           },
         },
       });
-    });
-
-    it('invalid', () => {
-      expect(() => {
-        buttonSchema.parse({
-          event: 'hello',
-          payload: {
-            id: {
-              type: 'text_not',
-            },
-          },
-        });
-      }).toThrowErrorMatchingInlineSnapshot(`
+    }).toThrowErrorMatchingInlineSnapshot(`
         "[
           {
             "code": "custom",
@@ -482,13 +483,27 @@ describe('protocol', () => {
           }
         ]"
       `);
+  });
+});
+
+describe('buttons', () => {
+  it('valid', () => {
+    buttonsSchema.parse({
+      a: {
+        event: 'hello.a',
+        payload: {
+          b: {
+            type: 'text',
+          },
+        },
+      },
     });
   });
 
-  describe('buttons', () => {
-    it('valid', () => {
+  it('invalid', () => {
+    expect(() => {
       buttonsSchema.parse({
-        a: {
+        id: {
           event: 'hello.a',
           payload: {
             b: {
@@ -497,21 +512,7 @@ describe('protocol', () => {
           },
         },
       });
-    });
-
-    it('invalid', () => {
-      expect(() => {
-        buttonsSchema.parse({
-          id: {
-            event: 'hello.a',
-            payload: {
-              b: {
-                type: 'text',
-              },
-            },
-          },
-        });
-      }).toThrowErrorMatchingInlineSnapshot(`
+    }).toThrowErrorMatchingInlineSnapshot(`
         "[
           {
             "code": "custom",
@@ -522,27 +523,28 @@ describe('protocol', () => {
           }
         ]"
       `);
-    });
   });
+});
 
-  describe('render', () => {
-    it('valid', () => {
-      renderSchema.parse({
-        buttons: {
-          a: {
-            event: 'hello.a',
-            payload: {
-              b: {
-                type: 'text',
-              },
+describe('render', () => {
+  it('valid', () => {
+    renderSchema.parse({
+      buttons: {
+        a: {
+          event: 'hello.a',
+          payload: {
+            b: {
+              type: 'text',
             },
           },
         },
-      });
+      },
     });
   });
+});
 
-  it('state', () => {
+describe('state', () => {
+  it('valid', () => {
     const a = stateSchema.parse({
       name: 'state#1',
       children: {
@@ -573,6 +575,62 @@ describe('protocol', () => {
                 payload: {
                   b: {
                     type: 'text',
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    });
+  });
+});
+
+describe('scopes', () => {
+  it('valid', () => {
+    scopesSchema.parse({
+      scopes: {
+        context: {
+          variables: {
+            global_a: {
+              type: 'text',
+            },
+          },
+        },
+        states: {
+          'state#1': {
+            name: 'state#1',
+            children: {
+              inputs: {
+                variables: {
+                  a: {
+                    type: 'text',
+                  },
+                },
+              },
+              tasks: {
+                variables: {
+                  a: {
+                    type: 'task',
+                  },
+                },
+              },
+              outputs: {
+                variables: {
+                  a: {
+                    type: 'text',
+                  },
+                },
+                render: {
+                  buttons: {
+                    a: {
+                      event: 'hello.a',
+                      payload: {
+                        b: {
+                          type: 'text',
+                        },
+                      },
+                    },
                   },
                 },
               },

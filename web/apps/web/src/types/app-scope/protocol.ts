@@ -86,10 +86,9 @@ export const customKeySchema = z
         code: z.ZodIssueCode.custom,
         message: `${arg} is a reserved key`,
       });
-    } else if(arg.indexOf('.') > -1) {
+    } else if (arg.indexOf('.') > -1) {
       ctx.addIssue({
         code: z.ZodIssueCode.custom,
-        // xxx 不合法, 包含了点
         message: `${arg} is invalid, contains dots`,
       });
     }
@@ -195,3 +194,14 @@ export const stateSchema = z
   .strict();
 
 export type State = z.infer<typeof stateSchema>;
+
+export const scopesSchema = z
+  .object({
+    scopes: z.object({
+      context: z.object({
+        variables: variablesSchema,
+      }),
+      states: z.record(customKeySchema, stateSchema),
+    }),
+  })
+  .describe('All states in a graph includes start context');
