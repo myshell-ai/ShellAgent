@@ -1,6 +1,8 @@
 import argparse
 import os
 from fastapi.staticfiles import StaticFiles
+import webbrowser
+from contextlib import asynccontextmanager
 
 
 if __name__ == '__main__':
@@ -26,7 +28,17 @@ if __name__ == '__main__':
     import uvicorn
     
     app.mount("/", StaticFiles(directory=str(web_build_path), html=True), name="static")
-    
+
+    # Define the lifespan context to open the browser on startup
+    @asynccontextmanager
+    async def lifespan(app):
+        # Run this code on startup
+        webbrowser.open(f"http://127.0.0.1:{args.port}")
+        yield
+        # Code here would run on shutdown (if needed)
+        
+    app.router.lifespan_context = lifespan
+            
     config = uvicorn.Config(
         app,
         host="0.0.0.0",
@@ -34,5 +46,7 @@ if __name__ == '__main__':
         proxy_headers=True,
         forwarded_allow_ips="*",
     )
+
+
     uvicorn_server = uvicorn.Server(config=config)
     uvicorn_server.run()
