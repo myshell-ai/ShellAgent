@@ -31,19 +31,23 @@ import { genAutomata } from '@/stores/app/utils/data-transformer';
 import { validateAutomata } from '@/stores/app/utils/date-validate';
 
 import { ExportDialog } from '../export-dialog';
+import { ExtraActions } from './extra-action';
+import Publish from './publish';
 
 export const Header: React.FC = observer(() => {
   const appBuilderChatModel = useInjection(AppBuilderChatModel);
   const params = useSearchParams();
+  const version = params.get('version') as string;
 
   const id = params.get('id') as string;
-  const { metadata, flowInstance, updateMetadata, nodeData, config } =
+  const { metadata, flowInstance, nodeData, config, loading, updateMetadata } =
     useAppStore(
       useShallow(state => ({
         config: state.config,
         metadata: state.metadata,
         nodeData: state.nodeData,
         flowInstance: state.flowInstance,
+        loading: state.loading,
         updateMetadata: state.updateMetadata,
       })),
     );
@@ -91,13 +95,13 @@ export const Header: React.FC = observer(() => {
 
     if (!isEmpty(reactflow)) {
       saveData({
-        app_id: params.get('id') as string,
+        app_id: id,
         reactflow,
         automata: genAutomata(reactflow, nodeData),
         config,
       });
     }
-  }, [flowInstance, nodeData, params, saveData, config]);
+  }, [flowInstance, nodeData, id, saveData, config]);
 
   const handleRun = useCallback(async () => {
     const reactflow = flowInstance?.toObject() as IFlow;
@@ -181,14 +185,26 @@ export const Header: React.FC = observer(() => {
           variant="outline">
           Run
         </Button>
-        <Button
-          onClick={handleSave}
-          loading={saveLoading}
-          className="w-28 px-8 border border-default shadow-button-primary1 ml-3"
-          size="md"
-          icon={SaveIcon}>
-          Save
-        </Button>
+        {!version ? (
+          <Button
+            onClick={handleSave}
+            loading={saveLoading}
+            className="w-28 px-8 border border-default shadow-button-primary1 ml-3"
+            size="md"
+            color="default"
+            icon={SaveIcon}>
+            Save
+          </Button>
+        ) : null}
+        <Publish
+          app_id={id}
+          version={version}
+          config={config}
+          nodeData={nodeData}
+          flowInstance={flowInstance}
+          loading={loading.getAutomata || loading.getReactFlow}
+        />
+        <ExtraActions />
       </div>
     </div>
   );

@@ -135,7 +135,13 @@ export const Header: React.FC<{ container: HTMLElement | null }> = ({
   } = useRequest(fetchWorkflowVersionList, {
     manual: true,
     onError: error => {
-      toast.error(error.message);
+      toast.error(error.message, {
+        position: 'top-center',
+        autoClose: 1000,
+        hideProgressBar: true,
+        pauseOnHover: true,
+        closeButton: false,
+      });
     },
   });
 

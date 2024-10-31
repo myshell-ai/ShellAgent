@@ -46,6 +46,7 @@ export default function AppBuilderDetail() {
   const appBuilderChatModel = useInjection(AppBuilderChatModel);
 
   const appId = params.get('id') as string;
+  const version = params.get('version') as string;
 
   const { setFlowInstance, getReactFlow, loading, getAutomata, getFlowList } =
     useAppStore(
@@ -66,19 +67,19 @@ export default function AppBuilderDetail() {
   useEffect(() => {
     if (flowInstance) {
       setFlowInstance(flowInstance);
-      getReactFlow({ app_id: appId }, flowInstance);
+      getReactFlow({ app_id: appId, version }, flowInstance);
     }
-  }, [flowInstance, appId]);
+  }, [flowInstance, appId, version]);
 
   useEffect(() => {
     appBuilderChatModel.closeRunDrawer();
   }, [appId]);
 
   useEffect(() => {
-    getAutomata({ app_id: appId });
+    getAutomata({ app_id: appId, version });
     getWidgetList({});
     getFlowList({ type: 'workflow' });
-  }, [appId]);
+  }, [appId, version]);
 
   // 退出页面初始化状态
   useEffect(() => {
@@ -105,7 +106,7 @@ export default function AppBuilderDetail() {
           footerExtra={<ListFooterExtra />}
           header={
             <>
-              <FlowHeader appId={appId} />
+              <FlowHeader appId={appId} version={version} />
               <StateConfigSheet />
               <TransitionSheet />
             </>
