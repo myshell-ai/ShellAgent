@@ -3,10 +3,7 @@ import { FieldValues } from '@shellagent/ui';
 import { produce } from 'immer';
 
 import { IButtonType } from '@/components/app/node-form/widgets/button-editor';
-import {
-  IWorkflowTask,
-  IWidgetTask,
-} from '@/components/app/node-form/widgets/tasks-config';
+import { Task } from '@/types/task/protocol';
 import { generateUUID } from '@/utils/common-helper';
 
 // 生成uuid的偏移量
@@ -74,7 +71,7 @@ export const initData = (data: FieldValues) => {
     // 更新 blocks 中的 name 并生成 keyMap
     const blockKeyMap: { [oldKey: string]: string } = {};
     if (draft?.blocks) {
-      draft.blocks = draft.blocks?.map((block: IWorkflowTask | IWidgetTask) => {
+      draft.blocks = draft.blocks?.map((block: Task) => {
         offset += 1;
         const newName = uuid(offset);
         blockKeyMap[block?.name] = newName;
@@ -96,7 +93,7 @@ export const initData = (data: FieldValues) => {
     draft.input = replaceKeyInData(newInput, combinedKeyMap);
     draft.output = replaceKeyInData(newOutput, combinedKeyMap);
     draft.render = replaceKeyInData(draft?.render || {}, combinedKeyMap);
-    draft.blocks = draft.blocks?.map((block: IWorkflowTask | IWidgetTask) =>
+    draft.blocks = draft.blocks?.map((block: Task) =>
       replaceKeyInData(block, combinedKeyMap),
     );
   });

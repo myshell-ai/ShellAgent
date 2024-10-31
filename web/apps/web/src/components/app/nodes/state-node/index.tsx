@@ -20,6 +20,7 @@ import { isEqual } from 'lodash-es';
 import React, { useCallback, useRef, useEffect, useState } from 'react';
 import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
+import { Task, TaskSchema } from '@/types/task/protocol';
 
 import { EdgeDataTypeEnum, EdgeTypeEnum } from '@/components/app/edges';
 import NodeCard from '@/components/app/node-card';
@@ -212,36 +213,38 @@ const StateNode: React.FC<NodeProps<StateNodeType>> = ({
           item.nodeType === NodeTypeEnum.widget ||
           item.nodeType === NodeTypeEnum.workflow
         ) {
-          const newTask = {
-            type: 'task',
-            display_name: item.display_name,
-            name: uuid(),
-            mode: item.nodeType,
-            workflow_id: undefined,
-            widget_name:
-              item.nodeType === NodeTypeEnum.widget
-                ? item.widget_name
-                : undefined,
-            widget_class_name:
-              item.nodeType === NodeTypeEnum.widget ? item.name : undefined,
-            inputs: {},
-            outputs: {},
-            custom: item.custom,
-          };
+          try {
+            const newTask = TaskSchema.parse({
+              type: 'task',
+              display_name: item.display_name,
+              name: item.display_name,
+              mode: item.type,
+              ...(item.type === NodeTypeEnum.widget && {
+                widget_name: item.widget_name,
+                widget_class_name: item.name,
+              }),
+              inputs: {},
+              outputs: {},
+              custom: item.custom,
+            });
 
-          setNodeData({
-            id,
-            data: {
-              ...nodeData[id],
-              blocks: [...(nodeData[id]?.blocks || []), newTask],
-            },
-          });
-          setFormKey(uuid());
-          emitter.emit(EventType.STATE_FORM_CHANGE, {
-            id: data.id as NodeId,
-            data: `${new Date().valueOf()}`,
-            type: 'StateCard',
-          });
+            setNodeData({
+              id,
+              data: {
+                ...nodeData[id],
+                blocks: [...((nodeData[id]?.blocks as Task[]) || []), newTask],
+              },
+            });
+            setFormKey(uuid());
+            emitter.emit(EventType.STATE_FORM_CHANGE, {
+              id: data.id as NodeId,
+              data: `${new Date().valueOf()}`,
+              type: 'StateCard',
+            });
+          } catch (error) {
+            console.error('Task parse error:', error);
+            return;
+          }
         }
       },
     }),

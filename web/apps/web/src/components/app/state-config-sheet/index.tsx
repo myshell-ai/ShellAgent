@@ -19,10 +19,7 @@ import { WidgetConfig } from '@/components/app/config-form/widget-config';
 import { WorkflowConfig } from '@/components/app/config-form/workflow-config';
 import { EditableTitle } from '@/components/app/editable-title';
 import NodeForm from '@/components/app/node-form';
-import {
-  IWidgetTask,
-  IWorkflowTask,
-} from '@/components/app/node-form/widgets/tasks-config';
+import { WidgetTask, WorkflowTask } from '@/types/task/protocol';
 import { AppBuilderChatModel } from '@/components/chat/app-builder-chat.model';
 import { useAppStore } from '@/stores/app/app-provider';
 import { SchemaProvider } from '@/stores/app/schema-provider';
@@ -115,7 +112,7 @@ const StateConfigSheet: React.FC<{}> = () => {
       };
     }
     if (insideSheetMode === 'workflow') {
-      const workflow: IWorkflowTask = isNumber(currentTaskIndex)
+      const workflow: WorkflowTask = isNumber(currentTaskIndex)
         ? nodeData[currentStateId]?.blocks?.[currentTaskIndex]
         : {};
 
@@ -139,7 +136,7 @@ const StateConfigSheet: React.FC<{}> = () => {
       };
     }
     if (insideSheetMode === 'widget') {
-      const widget: IWidgetTask = isNumber(currentTaskIndex)
+      const widget: WidgetTask = isNumber(currentTaskIndex)
         ? nodeData[currentStateId]?.blocks?.[currentTaskIndex]
         : {};
       return {
@@ -233,7 +230,9 @@ const StateConfigSheet: React.FC<{}> = () => {
       placement="right"
       width={375}
       style={{
-        transform: `translateX(${appBuilderChatModel.runOpen ? `-${runDrawerWidth + 24}px` : '-12px'}) translateY(12px)`,
+        transform: `translateX(${
+          appBuilderChatModel.runOpen ? `-${runDrawerWidth + 24}px` : '-12px'
+        }) translateY(12px)`,
         height: 'calc(100% - 24px)',
       }}
       className="rounded-lg translate-x-[-12px] translate-y-3"

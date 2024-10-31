@@ -1,10 +1,6 @@
 import argparse
 import os
-import threading
-import sys
-import psutil
-import time
-import signal
+from fastapi.staticfiles import StaticFiles
 
 
 if __name__ == '__main__':
@@ -26,7 +22,17 @@ if __name__ == '__main__':
     
 
     
-    from servers.base import app
-
-    app.run(port=args.port, host="0.0.0.0", debug=False)
-
+    from servers.base import app, web_build_path
+    import uvicorn
+    
+    app.mount("/", StaticFiles(directory=str(web_build_path), html=True), name="static")
+    
+    config = uvicorn.Config(
+        app,
+        host="0.0.0.0",
+        port=args.port,
+        proxy_headers=True,
+        forwarded_allow_ips="*",
+    )
+    uvicorn_server = uvicorn.Server(config=config)
+    uvicorn_server.run()
