@@ -211,7 +211,8 @@ class Runner(BaseModel):
     def run_task(self, container, task, environ, local_vars):
         
         # block names: names of the (task) blocks of the same level
-        if hasattr(task, "comfy_workflow_id"):
+        if task.widget_class_name == "ComfyUIWidget": # hasattr(task, "comfy_workflow_id")
+            assert hasattr(task, "comfy_workflow_id"), "no comfy_workflow_id is founded"
             self.process_comfy_extra_inputs(task)
             
         if task.mode == "widget":
@@ -423,8 +424,13 @@ class Runner(BaseModel):
         
         # add user_input_false inputs
         for k, v in state.inputs.items():
+            if "CHAT_MESSAGE" in payload and v.type == "text" and v.source == "IM":
+                local_vars[k] = payload["CHAT_MESSAGE"]
+                continue
+            
             if v.user_input and k not in payload:
-                raise NotImplementedError(f"{k} requires user_input=True but no input is provided!")
+                raise NotImplementedError(f"{v.name} requires user_input=True but no input is provided!")
+            
             # for user_input = True, provide the v.default_value
             # for user_input = False, provide the v.value
             if not v.user_input and not k in payload:
@@ -432,8 +438,7 @@ class Runner(BaseModel):
                     local_vars[k] = calc_expression(v.value, local_vars)
                 else:
                     raise NotImplementedError(f"{k} user_input=False but has neither default_value nor transition payload!")
-            if "CHAT_MESSAGE" in payload and v.type == "text" and v.source == "IM":
-                local_vars[k] = payload["CHAT_MESSAGE"]
+
                     
         self.run_tasks_sequential(state, environ, local_vars)
         
@@ -550,7 +555,7 @@ class Runner(BaseModel):
             
             for input_var in target_inputs.values():
                 for k in input_var.model_dump():
-                    setattr(input_var, k, calc_expression(getattr(input_var, k), visible_variables))
+                    setattr(input_var, k, tree_map(lambda x: calc_expression(x, visible_variables), getattr(input_var, k)))
                 
             # target_inputs = tree_map(lambda x: calc_expression(x, local_vars), target_inputs)
             event_mapping[event_item["event_key"]] = {
