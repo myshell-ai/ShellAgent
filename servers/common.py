@@ -400,13 +400,42 @@ async def update_stable_route():
 async def restart():
     print("Restart signal triggered")
     
-    # Create a response
+    # check and update startup file
+    try:
+        platform = sys.platform
+        repo_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..'))
+        
+        if platform.startswith('win'):
+            # Windows system
+            startup_file = os.path.join(repo_root, 'run.bat')
+            base_file = os.path.join(repo_root, 'ShellAgent', '.ci', 'windows_base_files', 'run.bat')
+        else:
+            # Linux or MacOS system
+            startup_file = os.path.join(repo_root, 'start.sh')
+            os_folder = 'MacOS_base_files' if platform == 'darwin' else 'linux_base_files'
+            base_file = os.path.join(repo_root, 'ShellAgent', '.ci', os_folder, 'start.sh')
+        
+        # check if the files exist
+        if os.path.exists(base_file) and os.path.exists(startup_file):
+            # read and compare file contents
+            with open(base_file, 'r', encoding='utf-8') as f1, open(startup_file, 'r', encoding='utf-8') as f2:
+                base_content = f1.read()
+                current_content = f2.read()
+                
+                if base_content != current_content:
+                    # different contents, backup old file and copy new file
+                    backup_file = f"{startup_file}.bak"
+                    shutil.copy2(startup_file, backup_file)
+                    shutil.copy2(base_file, startup_file)
+                    print(f"Startup file updated and old file backed up to {backup_file}")
+    except Exception as e:
+        print(f"Error checking startup files: {str(e)}")
+    
     response = JSONResponse(content={"message": "Server is restarting"}, status_code=200)
     
-    # Use a thread to exit the program after a short delay
     def delayed_exit():
-        time.sleep(1)  # Wait for 1 second to ensure the response has been sent
-        os._exit(42)  # Use exit code 42 to indicate restart signal
+        time.sleep(1)
+        os._exit(42)
 
     threading.Thread(target=delayed_exit).start()
     
