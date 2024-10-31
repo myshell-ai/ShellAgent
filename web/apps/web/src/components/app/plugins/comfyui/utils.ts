@@ -1,6 +1,7 @@
-import type { SaveResponse, UpdateDependencyRequest } from './services/type';
-import SHA256 from 'crypto-js/sha256';
 import encHex from 'crypto-js/enc-hex';
+import SHA256 from 'crypto-js/sha256';
+
+import type { SaveResponse, UpdateDependencyRequest } from './services/type';
 
 export function isValidUrl(url: string) {
   if (!url) {
@@ -86,11 +87,10 @@ export function generateHash() {
     typeof window.crypto.randomUUID === 'function'
   ) {
     return window.crypto.randomUUID().replace(/-/g, '');
-  } else {
-    const timestamp = new Date().getTime().toString();
-    const random = Math.random().toString();
-    const data = timestamp + random;
-    const hash = SHA256(data);
-    return hash.toString(encHex).slice(0, 32);
   }
+  const timestamp = new Date().getTime().toString();
+  const random = Math.random().toString();
+  const data = timestamp + random;
+  const hash = SHA256(data);
+  return hash.toString(encHex).slice(0, 32);
 }
