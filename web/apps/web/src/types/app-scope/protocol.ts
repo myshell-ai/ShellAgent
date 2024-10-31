@@ -86,6 +86,12 @@ export const customKeySchema = z
         code: z.ZodIssueCode.custom,
         message: `${arg} is a reserved key`,
       });
+    } else if(arg.indexOf('.') > -1) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        // xxx 不合法, 包含了点
+        message: `${arg} is invalid, contains dots`,
+      });
     }
   }) satisfies z.Schema<CustomKey>;
 

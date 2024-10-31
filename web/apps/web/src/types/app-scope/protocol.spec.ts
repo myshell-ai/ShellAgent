@@ -81,17 +81,12 @@ describe('protocol', () => {
       it('simple', () => {
         variableSchema.parse({
           type: 'text',
-          // value: 'hello',
         });
       });
 
       it('recursive', () => {
         const a = variableSchema.parse({
           type: 'text',
-          // value: {
-          //   type: 'text',
-          //   // value: 'hello',
-          // },
         });
       });
     });
@@ -131,32 +126,16 @@ describe('protocol', () => {
     it('simple', () => {
       taskVariableSchema.parse({
         type: 'task',
-        // output
-        // value: {
-        //   type: 'object',
-        //   value: {
-        //     image: 'https://',
-        //     image_type: {
-        //       type: 'string',
-        //       value: 'gif'
-        //     }
-        //   }
-        // },
       });
 
       taskVariableSchema.parse({
         type: 'task',
-        // value: 'hello',
       });
     });
 
     it('recursive', () => {
       taskVariableSchema.parse({
         type: 'task',
-        // value: {
-        //   type: 'text',
-        //   value: 'hello',
-        // },
       });
     });
   });
@@ -226,7 +205,7 @@ describe('protocol', () => {
       // customKeySchema.parse('a.1a');
     });
 
-    it('to lowercase', () => {
+    it('should not be lowercase', () => {
       expect(() => {
         customKeySchema.parse('Payload');
       }).toThrowErrorMatchingInlineSnapshot(`
@@ -240,7 +219,7 @@ describe('protocol', () => {
       `);
     });
 
-    it('not snakecase', () => {
+    it('should be snakecase', () => {
       expect(() => {
         customKeySchema.parse('Hello world');
       }).toThrowErrorMatchingInlineSnapshot(`
@@ -253,6 +232,21 @@ describe('protocol', () => {
         ]"
       `);
     });
+
+    it('not contain dot', () => {
+      expect(() => {
+        customKeySchema.parse('user_prompt.');
+      }).toThrowErrorMatchingInlineSnapshot(`
+        "[
+          {
+            "code": "custom",
+            "message": "user_prompt. is invalid, contains dots",
+            "path": []
+          }
+        ]"
+      `);
+    });
+    })
   });
 
   describe('state variables', () => {
@@ -260,7 +254,6 @@ describe('protocol', () => {
       variablesSchema.parse({
         test: {
           type: 'text',
-          // value: 'test',
         },
       });
     });
@@ -270,7 +263,6 @@ describe('protocol', () => {
         variablesSchema.parse({
           properties: {
             type: 'text',
-            // value: 'test',
           },
         });
       }).toThrowErrorMatchingInlineSnapshot(`
@@ -291,7 +283,6 @@ describe('protocol', () => {
         variablesSchema.parse({
           Properties: {
             type: 'text',
-            // value: 'test',
           },
         });
       }).toThrowErrorMatchingInlineSnapshot(`
@@ -391,7 +382,6 @@ describe('protocol', () => {
       outputVariablesSchema.parse({
         a: {
           type: 'text',
-          // value: 'hi',
         },
       });
     });
@@ -440,7 +430,6 @@ describe('protocol', () => {
         payload: {
           b: {
             type: 'text',
-            // value: 'hi',
           },
         },
       });
@@ -453,7 +442,6 @@ describe('protocol', () => {
           payload: {
             id: {
               type: 'text_not',
-              // value: 'hi',
             },
           },
         });
@@ -505,7 +493,6 @@ describe('protocol', () => {
           payload: {
             b: {
               type: 'text',
-              // value: 'hi',
             },
           },
         },
@@ -520,7 +507,6 @@ describe('protocol', () => {
             payload: {
               b: {
                 type: 'text',
-                // value: 'hi',
               },
             },
           },
@@ -548,7 +534,6 @@ describe('protocol', () => {
             payload: {
               b: {
                 type: 'text',
-                // value: 'hi',
               },
             },
           },
@@ -560,18 +545,11 @@ describe('protocol', () => {
   it('state', () => {
     const a = stateSchema.parse({
       name: 'state#1',
-      // variables: {
-      //   a: {
-      //     type: 'text',
-      //     value: 'a',
-      //   },
-      // },
       children: {
         inputs: {
           variables: {
             a: {
               type: 'text',
-              // value: 'a',
             },
           },
         },
@@ -579,7 +557,6 @@ describe('protocol', () => {
           variables: {
             a: {
               type: 'task',
-              // value: 'a',
             },
           },
         },
@@ -587,7 +564,6 @@ describe('protocol', () => {
           variables: {
             a: {
               type: 'text',
-              // value: 'hi',
             },
           },
           render: {
@@ -597,7 +573,6 @@ describe('protocol', () => {
                 payload: {
                   b: {
                     type: 'text',
-                    // value: 'hi',
                   },
                 },
               },
