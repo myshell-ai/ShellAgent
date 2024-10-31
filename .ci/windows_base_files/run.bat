@@ -44,6 +44,10 @@ if not exist "output" (
     mkdir "output"
 )
 
+:: Set proxy settings for port 7890
+set HTTP_PROXY=http://127.0.0.1:7890
+set HTTPS_PROXY=http://127.0.0.1:7890
+
 ..\python_embeded\python.exe -m pip install -e .
 ..\python_embeded\python.exe -m playwright install chromium
 ..\python_embeded\python.exe servers\main.py
