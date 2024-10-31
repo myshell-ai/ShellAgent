@@ -200,6 +200,7 @@ export const AppBuilderChatLuiButtonModal = observer(() => {
   const model = useInjection(AppBuilderChatModel);
   return (
     <AModal
+      destroyOnClose
       width="50%"
       open={model.isLuiButtonModalOpen}
       title={<Title size="h3">Enter to run</Title>}
