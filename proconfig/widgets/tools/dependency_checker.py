@@ -132,9 +132,9 @@ def check_dependency_recursive(config, non_existed_models: list, missing_models:
                 undefined_widgets.append(config.widget_class_name)
         elif config.mode == "widget":
             if hasattr(config, "comfy_workflow_id"):
+                config.mode = "comfy_workflow"
                 if config.comfy_workflow_id not in comfyui_workflow_ids:
                     comfyui_workflow_ids.append(config.comfy_workflow_id)
-                    config.mode = "comfy_workflow"
                 return # models in ComfyWorkflowTask already checked
             non_existed_models, missing_models = check_missing_models(config, non_existed_models, missing_models, local_vars)
             missing_widgets = check_missing_widgets(config, missing_widgets)

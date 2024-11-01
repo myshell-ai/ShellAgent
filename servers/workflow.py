@@ -19,6 +19,7 @@ from proconfig.widgets.imagen_widgets.utils.model_manager import safe_download
 from proconfig.utils.widget_manager import install_widget
 
 from typing import Dict
+from fastapi import HTTPException
 from fastapi.responses import JSONResponse, StreamingResponse
 from servers.base import app, WORKFLOW_SAVE_ROOT, MODEL_DIR, CUSTOM_WIDGETS_DIR, WORKFLOW_RUNS_SAVE_ROOT
 
@@ -131,6 +132,37 @@ async def save(data: Dict) -> Dict:
         }
     
     return response
+
+
+@app.post("/api/workflow/get_version_list")
+async def get_version_list(data: Dict):
+    flow_id = data.get("flow_id")
+
+    if not flow_id:
+        raise HTTPException(status_code=400, detail="flow_id is required")
+
+    flow_path = os.path.join(WORKFLOW_SAVE_ROOT, flow_id)
+
+    if not os.path.exists(flow_path):
+        raise HTTPException(status_code=404, detail="Flow ID not found")
+
+    versions = os.listdir(flow_path)
+    if not versions:
+        return {"data": []}
+
+    # Reorder the versions as in the original code
+    versions = [versions[0]] + versions[1:][::-1]
+
+    return_data = []
+    for version in versions:
+        version_path = os.path.join(flow_path, version)
+        create_time = os.path.getctime(version_path)
+        return_data.append({
+            "version_name": version,
+            "create_time": create_time
+        })
+
+    return {"data": return_data}
 
 @app.post("/api/workflow/release")
 async def release(data: Dict) -> Dict:
