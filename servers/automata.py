@@ -97,6 +97,8 @@ async def get_version_list(data: Dict):
 async def release(data: Dict) -> Dict:
     flow_id = data["app_id"]
     backend = data["automata"]
+    metadata = data["metadata"]
+    
     tag = data.get("version_name", "")
     
     # Calculate version hash and construct the save tag
@@ -113,6 +115,8 @@ async def release(data: Dict) -> Dict:
         json.dump(backend, backend_file, indent=2)
     with open(f"{save_root}/reactflow.json", "w") as frontend_file:
         json.dump(frontend, frontend_file, indent=2)
+    with open(f"{save_root}/metadata.json", "w") as metadata_file:
+        json.dump(metadata, metadata_file, indent=2)
     
     response = {
         "success": True
@@ -173,12 +177,16 @@ async def export_app(data: dict):
     try:
         automata_path = os.path.join(APP_SAVE_ROOT, data["app_id"], data["version_name"], "automata.json")
         metadata_path = os.path.join(APP_SAVE_ROOT, data["app_id"], data["version_name"], "metadata.json")
+        reactflow_path = os.path.join(APP_SAVE_ROOT, data["app_id"], data["version_name"], "reactflow.json")
         
         with open(metadata_path) as f:
             metadata = json.load(f)
         
         with open(automata_path) as f:
             automata = json.load(f)
+            
+        with open(reactflow_path) as f:
+            reactflow = json.load(f)
         
         dependency_results, automata = check_dependency(automata)
         
@@ -230,6 +238,7 @@ async def export_app(data: dict):
                 "comfyui_workflows": comfyui_workflows,
                 "comfyui_dependencies": comfyui_dependencies,
                 "metadata": metadata,
+                "reactflow": reactflow,
                 "dependency": {
                     "models": dependency_results["models"],
                     "widgets": dependency_results["widgets"]
