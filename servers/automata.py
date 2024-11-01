@@ -97,6 +97,11 @@ async def get_version_list(data: Dict):
 async def release(data: Dict) -> Dict:
     flow_id = data["app_id"]
     backend = data["automata"]
+<<<<<<< HEAD
+    metadata = data["metadata"]
+    
+=======
+>>>>>>> 4f93343d5c0f970560d70c42229cfb7f0e94f1a2
     tag = data.get("version_name", "")
     
     # Calculate version hash and construct the save tag
@@ -109,10 +114,19 @@ async def release(data: Dict) -> Dict:
     os.makedirs(save_root, exist_ok=True)
     
     # Save backend, frontend, and metadata to JSON files
+<<<<<<< HEAD
+    with open(f"{save_root}/automata.json", "w") as backend_file:
+        json.dump(backend, backend_file, indent=2)
+    with open(f"{save_root}/reactflow.json", "w") as frontend_file:
+        json.dump(frontend, frontend_file, indent=2)
+    with open(f"{save_root}/metadata.json", "w") as metadata_file:
+        json.dump(metadata, metadata_file, indent=2)
+=======
     with open(f"{save_root}/proconfig.json", "w") as backend_file:
         json.dump(backend, backend_file, indent=2)
     with open(f"{save_root}/reactflow.json", "w") as frontend_file:
         json.dump(frontend, frontend_file, indent=2)
+>>>>>>> 4f93343d5c0f970560d70c42229cfb7f0e94f1a2
     
     response = {
         "success": True
@@ -132,6 +146,7 @@ async def get_automata(data: Dict):
         if os.path.isfile(proconfig_file):
             proconfig = json.load(open(proconfig_file))
         else:
+            print(proconfig_file)
             proconfig = {}
 
         return {"data": proconfig}
@@ -173,12 +188,16 @@ async def export_app(data: dict):
     try:
         automata_path = os.path.join(APP_SAVE_ROOT, data["app_id"], data["version_name"], "automata.json")
         metadata_path = os.path.join(APP_SAVE_ROOT, data["app_id"], data["version_name"], "metadata.json")
+        reactflow_path = os.path.join(APP_SAVE_ROOT, data["app_id"], data["version_name"], "reactflow.json")
         
         with open(metadata_path) as f:
             metadata = json.load(f)
         
         with open(automata_path) as f:
             automata = json.load(f)
+            
+        with open(reactflow_path) as f:
+            reactflow = json.load(f)
         
         dependency_results, automata = check_dependency(automata)
         
@@ -230,6 +249,7 @@ async def export_app(data: dict):
                 "comfyui_workflows": comfyui_workflows,
                 "comfyui_dependencies": comfyui_dependencies,
                 "metadata": metadata,
+                "reactflow": reactflow,
                 "dependency": {
                     "models": dependency_results["models"],
                     "widgets": dependency_results["widgets"]
@@ -445,7 +465,7 @@ def process_text_embeded_uri(text):
         
         new_file_uri = file_uri.strip()
         print("file_uri:", file_uri)
-        if os.path.isfile(file_uri):
+        if os.path.isfile(new_file_uri):
             new_file_uri = "/api/files/" + new_file_uri
         new_attributes = attributes.replace(file_uri, new_file_uri)
         return f"<{tag} {new_attributes}>"
@@ -514,7 +534,10 @@ def parse_server_message(session_id, render, event_mapping, message_count):
             if not type(render[media_key]) == list:
                 render[media_key] = [render[media_key]]
             for media in render[media_key]:
-                ext = media.rsplit(".", 1)[-1]
+                try:
+                    ext = media.rsplit(".", 1)[-1]
+                except:
+                    raise ValueError(f"{media} is not a valid {media_key}. Please check the automata defination.")
                 media_obj = EmbedObj(
                     id=None,
                     status=EmbedObjStatus.DONE,

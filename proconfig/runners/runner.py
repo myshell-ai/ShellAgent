@@ -222,7 +222,7 @@ class Runner(BaseModel):
         elif task.mode == "block":
             return self.run_block_task(task, environ, local_vars)
         else:
-            raise NotImplementedError()
+            raise NotImplementedError(f"task mode is {task.mode}, which is not supported")
 
 
     def load_breakpoint_backup(self, workflow: Workflow):
