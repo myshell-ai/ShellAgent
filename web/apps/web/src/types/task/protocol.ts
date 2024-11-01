@@ -1,6 +1,14 @@
 import { z } from 'zod';
-import { NodeTypeEnum } from '@shellagent/flow-engine';
-import { customKeySchema } from '@/types/app-scope/protocol';
+// import { NodeTypeEnum } from '@shellagent/flow-engine';
+import { customKeySchema } from '../app-scope/protocol';
+
+export const nodeTypeSchema = z.enum([
+  'start',
+  'end',
+  'widget',
+  'state',
+  'workflow',
+]);
 
 // 基础任务模式
 const BaseTaskSchema = z
@@ -8,7 +16,7 @@ const BaseTaskSchema = z
     type: z.literal('task'),
     display_name: z.string(),
     name: customKeySchema,
-    mode: z.nativeEnum(NodeTypeEnum),
+    mode: nodeTypeSchema,
     inputs: z.record(z.string()),
     outputs: z.record(z.string()),
     custom: z.boolean().optional(),
@@ -17,13 +25,13 @@ const BaseTaskSchema = z
 
 // Workflow 任务模式
 const WorkflowTaskSchema = BaseTaskSchema.extend({
-  mode: z.literal(NodeTypeEnum.workflow),
+  mode: z.literal(nodeTypeSchema.Enum.workflow),
   workflow_id: z.string().uuid().optional(),
 }).strict();
 
 // Widget 任务模式
 const WidgetTaskSchema = BaseTaskSchema.extend({
-  mode: z.literal(NodeTypeEnum.widget),
+  mode: z.literal(nodeTypeSchema.Enum.widget),
   widget_name: z.string().optional(),
   widget_class_name: z.string(),
 }).strict();

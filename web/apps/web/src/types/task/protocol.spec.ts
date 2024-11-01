@@ -1,5 +1,4 @@
-import { TaskSchema, Task } from './protocol';
-import { NodeTypeEnum } from '@shellagent/flow-engine';
+import { TaskSchema, Task, nodeTypeSchema } from './protocol';
 import { ZodError } from 'zod';
 
 describe('TaskSchema', () => {
@@ -8,7 +7,7 @@ describe('TaskSchema', () => {
       type: 'task',
       display_name: 'Sample Workflow Task',
       name: 'workflow_task_1',
-      mode: NodeTypeEnum.workflow,
+      mode: nodeTypeSchema.Enum.workflow,
       workflow_id: '123e4567-e89b-12d3-a456-426614174000',
       inputs: {
         input1: 'value1',
@@ -27,7 +26,7 @@ describe('TaskSchema', () => {
       type: 'task',
       display_name: 'Sample Widget Task',
       name: 'widget_task_1',
-      mode: NodeTypeEnum.widget,
+      mode: nodeTypeSchema.Enum.widget,
       widget_name: 'SampleWidget',
       widget_class_name: 'SampleWidgetClass',
       inputs: {
@@ -45,7 +44,7 @@ describe('TaskSchema', () => {
     const invalidTaskMissingFields = {
       type: 'task',
       display_name: 'Task Missing Fields',
-      mode: NodeTypeEnum.workflow,
+      mode: nodeTypeSchema.Enum.workflow,
       // Missing 'name', 'workflow_id', 'inputs', 'outputs'
     };
 
@@ -57,7 +56,7 @@ describe('TaskSchema', () => {
       type: 'task',
       display_name: 'Task with Extra Fields',
       name: 'extra_field_task',
-      mode: NodeTypeEnum.widget,
+      mode: nodeTypeSchema.Enum.widget,
       widget_name: 'ExtraWidget',
       widget_class_name: 'ExtraWidgetClass',
       extra_field: 'Unexpected Field', // Extra field
@@ -88,7 +87,7 @@ describe('TaskSchema', () => {
       type: 'task',
       display_name: 'WorkflowTask without workflow_id',
       name: 'invalid_workflow_task',
-      mode: NodeTypeEnum.workflow,
+      mode: nodeTypeSchema.Enum.workflow,
       inputs: {},
       outputs: {},
     };
@@ -101,7 +100,7 @@ describe('TaskSchema', () => {
       type: 'task',
       display_name: 'WidgetTask Missing widget_name',
       name: 'invalid_widget_task_1',
-      mode: NodeTypeEnum.widget,
+      mode: nodeTypeSchema.Enum.widget,
       widget_class_name: 'MissingNameClass',
       inputs: {},
       outputs: {},
@@ -117,7 +116,7 @@ describe('TaskSchema', () => {
       type: 'task',
       display_name: 'WidgetTask Missing widget_class_name',
       name: 'invalid_widget_task_2',
-      mode: NodeTypeEnum.widget,
+      mode: nodeTypeSchema.Enum.widget,
       widget_name: 'MissingClassNameWidget',
       inputs: {},
       outputs: {},
@@ -133,7 +132,7 @@ describe('TaskSchema', () => {
       type: 'task',
       display_name: 'Task with Custom Field',
       name: 'custom_task',
-      mode: NodeTypeEnum.workflow,
+      mode: nodeTypeSchema.Enum.workflow,
       workflow_id: '123e4567-e89b-12d3-a456-426614174000',
       inputs: {},
       outputs: {},
@@ -148,7 +147,7 @@ describe('TaskSchema', () => {
       type: 'task',
       display_name: 'Task without Custom Field',
       name: 'no_custom_task',
-      mode: NodeTypeEnum.widget,
+      mode: nodeTypeSchema.Enum.widget,
       widget_name: 'NoCustomWidget',
       widget_class_name: 'NoCustomWidgetClass',
       inputs: {},
@@ -164,7 +163,7 @@ describe('TaskSchema', () => {
       type: 'task',
       display_name: 'Task with Extra Keys',
       name: 'extra_keys_task',
-      mode: NodeTypeEnum.widget,
+      mode: nodeTypeSchema.Enum.widget,
       widget_name: 'ExtraKeysWidget',
       widget_class_name: 'ExtraKeysWidgetClass',
       unexpected_key: 'unexpected_value', // Extra key
@@ -182,7 +181,7 @@ describe('TaskSchema', () => {
       type: 'task',
       display_name: 'Task with Non-String Inputs and Outputs',
       name: 'invalid_io_task',
-      mode: NodeTypeEnum.workflow,
+      mode: nodeTypeSchema.Enum.workflow,
       workflow_id: '123e4567-e89b-12d3-a456-426614174000',
       inputs: {
         input1: 123, // Non-string value
@@ -200,7 +199,7 @@ describe('TaskSchema', () => {
       type: 'task',
       display_name: 'Task with Non-Boolean Custom Field',
       name: 'invalid_custom_task',
-      mode: NodeTypeEnum.widget,
+      mode: nodeTypeSchema.Enum.widget,
       widget_name: 'InvalidCustomWidget',
       widget_class_name: 'InvalidCustomWidgetClass',
       inputs: {},
@@ -216,7 +215,7 @@ describe('TaskSchema', () => {
       type: 'task',
       display_name: 'WorkflowTask with Non-UUID workflow_id',
       name: 'invalid_workflow_id_task',
-      mode: NodeTypeEnum.workflow,
+      mode: nodeTypeSchema.Enum.workflow,
       workflow_id: 'invalid-uuid',
       inputs: {},
       outputs: {},
