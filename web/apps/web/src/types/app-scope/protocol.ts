@@ -115,17 +115,17 @@ export const customEventSchema = z
 // FIX: Currently, ⁠variables should not contain a value as role of a subview.
 // But the root issue is that type and data info are mixed within the subview.
 // This should be refactored in Q4.
-export const taskVariableSchema = z
-  .object({
-    type: z.literal('task'),
-    // value: z.union([variableSchema, z.string()]),
-  })
-  .strict();
+// export const taskVariableSchema = z
+//   .object({
+//     type: z.literal('task'),
+//     // value: z.union([variableSchema, z.string()]),
+//   })
+//   .strict();
 
-export const taskVariablesSchema = z.record(
-  customKeySchema,
-  taskVariableSchema,
-);
+// export const taskVariablesSchema = z.record(
+//   customKeySchema,
+//   taskVariableSchema,
+// );
 
 export const outputContextNameSchema = z
   .custom<`context.${CustomKey}`>()
@@ -172,21 +172,22 @@ export const renderSchema = z
   })
   .strict();
 
+
+export const taskSchema = z.object({
+  name: z.string(),
+  variables: variablesSchema
+})
+
 export const stateSchema = z
   .object({
     name: z.string(),
-    // variables: z.record(customKeySchema, variableSchema), // TO REMOVE: redundant with outputs variables
     children: z.object({
       inputs: z.object({
         variables: variablesSchema,
       }),
-      tasks: z.object({
-        variables: taskVariablesSchema,
-      }),
+      tasks: z.array(taskSchema),
       outputs: z.object({
-        variables: outputVariablesSchema.describe(
-          'Actually represents state output',
-        ),
+        variables: outputVariablesSchema,
         render: renderSchema,
       }),
     }),
@@ -205,3 +206,5 @@ export const scopesSchema = z
     }),
   })
   .describe('All states in a graph includes start context');
+
+export type Scopes = z.infer<typeof scopesSchema>;

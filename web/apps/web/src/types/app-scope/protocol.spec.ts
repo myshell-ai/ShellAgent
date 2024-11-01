@@ -11,7 +11,8 @@ import {
   reservedKeySchema,
   scopesSchema,
   stateSchema,
-  taskVariableSchema,
+  taskSchema,
+  // taskVariableSchema,
   variableSchema,
   variablesSchema,
 } from './protocol';
@@ -123,23 +124,36 @@ describe('protocol', () => {
     });
   });
 
-  describe('task variable', () => {
+  describe('task', () => {
     it('simple', () => {
-      taskVariableSchema.parse({
-        type: 'task',
-      });
+      taskSchema.parse({
+        name: 'gpt',
+        variables: {
+          reply: {
+            type: 'text'
+          }
+        }
+      })
+    })
+  })
 
-      taskVariableSchema.parse({
-        type: 'task',
-      });
-    });
+  // describe('task variable', () => {
+  //   it('simple', () => {
+  //     taskVariableSchema.parse({
+  //       type: 'task',
+  //     });
 
-    it('recursive', () => {
-      taskVariableSchema.parse({
-        type: 'task',
-      });
-    });
-  });
+  //     taskVariableSchema.parse({
+  //       type: 'task',
+  //     });
+  //   });
+
+  //   it('recursive', () => {
+  //     taskVariableSchema.parse({
+  //       type: 'task',
+  //     });
+  //   });
+  // });
 
   describe('custom key', () => {
     it('reserved', () => {
@@ -555,13 +569,25 @@ describe('state', () => {
             },
           },
         },
-        tasks: {
-          variables: {
-            a: {
-              type: 'task',
-            },
-          },
-        },
+        // tasks: {
+        //   'task_1': {
+        //     variables: {
+        //       a: {
+        //         type: 'task',
+        //       },
+        //     },
+        //   }
+        // },
+        tasks: [
+          {
+            name: 'gpt',
+            variables: {
+              reply: {
+                type: 'text'
+              }
+            }
+          }
+        ],
         outputs: {
           variables: {
             a: {
@@ -584,6 +610,24 @@ describe('state', () => {
       },
     });
   });
+
+  it('most simple', () => {
+    const a = stateSchema.parse({
+      name: 'state#1',
+      children: {
+        inputs: {
+          variables: {},
+        },
+        tasks: [],
+        outputs: {
+          variables: {},
+          render: {
+            buttons: {},
+          },
+        },
+      },
+    });
+  })
 });
 
 describe('scopes', () => {
@@ -608,13 +652,16 @@ describe('scopes', () => {
                   },
                 },
               },
-              tasks: {
-                variables: {
-                  a: {
-                    type: 'task',
-                  },
-                },
-              },
+              tasks: [
+                {
+                  name: 'gpt',
+                  variables: {
+                    reply: {
+                      type: 'text'
+                    }
+                  }
+                }
+              ],
               outputs: {
                 variables: {
                   a: {
