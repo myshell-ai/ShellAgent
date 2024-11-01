@@ -263,67 +263,95 @@ async def check_repo_status():
     except Exception as e:
         print(f"Error fetching information from the remote repository: {str(e)}")
 
-    has_new_stable = False
-    current_tag = None
-    current_version = None
-    target_release_date = None
+    if "SHELLAGENT_BRANCH" in os.environ and os.environ['SHELLAGENT_BRANCH'] != 'main':
+        branch = os.environ['SHELLAGENT_BRANCH']
+        try:
+            # Try to get the branch reference
+            latest_commit = repo.revparse_single(f'refs/remotes/origin/{branch}')
+            # set the target release date to the latest commit date
+            target_release_date = datetime.fromtimestamp(latest_commit.commit_time).strftime('%Y-%m-%d')
+            if (repo.merge_base(latest_commit.id, repo.head.target) == repo.head.target and latest_commit.id != repo.head.target) or repo.head.shorthand != branch:
+                response_data = {
+                    "has_new_stable": True,
+                    "current_version": str(repo.head.target)[:7],
+                    "target_release_date": target_release_date,
+                    "latest_tag_name": branch,
+                    "changelog": ""
+                }
+            else: 
+                response_data = {
+                    "has_new_stable": False,
+                    "current_version": str(repo.head.target)[:7],
+                    "target_release_date": target_release_date
+                }
+        except KeyError:
+            # If branch not found, raise HTTP exception
+            raise HTTPException(
+                status_code=404, 
+                detail=f"Branch '{branch}' not found in remote repository"
+            )
+    else:
+        has_new_stable = False
+        current_tag = None
+        current_version = None
+        target_release_date = None
 
-    current_branch = repo.head.shorthand
+        current_branch = repo.head.shorthand
 
-    latest_commit = repo.revparse_single(current_branch)
-    current_commit_id = str(latest_commit.id)
+        latest_commit = repo.revparse_single(current_branch)
+        current_commit_id = str(latest_commit.id)
 
-    for reference in repo.references:
-        if reference.startswith('refs/tags/v'):
-            tag = repo.lookup_reference(reference)
-            if tag.peel().id == latest_commit.id:
-                current_tag = reference
-                current_version = reference.split('/')[-1]
-                break
+        for reference in repo.references:
+            if reference.startswith('refs/tags/v'):
+                tag = repo.lookup_reference(reference)
+                if tag.peel().id == latest_commit.id:
+                    current_tag = reference
+                    current_version = reference.split('/')[-1]
+                    break
 
-    if not current_version:
-        current_version = current_commit_id[:7]  # Use short commit id
+        if not current_version:
+            current_version = current_commit_id[:7]  # Use short commit id
 
-    print(f'current_version: {current_version}')
+        print(f'current_version: {current_version}')
 
-    latest_tag = max(
-        (ref for ref in repo.references if ref.startswith('refs/tags/v')),
-        key=lambda x: [int(i) for i in x.split('/')[-1][1:].split('.')]
-    )
-    latest_tag_ref = repo.lookup_reference(latest_tag)
-    latest_tag_commit = latest_tag_ref.peel(pygit2.GIT_OBJECT_COMMIT)
-    print(f"latest_tag: {latest_tag}")
+        latest_tag = max(
+            (ref for ref in repo.references if ref.startswith('refs/tags/v')),
+            key=lambda x: [int(i) for i in x.split('/')[-1][1:].split('.')]
+        )
+        latest_tag_ref = repo.lookup_reference(latest_tag)
+        latest_tag_commit = latest_tag_ref.peel(pygit2.GIT_OBJECT_COMMIT)
+        print(f"latest_tag: {latest_tag}")
 
-    # Check if the latest stable version is newer than the current commit
-    has_new_stable = repo.merge_base(latest_tag_commit.id, latest_commit.id) == latest_commit.id and latest_tag_commit.id != latest_commit.id
-    latest_tag_name = latest_tag.split('/')[-1]
+        # Check if the latest stable version is newer than the current commit
+        has_new_stable = repo.merge_base(latest_tag_commit.id, latest_commit.id) == latest_commit.id and latest_tag_commit.id != latest_commit.id
+        latest_tag_name = latest_tag.split('/')[-1]
 
-    changelog = ""
-    
-    if has_new_stable:
-        # Get changelog and release date
-        github_api_url = f"https://api.github.com/repos/myshell-ai/ShellAgent/releases/tags/{latest_tag_name}"
-        response = requests.get(github_api_url)
-        if response.status_code == 200:
-            release_data = response.json()
-            changelog = release_data.get('body', 'No changelog found')
-            target_release_date = release_data.get('published_at', 'Unknown')
-        else:
-            changelog = f"Failed to get changelog. HTTP status code: {response.status_code}"
-            target_release_date = 'Unknown'
+        changelog = ""
+        
+        if has_new_stable:
+            # Get changelog and release date
+            github_api_url = f"https://api.github.com/repos/myshell-ai/ShellAgent/releases/tags/{latest_tag_name}"
+            response = requests.get(github_api_url)
+            if response.status_code == 200:
+                release_data = response.json()
+                changelog = release_data.get('body', 'No changelog found')
+                target_release_date = release_data.get('published_at', 'Unknown')
+            else:
+                changelog = f"Failed to get changelog. HTTP status code: {response.status_code}"
+                target_release_date = 'Unknown'
 
-        print(f"Latest tag: {latest_tag_name}")
-        print(f"Changelog:\n{changelog}")
-        print(f"Release date: {target_release_date}")
+            print(f"Latest tag: {latest_tag_name}")
+            print(f"Changelog:\n{changelog}")
+            print(f"Release date: {target_release_date}")
 
-    response_data = {
-        "has_new_stable": has_new_stable,
-        "current_version": current_version,
-        "target_release_date": target_release_date
-    }
-    if has_new_stable:
-        response_data["latest_tag_name"] = latest_tag_name
-        response_data["changelog"] = changelog
+        response_data = {
+            "has_new_stable": has_new_stable,
+            "current_version": current_version,
+            "target_release_date": target_release_date
+        }
+        if has_new_stable:
+            response_data["latest_tag_name"] = latest_tag_name
+            response_data["changelog"] = changelog
 
     # Update the last check time before returning the response
     os.makedirs(os.path.dirname(LAST_CHECK_FILE), exist_ok=True)
@@ -336,10 +364,29 @@ def update_stable():
     try:
         script_path = os.path.join('.ci', 'update', 'update.py')
         python_exe = sys.executable
-        result = subprocess.run([python_exe, script_path, './', '--stable'], capture_output=True, text=True, check=True)
-        return result.stdout
-    except subprocess.CalledProcessError as e:
-        raise Exception(f"update failed: {e.stderr}")
+        
+        process = subprocess.Popen(
+            [python_exe, script_path, './', '--stable'],
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            text=True,
+            universal_newlines=True
+        )
+        
+        stdout, stderr = process.communicate()
+        
+        if stdout:
+            print(stdout)
+        if stderr:
+            print(stderr, file=sys.stderr)
+            
+        if process.returncode != 0:
+            raise Exception(f"Update failed with return code: {process.returncode}")
+            
+        return stdout + stderr if stderr else stdout
+        
+    except Exception as e:
+        raise Exception(f"Update failed: {str(e)}")
 
 @app.get('/api/update/stable')
 async def update_stable_route():
@@ -353,13 +400,42 @@ async def update_stable_route():
 async def restart():
     print("Restart signal triggered")
     
-    # Create a response
+    # check and update startup file
+    try:
+        platform = sys.platform
+        repo_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..'))
+        
+        if platform.startswith('win'):
+            # Windows system
+            startup_file = os.path.join(repo_root, 'run.bat')
+            base_file = os.path.join(repo_root, 'ShellAgent', '.ci', 'windows_base_files', 'run.bat')
+        else:
+            # Linux or MacOS system
+            startup_file = os.path.join(repo_root, 'start.sh')
+            os_folder = 'MacOS_base_files' if platform == 'darwin' else 'linux_base_files'
+            base_file = os.path.join(repo_root, 'ShellAgent', '.ci', os_folder, 'start.sh')
+        
+        # check if the files exist
+        if os.path.exists(base_file) and os.path.exists(startup_file):
+            # read and compare file contents
+            with open(base_file, 'r', encoding='utf-8') as f1, open(startup_file, 'r', encoding='utf-8') as f2:
+                base_content = f1.read()
+                current_content = f2.read()
+                
+                if base_content != current_content:
+                    # different contents, backup old file and copy new file
+                    backup_file = f"{startup_file}.bak"
+                    shutil.copy2(startup_file, backup_file)
+                    shutil.copy2(base_file, startup_file)
+                    print(f"Startup file updated and old file backed up to {backup_file}")
+    except Exception as e:
+        print(f"Error checking startup files: {str(e)}")
+    
     response = JSONResponse(content={"message": "Server is restarting"}, status_code=200)
     
-    # Use a thread to exit the program after a short delay
     def delayed_exit():
-        time.sleep(1)  # Wait for 1 second to ensure the response has been sent
-        os._exit(42)  # Use exit code 42 to indicate restart signal
+        time.sleep(1)
+        os._exit(42)
 
     threading.Thread(target=delayed_exit).start()
     

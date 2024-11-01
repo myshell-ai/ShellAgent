@@ -49,6 +49,11 @@ def pull(repo, remote_name='origin', branch='main'):
 
 pygit2.option(pygit2.GIT_OPT_SET_OWNER_VALIDATION, 0)
 repo_path = str(sys.argv[1])
+if "SHELLAGENT_BRANCH" in os.environ:
+    branch_name = os.environ['SHELLAGENT_BRANCH']
+else:
+    branch_name = 'main'
+
 repo = pygit2.Repository(repo_path)
 ident = pygit2.Signature('shellagent', 'shellagent@myshell.ai')
 
@@ -94,22 +99,26 @@ try:
 except:
     pass
 
-print("Checking out main branch")
-branch = repo.lookup_branch('main')
+print(f"Checking out {branch_name} branch")
+branch = repo.lookup_branch(branch_name)
 if branch is None:
     ref = repo.lookup_reference('refs/remotes/origin/main')
     repo.checkout(ref)
-    branch = repo.lookup_branch('main')
+    branch = repo.lookup_branch(branch_name)
     if branch is None:
-        repo.create_branch('main', repo.get(ref.target))
+        repo.create_branch(branch_name, repo.get(ref.target))
 else:
     ref = repo.lookup_reference(branch.name)
     repo.checkout(ref)
 
 print("Pulling latest changes")
-pull(repo, branch='main')
+if branch_name != 'main':
+    subprocess.run(['git', '-C', repo_path, 'checkout', branch_name])
+    subprocess.run(['git', '-C', repo_path, 'pull', 'origin', branch_name])
+else:
+    pull(repo, branch=branch_name)
 
-if "--stable" in sys.argv:
+if "--stable" in sys.argv and branch_name == 'main':
     def latest_tag(repo):
         versions = []
         for k in repo.references:
@@ -140,31 +149,63 @@ if "--stable" in sys.argv:
 def download_latest_web_build():
     print("Downloading the latest web-build...")
 
-    # Get the latest release information
-    api_url = "https://api.github.com/repos/myshell-ai/ShellAgent/releases/latest"
-    response = requests.get(api_url)
-    if response.status_code != 200:
-        print("Failed to get the latest release information")
-        return
+    if branch_name != 'main':
+        if 'WEB_BUILD_URL' not in os.environ:
+            print("WEB_BUILD_URL is not set")
+            return
+        download_url = os.environ['WEB_BUILD_URL']
+        try:
+            # URL format like: https://github.com/myshell-ai/ShellAgent/actions/runs/{run_id}/artifacts/{artifact_id}
+            parts = download_url.split('/')
+            artifact_id = parts[-1]
+            owner = "myshell-ai"
+            repo = "ShellAgent"
+            
+            # Construct GitHub API URL
+            api_url = f"https://api.github.com/repos/{owner}/{repo}/actions/artifacts/{artifact_id}/zip"
+            
+            # Set GitHub API authentication headers
+            headers = {
+                'Authorization': f'token {os.environ.get("GITHUB_TOKEN")}',
+                'Accept': 'application/vnd.github+json'
+            }
+            
+            response = requests.get(api_url, headers=headers)
+            response.raise_for_status()
+            
+            with open('web-build.zip', 'wb') as f:
+                f.write(response.content)
+            print("Download completed successfully")
+        except Exception as e:
+            print(f"Failed to download web-build: {e}")
+            return
+    else:
+        # Get the latest release information
+        api_url = "https://api.github.com/repos/myshell-ai/ShellAgent/releases/latest"
+        response = requests.get(api_url)
+        if response.status_code != 200:
+            print("Failed to get the latest release information")
+            return
 
-    release_info = response.json()
-    web_build_asset = next((asset for asset in release_info['assets'] if asset['name'] == 'web-build.zip'), None)
+        release_info = response.json()
+        web_build_asset = next((asset for asset in release_info['assets'] if asset['name'] == 'web-build.zip'), None)
 
-    if not web_build_asset:
-        print("web-build.zip resource not found")
-        return
+        if not web_build_asset:
+            print("web-build.zip resource not found")
+            return
 
-    # Download web-build
-    download_url = web_build_asset['browser_download_url']
-    response = requests.get(download_url)
+        # Download web-build
+        download_url = web_build_asset['browser_download_url']
 
-    if response.status_code != 200:
-        print("Failed to download web-build")
-        return
+        response = requests.get(download_url)
 
-    # Save and extract web-build
-    with open('web-build.zip', 'wb') as f:
-        f.write(response.content)
+        if response.status_code != 200:
+            print("Failed to download web-build")
+            return
+
+        # Save and extract web-build
+        with open('web-build.zip', 'wb') as f:
+            f.write(response.content)
 
     target_dir = os.path.join(repo_path, "servers", "web-build")
     if os.path.exists(target_dir):
@@ -179,52 +220,3 @@ def download_latest_web_build():
 download_latest_web_build()
 
 print("Done!")
-
-self_update = True
-if len(sys.argv) > 2:
-    self_update = '--skip_self_update' not in sys.argv
-
-update_py_path = os.path.realpath(__file__)
-repo_update_py_path = os.path.join(repo_path, ".ci/update_windows/update.py")
-
-cur_path = os.path.dirname(update_py_path)
-
-
-req_path = os.path.join(cur_path, "current_requirements.txt")
-repo_req_path = os.path.join(repo_path, "requirements.txt")
-
-
-def files_equal(file1, file2):
-    try:
-        return filecmp.cmp(file1, file2, shallow=False)
-    except:
-        return False
-
-def file_size(f):
-    try:
-        return os.path.getsize(f)
-    except:
-        return 0
-
-
-if self_update and not files_equal(update_py_path, repo_update_py_path) and file_size(repo_update_py_path) > 10:
-    shutil.copy(repo_update_py_path, os.path.join(cur_path, "update_new.py"))
-    exit()
-
-if not os.path.exists(req_path) or not files_equal(repo_req_path, req_path):
-    import subprocess
-    try:
-        subprocess.check_call([sys.executable, '-s', '-m', 'pip', 'install', '-r', repo_req_path])
-        shutil.copy(repo_req_path, req_path)
-    except:
-        pass
-
-
-stable_update_script = os.path.join(repo_path, ".ci/update_windows/update_comfyui_stable.bat")
-stable_update_script_to = os.path.join(cur_path, "update_comfyui_stable.bat")
-
-try:
-    if not file_size(stable_update_script_to) > 10:
-        shutil.copy(stable_update_script, stable_update_script_to)
-except:
-    pass
