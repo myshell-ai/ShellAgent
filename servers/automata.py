@@ -111,7 +111,7 @@ async def release(data: Dict) -> Dict:
     os.makedirs(save_root, exist_ok=True)
     
     # Save backend, frontend, and metadata to JSON files
-    with open(f"{save_root}/proconfig.json", "w") as backend_file:
+    with open(f"{save_root}/automata.json", "w") as backend_file:
         json.dump(backend, backend_file, indent=2)
     with open(f"{save_root}/reactflow.json", "w") as frontend_file:
         json.dump(frontend, frontend_file, indent=2)
@@ -136,6 +136,7 @@ async def get_automata(data: Dict):
         if os.path.isfile(proconfig_file):
             proconfig = json.load(open(proconfig_file))
         else:
+            print(proconfig_file)
             proconfig = {}
 
         return {"data": proconfig}
@@ -454,7 +455,7 @@ def process_text_embeded_uri(text):
         
         new_file_uri = file_uri.strip()
         print("file_uri:", file_uri)
-        if os.path.isfile(file_uri):
+        if os.path.isfile(new_file_uri):
             new_file_uri = "/api/files/" + new_file_uri
         new_attributes = attributes.replace(file_uri, new_file_uri)
         return f"<{tag} {new_attributes}>"
