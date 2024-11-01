@@ -18,6 +18,7 @@ import { APIFetch } from '@/services/base';
 import { useAppStore } from '@/stores/app/app-provider';
 import { ShellAgent } from '@/stores/app/app-store';
 import { GetShellAgentResponse } from '@/services/app/type';
+import { Automata } from '@shellagent/pro-config';
 
 const ImportModal: React.FC<{
   open: boolean;
@@ -68,27 +69,46 @@ const ImportModal: React.FC<{
     if (!data) {
       return;
     }
-    try {
-      initAppBuilder(data);
-      onOpenChange(false);
-      setShellAgent(undefined);
-      setFileUrl(undefined);
-      toast.success(`import success!`, {
-        position: 'top-center',
-        autoClose: 1000,
-        hideProgressBar: true,
-        pauseOnHover: true,
-        closeButton: false,
-      });
-    } catch (error: any) {
-      toast.error(`import error: ${error?.message}`, {
-        position: 'top-center',
-        autoClose: 1000,
-        hideProgressBar: true,
-        pauseOnHover: true,
-        closeButton: false,
-      });
-    }
+    initAppBuilder({
+      reactflow: {
+        nodes: [],
+        edges: [],
+        viewport: {
+          x: 0,
+          y: 0,
+          zoom: 0,
+        },
+      },
+      config: {
+        fieldsModeMap: {},
+        schemaModeMap: {},
+      },
+      metadata: data.metadata,
+      automata: {} as Automata,
+    });
+    setTimeout(() => {
+      try {
+        initAppBuilder(data);
+        onOpenChange(false);
+        setShellAgent(undefined);
+        setFileUrl(undefined);
+        toast.success(`import success!`, {
+          position: 'top-center',
+          autoClose: 1000,
+          hideProgressBar: true,
+          pauseOnHover: true,
+          closeButton: false,
+        });
+      } catch (error: any) {
+        toast.error(`import error: ${error?.message}`, {
+          position: 'top-center',
+          autoClose: 1000,
+          hideProgressBar: true,
+          pauseOnHover: true,
+          closeButton: false,
+        });
+      }
+    });
   };
 
   const onChange = (resourceUrl?: string | string[]) => {

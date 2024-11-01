@@ -8,6 +8,8 @@ import dynamic from 'next/dynamic';
 import { useSearchParams } from 'next/navigation';
 import { useEffect, useRef } from 'react';
 import { useShallow } from 'zustand/react/shallow';
+import { DndProvider } from 'react-dnd';
+import { HTML5Backend } from 'react-dnd-html5-backend';
 
 import { edgeTypes, materialList, nodeTypes } from '@/components/app/constants';
 import FlowHeader from '@/components/app/flow-header';
@@ -89,32 +91,34 @@ export default function AppBuilderDetail() {
   }, []);
 
   return (
-    <div className="h-full flex flex-col bg-surface">
-      <header>
-        <Header />
-      </header>
-      <main
-        id="workflow"
-        style={{ height: 'calc(100vh - 60px)', position: 'relative' }}>
-        <FlowEngine
-          listLoading={false}
-          loading={loading.getAutomata || loading.getReactFlow}
-          ref={flowRef}
-          nodeTypes={nodeTypes}
-          edgeTypes={edgeTypes}
-          materialList={materialList}
-          footerExtra={<ListFooterExtra />}
-          header={
-            <>
-              <FlowHeader appId={appId} version_name={version_name} />
-              <StateConfigSheet />
-              <TransitionSheet />
-            </>
-          }
-        />
-        <ChatSheet />
-        <ImageCanvasDialog />
-      </main>
-    </div>
+    <DndProvider backend={HTML5Backend}>
+      <div className="h-full flex flex-col bg-surface">
+        <header>
+          <Header />
+        </header>
+        <main
+          id="workflow"
+          style={{ height: 'calc(100vh - 60px)', position: 'relative' }}>
+          <FlowEngine
+            listLoading={false}
+            loading={loading.getAutomata || loading.getReactFlow}
+            ref={flowRef}
+            nodeTypes={nodeTypes}
+            edgeTypes={edgeTypes}
+            materialList={materialList}
+            footerExtra={<ListFooterExtra />}
+            header={
+              <>
+                <FlowHeader appId={appId} version_name={version_name} />
+                <StateConfigSheet />
+                <TransitionSheet />
+              </>
+            }
+          />
+          <ChatSheet />
+          <ImageCanvasDialog />
+        </main>
+      </div>
+    </DndProvider>
   );
 }

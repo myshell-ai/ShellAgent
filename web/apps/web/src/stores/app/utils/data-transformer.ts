@@ -66,7 +66,12 @@ export const genNodeData = (automata: Automata): AppStore['nodeData'] => {
           render: state.render,
           input: transformValuesToChoices(state.inputs),
           output: state.outputs,
-          blocks: state.blocks,
+          blocks: Array.isArray(state.blocks)
+            ? state.blocks?.map((item: any) => ({
+                ...item,
+                mode: item.mode === 'comfy_workflow' ? 'widget' : item.mode,
+              }))
+            : state.blocks,
         };
       }
     });
