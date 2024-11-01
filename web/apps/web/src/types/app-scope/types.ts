@@ -16,14 +16,14 @@ export type ScopeType = TargetPath;
 
 export interface Variable {
   type?: VariableType;
-  scope: ScopeType[];
-  value: Variable | string;
 }
 
 export interface TaskVariable {
   type: 'task';
-  scope: ScopeType[];
-  value: Variable | string;
+  name: string;
+  variables: {
+    [key: VariableName]: Variable;
+  };
 }
 
 export interface Scopes {
@@ -50,11 +50,7 @@ export interface State {
         [key: VariableName]: Variable;
       };
     };
-    tasks: {
-      variables: {
-        [key: VariableName]: TaskVariable;
-      };
-    };
+    tasks: TaskVariable[];
     outputs: {
       variables: {
         [key: OutputName]: Variable;
