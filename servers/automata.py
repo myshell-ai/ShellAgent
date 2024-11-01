@@ -12,6 +12,7 @@ from typing import Dict, Any, Literal, List
 from filelock import FileLock
 
 import re
+from proconfig.utils.misc import convert_unserializable_display, hash_dict
 
 from pydantic import BaseModel
 
@@ -59,6 +60,65 @@ async def save_app(data: Dict):
             return {"success": True}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+    
+    
+
+@app.post("/api/app/get_version_list")
+async def get_version_list(data: Dict):
+    flow_id = data.get("app_id")
+
+    if not flow_id:
+        raise HTTPException(status_code=400, detail="flow_id is required")
+
+    flow_path = os.path.join(APP_SAVE_ROOT, flow_id)
+
+    if not os.path.exists(flow_path):
+        raise HTTPException(status_code=404, detail="Flow ID not found")
+
+    versions = os.listdir(flow_path)
+    if not versions:
+        return {"data": []}
+
+    # Reorder the versions as in the original code
+    versions = [versions[0]] + versions[1:][::-1]
+
+    return_data = []
+    for version in versions:
+        version_path = os.path.join(flow_path, version)
+        create_time = os.path.getctime(version_path)
+        return_data.append({
+            "version_name": version,
+            "create_time": create_time
+        })
+
+    return {"data": return_data}
+
+@app.post("/api/app/release")
+async def release(data: Dict) -> Dict:
+    flow_id = data["app_id"]
+    backend = data["automata"]
+    tag = data.get("version_name", "")
+    
+    # Calculate version hash and construct the save tag
+    version_hash = hash_dict(data)
+    save_tag = f"{tag}({version_hash})"
+    
+    # Prepare frontend data and save directory path
+    frontend = {k: data[k] for k in ["config", "reactflow"]}
+    save_root = f"{APP_SAVE_ROOT}/{flow_id}/{save_tag}"
+    os.makedirs(save_root, exist_ok=True)
+    
+    # Save backend, frontend, and metadata to JSON files
+    with open(f"{save_root}/proconfig.json", "w") as backend_file:
+        json.dump(backend, backend_file, indent=2)
+    with open(f"{save_root}/reactflow.json", "w") as frontend_file:
+        json.dump(frontend, frontend_file, indent=2)
+    
+    response = {
+        "success": True
+    }
+    return response    
+
 
 @app.post("/api/app/get_automata")
 async def get_automata(data: Dict):
@@ -254,9 +314,6 @@ tasks_queue = []
 @app.post('/api/app/run')
 @app.get('/api/app/run')
 async def app_run(event_data: RunAppRequest):
-    # import pdb; pdb.set_trace()
-    # event_data = await request.json()  # Get JSON data from request
-    # event_data = RunAppRequest(**event_data)  # Validate with Pydantic model
 
     automata = sess_id_to_automata[event_data.session_id]
     
@@ -343,6 +400,7 @@ def build_form_schema(target_inputs):
     canInputText = False 
     canInputAudio = False
     canUploadFile = False
+    
     for k, v in target_inputs.items():
         if v.user_input:
             required.append(k)
@@ -535,7 +593,7 @@ def execute_automata(task_id, client_queue, automata, environ, payload, sess_id,
         sess_state, render, event_mapping = runner.run_automata(automata, sess_state, environ, payload)
         # add message count
         message_count = sess_state["message_count"]
-        event_mapping = {f'MESSAGE_{message_count}_{k}': v for k, v in event_mapping.items()}
+        event_mapping = {f'MESSAGE_{message_count}_{k}' if k != "CHAT" else k: v for k, v in event_mapping.items()}
         sess_state[EVENT_MAPPING_KEY].update(event_mapping)
         sess_states[sess_id] = sess_state
         server_message = parse_server_message(sess_id, render, event_mapping, sess_state["message_count"])
