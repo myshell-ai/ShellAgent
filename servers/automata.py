@@ -97,11 +97,8 @@ async def get_version_list(data: Dict):
 async def release(data: Dict) -> Dict:
     flow_id = data["app_id"]
     backend = data["automata"]
-<<<<<<< HEAD
     metadata = data["metadata"]
     
-=======
->>>>>>> 4f93343d5c0f970560d70c42229cfb7f0e94f1a2
     tag = data.get("version_name", "")
     
     # Calculate version hash and construct the save tag
@@ -114,19 +111,12 @@ async def release(data: Dict) -> Dict:
     os.makedirs(save_root, exist_ok=True)
     
     # Save backend, frontend, and metadata to JSON files
-<<<<<<< HEAD
     with open(f"{save_root}/automata.json", "w") as backend_file:
         json.dump(backend, backend_file, indent=2)
     with open(f"{save_root}/reactflow.json", "w") as frontend_file:
         json.dump(frontend, frontend_file, indent=2)
     with open(f"{save_root}/metadata.json", "w") as metadata_file:
         json.dump(metadata, metadata_file, indent=2)
-=======
-    with open(f"{save_root}/proconfig.json", "w") as backend_file:
-        json.dump(backend, backend_file, indent=2)
-    with open(f"{save_root}/reactflow.json", "w") as frontend_file:
-        json.dump(frontend, frontend_file, indent=2)
->>>>>>> 4f93343d5c0f970560d70c42229cfb7f0e94f1a2
     
     response = {
         "success": True

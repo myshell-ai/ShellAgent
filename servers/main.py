@@ -37,13 +37,9 @@ if __name__ == '__main__':
         webbrowser.open(f"http://127.0.0.1:{args.port}")
         yield
         # Code here would run on shutdown (if needed)
-        
-<<<<<<< HEAD
+
     if not args.disable_auto_launch:
         app.router.lifespan_context = lifespan
-=======
-    app.router.lifespan_context = lifespan
->>>>>>> 4f93343d5c0f970560d70c42229cfb7f0e94f1a2
             
     config = uvicorn.Config(
         app,
