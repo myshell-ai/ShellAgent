@@ -10,6 +10,7 @@ if __name__ == '__main__':
     parser.add_argument("--port", type=int, default=8099)
     parser.add_argument("--device", type=int, default=0)
     parser.add_argument("--project_root", type=str, default="data")
+    parser.add_argument("--disable_auto_launch", action="store_true", default=False)
     args = parser.parse_args()
     
     os.environ["PROCONFIG_PROJECT_ROOT"] = str(args.project_root)
@@ -37,7 +38,8 @@ if __name__ == '__main__':
         yield
         # Code here would run on shutdown (if needed)
         
-    app.router.lifespan_context = lifespan
+    if not args.disable_auto_launch:
+        app.router.lifespan_context = lifespan
             
     config = uvicorn.Config(
         app,
