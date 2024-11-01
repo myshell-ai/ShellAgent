@@ -145,6 +145,11 @@ def comfyui_run(api, workflow, prompt, schemas, user_inputs):
                 outputs[schemas["outputs"][node_id]["title"]] = node_output["output"][0]
         else:
             outputs[schemas["outputs"][node_id]["title"]] = node_output["output"][0]
+            
+    # check outputs
+    for node_id, schema in schemas["outputs"].items():
+        if schema["title"] not in outputs:
+            raise ValueError(f"{schema['title']} cannot be founded in the ComfyUI results. Please check the ComfyUI workflow.")
     return outputs
 
 

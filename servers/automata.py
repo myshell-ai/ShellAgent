@@ -523,7 +523,10 @@ def parse_server_message(session_id, render, event_mapping, message_count):
             if not type(render[media_key]) == list:
                 render[media_key] = [render[media_key]]
             for media in render[media_key]:
-                ext = media.rsplit(".", 1)[-1]
+                try:
+                    ext = media.rsplit(".", 1)[-1]
+                except:
+                    raise ValueError(f"{media} is not a valid {media_key}. Please check the automata defination.")
                 media_obj = EmbedObj(
                     id=None,
                     status=EmbedObjStatus.DONE,
