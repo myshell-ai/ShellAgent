@@ -37,7 +37,7 @@ import Publish from './publish';
 export const Header: React.FC = observer(() => {
   const appBuilderChatModel = useInjection(AppBuilderChatModel);
   const params = useSearchParams();
-  const version = params.get('version') as string;
+  const version_name = params.get('version_name') as string;
 
   const id = params.get('id') as string;
   const { metadata, flowInstance, nodeData, config, loading, updateMetadata } =
@@ -185,7 +185,7 @@ export const Header: React.FC = observer(() => {
           variant="outline">
           Run
         </Button>
-        {!version ? (
+        {!version_name ? (
           <Button
             onClick={handleSave}
             loading={saveLoading}
@@ -198,10 +198,11 @@ export const Header: React.FC = observer(() => {
         ) : null}
         <Publish
           app_id={id}
-          version={version}
+          version_name={version_name}
           config={config}
           nodeData={nodeData}
           flowInstance={flowInstance}
+          metadata={metadata}
           loading={loading.getAutomata || loading.getReactFlow}
         />
         <ExtraActions />

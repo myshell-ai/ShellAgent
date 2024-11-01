@@ -15,7 +15,7 @@ export interface AppMetadata {
 // /api/app/get_automata
 export type GetAutomataRequest = {
   app_id: string;
-  version?: string;
+  version_name?: string;
 };
 
 export type GetAutomatagResponse = {
@@ -26,7 +26,7 @@ export type GetAutomatagResponse = {
 // /api/app/get_flow
 export type GetAppFlowRequest = {
   app_id: string;
-  version?: string;
+  version_name?: string;
 };
 
 export type GetAppFlowResponse = {
@@ -152,6 +152,7 @@ export interface ExportBotResponse {
 }
 
 export type ReleaseAppRequest = SaveAppRequest & {
+  metadata: Metadata;
   version_name: string;
 };
 

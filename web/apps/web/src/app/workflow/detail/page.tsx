@@ -25,7 +25,7 @@ export default function WorkflowPage() {
   const conRef = useRef<HTMLDivElement>(null);
 
   const flowId = params.get('id') as string;
-  const version = params.get('version') || undefined;
+  const version_name = params.get('version_name') || undefined;
 
   const {
     setFlowInstance,
@@ -53,13 +53,13 @@ export default function WorkflowPage() {
   useEffect(() => {
     if (flowInstance) {
       setFlowInstance(flowInstance);
-      getReactFlow({ flow_id: flowId, version_name: version }, flowInstance);
+      getReactFlow({ flow_id: flowId, version_name }, flowInstance);
     }
   }, [flowInstance, flowId]);
 
   useEffect(() => {
-    getProConfig({ flow_id: flowId, version_name: version });
-  }, [flowId, version]);
+    getProConfig({ flow_id: flowId, version_name });
+  }, [flowId, version_name]);
 
   return (
     <div className="h-full flex flex-col bg-surface">
@@ -81,7 +81,7 @@ export default function WorkflowPage() {
               <IconButton variant="ghost" className="w-9 h-9" icon={Setting} />
             </div>
           }
-          header={<FlowHeader flowId={flowId} version={version} />}
+          header={<FlowHeader flowId={flowId} version_name={version_name} />}
         />
       </main>
     </div>

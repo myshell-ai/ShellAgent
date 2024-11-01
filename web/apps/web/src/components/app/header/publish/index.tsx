@@ -29,31 +29,34 @@ import { AppState } from '@/stores/app/app-store';
 import { saveApp, releaseApp, fetchAppVersionList } from '@/services/app';
 import { genAutomata } from '@/stores/app/utils/data-transformer';
 import { cn } from '@/utils/cn';
+import { Metadata } from '@/services/home/type';
 
 import VersionSkeleton from '../skeleton';
 
 interface PublishProps {
   app_id: string;
-  version: string;
+  version_name: string;
   loading: boolean;
   config: AppState['config'];
   nodeData: AppState['nodeData'];
   flowInstance: AppState['flowInstance'];
+  metadata: Metadata;
 }
 
 export default function Publish({
   app_id,
-  version,
+  version_name,
   loading,
   config,
   nodeData,
+  metadata,
   flowInstance,
 }: PublishProps) {
   const router = useRouter();
-  const [autoSavedTime, setAutoSavedTime] = useState('');
+  // const [autoSavedTime, setAutoSavedTime] = useState('');
   const [versionName, setVersionName] = useState('');
   const [showPublishPopover, publishPopoverActions] = useBoolean(false);
-  const hiddenOperation = !!version;
+  const hiddenOperation = !!version_name;
 
   const {
     run: getVersionList,
@@ -148,10 +151,11 @@ export default function Publish({
         automata: genAutomata(reactflow, nodeData),
         config,
         version_name: versionName,
+        metadata,
       });
     }
     publishPopoverActions.setFalse();
-  }, [flowInstance, nodeData, config, app_id, versionName]);
+  }, [flowInstance, nodeData, config, app_id, versionName, metadata]);
 
   const handleRestore = () => {
     const reactflow = flowInstance?.toObject() as IFlow;
@@ -230,18 +234,18 @@ export default function Publish({
                           <Text color="subtle" className="block w-full">
                             {`${item.version_name}(current)`}
                           </Text>
-                          {autoSavedTime && !version ? (
+                          {/* {autoSavedTime && !version_name ? (
                             <Text size="sm" color="subtlest">
                               Updated {dayjs(autoSavedTime).fromNow()}
                             </Text>
-                          ) : null}
+                          ) : null} */}
                         </div>
                       );
                     }
                     return (
                       <Link
                         className="flex justify-between items-center p-1.5 rounded-md hover:bg-surface-hovered group/menu"
-                        href={`${window.location.pathname}?id=${app_id}&version=${item.version_name}`}
+                        href={`${window.location.pathname}?id=${app_id}&version_name=${item.version_name}`}
                         prefetch={false}>
                         <div>
                           <TooltipProvider>
