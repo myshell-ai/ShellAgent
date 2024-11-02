@@ -6,8 +6,7 @@ import {
   RefType,
   refOptionsOutputSchema,
 } from './scope';
-import { isEmpty } from 'lodash-es';
-
+import { isEmpty, mapKeys, mapValues } from 'lodash-es';
 export function getRefOptions(
   scopes: Scopes,
   edges: Edges,
@@ -141,4 +140,37 @@ export function findAncestors(edges: Edges, stateName: CustomKey): CustomKey[] {
 
   findUpstream(stateName);
   return Array.from(ancestors) as CustomKey[];
+}
+
+export function convertRefsToAncestors(refOpts: RefOptionsOutput) {
+  // todo: Ensure that ⁠value is a fully qualified name, matching the ⁠protocol’s path.
+}
+
+export function renameRefKey(
+  refs: Record<string, string>,
+  oldKey: string,
+  newKey: string,
+): Record<string, string> {
+  return mapKeys(refs, (value, key) => {
+    return key === oldKey ? newKey : key;
+  });
+}
+
+export function updateRefValue(
+  refs: Record<string, string>,
+  key: string,
+  newValue: string,
+): Record<string, string> {
+  refs[key] = newValue;
+  return refs;
+}
+
+export function renameRefer(
+  refs: Record<string, string>,
+  origRefer: string,
+  newRefer: string,
+): Record<string, string> {
+  return mapValues(refs, value => {
+    return value === origRefer ? newRefer : value;
+  });
 }

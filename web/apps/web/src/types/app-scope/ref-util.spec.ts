@@ -1,7 +1,13 @@
-import { scopesSchema, stateSchema } from '../../types/app-scope/protocol';
-import { findAncestors, getRefOptions } from './scope-util';
+import { scopesSchema, stateSchema } from './protocol';
+import {
+  findAncestors,
+  getRefOptions,
+  renameRefer,
+  renameRefKey,
+  updateRefValue,
+} from './ref-util';
 
-describe('scope util', () => {
+describe('ref util', () => {
   describe('find ancestors', () => {
     it('ancestors', () => {
       const edges = [
@@ -959,6 +965,69 @@ state#3
               },
             ],
           },
+        }
+      `);
+    });
+  });
+
+  describe('refs', () => {
+    // 被引用对象
+    it('rename referenced key', () => {
+      const refs = {
+        'state#1.outputs.outputs1-1': 'context.global_111',
+        'state#1.outputs.outputs21': 'context.global_111',
+        'state#2.message.text': 'state#1.outputs.output1',
+      };
+
+      const ret = renameRefKey(
+        refs,
+        'state#1.outputs.outputs1-1',
+        'state#1.outputs.outputs1',
+      );
+
+      expect(ret).toMatchInlineSnapshot(`
+        {
+          "state#1.outputs.outputs1": "context.global_111",
+          "state#1.outputs.outputs21": "context.global_111",
+          "state#2.message.text": "state#1.outputs.output1",
+        }
+      `);
+    });
+
+    it('update referenced value', () => {
+      const refs = {
+        'state#1.outputs.outputs1-1': 'context.global_111',
+        'state#1.outputs.outputs21': 'context.global_111',
+        'state#2.message.text': 'state#1.outputs.output1',
+      };
+
+      const ret = updateRefValue(
+        refs,
+        'state#1.outputs.outputs1-1',
+        'context.global_a',
+      );
+      expect(ret).toMatchInlineSnapshot(`
+        {
+          "state#1.outputs.outputs1-1": "context.global_a",
+          "state#1.outputs.outputs21": "context.global_111",
+          "state#2.message.text": "state#1.outputs.output1",
+        }
+      `);
+    });
+
+    it('rename refer', () => {
+      const refs = {
+        'state#1.outputs.outputs1-1': 'context.global_111',
+        'state#1.outputs.outputs21': 'context.global_111',
+        'state#2.message.text': 'state#1.outputs.output1',
+      };
+
+      const ret = renameRefer(refs, 'context.global_111', 'context.global.a');
+      expect(ret).toMatchInlineSnapshot(`
+        {
+          "state#1.outputs.outputs1-1": "context.global.a",
+          "state#1.outputs.outputs21": "context.global.a",
+          "state#2.message.text": "state#1.outputs.output1",
         }
       `);
     });

@@ -12,7 +12,6 @@ import { IEdge, INode } from '@shellagent/flow-engine';
 import { TValues } from '@shellagent/form-engine';
 import { getRefNodes } from '@/stores/app/utils/data-transformer';
 import { Scopes, State } from '@/types/app-scope/protocol';
-import { Edges, RefType } from '@/types/app-scope/scope';
 
 @injectable()
 export class AppBuilderModel {
