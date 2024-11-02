@@ -21,6 +21,8 @@ import React, { useCallback, useRef, useEffect, useState } from 'react';
 import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
 import { Task, TaskSchema } from '@/types/task/protocol';
+import { getTaskDisplayName } from '@/utils/get_display_name';
+import { customSnakeCase } from '@/types/app-scope/protocol';
 
 import { EdgeDataTypeEnum, EdgeTypeEnum } from '@/components/app/edges';
 import NodeCard from '@/components/app/node-card';
@@ -214,10 +216,14 @@ const StateNode: React.FC<NodeProps<StateNodeType>> = ({
           item.nodeType === NodeTypeEnum.workflow
         ) {
           try {
+            const displayName = getTaskDisplayName(
+              item,
+              nodeData[id]?.blocks as Task[],
+            );
             const newTask = TaskSchema.parse({
               type: 'task',
-              display_name: item.display_name,
-              name: item.display_name,
+              display_name: displayName,
+              name: customSnakeCase(displayName),
               mode: item.type,
               ...(item.type === NodeTypeEnum.widget && {
                 widget_name: item.widget_name,

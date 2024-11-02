@@ -1,17 +1,17 @@
 import { PlusIcon } from '@heroicons/react/24/outline';
 import { XMarkIcon } from '@heroicons/react/24/solid';
-import { WidgetItem, uuid, NodeTypeEnum } from '@shellagent/flow-engine';
+import { WidgetItem, NodeTypeEnum } from '@shellagent/flow-engine';
 import { Button, useFormContext, Drag } from '@shellagent/ui';
 import { useClickAway } from 'ahooks';
 import { Dropdown } from 'antd';
 import { useState, useRef, useCallback } from 'react';
 import { useDrag, useDrop } from 'react-dnd';
 import { Task, TaskSchema } from '@/types/task/protocol';
-
+import { customSnakeCase } from '@/types/app-scope/protocol';
+import { getTaskDisplayName } from '@/utils/get_display_name';
 import { materialList } from '@/components/app/constants';
 import { TaskList } from '@/components/app/task-list';
 import { useAppState } from '@/stores/app/use-app-state';
-import { generateUUID } from '@/utils/common-helper';
 
 const TaskItem = ({
   name,
@@ -153,10 +153,11 @@ const TasksConfig = ({
     (task: WidgetItem) => {
       setOpen(false);
       try {
+        const displayName = getTaskDisplayName(task, values);
         const newTask = TaskSchema.parse({
           type: 'task',
-          display_name: task.display_name,
-          name: task.display_name,
+          display_name: displayName,
+          name: customSnakeCase(displayName),
           mode: task.type,
           ...(task.type === NodeTypeEnum.widget && {
             widget_name: task.widget_name,
