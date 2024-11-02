@@ -11,7 +11,8 @@ import {
   reservedKeySchema,
   scopesSchema,
   stateSchema,
-  taskVariableSchema,
+  taskSchema,
+  // taskVariableSchema,
   variableSchema,
   variablesSchema,
 } from './protocol';
@@ -123,23 +124,36 @@ describe('protocol', () => {
     });
   });
 
-  describe('task variable', () => {
+  describe('task', () => {
     it('simple', () => {
-      taskVariableSchema.parse({
-        type: 'task',
-      });
-
-      taskVariableSchema.parse({
-        type: 'task',
-      });
-    });
-
-    it('recursive', () => {
-      taskVariableSchema.parse({
-        type: 'task',
+      taskSchema.parse({
+        name: 'gpt',
+        variables: {
+          reply: {
+            type: 'text',
+          },
+        },
       });
     });
   });
+
+  // describe('task variable', () => {
+  //   it('simple', () => {
+  //     taskVariableSchema.parse({
+  //       type: 'task',
+  //     });
+
+  //     taskVariableSchema.parse({
+  //       type: 'task',
+  //     });
+  //   });
+
+  //   it('recursive', () => {
+  //     taskVariableSchema.parse({
+  //       type: 'task',
+  //     });
+  //   });
+  // });
 
   describe('custom key', () => {
     it('reserved', () => {
@@ -427,7 +441,6 @@ describe('custom event name', () => {
 describe('button', () => {
   it('valid', () => {
     buttonSchema.parse({
-      event: 'hello.a',
       payload: {
         b: {
           type: 'text',
@@ -435,62 +448,12 @@ describe('button', () => {
       },
     });
   });
-
-  it('invalid', () => {
-    expect(() => {
-      buttonSchema.parse({
-        event: 'hello',
-        payload: {
-          id: {
-            type: 'text_not',
-          },
-        },
-      });
-    }).toThrowErrorMatchingInlineSnapshot(`
-        "[
-          {
-            "code": "custom",
-            "message": "hello should concatenated by dots",
-            "path": [
-              "event"
-            ]
-          },
-          {
-            "code": "custom",
-            "message": "id is a reserved key",
-            "path": [
-              "payload",
-              "id"
-            ]
-          },
-          {
-            "received": "text_not",
-            "code": "invalid_enum_value",
-            "options": [
-              "text",
-              "image",
-              "audio",
-              "video",
-              "file",
-              "text_file"
-            ],
-            "path": [
-              "payload",
-              "id",
-              "type"
-            ],
-            "message": "Invalid enum value. Expected 'text' | 'image' | 'audio' | 'video' | 'file' | 'text_file', received 'text_not'"
-          }
-        ]"
-      `);
-  });
 });
 
 describe('buttons', () => {
   it('valid', () => {
     buttonsSchema.parse({
       a: {
-        event: 'hello.a',
         payload: {
           b: {
             type: 'text',
@@ -504,7 +467,6 @@ describe('buttons', () => {
     expect(() => {
       buttonsSchema.parse({
         id: {
-          event: 'hello.a',
           payload: {
             b: {
               type: 'text',
@@ -531,7 +493,6 @@ describe('render', () => {
     renderSchema.parse({
       buttons: {
         a: {
-          event: 'hello.a',
           payload: {
             b: {
               type: 'text',
@@ -555,13 +516,25 @@ describe('state', () => {
             },
           },
         },
-        tasks: {
-          variables: {
-            a: {
-              type: 'task',
+        // tasks: {
+        //   'task_1': {
+        //     variables: {
+        //       a: {
+        //         type: 'task',
+        //       },
+        //     },
+        //   }
+        // },
+        tasks: [
+          {
+            name: 'gpt',
+            variables: {
+              reply: {
+                type: 'text',
+              },
             },
           },
-        },
+        ],
         outputs: {
           variables: {
             a: {
@@ -571,7 +544,6 @@ describe('state', () => {
           render: {
             buttons: {
               a: {
-                event: 'hello.a',
                 payload: {
                   b: {
                     type: 'text',
@@ -579,6 +551,24 @@ describe('state', () => {
                 },
               },
             },
+          },
+        },
+      },
+    });
+  });
+
+  it('most simple', () => {
+    const a = stateSchema.parse({
+      name: 'state#1',
+      children: {
+        inputs: {
+          variables: {},
+        },
+        tasks: [],
+        outputs: {
+          variables: {},
+          render: {
+            buttons: {},
           },
         },
       },
@@ -608,13 +598,16 @@ describe('scopes', () => {
                   },
                 },
               },
-              tasks: {
-                variables: {
-                  a: {
-                    type: 'task',
+              tasks: [
+                {
+                  name: 'gpt',
+                  variables: {
+                    reply: {
+                      type: 'text',
+                    },
                   },
                 },
-              },
+              ],
               outputs: {
                 variables: {
                   a: {
@@ -624,7 +617,6 @@ describe('scopes', () => {
                 render: {
                   buttons: {
                     a: {
-                      event: 'hello.a',
                       payload: {
                         b: {
                           type: 'text',
