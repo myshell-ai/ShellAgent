@@ -155,6 +155,8 @@ export const outputNameSchema = z.union([
 
 export const variablesSchema = z.record(customKeySchema, variableSchema);
 
+export type Variables = z.infer<typeof variablesSchema>;
+
 export const outputVariablesSchema = z.record(outputNameSchema, variableSchema);
 
 export const buttonSchema = z
@@ -166,17 +168,20 @@ export const buttonSchema = z
 
 export const buttonsSchema = z.record(customKeySchema, buttonSchema);
 
+export type Buttons = z.infer<typeof buttonsSchema>;
+
 export const renderSchema = z
   .object({
     buttons: buttonsSchema,
   })
   .strict();
 
-
 export const taskSchema = z.object({
   name: z.string(),
-  variables: variablesSchema
-})
+  variables: variablesSchema,
+});
+
+export type Task = z.infer<typeof taskSchema>;
 
 export const stateSchema = z
   .object({

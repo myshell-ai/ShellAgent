@@ -50,7 +50,17 @@ export interface State {
         [key: VariableName]: Variable;
       };
     };
-    tasks: TaskVariable[];
+    tasks: {
+      variables: {
+        [key: VariableName]: TaskVariable;
+      };
+    };
+    tasks2: {
+      name: string;
+      variables: {
+        [key: VariableName]: Variable;
+      };
+    }[];
     outputs: {
       variables: {
         [key: OutputName]: Variable;

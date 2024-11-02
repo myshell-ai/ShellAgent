@@ -130,12 +130,12 @@ describe('protocol', () => {
         name: 'gpt',
         variables: {
           reply: {
-            type: 'text'
-          }
-        }
-      })
-    })
-  })
+            type: 'text',
+          },
+        },
+      });
+    });
+  });
 
   // describe('task variable', () => {
   //   it('simple', () => {
@@ -583,10 +583,10 @@ describe('state', () => {
             name: 'gpt',
             variables: {
               reply: {
-                type: 'text'
-              }
-            }
-          }
+                type: 'text',
+              },
+            },
+          },
         ],
         outputs: {
           variables: {
@@ -627,7 +627,7 @@ describe('state', () => {
         },
       },
     });
-  })
+  });
 });
 
 describe('scopes', () => {
@@ -657,10 +657,10 @@ describe('scopes', () => {
                   name: 'gpt',
                   variables: {
                     reply: {
-                      type: 'text'
-                    }
-                  }
-                }
+                      type: 'text',
+                    },
+                  },
+                },
               ],
               outputs: {
                 variables: {
