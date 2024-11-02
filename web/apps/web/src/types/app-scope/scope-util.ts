@@ -1,6 +1,11 @@
 import { CustomKey } from '@shellagent/pro-config';
 import { Buttons, Scopes, Task, Variables } from './protocol';
-import { Edges, RefType } from './scope';
+import {
+  Edges,
+  RefOptionsOutput,
+  RefType,
+  refOptionsOutputSchema,
+} from './scope';
 import { isEmpty } from 'lodash-es';
 
 export function getRefOptions(
@@ -9,16 +14,8 @@ export function getRefOptions(
   stateName: CustomKey,
   refType: RefType,
   taskName?: string,
-) {
-  const ret: {
-    global: Record<CustomKey, Variables>;
-    local: {
-      inputs: { variables: Variables };
-      tasks: Task[];
-      outputs: { variables: Variables };
-      buttons: Buttons;
-    };
-  } = {
+): RefOptionsOutput {
+  const ret: RefOptionsOutput = {
     global: {
       context: scopes.scopes.context.variables,
     },
@@ -65,7 +62,7 @@ export function getRefOptions(
     }
   }
 
-  return ret;
+  return refOptionsOutputSchema.parse(ret);
 
   function assignStateRender() {
     assignAncestralStatesOutput();
