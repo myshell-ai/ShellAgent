@@ -1,14 +1,14 @@
 import { PlusIcon } from '@heroicons/react/24/outline';
 import { XMarkIcon } from '@heroicons/react/24/solid';
 import { WidgetItem, NodeTypeEnum } from '@shellagent/flow-engine';
+import { Task, TaskSchema } from '@shellagent/shared/protocol/task';
+import { customSnakeCase, getTaskDisplayName } from '@shellagent/shared/utils';
 import { Button, useFormContext, Drag } from '@shellagent/ui';
 import { useClickAway } from 'ahooks';
 import { Dropdown } from 'antd';
 import { useState, useRef, useCallback } from 'react';
 import { useDrag, useDrop } from 'react-dnd';
-import { Task, TaskSchema } from '@/types/task/protocol';
-import { customSnakeCase } from '@/types/app-scope/protocol';
-import { getTaskDisplayName } from '@/utils/get_display_name';
+
 import { materialList } from '@/components/app/constants';
 import { TaskList } from '@/components/app/task-list';
 import { useAppState } from '@/stores/app/use-app-state';
@@ -172,7 +172,6 @@ const TasksConfig = ({
         onChange(blocks);
       } catch (error) {
         console.error('Task parse error:', error);
-        return;
       }
     },
     [values, onChange],

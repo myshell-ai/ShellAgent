@@ -4,17 +4,14 @@ import {
   ReservedKey,
   SnakeCaseName,
 } from '@shellagent/pro-config';
+import { customSnakeCase } from '../../utils/utils';
 import { z } from 'zod';
 
 /**
  * only process Space, not continous Uppercase letters
  * examples see test cases
  */
-export function customSnakeCase(s: unknown) {
-  if (typeof s !== 'string') return s;
-  const r = s.split(/(?<![A-Z])(?=[A-Z])|\s+/);
-  return r.map(i => i.toLowerCase()).join('_');
-}
+export { customSnakeCase };
 
 export const variableTypeSchema = z.enum([
   'text',

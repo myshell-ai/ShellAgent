@@ -7,6 +7,7 @@ import {
   useReactFlowStore,
   getColor,
 } from '@shellagent/flow-engine';
+import { Button as IButtonType } from '@shellagent/shared/protocol/render-button';
 import { IconButton, Button, Text } from '@shellagent/ui';
 import clsx from 'clsx';
 import { PropsWithChildren } from 'react';
@@ -20,8 +21,6 @@ import { useAppStore } from '@/stores/app/app-provider';
 import { useSchemaContext } from '@/stores/app/schema-provider';
 import { useAppState } from '@/stores/app/use-app-state';
 import { generateUUID } from '@/utils/common-helper';
-
-import { IButtonType } from './button-editor';
 
 const CustomPoint: React.FC<{
   className?: string;

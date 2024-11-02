@@ -1,9 +1,9 @@
 import { uuid, uuidRegex } from '@shellagent/flow-engine';
+import { Button as IButtonType } from '@shellagent/shared/protocol/render-button';
+import { Task } from '@shellagent/shared/protocol/task';
 import { FieldValues } from '@shellagent/ui';
 import { produce } from 'immer';
 
-import { IButtonType } from '@/components/app/node-form/widgets/button-editor';
-import { Task } from '@/types/task/protocol';
 import { generateUUID } from '@/utils/common-helper';
 
 // 生成uuid的偏移量

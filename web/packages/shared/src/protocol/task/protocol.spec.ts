@@ -1,4 +1,4 @@
-import { TaskSchema, Task, nodeTypeSchema } from './protocol';
+import { TaskSchema, Task, nodeTypeSchema } from '.';
 import { ZodError } from 'zod';
 
 describe('TaskSchema', () => {

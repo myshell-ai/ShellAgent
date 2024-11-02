@@ -1,5 +1,5 @@
 import { CustomKey } from '@shellagent/pro-config';
-import { Buttons, Scopes, Task, Variables } from './protocol';
+import { Buttons, Scopes, Task, Variables } from '.';
 import {
   Edges,
   RefOptionsOutput,

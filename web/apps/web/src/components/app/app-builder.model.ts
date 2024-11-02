@@ -1,5 +1,10 @@
+import { IEdge, INode } from '@shellagent/flow-engine';
+import { TValues } from '@shellagent/form-engine';
+import { Scopes, State } from '@shellagent/shared/protocol/app-scope';
 import { injectable } from 'inversify';
 import { makeObservable, observable } from 'mobx';
+
+import { getRefNodes } from '@/stores/app/utils/data-transformer';
 import {
   getContext,
   getInput,
@@ -8,10 +13,6 @@ import {
   getTasks,
   VariableProps,
 } from '@/stores/app/variable-provider';
-import { IEdge, INode } from '@shellagent/flow-engine';
-import { TValues } from '@shellagent/form-engine';
-import { getRefNodes } from '@/stores/app/utils/data-transformer';
-import { Scopes, State } from '@/types/app-scope/protocol';
 
 @injectable()
 export class AppBuilderModel {

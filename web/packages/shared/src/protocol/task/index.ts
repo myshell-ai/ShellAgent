@@ -1,6 +1,5 @@
 import { z } from 'zod';
-// import { NodeTypeEnum } from '@shellagent/flow-engine';
-import { customKeySchema } from '../app-scope/protocol';
+import { customKeySchema } from '../app-scope';
 
 export const nodeTypeSchema = z.enum([
   'start',

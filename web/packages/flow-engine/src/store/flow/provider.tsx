@@ -36,7 +36,8 @@ import {
   NodeId,
   NodeName,
 } from '../../types';
-import { getLayouted, getNodeName, parseNodeName, uuid } from '../../utils';
+import { getLayouted, getNodeName, parseNodeName } from '../../utils';
+import { customSnakeCase } from '@shellagent/shared/utils';
 
 export type FlowState = {
   readonly flow: IFlow;
@@ -178,11 +179,15 @@ export const FlowStoreProvider = ({ children }: FlowStoreProviderProps) => {
         '';
       const lastIndex = parseNodeName(lastNodeName as NodeName).index || 0;
 
+      // TODO joe
       const index = (nodeIndex[name] || lastIndex) + 1;
-      const id = data?.id || (uuid() as NodeId);
       setNodeIndex(draft => {
         draft[name] = index;
       });
+
+      const nodeName = getNodeName(displayName, index);
+      const id = customSnakeCase(nodeName);
+
       setNodes(
         nodes =>
           [
@@ -198,7 +203,7 @@ export const FlowStoreProvider = ({ children }: FlowStoreProviderProps) => {
                 type,
                 id,
                 name,
-                display_name: getNodeName(displayName, index),
+                display_name: nodeName,
               },
             },
           ] as any,

@@ -1,14 +1,14 @@
 import { NodeIdEnum, useReactFlowStore } from '@shellagent/flow-engine';
 import { TValues } from '@shellagent/form-engine';
+import { Button as IButtonType } from '@shellagent/shared/protocol/render-button';
+import { useInjection } from 'inversify-react';
 import { isEmpty } from 'lodash-es';
 import { useEffect, useMemo } from 'react';
 import { createContext, useContextSelector } from 'use-context-selector';
 
-import { IButtonType } from '@/components/app/node-form/widgets/button-editor';
+import { AppBuilderModel } from '@/components/app/app-builder.model';
 import { useAppStore } from '@/stores/app/app-provider';
 import { getRefNodes } from '@/stores/app/utils/data-transformer';
-import { AppBuilderModel } from '@/components/app/app-builder.model.ts';
-import { useInjection } from 'inversify-react';
 
 interface TVariable {
   label: string;
@@ -159,9 +159,9 @@ export const VariableProvider: React.FC<VariableProviderProps> = ({
 
   useEffect(() => {
     appBuilder.setVariables(id, eventKey, {
-      edges: edges,
-      nodes: nodes,
-      nodeData: nodeData,
+      edges,
+      nodes,
+      nodeData,
     });
   }, [nodeData]);
 

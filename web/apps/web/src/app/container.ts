@@ -5,6 +5,7 @@ import { ImageCanvasModel } from 'image-canvas/model';
 import { Container, interfaces } from 'inversify';
 import { toast } from 'react-toastify';
 
+import { AppBuilderModel } from '@/components/app/app-builder.model';
 import { AppBuilderChatModel } from '@/components/chat/app-builder-chat.model';
 import { DownloadModel } from '@/components/download/download.model';
 import { OpenImageCanvasModel } from '@/components/image-canvas/open-image-canvas.model';
@@ -18,7 +19,6 @@ import { SettingsModel } from '@/components/settings/settings.model';
 import { EmitterModel } from '@/utils/emitter.model';
 import { ModalModel } from '@/utils/modal.model';
 import { RequestModel } from '@/utils/request.model';
-import { AppBuilderModel } from '@/components/app/app-builder.model';
 
 export const container = new Container();
 

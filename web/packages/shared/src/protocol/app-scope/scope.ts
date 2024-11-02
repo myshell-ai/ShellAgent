@@ -5,7 +5,7 @@ import {
   outputVariablesSchema,
   taskSchema,
   variablesSchema,
-} from './protocol';
+} from '.';
 
 export const edgesSchema = z.array(
   z.object({

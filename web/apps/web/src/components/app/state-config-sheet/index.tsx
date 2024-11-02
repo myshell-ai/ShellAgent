@@ -6,6 +6,8 @@ import {
   useReactFlowStore,
 } from '@shellagent/flow-engine';
 import { TFieldMode, TValues } from '@shellagent/form-engine';
+import { Button as IButtonType } from '@shellagent/shared/protocol/render-button';
+import { WidgetTask, WorkflowTask } from '@shellagent/shared/protocol/task';
 import { Drawer, FormRef } from '@shellagent/ui';
 import { useInjection } from 'inversify-react';
 import { isEqual, isNumber } from 'lodash-es';
@@ -19,7 +21,6 @@ import { WidgetConfig } from '@/components/app/config-form/widget-config';
 import { WorkflowConfig } from '@/components/app/config-form/workflow-config';
 import { EditableTitle } from '@/components/app/editable-title';
 import NodeForm from '@/components/app/node-form';
-import { WidgetTask, WorkflowTask } from '@/types/task/protocol';
 import { AppBuilderChatModel } from '@/components/chat/app-builder-chat.model';
 import { useAppStore } from '@/stores/app/app-provider';
 import { SchemaProvider } from '@/stores/app/schema-provider';
@@ -28,7 +29,6 @@ import { stateConfigSchema } from '@/stores/app/utils/schema';
 import { VariableProvider } from '@/stores/app/variable-provider';
 
 import emitter, { EventType, useEventEmitter } from '../emitter';
-import { IButtonType } from '../node-form/widgets';
 
 const StateConfigSheet: React.FC<{}> = () => {
   const appBuilderChatModel = useInjection(AppBuilderChatModel);

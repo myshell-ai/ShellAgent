@@ -15,7 +15,7 @@ import {
   // taskVariableSchema,
   variableSchema,
   variablesSchema,
-} from './protocol';
+} from '.';
 
 describe('protocol', () => {
   describe('customSnakeCase', () => {
@@ -26,9 +26,11 @@ describe('protocol', () => {
       expect(customSnakeCase('123a123b')).toBe('123a123b');
       expect(customSnakeCase('a_1')).toBe('a_1');
       expect(customSnakeCase('GPT2')).toBe('gpt2');
-      expect(customSnakeCase('State#2')).toBe('state#2');
+      expect(customSnakeCase('State#2')).toBe('state_2');
       // Can use a mask input
       expect(customSnakeCase('Image Canvas')).toBe('image_canvas');
+      expect(customSnakeCase('👍🏻')).toBe('1f44d_1f3fb');
+      expect(customSnakeCase('Hello🌟World')).toBe('hello_1f31f_world');
     });
   });
 

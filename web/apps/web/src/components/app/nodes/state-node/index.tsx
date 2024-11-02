@@ -14,15 +14,14 @@ import {
   uuid,
 } from '@shellagent/flow-engine';
 import { TFieldMode, TValues } from '@shellagent/form-engine';
+import { Task, TaskSchema } from '@shellagent/shared/protocol/task';
+import { customSnakeCase, getTaskDisplayName } from '@shellagent/shared/utils';
 import { FormRef } from '@shellagent/ui';
 import { useKeyPress } from 'ahooks';
 import { isEqual } from 'lodash-es';
 import React, { useCallback, useRef, useEffect, useState } from 'react';
 import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
-import { Task, TaskSchema } from '@/types/task/protocol';
-import { getTaskDisplayName } from '@/utils/get_display_name';
-import { customSnakeCase } from '@/types/app-scope/protocol';
 
 import { EdgeDataTypeEnum, EdgeTypeEnum } from '@/components/app/edges';
 import NodeCard from '@/components/app/node-card';
@@ -249,7 +248,6 @@ const StateNode: React.FC<NodeProps<StateNodeType>> = ({
             });
           } catch (error) {
             console.error('Task parse error:', error);
-            return;
           }
         }
       },

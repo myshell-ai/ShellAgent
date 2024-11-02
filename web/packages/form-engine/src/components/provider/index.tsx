@@ -14,6 +14,7 @@ import {
 import { getDefaultValueBySchema } from '../../utils/generate-schema';
 import { reorder as order } from '../../utils/reorder';
 import { uuid } from '../../utils/uuid';
+import { customSnakeCase } from '@shellagent/shared/utils';
 
 const FormEngineContext = createContext<{
   components: SchemaReactComponents;
@@ -122,13 +123,29 @@ export const FormEngineProvider: React.FC<IFormEngineProviderProps> = props => {
 
       if (key) {
         newKey = key;
-      } else if (xKey && /{{counter}}/.test(xKey)) {
-        if (isNaN(Counter[path])) {
-          Counter[path] = 0;
-        } else {
-          Counter[path]++;
+      } else if (xKey && /{{(\w+)}}/.test(xKey)) {
+        // TODO key使用zod校验
+        const variables =
+          xKey.match(/{{(\w+)}}/g)?.map(v => v.replace(/[{}]/g, '')) || [];
+        let parsedKey = xKey;
+
+        if (Array.isArray(variables) && variables.indexOf('counter') !== -1) {
+          if (isNaN(Counter[path])) {
+            Counter[path] = 1;
+          } else {
+            Counter[path]++;
+          }
+          parsedKey = parsedKey.replace('{{counter}}', String(Counter[path]));
         }
-        newKey = xKey.replace('{{counter}}', String(Counter[path]));
+
+        variables.forEach(variable => {
+          if (variable !== 'counter' && newItem[variable]) {
+            const newValue = newItem[variable];
+            parsedKey = parsedKey.replace(`{{${variable}}}`, newValue);
+          }
+        });
+
+        newKey = customSnakeCase(parsedKey);
       } else {
         newKey = uuid();
       }

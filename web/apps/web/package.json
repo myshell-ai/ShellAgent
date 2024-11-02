@@ -26,6 +26,7 @@
     "@shellagent/flow-engine": "workspace:*",
     "@shellagent/form-engine": "workspace:*",
     "@shellagent/pro-config": "workspace:*",
+    "@shellagent/shared": "workspace:*",
     "@shellagent/tailwind-config": "workspace:*",
     "@shellagent/ui": "workspace:*",
     "ahooks": "^3.8.1",
@@ -76,7 +77,6 @@
     "zod": "^3.23.8",
     "zustand": "^4.5.4",
     "zustand-computed-state": "^0.1.8"
-
   },
   "devDependencies": {
     "@shellagent/eslint-config": "workspace:*",
