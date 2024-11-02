@@ -441,7 +441,6 @@ describe('custom event name', () => {
 describe('button', () => {
   it('valid', () => {
     buttonSchema.parse({
-      event: 'hello.a',
       payload: {
         b: {
           type: 'text',
@@ -449,62 +448,12 @@ describe('button', () => {
       },
     });
   });
-
-  it('invalid', () => {
-    expect(() => {
-      buttonSchema.parse({
-        event: 'hello',
-        payload: {
-          id: {
-            type: 'text_not',
-          },
-        },
-      });
-    }).toThrowErrorMatchingInlineSnapshot(`
-        "[
-          {
-            "code": "custom",
-            "message": "hello should concatenated by dots",
-            "path": [
-              "event"
-            ]
-          },
-          {
-            "code": "custom",
-            "message": "id is a reserved key",
-            "path": [
-              "payload",
-              "id"
-            ]
-          },
-          {
-            "received": "text_not",
-            "code": "invalid_enum_value",
-            "options": [
-              "text",
-              "image",
-              "audio",
-              "video",
-              "file",
-              "text_file"
-            ],
-            "path": [
-              "payload",
-              "id",
-              "type"
-            ],
-            "message": "Invalid enum value. Expected 'text' | 'image' | 'audio' | 'video' | 'file' | 'text_file', received 'text_not'"
-          }
-        ]"
-      `);
-  });
 });
 
 describe('buttons', () => {
   it('valid', () => {
     buttonsSchema.parse({
       a: {
-        event: 'hello.a',
         payload: {
           b: {
             type: 'text',
@@ -518,7 +467,6 @@ describe('buttons', () => {
     expect(() => {
       buttonsSchema.parse({
         id: {
-          event: 'hello.a',
           payload: {
             b: {
               type: 'text',
@@ -545,7 +493,6 @@ describe('render', () => {
     renderSchema.parse({
       buttons: {
         a: {
-          event: 'hello.a',
           payload: {
             b: {
               type: 'text',
@@ -597,7 +544,6 @@ describe('state', () => {
           render: {
             buttons: {
               a: {
-                event: 'hello.a',
                 payload: {
                   b: {
                     type: 'text',
@@ -671,7 +617,6 @@ describe('scopes', () => {
                 render: {
                   buttons: {
                     a: {
-                      event: 'hello.a',
                       payload: {
                         b: {
                           type: 'text',

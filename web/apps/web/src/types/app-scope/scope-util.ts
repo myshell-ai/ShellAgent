@@ -1,6 +1,7 @@
 import { CustomKey } from '@shellagent/pro-config';
 import { Buttons, Scopes, Task, Variables } from './protocol';
 import { Edges, RefType } from './scope';
+import { isEmpty } from 'lodash-es';
 
 export function getRefOptions(
   scopes: Scopes,
@@ -11,22 +12,17 @@ export function getRefOptions(
 ) {
   const ret: {
     global: Record<CustomKey, Variables>;
-    local: {
+    local: Partial<{
       inputs: Variables;
       tasks: Task[];
       outputs: Variables;
       buttons: Buttons;
-    };
+    }>;
   } = {
     global: {
       context: scopes.scopes.context.variables,
     },
-    local: {
-      inputs: {},
-      tasks: [],
-      outputs: {},
-      buttons: {},
-    },
+    local: {},
   };
 
   switch (refType) {
@@ -92,7 +88,9 @@ export function getRefOptions(
   function assignCurrentStateInput() {
     const state = scopes.scopes.states[stateName];
     if (state == null) throw new Error(`cannot find ${stateName} in scopes`);
-    ret.local.inputs = state.children.inputs.variables;
+    if (!isEmpty(state.children.inputs.variables)) {
+      ret.local.inputs = state.children.inputs.variables;
+    }
   }
 
   function assignCurrentStateOutput() {
