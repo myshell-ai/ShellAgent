@@ -12,17 +12,22 @@ export function getRefOptions(
 ) {
   const ret: {
     global: Record<CustomKey, Variables>;
-    local: Partial<{
-      inputs: Variables;
+    local: {
+      inputs: { variables: Variables };
       tasks: Task[];
-      outputs: Variables;
+      outputs: { variables: Variables };
       buttons: Buttons;
-    }>;
+    };
   } = {
     global: {
       context: scopes.scopes.context.variables,
     },
-    local: {},
+    local: {
+      inputs: { variables: {} },
+      tasks: [],
+      outputs: { variables: {} },
+      buttons: {},
+    },
   };
 
   switch (refType) {
@@ -89,14 +94,14 @@ export function getRefOptions(
     const state = scopes.scopes.states[stateName];
     if (state == null) throw new Error(`cannot find ${stateName} in scopes`);
     if (!isEmpty(state.children.inputs.variables)) {
-      ret.local.inputs = state.children.inputs.variables;
+      ret.local.inputs.variables = state.children.inputs.variables;
     }
   }
 
   function assignCurrentStateOutput() {
     const state = scopes.scopes.states[stateName];
     if (state == null) throw new Error(`cannot find ${stateName} in scopes`);
-    ret.local.outputs = state.children.outputs.variables;
+    ret.local.outputs.variables = state.children.outputs.variables;
   }
 
   function assignPreviousTasks() {

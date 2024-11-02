@@ -153,7 +153,16 @@ state#3
               },
             },
           },
-          "local": {},
+          "local": {
+            "buttons": {},
+            "inputs": {
+              "variables": {},
+            },
+            "outputs": {
+              "variables": {},
+            },
+            "tasks": [],
+          },
         }
       `);
     });
@@ -228,10 +237,16 @@ state#3
               },
             },
             "local": {
+              "buttons": {},
               "inputs": {
-                "input_b": {
-                  "type": "text",
+                "variables": {
+                  "input_b": {
+                    "type": "text",
+                  },
                 },
+              },
+              "outputs": {
+                "variables": {},
               },
               "tasks": [
                 {
@@ -317,11 +332,18 @@ state#3
               },
             },
             "local": {
+              "buttons": {},
               "inputs": {
-                "input_b": {
-                  "type": "text",
+                "variables": {
+                  "input_b": {
+                    "type": "text",
+                  },
                 },
               },
+              "outputs": {
+                "variables": {},
+              },
+              "tasks": [],
             },
           }
         `);
@@ -396,10 +418,16 @@ state#3
             },
           },
           "local": {
+            "buttons": {},
             "inputs": {
-              "input_b": {
-                "type": "text",
+              "variables": {
+                "input_b": {
+                  "type": "text",
+                },
               },
+            },
+            "outputs": {
+              "variables": {},
             },
             "tasks": [
               {
@@ -476,7 +504,16 @@ state#3
               },
             },
           },
-          "local": {},
+          "local": {
+            "buttons": {},
+            "inputs": {
+              "variables": {},
+            },
+            "outputs": {
+              "variables": {},
+            },
+            "tasks": [],
+          },
         }
       `);
     });
@@ -549,14 +586,19 @@ state#3
             },
           },
           "local": {
+            "buttons": {},
             "inputs": {
-              "input_b": {
-                "type": "text",
+              "variables": {
+                "input_b": {
+                  "type": "text",
+                },
               },
             },
             "outputs": {
-              "output_b": {
-                "type": "text",
+              "variables": {
+                "output_b": {
+                  "type": "text",
+                },
               },
             },
             "tasks": [
@@ -650,14 +692,19 @@ state#3
             },
           },
           "local": {
+            "buttons": {},
             "inputs": {
-              "input_b": {
-                "type": "text",
+              "variables": {
+                "input_b": {
+                  "type": "text",
+                },
               },
             },
             "outputs": {
-              "output_b": {
-                "type": "text",
+              "variables": {
+                "output_b": {
+                  "type": "text",
+                },
               },
             },
             "tasks": [
@@ -756,14 +803,19 @@ state#3
             },
           },
           "local": {
+            "buttons": {},
             "inputs": {
-              "input_b": {
-                "type": "text",
+              "variables": {
+                "input_b": {
+                  "type": "text",
+                },
               },
             },
             "outputs": {
-              "output_b": {
-                "type": "text",
+              "variables": {
+                "output_b": {
+                  "type": "text",
+                },
               },
             },
             "tasks": [
@@ -875,13 +927,17 @@ state#3
               },
             },
             "inputs": {
-              "input_b": {
-                "type": "text",
+              "variables": {
+                "input_b": {
+                  "type": "text",
+                },
               },
             },
             "outputs": {
-              "output_b": {
-                "type": "text",
+              "variables": {
+                "output_b": {
+                  "type": "text",
+                },
               },
             },
             "tasks": [
