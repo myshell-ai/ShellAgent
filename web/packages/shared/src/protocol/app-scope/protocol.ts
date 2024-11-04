@@ -203,6 +203,7 @@ export const renderSchema = z
 
 export const taskSchema = z.object({
   name: z.string(),
+  display_name: z.string(),
   variables: variablesSchema,
 });
 
