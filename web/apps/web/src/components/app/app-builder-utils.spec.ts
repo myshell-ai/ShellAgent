@@ -156,7 +156,14 @@ describe('app builder utils', () => {
                   "buttons": {
                     "button_1": {
                       "event": "button_1.on_click",
-                      "payload": {},
+                      "payload": {
+                        "untitled_payload_1": {
+                          "type": "text",
+                        },
+                        "untitled_payload_2": {
+                          "type": "text",
+                        },
+                      },
                     },
                   },
                 },
@@ -171,9 +178,40 @@ describe('app builder utils', () => {
                   "name": "workflow_runner_1",
                   "variables": {},
                 },
+                {
+                  "name": "comfy_ui_1",
+                  "variables": {},
+                },
               ],
             },
             "name": "state_1",
+          },
+          "state_2": {
+            "children": {
+              "inputs": {
+                "variables": {},
+              },
+              "outputs": {
+                "render": {
+                  "buttons": {
+                    "button_1": {
+                      "event": "button_1.on_click",
+                      "payload": {
+                        "untitled_payload_3": {
+                          "type": "text",
+                        },
+                        "untitled_payload_4": {
+                          "type": "text",
+                        },
+                      },
+                    },
+                  },
+                },
+                "variables": {},
+              },
+              "tasks": [],
+            },
+            "name": "state_2",
           },
         },
       }
