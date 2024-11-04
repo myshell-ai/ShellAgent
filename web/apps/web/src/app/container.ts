@@ -19,6 +19,8 @@ import { SettingsModel } from '@/components/settings/settings.model';
 import { EmitterModel } from '@/utils/emitter.model';
 import { ModalModel } from '@/utils/modal.model';
 import { RequestModel } from '@/utils/request.model';
+import { toJS } from 'mobx';
+(window as any).toJS = toJS;
 
 export const container = new Container();
 

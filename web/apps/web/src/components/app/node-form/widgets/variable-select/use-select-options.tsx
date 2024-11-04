@@ -6,7 +6,7 @@ import { useMemo } from 'react';
 import { useVariableContext } from '@/stores/app/variable-provider';
 import { useInjection } from 'inversify-react';
 import { AppBuilderModel } from '@/components/app/app-builder.model';
-import { refTypeSchema } from '@shellagent/shared/protocol/app-scope';
+import { RefType, refTypeSchema } from '@shellagent/shared/protocol/app-scope';
 import { useSchemaContext } from '@/stores/app/schema-provider';
 
 export const useSelectOptions = (name?: string) => {
@@ -30,17 +30,19 @@ export const useSelectOptions = (name?: string) => {
     states: state.states,
   }));
 
-  const refOptions = appBuilder.getRefOptions(
-    stateId,
-    refTypeSchema.enum.state_input,
-  );
+  let refType: RefType | null = null;
 
   // const currentGroup = [...input, ...tasks, ...output];
 
-  // if (parent?.startsWith('condition.')) {
-  //   // target inputs需要payload
-  //   currentGroup.push(...payloads);
-  // }
+  if (parent?.startsWith('condition.')) {
+    refType = refTypeSchema.Enum.target_input;
+  } else if (parent?.startsWith('input.')) {
+    refType = refTypeSchema.Enum.state_input;
+  } else if (parent?.startsWith('blocks.')) {
+    refType = refTypeSchema.Enum.state_task;
+  } else if (name?.startsWith('output.')) {
+    refType = refTypeSchema.Enum.state_output;
+  }
 
   // const globalGroup = [...context, ...states];
 
@@ -106,6 +108,13 @@ export const useSelectOptions = (name?: string) => {
   //     { label: 'global', children: formatOptions(globalGroup) },
   //   ];
   // }, [currentGroup, globalGroup, parent, name]);
+
+  // const refOptions = appBuilder.getRefOptions(
+  //   stateId as Lowercase<string>,
+  //   refType as RefType,
+  //   refTypeSchema.enum.state_input,
+  // );
+  const refOptions: any[] = [];
 
   return refOptions;
 };

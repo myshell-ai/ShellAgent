@@ -613,4 +613,87 @@ describe('app builder utils', () => {
       ]
     `);
   });
+
+  describe('cases', () => {
+    it('case#1', () => {
+      const input = {
+        id: 'state_2',
+        type: 'state',
+        name: 'State',
+        render: {},
+        input: {
+          untitled_input_1: {
+            name: 'input_1',
+            type: 'text',
+            user_input: true,
+          },
+        },
+        blocks: [
+          {
+            type: 'task',
+            display_name: 'GPT#1',
+            name: 'gpt_1',
+            mode: 'widget',
+            inputs: {
+              model: 'gpt-4o',
+              system_prompt: '',
+              user_prompt: '',
+              input_image: null,
+              memory: [],
+              function_parameters: [],
+              memory_mode: 'auto',
+              temperature: 0.7,
+              top_p: 1,
+              max_tokens: null,
+              stream: false,
+              presence_penalty: 0,
+              frequency_penalty: 0,
+              callback: null,
+              widget_run_id: null,
+              function_name: 'any_function_name',
+              function_description: 'any_function_description',
+            },
+            outputs: {
+              display: {
+                reply: 'string|object',
+              },
+            },
+            widget_class_name: 'GPTWidget',
+            render: null,
+          },
+        ],
+      };
+      const ret = convertNodeDataToState(input);
+      expect(ret).toMatchInlineSnapshot(`
+        {
+          "children": {
+            "inputs": {
+              "variables": {
+                "untitled_input_1": {
+                  "type": "text",
+                },
+              },
+            },
+            "outputs": {
+              "render": {
+                "buttons": {},
+              },
+              "variables": {},
+            },
+            "tasks": [
+              {
+                "name": "gpt_1",
+                "variables": {
+                  "reply": {
+                    "type": "string|object",
+                  },
+                },
+              },
+            ],
+          },
+          "name": "state_2",
+        }
+      `);
+    });
+  });
 });

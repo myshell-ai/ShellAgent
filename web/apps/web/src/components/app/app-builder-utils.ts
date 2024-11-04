@@ -15,7 +15,7 @@ export interface CascaderOption {
 }
 
 export function convertNodeDataToState(nodeData: any): State {
-  return stateSchema.parse({
+  const ret = {
     name: nodeData.id,
     children: {
       inputs: {
@@ -27,7 +27,11 @@ export function convertNodeDataToState(nodeData: any): State {
       },
       tasks: (nodeData.blocks || []).map((block: any) => ({
         name: block.name,
-        variables: block.inputs, // Assuming inputs are the variables
+        variables: mapValues(block.outputs.display, (v, k) => {
+          return {
+            type: v,
+          };
+        }), // Assuming inputs are the variables
       })),
       outputs: {
         variables: Object.fromEntries(
@@ -53,7 +57,12 @@ export function convertNodeDataToState(nodeData: any): State {
         },
       },
     },
-  });
+  };
+  try {
+    return stateSchema.parse(ret);
+  } catch (e) {
+    throw e;
+  }
 }
 
 export function convetNodeDataToScopes(nodeDatas: any, edges: any[]) {

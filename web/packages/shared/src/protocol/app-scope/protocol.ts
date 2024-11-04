@@ -13,7 +13,7 @@ import { z } from 'zod';
  */
 export { customSnakeCase };
 
-export const variableTypeSchema = z.enum([
+export const primitiveVariableTypeSchema = z.enum([
   'text',
   'image',
   'audio',
@@ -22,7 +22,24 @@ export const variableTypeSchema = z.enum([
   'text_file',
 ]);
 
-export type VariableType = z.infer<typeof variableTypeSchema>;
+export type PrimitiveVariableType = z.infer<typeof primitiveVariableTypeSchema>;
+
+export const variableTypeSchema = z
+  .custom<PrimitiveVariableType | string>()
+  .superRefine((arg, ctx) => {
+    if (arg.indexOf('|') === -1) {
+      const ret = primitiveVariableTypeSchema.safeParse(arg);
+      if (!ret.success) {
+        ret.error?.issues.forEach(iss => ctx.addIssue(iss));
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: `${arg} is not valid, only allowed compound type, e.g. string|object`,
+        });
+      }
+    } else {
+      // noops
+    }
+  });
 
 // FIX: Primitive variables cannot be nested.
 // https://github.com/colinhacks/zod/discussions/2245

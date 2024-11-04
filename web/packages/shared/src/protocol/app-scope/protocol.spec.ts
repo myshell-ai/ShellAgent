@@ -98,6 +98,12 @@ describe('protocol', () => {
       });
     });
 
+    describe('compound type', () => {
+      variableSchema.parse({
+        type: 'string|object',
+      });
+    });
+
     describe('not valid', () => {
       it('type not right', () => {
         expect(() => {
@@ -106,25 +112,32 @@ describe('protocol', () => {
             // value: 'hello',
           });
         }).toThrowErrorMatchingInlineSnapshot(`
-              "[
-                {
-                  "received": "text_not",
-                  "code": "invalid_enum_value",
-                  "options": [
-                    "text",
-                    "image",
-                    "audio",
-                    "video",
-                    "file",
-                    "text_file"
-                  ],
-                  "path": [
-                    "type"
-                  ],
-                  "message": "Invalid enum value. Expected 'text' | 'image' | 'audio' | 'video' | 'file' | 'text_file', received 'text_not'"
-                }
-              ]"
-            `);
+          "[
+            {
+              "received": "text_not",
+              "code": "invalid_enum_value",
+              "options": [
+                "text",
+                "image",
+                "audio",
+                "video",
+                "file",
+                "text_file"
+              ],
+              "path": [
+                "type"
+              ],
+              "message": "Invalid enum value. Expected 'text' | 'image' | 'audio' | 'video' | 'file' | 'text_file', received 'text_not'"
+            },
+            {
+              "code": "custom",
+              "message": "text_not is not valid, only allowed compound type, e.g. string|object",
+              "path": [
+                "type"
+              ]
+            }
+          ]"
+        `);
       });
     });
   });
