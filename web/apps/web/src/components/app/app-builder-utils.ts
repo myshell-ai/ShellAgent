@@ -29,7 +29,7 @@ export function convertNodeDataToState(nodeData: any): State {
         ),
         render: {
           buttons: Object.fromEntries(
-            nodeData.render.buttons.map((button: any) => {
+            (nodeData.render?.buttons || []).map((button: any) => {
               const [name, evt] = button.id.split('.');
               return [
                 name,

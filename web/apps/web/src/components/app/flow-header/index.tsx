@@ -5,6 +5,8 @@ import dayjs from 'dayjs';
 import { isEmpty, pick } from 'lodash-es';
 import React, { useCallback, useMemo, useState, useEffect, memo } from 'react';
 import { useShallow } from 'zustand/react/shallow';
+import { useInjection } from 'inversify-react';
+import { AppBuilderModel } from '@/components/app/app-builder.model.ts';
 
 import { usePasteState } from '@/components/app/nodes/state-node/hook/use-paste-state';
 import { saveApp } from '@/services/app';
@@ -27,6 +29,12 @@ const FlowHeader: React.FC<{ appId: string }> = ({ appId }) => {
       loading: state.loading,
     })),
   );
+
+  const appBuilder = useInjection(AppBuilderModel);
+
+  useEffect(() => {
+    appBuilder.updateScopes(nodeData);
+  }, [nodeData]);
 
   const { nodes, edges, viewport } = useReactFlowStore(state => ({
     nodes: state.nodes,
