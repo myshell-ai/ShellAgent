@@ -158,12 +158,12 @@ export const outputVariablesSchema = z.record(outputNameSchema, variableSchema);
 
 export const buttonSchema = z
   .object({
-    // event: customEventSchema,
+    event: customEventSchema,
     payload: z.record(customKeySchema, variableSchema),
   })
   .strict();
 
-export const buttonsSchema = z.record(customEventSchema, buttonSchema);
+export const buttonsSchema = z.record(customKeySchema, buttonSchema);
 
 export type Buttons = z.infer<typeof buttonsSchema>;
 

@@ -13,6 +13,7 @@ import {
   getTasks,
   VariableProps,
 } from '@/stores/app/variable-provider';
+import { convetNodeDataToScopes } from './app-builder-utils';
 
 @injectable()
 export class AppBuilderModel {
@@ -22,7 +23,11 @@ export class AppBuilderModel {
     makeObservable(this);
   }
 
-  @observable scopes: Scopes | null = null;
+  // @observable scopes: Scopes | null = null;
+
+  updateScopes(nodeData: any) {
+    convetNodeDataToScopes(nodeData);
+  }
 
   onRefUpdate() {}
 

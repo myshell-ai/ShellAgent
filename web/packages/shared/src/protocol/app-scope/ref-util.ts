@@ -7,6 +7,7 @@ import {
   refOptionsOutputSchema,
 } from './scope';
 import { isEmpty, mapKeys, mapValues } from 'lodash-es';
+
 export function getRefOptions(
   scopes: Scopes,
   edges: Edges,
