@@ -198,104 +198,106 @@ describe('app builder utils', () => {
     const scopes = convetNodeDataToScopes(nodeData, edges);
     expect(scopes).toMatchInlineSnapshot(`
       {
-        "context": {
-          "variables": {
-            "untitled___context__1__": {
-              "type": "text",
+        "scopes": {
+          "context": {
+            "variables": {
+              "untitled___context__1__": {
+                "type": "text",
+              },
+              "untitled___context__2__": {
+                "type": "text",
+              },
             },
-            "untitled___context__2__": {
-              "type": "text",
+          },
+          "edges": [
+            {
+              "source": "@@@start",
+              "target": "state_1",
             },
-          },
-        },
-        "edges": [
-          {
-            "source": "@@@start",
-            "target": "state_1",
-          },
-          {
-            "source": "state_1",
-            "target": "state_2",
-          },
-          {
-            "source": "state_1",
-            "target": "state_2",
-          },
-        ],
-        "states": {
-          "state_1": {
-            "children": {
-              "inputs": {
-                "variables": {
-                  "untitled_input_1": {
-                    "type": "text",
-                  },
-                  "untitled_input_2": {
-                    "type": "text",
+            {
+              "source": "state_1",
+              "target": "state_2",
+            },
+            {
+              "source": "state_1",
+              "target": "state_2",
+            },
+          ],
+          "states": {
+            "state_1": {
+              "children": {
+                "inputs": {
+                  "variables": {
+                    "untitled_input_1": {
+                      "type": "text",
+                    },
+                    "untitled_input_2": {
+                      "type": "text",
+                    },
                   },
                 },
-              },
-              "outputs": {
-                "render": {
-                  "buttons": {
-                    "button_1": {
-                      "event": "button_1.on_click",
-                      "payload": {
-                        "untitled_payload_1": {
-                          "type": "text",
-                        },
-                        "untitled_payload_2": {
-                          "type": "text",
+                "outputs": {
+                  "render": {
+                    "buttons": {
+                      "button_1": {
+                        "event": "button_1.on_click",
+                        "payload": {
+                          "untitled_payload_1": {
+                            "type": "text",
+                          },
+                          "untitled_payload_2": {
+                            "type": "text",
+                          },
                         },
                       },
                     },
                   },
-                },
-                "variables": {
-                  "untitled_output_1": {
-                    "type": "text",
+                  "variables": {
+                    "untitled_output_1": {
+                      "type": "text",
+                    },
                   },
                 },
+                "tasks": [
+                  {
+                    "name": "workflow_runner_1",
+                    "variables": {},
+                  },
+                  {
+                    "name": "comfy_ui_1",
+                    "variables": {},
+                  },
+                ],
               },
-              "tasks": [
-                {
-                  "name": "workflow_runner_1",
-                  "variables": {},
-                },
-                {
-                  "name": "comfy_ui_1",
-                  "variables": {},
-                },
-              ],
+              "name": "state_1",
             },
-            "name": "state_1",
-          },
-          "state_2": {
-            "children": {
-              "inputs": {
-                "variables": {},
-              },
-              "outputs": {
-                "render": {
-                  "buttons": {
-                    "button_1": {
-                      "event": "button_1.on_click",
-                      "payload": {
-                        "untitled_payload_3": {
-                          "type": "text",
-                        },
-                        "untitled_payload_4": {
-                          "type": "text",
+            "state_2": {
+              "children": {
+                "inputs": {
+                  "variables": {},
+                },
+                "outputs": {
+                  "render": {
+                    "buttons": {
+                      "button_1": {
+                        "event": "button_1.on_click",
+                        "payload": {
+                          "untitled_payload_3": {
+                            "type": "text",
+                          },
+                          "untitled_payload_4": {
+                            "type": "text",
+                          },
                         },
                       },
                     },
                   },
+                  "variables": {},
                 },
-                "variables": {},
+                "tasks": [],
               },
-              "tasks": [],
+              "name": "state_2",
             },
-            "name": "state_2",
           },
         },
       }
