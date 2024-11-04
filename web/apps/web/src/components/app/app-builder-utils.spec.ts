@@ -30,7 +30,18 @@ describe('app builder utils', () => {
               content: 'Button#1',
               on_click: {
                 event: 'button_1.on_click',
-                payload: {},
+                payload: {
+                  untitled_payload_1: {
+                    type: 'text',
+                    value: '',
+                    name: 'Untitled Payload',
+                  },
+                  untitled_payload_2: {
+                    type: 'text',
+                    value: '',
+                    name: 'Untitled Payload',
+                  },
+                },
               },
               id: 'button_1.on_click',
               description: '',
@@ -66,7 +77,49 @@ describe('app builder utils', () => {
             inputs: {},
             outputs: {},
           },
+          {
+            api: 'https://comfyui-test.myshell.life/',
+            comfy_workflow_id: 'ce6567645cdd4afc8c5cf90add032f8a',
+            type: 'task',
+            display_name: 'ComfyUI#1',
+            name: 'comfy_ui_1',
+            mode: 'widget',
+            inputs: {},
+            outputs: {},
+            custom: true,
+            widget_class_name: 'ComfyUIWidget',
+          },
         ],
+      },
+      state_2: {
+        id: 'state_2',
+        type: 'state',
+        name: 'State',
+        render: {
+          buttons: [
+            {
+              content: 'Button#1',
+              on_click: {
+                event: 'button_1.on_click',
+                payload: {
+                  untitled_payload_3: {
+                    type: 'text',
+                    value: '',
+                    name: 'Untitled Payload',
+                  },
+                  untitled_payload_4: {
+                    type: 'text',
+                    value: '',
+                    name: 'Untitled Payload',
+                  },
+                },
+              },
+              id: 'button_1.on_click',
+              description: '',
+            },
+          ],
+        },
+        input: {},
       },
     };
   });

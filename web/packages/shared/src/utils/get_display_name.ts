@@ -20,7 +20,6 @@ export type WidgetItem = {
   type?: NodeType;
   custom?: boolean; // 是否为自定义widget
   undraggable?: boolean; // 是否可以拖拽至画布中
-  // @ts-expect-error
   customRender?: () => JSX.Element;
   widget_name?: string;
 };
