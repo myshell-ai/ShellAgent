@@ -5,7 +5,7 @@ import {
   State,
   stateSchema,
 } from '@shellagent/shared/protocol/app-scope';
-import { mapValues } from 'lodash-es';
+import { mapValues, isEmpty } from 'lodash-es';
 
 export interface CascaderOption {
   label: string;
@@ -97,57 +97,112 @@ export function convetNodeDataToScopes(nodeDatas: any, edges: any[]) {
   });
 }
 
-export function convertRefOptsToCascaderOpts(input: any): CascaderOption[] {
-  const convertVariables = (variables: any): CascaderOption[] => {
-    return Object.entries(variables).map(([key, value]: [string, any]) => ({
+export function convertRefOptsToCascaderOpts(
+  refOptions: RefOptionsOutput,
+): CascaderOption[] {
+  const cascaderOptions: CascaderOption[] = [];
+
+  // Convert global options
+  const globalOptions: CascaderOption[] = [];
+  for (const [key, variables] of Object.entries(refOptions.global)) {
+    const children: CascaderOption[] = Object.entries(variables || {}).map(
+      ([variableKey, variable]) => ({
+        label: variableKey,
+        value: `{{ ${key}.${variableKey} }}`,
+        field_type: variable?.type,
+      }),
+    );
+
+    globalOptions.push({
       label: key,
-      field_type: value.type,
-      value: '{{}}',
-    }));
-  };
-
-  const convertSection = (section: any): CascaderOption[] => {
-    return Object.entries(section).map(([key, value]: [string, any]) => {
-      if (value.type) {
-        // It's a variable
-        return {
-          label: key,
-          field_type: value.type,
-          value: '{{}}',
-        };
-      } else if (value.payload) {
-        // It's a button with payload
-        return {
-          label: key,
-          children: convertVariables(value.payload),
-        };
-      } else if (Array.isArray(value)) {
-        // It's a list of tasks
-        return {
-          label: key,
-          children: value.map((task: any) => ({
-            label: task.name,
-            children: convertVariables(task.variables),
-          })),
-        };
-      } else {
-        // It's a nested section
-        return {
-          label: key,
-          children: convertSection(value),
-        };
-      }
+      children,
     });
-  };
+  }
 
-  return [
-    {
+  if (globalOptions.length > 0) {
+    cascaderOptions.push({
       label: 'global',
-      children: convertSection(input.global),
-    },
-    {
+      children: globalOptions,
+    });
+  }
+
+  // Convert local options
+  const localOptions: CascaderOption[] = [];
+
+  // Local buttons
+  if (!isEmpty(refOptions.local.buttons)) {
+    const buttonOptions = Object.entries(refOptions.local.buttons).map(
+      ([buttonKey, button]) => ({
+        label: buttonKey,
+        children: Object.entries(button?.payload || {}).map(
+          ([payloadKey, payload]) => ({
+            label: payloadKey,
+            value: `{{ ${payloadKey} }}`,
+            field_type: payload?.type,
+          }),
+        ),
+      }),
+    );
+
+    localOptions.push({
+      label: 'buttons',
+      children: buttonOptions,
+    });
+  }
+
+  // Local inputs
+  if (!isEmpty(refOptions.local.inputs.variables)) {
+    localOptions.push({
+      label: 'inputs',
+      children: Object.entries(refOptions.local.inputs.variables).map(
+        ([variableKey, variable]) => ({
+          label: variableKey,
+          value: `{{ ${variableKey} }}`,
+          field_type: variable?.type,
+        }),
+      ),
+    });
+  }
+
+  // Local outputs
+  if (!isEmpty(refOptions.local.outputs.variables)) {
+    localOptions.push({
+      label: 'outputs',
+      children: Object.entries(refOptions.local.outputs.variables).map(
+        ([variableKey, variable]) => ({
+          label: variableKey,
+          value: `{{ ${variableKey} }}`,
+          field_type: variable.type,
+        }),
+      ),
+    });
+  }
+
+  // Local tasks
+  if (refOptions.local.tasks.length > 0) {
+    const taskOptions = refOptions.local.tasks.map(task => ({
+      label: task.name,
+      children: Object.entries(task.variables).map(
+        ([variableKey, variable]) => ({
+          label: variableKey,
+          value: `{{ ${task.name}.${variableKey} }}`,
+          field_type: variable?.type,
+        }),
+      ),
+    }));
+
+    localOptions.push({
+      label: 'tasks',
+      children: taskOptions,
+    });
+  }
+
+  if (localOptions.length > 0) {
+    cascaderOptions.push({
       label: 'local',
-      children: convertSection(input.local),
-    },
-  ];
+      children: localOptions,
+    });
+  }
+
+  return cascaderOptions;
 }

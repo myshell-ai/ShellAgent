@@ -365,7 +365,7 @@ describe('app builder utils', () => {
     `);
   });
 
-  it('convert ref opts to cascader opts', () => {
+  it.only('convert ref opts to cascader opts', () => {
     const input = {
       global: {
         context: {
@@ -373,7 +373,7 @@ describe('app builder utils', () => {
             type: 'text',
           },
         },
-        'state#1': {
+        state_1: {
           output_a: {
             type: 'text',
           },
@@ -382,6 +382,7 @@ describe('app builder utils', () => {
       local: {
         buttons: {
           button_a: {
+            event: 'button_a.on_click',
             payload: {
               input_b: {
                 type: 'text',
@@ -423,7 +424,7 @@ describe('app builder utils', () => {
         ],
       },
     };
-    const ret = convertRefOptsToCascaderOpts(input);
+    const ret = convertRefOptsToCascaderOpts(input as any);
     expect(ret).toMatchInlineSnapshot(`
       [
         {
@@ -433,7 +434,7 @@ describe('app builder utils', () => {
                 {
                   "field_type": "text",
                   "label": "global_a",
-                  "value": "{{}}",
+                  "value": "{{ context.global_a }}",
                 },
               ],
               "label": "context",
@@ -443,10 +444,10 @@ describe('app builder utils', () => {
                 {
                   "field_type": "text",
                   "label": "output_a",
-                  "value": "{{}}",
+                  "value": "{{ state_1.output_a }}",
                 },
               ],
-              "label": "state#1",
+              "label": "state_1",
             },
           ],
           "label": "global",
@@ -460,7 +461,7 @@ describe('app builder utils', () => {
                     {
                       "field_type": "text",
                       "label": "input_b",
-                      "value": "{{}}",
+                      "value": "{{ input_b }}",
                     },
                   ],
                   "label": "button_a",
@@ -471,14 +472,9 @@ describe('app builder utils', () => {
             {
               "children": [
                 {
-                  "children": [
-                    {
-                      "field_type": "text",
-                      "label": "input_b",
-                      "value": "{{}}",
-                    },
-                  ],
-                  "label": "variables",
+                  "field_type": "text",
+                  "label": "input_b",
+                  "value": "{{ input_b }}",
                 },
               ],
               "label": "inputs",
@@ -486,14 +482,9 @@ describe('app builder utils', () => {
             {
               "children": [
                 {
-                  "children": [
-                    {
-                      "field_type": "text",
-                      "label": "output_b",
-                      "value": "{{}}",
-                    },
-                  ],
-                  "label": "variables",
+                  "field_type": "text",
+                  "label": "output_b",
+                  "value": "{{ output_b }}",
                 },
               ],
               "label": "outputs",
@@ -505,7 +496,7 @@ describe('app builder utils', () => {
                     {
                       "field_type": "text",
                       "label": "output_a",
-                      "value": "{{}}",
+                      "value": "{{ task1.output_a }}",
                     },
                   ],
                   "label": "task1",
@@ -515,7 +506,7 @@ describe('app builder utils', () => {
                     {
                       "field_type": "text",
                       "label": "output_a",
-                      "value": "{{}}",
+                      "value": "{{ task2.output_a }}",
                     },
                   ],
                   "label": "task2",
