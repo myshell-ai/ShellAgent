@@ -1,4 +1,4 @@
-import { Button } from '@/protocol/render-button';
+import { Button } from '../protocol/render-button';
 import { CustomEventName } from '@shellagent/pro-config';
 import { customSnakeCase } from './utils';
 

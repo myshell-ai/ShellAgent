@@ -1,4 +1,5 @@
 import {
+  RefOptionsOutput,
   Scopes,
   scopesSchema,
   State,
@@ -71,3 +72,5 @@ export function convetNodeDataToScopes(nodeDatas: any) {
   });
   return ret;
 }
+
+export function convertRefToCascaderOpts(refOpts: RefOptionsOutput) {}

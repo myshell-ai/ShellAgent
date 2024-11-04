@@ -1,4 +1,3 @@
-import { customEventSchema } from '@shellagent/shared/protocol/app-scope';
 import {
   convertNodeDataToState,
   convetNodeDataToScopes,
@@ -277,5 +276,73 @@ describe('app builder utils', () => {
         "name": "state_2",
       }
     `);
+  });
+
+  it('convert ref opts to cascader opts', () => {
+    const input = {
+      global: {
+        context: {
+          global_a: {
+            type: 'text',
+          },
+        },
+        'state#1': {
+          output_a: {
+            type: 'text',
+          },
+        },
+      },
+      local: {
+        buttons: {
+          button_a: {
+            payload: {
+              input_b: {
+                type: 'text',
+              },
+            },
+          },
+        },
+        inputs: {
+          variables: {
+            input_b: {
+              type: 'text',
+            },
+          },
+        },
+        outputs: {
+          variables: {
+            output_b: {
+              type: 'text',
+            },
+          },
+        },
+        tasks: [
+          {
+            name: 'task1',
+            variables: {
+              output_a: {
+                type: 'text',
+              },
+            },
+          },
+          {
+            name: 'task2',
+            variables: {
+              output_a: {
+                type: 'text',
+              },
+            },
+          },
+        ],
+      },
+    };
+    const ret = {
+      global: {
+        children: [],
+      },
+      local: {
+        children: [],
+      },
+    };
   });
 });

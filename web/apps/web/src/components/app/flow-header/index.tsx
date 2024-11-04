@@ -6,7 +6,7 @@ import { isEmpty, pick } from 'lodash-es';
 import React, { useCallback, useMemo, useState, useEffect, memo } from 'react';
 import { useShallow } from 'zustand/react/shallow';
 import { useInjection } from 'inversify-react';
-import { AppBuilderModel } from '@/components/app/app-builder.model.ts';
+import { AppBuilderModel } from '@/components/app/app-builder.model';
 
 import { usePasteState } from '@/components/app/nodes/state-node/hook/use-paste-state';
 import { saveApp } from '@/services/app';

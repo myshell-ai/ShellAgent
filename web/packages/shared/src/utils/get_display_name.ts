@@ -1,5 +1,5 @@
-import { Task } from '@/protocol/task';
-import { Button } from '@/protocol/render-button';
+import { Task } from '../protocol/task';
+import { Button } from '../protocol/render-button';
 
 export enum NodeTypeEnum {
   start = 'start',
