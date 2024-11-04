@@ -4,9 +4,16 @@ import { isEmpty } from 'lodash-es';
 import { useMemo } from 'react';
 
 import { useVariableContext } from '@/stores/app/variable-provider';
+import { useInjection } from 'inversify-react';
+import { AppBuilderModel } from '@/components/app/app-builder.model';
+import { refTypeSchema } from '@shellagent/shared/protocol/app-scope';
+import { useSchemaContext } from '@/stores/app/schema-provider';
 
 export const useSelectOptions = (name?: string) => {
   const { parent } = useFormEngineContext();
+  const stataId = useSchemaContext(state => state.id);
+
+  const appBuilder = useInjection(AppBuilderModel);
   const {
     payloads = [],
     input = [],
@@ -22,6 +29,11 @@ export const useSelectOptions = (name?: string) => {
     context: state.context,
     states: state.states,
   }));
+
+  const refOptions = appBuilder.getRefOptions(
+    stataId,
+    refTypeSchema.enum.state_input,
+  );
 
   const currentGroup = [...input, ...tasks, ...output];
 
@@ -65,7 +77,7 @@ export const useSelectOptions = (name?: string) => {
         return memo;
       } else if (
         name?.startsWith('context.') &&
-        ['Start-Context'].includes(current.label)
+        ['Context'].includes(current.label)
       ) {
         return memo;
       }

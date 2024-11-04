@@ -32,15 +32,15 @@ const FlowHeader: React.FC<{ appId: string }> = ({ appId }) => {
 
   const appBuilder = useInjection(AppBuilderModel);
 
-  useEffect(() => {
-    appBuilder.updateScopes(nodeData);
-  }, [nodeData]);
-
   const { nodes, edges, viewport } = useReactFlowStore(state => ({
     nodes: state.nodes,
     edges: state.edges,
     viewport: state.viewport,
   }));
+
+  useEffect(() => {
+    appBuilder.updateScopes(nodeData, edges);
+  }, [nodeData]);
 
   const values = useMemo(() => {
     return {
