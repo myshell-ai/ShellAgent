@@ -88,14 +88,12 @@ describe('protocol', () => {
       it('simple', () => {
         variableSchema.parse({
           type: 'text',
-          value: 'hello',
         });
       });
 
       it('recursive', () => {
         const a = variableSchema.parse({
           type: 'text',
-          value: 'hello',
         });
       });
     });
@@ -103,7 +101,6 @@ describe('protocol', () => {
     describe('compound type', () => {
       variableSchema.parse({
         type: 'string|object',
-        value: '{{ state_1.inputs.a }}',
       });
     });
 
@@ -112,7 +109,7 @@ describe('protocol', () => {
         expect(() => {
           variableSchema.parse({
             type: 'text_not',
-            value: 'hello',
+            // value: 'hello',
           });
         }).toThrowErrorMatchingInlineSnapshot(`
           "[
@@ -152,7 +149,6 @@ describe('protocol', () => {
         variables: {
           reply: {
             type: 'text',
-            value: 'hello',
           },
         },
       });
@@ -291,7 +287,6 @@ describe('state variables', () => {
     variablesSchema.parse({
       test: {
         type: 'text',
-        value: 'hello',
       },
     });
   });
@@ -301,7 +296,6 @@ describe('state variables', () => {
       variablesSchema.parse({
         properties: {
           type: 'text',
-          value: 'hello',
         },
       });
     }).toThrowErrorMatchingInlineSnapshot(`
@@ -322,7 +316,6 @@ describe('state variables', () => {
       variablesSchema.parse({
         Properties: {
           type: 'text',
-          value: 'hello',
         },
       });
     }).toThrowErrorMatchingInlineSnapshot(`
@@ -422,7 +415,6 @@ describe('output variables', () => {
     outputVariablesSchema.parse({
       a: {
         type: 'text',
-        value: 'hello',
       },
     });
   });
@@ -471,7 +463,6 @@ describe('button', () => {
       payload: {
         b: {
           type: 'text',
-          value: 'hello',
         },
       },
     });
@@ -486,7 +477,6 @@ describe('buttons', () => {
         payload: {
           b: {
             type: 'text',
-            value: 'hello',
           },
         },
       },
@@ -501,7 +491,6 @@ describe('buttons', () => {
           payload: {
             b: {
               type: 'text',
-              value: 'hello',
             },
           },
         },
@@ -529,7 +518,6 @@ describe('render', () => {
           payload: {
             b: {
               type: 'text',
-              value: 'hello',
             },
           },
         },
@@ -547,7 +535,6 @@ describe('state', () => {
           variables: {
             a: {
               type: 'text',
-              value: 'hello',
             },
           },
         },
@@ -566,7 +553,6 @@ describe('state', () => {
             variables: {
               reply: {
                 type: 'text',
-                value: 'hello',
               },
             },
           },
@@ -575,7 +561,6 @@ describe('state', () => {
           variables: {
             a: {
               type: 'text',
-              value: 'hello',
             },
           },
           render: {
@@ -585,7 +570,6 @@ describe('state', () => {
                 payload: {
                   b: {
                     type: 'text',
-                    value: 'hello',
                   },
                 },
               },
@@ -623,7 +607,6 @@ describe('scopes', () => {
           variables: {
             global_a: {
               type: 'text',
-              value: 'hello',
             },
           },
         },
@@ -636,7 +619,6 @@ describe('scopes', () => {
                 variables: {
                   a: {
                     type: 'text',
-                    value: 'hello',
                   },
                 },
               },
@@ -646,7 +628,6 @@ describe('scopes', () => {
                   variables: {
                     reply: {
                       type: 'text',
-                      value: 'hello',
                     },
                   },
                 },
@@ -655,7 +636,6 @@ describe('scopes', () => {
                 variables: {
                   a: {
                     type: 'text',
-                    value: 'hello',
                   },
                 },
                 render: {
@@ -665,7 +645,6 @@ describe('scopes', () => {
                       payload: {
                         b: {
                           type: 'text',
-                          value: 'hello',
                         },
                       },
                     },

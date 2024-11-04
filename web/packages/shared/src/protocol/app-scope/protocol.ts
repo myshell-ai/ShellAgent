@@ -64,7 +64,7 @@ export const variableTypeSchema = z
 export const variableSchema = z
   .object({
     type: variableTypeSchema,
-    value: z.string(),
+    // value: z.string()
   })
   .strict();
 
