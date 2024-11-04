@@ -202,9 +202,11 @@ describe('app builder utils', () => {
           "context": {
             "variables": {
               "untitled___context__1__": {
+                "display_name": "Untitled Context",
                 "type": "text",
               },
               "untitled___context__2__": {
+                "display_name": "Untitled Context",
                 "type": "text",
               },
             },
@@ -229,9 +231,11 @@ describe('app builder utils', () => {
                 "inputs": {
                   "variables": {
                     "untitled_input_1": {
+                      "display_name": "Untitled Input",
                       "type": "text",
                     },
                     "untitled_input_2": {
+                      "display_name": "Untitled Input",
                       "type": "text",
                     },
                   },
@@ -243,9 +247,11 @@ describe('app builder utils', () => {
                         "event": "button_1.on_click",
                         "payload": {
                           "untitled_payload_1": {
+                            "display_name": "Untitled Payload",
                             "type": "text",
                           },
                           "untitled_payload_2": {
+                            "display_name": "Untitled Payload",
                             "type": "text",
                           },
                         },
@@ -254,6 +260,7 @@ describe('app builder utils', () => {
                   },
                   "variables": {
                     "untitled_output_1": {
+                      "display_name": "Untitled Output",
                       "type": "text",
                     },
                   },
@@ -283,9 +290,11 @@ describe('app builder utils', () => {
                         "event": "button_1.on_click",
                         "payload": {
                           "untitled_payload_3": {
+                            "display_name": "Untitled Payload",
                             "type": "text",
                           },
                           "untitled_payload_4": {
+                            "display_name": "Untitled Payload",
                             "type": "text",
                           },
                         },
@@ -347,9 +356,11 @@ describe('app builder utils', () => {
                   "event": "button_1.on_click",
                   "payload": {
                     "untitled_payload_3": {
+                      "display_name": "Untitled Payload",
                       "type": "text",
                     },
                     "untitled_payload_4": {
+                      "display_name": "Untitled Payload",
                       "type": "text",
                     },
                   },
@@ -371,11 +382,13 @@ describe('app builder utils', () => {
         context: {
           global_a: {
             type: 'text',
+            display_name: 'Global A',
           },
         },
         state_1: {
           output_a: {
             type: 'text',
+            display_name: 'Output A',
           },
         },
       },
@@ -386,6 +399,7 @@ describe('app builder utils', () => {
             payload: {
               input_b: {
                 type: 'text',
+                display_name: 'Input B',
               },
             },
           },
@@ -394,6 +408,7 @@ describe('app builder utils', () => {
           variables: {
             input_b: {
               type: 'text',
+              display_name: 'Input B',
             },
           },
         },
@@ -401,6 +416,7 @@ describe('app builder utils', () => {
           variables: {
             output_b: {
               type: 'text',
+              display_name: 'Output B',
             },
           },
         },
@@ -410,6 +426,7 @@ describe('app builder utils', () => {
             variables: {
               output_a: {
                 type: 'text',
+                display_name: 'Output A',
               },
             },
           },
@@ -418,6 +435,7 @@ describe('app builder utils', () => {
             variables: {
               output_a: {
                 type: 'text',
+                display_name: 'Output A',
               },
             },
           },
@@ -433,7 +451,7 @@ describe('app builder utils', () => {
               "children": [
                 {
                   "field_type": "text",
-                  "label": "global_a",
+                  "label": "Global A",
                   "value": "{{ context.global_a }}",
                 },
               ],
@@ -443,7 +461,7 @@ describe('app builder utils', () => {
               "children": [
                 {
                   "field_type": "text",
-                  "label": "output_a",
+                  "label": "Output A",
                   "value": "{{ state_1.output_a }}",
                 },
               ],
@@ -460,7 +478,7 @@ describe('app builder utils', () => {
                   "children": [
                     {
                       "field_type": "text",
-                      "label": "input_b",
+                      "label": "Input B",
                       "value": "{{ input_b }}",
                     },
                   ],
@@ -473,7 +491,7 @@ describe('app builder utils', () => {
               "children": [
                 {
                   "field_type": "text",
-                  "label": "input_b",
+                  "label": "Input B",
                   "value": "{{ input_b }}",
                 },
               ],
@@ -483,7 +501,7 @@ describe('app builder utils', () => {
               "children": [
                 {
                   "field_type": "text",
-                  "label": "output_b",
+                  "label": "Output B",
                   "value": "{{ output_b }}",
                 },
               ],
@@ -495,7 +513,7 @@ describe('app builder utils', () => {
                   "children": [
                     {
                       "field_type": "text",
-                      "label": "output_a",
+                      "label": "Output A",
                       "value": "{{ task1.output_a }}",
                     },
                   ],
@@ -505,7 +523,7 @@ describe('app builder utils', () => {
                   "children": [
                     {
                       "field_type": "text",
-                      "label": "output_a",
+                      "label": "Output A",
                       "value": "{{ task2.output_a }}",
                     },
                   ],
@@ -577,6 +595,7 @@ describe('app builder utils', () => {
             "inputs": {
               "variables": {
                 "untitled_input_1": {
+                  "display_name": "input_1",
                   "type": "text",
                 },
               },
@@ -592,6 +611,7 @@ describe('app builder utils', () => {
                 "name": "gpt_1",
                 "variables": {
                   "reply": {
+                    "display_name": "GPT#1",
                     "type": "string|object",
                   },
                 },
@@ -599,6 +619,257 @@ describe('app builder utils', () => {
             ],
           },
           "name": "state_2",
+        }
+      `);
+    });
+
+    it('case#2', () => {
+      const nodeDatas = {
+        '@@@start': {
+          id: '@@@start',
+          type: 'start',
+          context: {
+            '7b_7b_name_7d_7d__2': {
+              type: 'text',
+              value: '',
+              name: '1111',
+            },
+            '7b_7b_name_7d_7d__1': {
+              type: 'text',
+              value: '',
+              name: '2222',
+            },
+          },
+        },
+        state_1: {
+          id: 'state_1',
+          type: 'state',
+          name: 'State',
+          render: {
+            buttons: [
+              {
+                content: 'Button#1',
+                on_click: {
+                  event: 'button_1.on_click',
+                  payload: {
+                    key_1730724703385: {
+                      type: 'text',
+                      value: '{{untitled_output_2}}',
+                      name: 'Untitled',
+                    },
+                  },
+                },
+                id: 'button_1.on_click',
+                description: '',
+              },
+            ],
+          },
+          input: {
+            untitled_input_2: {
+              name: 'Untitled Input',
+              type: 'text',
+              user_input: true,
+            },
+          },
+          output: {
+            untitled_output_2: {
+              type: 'text',
+              value: '',
+              name: 'Untitled Output',
+            },
+          },
+        },
+        state_2: {
+          id: 'state_2',
+          type: 'state',
+          name: 'State',
+          render: {
+            buttons: [
+              {
+                content: 'Button#1',
+                on_click: {
+                  event: 'button_1.on_click',
+                  payload: {
+                    untitled_payload_1: {
+                      type: 'text',
+                      value: '{{__context__7b_7b_name_7d_7d__2__}}',
+                      name: 'hhhh',
+                    },
+                  },
+                },
+                id: 'button_1.on_click',
+                description: '',
+              },
+            ],
+            audio: '',
+            image: '',
+            text: '{{__context__7b_7b_name_7d_7d__2__}}',
+          },
+          input: {
+            untitled_input_1: {
+              name: 'Untitled Input',
+              type: 'text',
+              user_input: true,
+              default_value: '{{state_1.untitled_output_2}}',
+            },
+          },
+          output: {
+            untitled_output_1: {
+              type: 'text',
+              value: '{{__context__7b_7b_name_7d_7d__2__}}',
+              name: 'Untitled Output',
+            },
+          },
+          blocks: [
+            {
+              inputs: {
+                model: 'gpt-4o',
+                system_prompt: '',
+                user_prompt: '',
+                input_image: null,
+                memory: [],
+                function_parameters: [],
+                memory_mode: 'auto',
+                temperature: 0.7,
+                top_p: 1,
+                max_tokens: null,
+                stream: false,
+                presence_penalty: 0,
+                frequency_penalty: 0,
+                callback: null,
+                widget_run_id: null,
+                function_name: 'any_function_name',
+                function_description: 'any_function_description',
+              },
+              outputs: {
+                display: {
+                  reply: 'string|object',
+                },
+              },
+              render: null,
+              type: 'task',
+              display_name: 'GPT#1',
+              name: 'gpt_1',
+              mode: 'widget',
+              widget_class_name: 'GPTWidget',
+            },
+            {
+              type: 'task',
+              display_name: 'GPT',
+              name: 'key_1730724856858',
+              mode: 'widget',
+              widget_class_name: 'GPTWidget',
+              inputs: {},
+              outputs: {},
+            },
+          ],
+        },
+      };
+
+      const ret = convetNodeDataToScopes(nodeDatas, []);
+      expect(ret).toMatchInlineSnapshot(`
+        {
+          "scopes": {
+            "context": {
+              "variables": {
+                "7b_7b_name_7d_7d__1": {
+                  "display_name": "2222",
+                  "type": "text",
+                },
+                "7b_7b_name_7d_7d__2": {
+                  "display_name": "1111",
+                  "type": "text",
+                },
+              },
+            },
+            "edges": [],
+            "states": {
+              "state_1": {
+                "children": {
+                  "inputs": {
+                    "variables": {
+                      "untitled_input_2": {
+                        "display_name": "Untitled Input",
+                        "type": "text",
+                      },
+                    },
+                  },
+                  "outputs": {
+                    "render": {
+                      "buttons": {
+                        "button_1": {
+                          "event": "button_1.on_click",
+                          "payload": {
+                            "key_1730724703385": {
+                              "display_name": "Untitled",
+                              "type": "text",
+                            },
+                          },
+                        },
+                      },
+                    },
+                    "variables": {
+                      "untitled_output_2": {
+                        "display_name": "Untitled Output",
+                        "type": "text",
+                      },
+                    },
+                  },
+                  "tasks": [],
+                },
+                "name": "state_1",
+              },
+              "state_2": {
+                "children": {
+                  "inputs": {
+                    "variables": {
+                      "untitled_input_1": {
+                        "display_name": "Untitled Input",
+                        "type": "text",
+                      },
+                    },
+                  },
+                  "outputs": {
+                    "render": {
+                      "buttons": {
+                        "button_1": {
+                          "event": "button_1.on_click",
+                          "payload": {
+                            "untitled_payload_1": {
+                              "display_name": "hhhh",
+                              "type": "text",
+                            },
+                          },
+                        },
+                      },
+                    },
+                    "variables": {
+                      "untitled_output_1": {
+                        "display_name": "Untitled Output",
+                        "type": "text",
+                      },
+                    },
+                  },
+                  "tasks": [
+                    {
+                      "name": "gpt_1",
+                      "variables": {
+                        "reply": {
+                          "display_name": "GPT#1",
+                          "type": "string|object",
+                        },
+                      },
+                    },
+                    {
+                      "name": "key_1730724856858",
+                      "variables": {},
+                    },
+                  ],
+                },
+                "name": "state_2",
+              },
+            },
+          },
         }
       `);
     });
