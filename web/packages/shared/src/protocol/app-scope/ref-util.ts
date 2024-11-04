@@ -6,14 +6,14 @@ import {
   RefType,
   refOptionsOutputSchema,
 } from './scope';
-import { isEmpty, mapKeys, mapValues } from 'lodash-es';
+import { isEmpty, mapKeys, mapValues, isNumber } from 'lodash-es';
 
 export function getRefOptions(
   scopes: Scopes,
   // edges: Edges,
   stateName: CustomKey,
   refType: RefType,
-  taskName?: string,
+  taskIndex?: number,
 ): RefOptionsOutput {
   const ret: RefOptionsOutput = {
     global: {
@@ -99,17 +99,14 @@ export function getRefOptions(
   function assignPreviousTasks() {
     const state = scopes.scopes.states[stateName];
     if (state == null) throw new Error(`cannot find ${stateName} in scopes`);
-    if (taskName == null)
-      throw new Error(`should specify task name if ref type is ${refType}`);
     const tasks = state.children.tasks;
-    const taskIdx = tasks.findIndex(t => t.name === taskName);
-    if (taskIdx === -1)
-      throw new Error(`cannot find ${taskName} in ${stateName} tasks`);
+    if (!isNumber(taskIndex))
+      throw new Error(`cannot find ${taskIndex} in ${stateName} tasks`);
 
-    if (taskIdx === 0) {
+    if (taskIndex === 0) {
       // noops
     } else {
-      const prevTasks = tasks.slice(0, taskIdx);
+      const prevTasks = tasks.slice(0, taskIndex);
       ret.local.tasks = prevTasks;
     }
   }

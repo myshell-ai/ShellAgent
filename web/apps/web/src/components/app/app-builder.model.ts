@@ -40,12 +40,12 @@ export class AppBuilderModel {
   getRefOptions(
     stateName: CustomKey,
     refType: RefType,
-    taskName?: string,
+    taskIndex?: number,
   ): CascaderOption[] {
     if (this.scopes == null) {
       return [];
     }
-    const refOpts = getRefOptions(this.scopes, stateName, refType, taskName);
+    const refOpts = getRefOptions(this.scopes, stateName, refType, taskIndex);
 
     const cascaderOpts = convertRefOptsToCascaderOpts(refOpts);
     return cascaderOpts;
