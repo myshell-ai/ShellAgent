@@ -125,7 +125,77 @@ describe('app builder utils', () => {
         input: {},
       },
     };
-    const scopes = convetNodeDataToScopes(nodeData);
+    const edges = [
+      {
+        type: 'default_edge',
+        style: {
+          strokeWidth: 2,
+          stroke: '#d1d5db',
+        },
+        markerEnd: {
+          color: '#5A646Es',
+          height: 25,
+          strokeWidth: 2,
+          type: 'arrowclosed',
+          width: 10,
+        },
+        id: 'reactflow__edge-@@@start@@@start-state_1state_1',
+        source: '@@@start',
+        target: 'state_1',
+      },
+      {
+        type: 'custom_edge',
+        style: {
+          strokeWidth: 2,
+          stroke: '#d1d5db',
+        },
+        markerEnd: {
+          color: '#5A646Es',
+          height: 25,
+          strokeWidth: 2,
+          type: 'arrowclosed',
+          width: 10,
+        },
+        id: 'reactflow__edge-state_1custom_button-source-handle-button_1.on_click#0-state_2state_2',
+        source: 'state_1',
+        target: 'state_2',
+        data: {
+          id: 'f02199d9-c3ff-4681-aaee-1b64bdc49bed',
+          custom: true,
+          event_key: 'button_1.on_click',
+          type: 'STATE',
+          source: 'state_1',
+          target: 'state_2',
+          conditions: [],
+        },
+      },
+      {
+        type: 'custom_edge',
+        style: {
+          strokeWidth: 2,
+          stroke: '#d1d5db',
+        },
+        markerEnd: {
+          color: '#5A646Es',
+          height: 25,
+          strokeWidth: 2,
+          type: 'arrowclosed',
+          width: 10,
+        },
+        id: 'reactflow__edge-state_1custom_state_1-state_2state_2',
+        source: 'state_1',
+        target: 'state_2',
+        data: {
+          id: 'state_1',
+          custom: true,
+          type: 'ALWAYS',
+          source: 'state_1',
+          target: 'state_2',
+          conditions: [],
+        },
+      },
+    ];
+    const scopes = convetNodeDataToScopes(nodeData, edges);
     expect(scopes).toMatchInlineSnapshot(`
       {
         "context": {
@@ -138,6 +208,20 @@ describe('app builder utils', () => {
             },
           },
         },
+        "edges": [
+          {
+            "source": "@@@start",
+            "target": "state_1",
+          },
+          {
+            "source": "state_1",
+            "target": "state_2",
+          },
+          {
+            "source": "state_1",
+            "target": "state_2",
+          },
+        ],
         "states": {
           "state_1": {
             "children": {

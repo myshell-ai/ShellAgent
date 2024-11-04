@@ -56,7 +56,7 @@ export function convertNodeDataToState(nodeData: any): State {
   });
 }
 
-export function convetNodeDataToScopes(nodeDatas: any) {
+export function convetNodeDataToScopes(nodeDatas: any, edges: any[]) {
   const ret = Object.keys(nodeDatas).reduce(
     (acc, k) => {
       const v = nodeDatas[k];
@@ -72,8 +72,17 @@ export function convetNodeDataToScopes(nodeDatas: any) {
     {
       context: {},
       states: {},
+      edges: [],
     } as any,
   );
+
+  ret.edges = edges.map(e => {
+    return {
+      source: e.source,
+      target: e.target,
+    };
+  });
+
   scopesSchema.parse({
     scopes: ret,
   });
