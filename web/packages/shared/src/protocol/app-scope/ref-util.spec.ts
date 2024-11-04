@@ -265,7 +265,7 @@ state#3
           // edges,
           'state_2',
           'state_task',
-          'task2',
+          1,
         );
         expect(options).toMatchInlineSnapshot(`
           {
@@ -383,7 +383,7 @@ state#3
           // edges,
           'state_2',
           'state_task',
-          'task1',
+          0,
         );
         expect(options).toMatchInlineSnapshot(`
           {
