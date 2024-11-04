@@ -7,6 +7,13 @@ import {
 } from '@shellagent/shared/protocol/app-scope';
 import { mapValues } from 'lodash-es';
 
+export interface CascaderOption {
+  label: string;
+  value?: string;
+  field_type?: string;
+  children?: CascaderOption[];
+}
+
 export function convertNodeDataToState(nodeData: any): State {
   return stateSchema.parse({
     name: nodeData.id,
@@ -73,4 +80,57 @@ export function convetNodeDataToScopes(nodeDatas: any) {
   return ret;
 }
 
-export function convertRefToCascaderOpts(refOpts: RefOptionsOutput) {}
+export function convertRefOptsToCascaderOpts(input: any): CascaderOption[] {
+  const convertVariables = (variables: any): CascaderOption[] => {
+    return Object.entries(variables).map(([key, value]: [string, any]) => ({
+      label: key,
+      field_type: value.type,
+      value: '{{}}',
+    }));
+  };
+
+  const convertSection = (section: any): CascaderOption[] => {
+    return Object.entries(section).map(([key, value]: [string, any]) => {
+      if (value.type) {
+        // It's a variable
+        return {
+          label: key,
+          field_type: value.type,
+          value: '{{}}',
+        };
+      } else if (value.payload) {
+        // It's a button with payload
+        return {
+          label: key,
+          children: convertVariables(value.payload),
+        };
+      } else if (Array.isArray(value)) {
+        // It's a list of tasks
+        return {
+          label: key,
+          children: value.map((task: any) => ({
+            label: task.name,
+            children: convertVariables(task.variables),
+          })),
+        };
+      } else {
+        // It's a nested section
+        return {
+          label: key,
+          children: convertSection(value),
+        };
+      }
+    });
+  };
+
+  return [
+    {
+      label: 'global',
+      children: convertSection(input.global),
+    },
+    {
+      label: 'local',
+      children: convertSection(input.local),
+    },
+  ];
+}

@@ -2,12 +2,12 @@ import { IFlow, useReactFlowStore } from '@shellagent/flow-engine';
 import { Text } from '@shellagent/ui';
 import { useDebounce, useRequest } from 'ahooks';
 import dayjs from 'dayjs';
+import { useInjection } from 'inversify-react';
 import { isEmpty, pick } from 'lodash-es';
 import React, { useCallback, useMemo, useState, useEffect, memo } from 'react';
 import { useShallow } from 'zustand/react/shallow';
-import { useInjection } from 'inversify-react';
-import { AppBuilderModel } from '@/components/app/app-builder.model';
 
+import { AppBuilderModel } from '@/components/app/app-builder.model';
 import { usePasteState } from '@/components/app/nodes/state-node/hook/use-paste-state';
 import { saveApp } from '@/services/app';
 import { useAppStore } from '@/stores/app/app-provider';

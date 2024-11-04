@@ -1,5 +1,6 @@
 import {
   convertNodeDataToState,
+  convertRefOptsToCascaderOpts,
   convetNodeDataToScopes,
 } from './app-builder-utils';
 
@@ -336,13 +337,196 @@ describe('app builder utils', () => {
         ],
       },
     };
-    const ret = {
-      global: {
-        children: [],
-      },
-      local: {
-        children: [],
-      },
-    };
+
+    // const ret = [
+    //   { label: 'global', children: [
+    //     {
+    //       label: "context",
+    //       children: [
+    //         {
+    //           label: "global_a",
+    //           value: "{{}}",
+    //           field_type: "text"
+    //         },
+    //       ]
+    //     },
+    //     {
+    //       label: "state#1",
+    //       children: [
+    //         {
+    //           label: "output_a",
+    //           value: "{{}}",
+    //           field_type: "text"
+    //         },
+    //       ]
+    //     }
+    //   ] },
+    //   { label: 'local', children: [
+    //     {
+    //       label: "buttons",
+    //       children: [
+    //         {
+    //           label: "button_a",
+    //           children: [
+    //             {
+    //               label: "input_b",
+    //               field_type: "text"
+    //             }
+    //           ]
+    //         },
+    //       ]
+    //     },
+    //     {
+    //       label: "inputs",
+    //       children: [
+    //         {
+    //           label: "input_b",
+    //           field_type: "text",
+    //           value: "{{}}",
+    //         },
+    //       ]
+    //     },
+    //     {
+    //       label: "outputs",
+    //       children: [
+    //         {
+    //           label: "output_b",
+    //           field_type: "text",
+    //           value: "{{}}",
+    //         },
+    //       ]
+    //     },
+    //     {
+    //       label: "tasks",
+    //       children: [
+    //         {
+    //           label: "task1",
+    //           children: [
+    //             {
+    //               label: "output_a",
+    //               field_type: "text",
+    //               value: "{{}}",
+    //             },
+    //           ]
+    //         },
+    //         {
+    //           label: "task2",
+    //           children: [
+    //             {
+    //               label: "output_a",
+    //               field_type: "text",
+    //               value: "{{}}",
+    //             },
+    //           ]
+    //         },
+    //       ]
+    //     }
+    //   ] },
+    // ]
+    const ret = convertRefOptsToCascaderOpts(input);
+    expect(ret).toMatchInlineSnapshot(`
+      [
+        {
+          "children": [
+            {
+              "children": [
+                {
+                  "field_type": "text",
+                  "label": "global_a",
+                  "value": "{{}}",
+                },
+              ],
+              "label": "context",
+            },
+            {
+              "children": [
+                {
+                  "field_type": "text",
+                  "label": "output_a",
+                  "value": "{{}}",
+                },
+              ],
+              "label": "state#1",
+            },
+          ],
+          "label": "global",
+        },
+        {
+          "children": [
+            {
+              "children": [
+                {
+                  "children": [
+                    {
+                      "field_type": "text",
+                      "label": "input_b",
+                      "value": "{{}}",
+                    },
+                  ],
+                  "label": "button_a",
+                },
+              ],
+              "label": "buttons",
+            },
+            {
+              "children": [
+                {
+                  "children": [
+                    {
+                      "field_type": "text",
+                      "label": "input_b",
+                      "value": "{{}}",
+                    },
+                  ],
+                  "label": "variables",
+                },
+              ],
+              "label": "inputs",
+            },
+            {
+              "children": [
+                {
+                  "children": [
+                    {
+                      "field_type": "text",
+                      "label": "output_b",
+                      "value": "{{}}",
+                    },
+                  ],
+                  "label": "variables",
+                },
+              ],
+              "label": "outputs",
+            },
+            {
+              "children": [
+                {
+                  "children": [
+                    {
+                      "field_type": "text",
+                      "label": "output_a",
+                      "value": "{{}}",
+                    },
+                  ],
+                  "label": "task1",
+                },
+                {
+                  "children": [
+                    {
+                      "field_type": "text",
+                      "label": "output_a",
+                      "value": "{{}}",
+                    },
+                  ],
+                  "label": "task2",
+                },
+              ],
+              "label": "tasks",
+            },
+          ],
+          "label": "local",
+        },
+      ]
+    `);
   });
 });

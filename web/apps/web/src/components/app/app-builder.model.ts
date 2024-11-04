@@ -1,5 +1,6 @@
 import { IEdge, INode } from '@shellagent/flow-engine';
 import { TValues } from '@shellagent/form-engine';
+import { CustomKey } from '@shellagent/pro-config';
 import {
   State,
   Edges,
@@ -19,8 +20,11 @@ import {
   getTasks,
   VariableProps,
 } from '@/stores/app/variable-provider';
-import { convetNodeDataToScopes } from './app-builder-utils';
-import { CustomKey } from '@shellagent/pro-config';
+
+import {
+  convertRefOptsToCascaderOpts,
+  convetNodeDataToScopes,
+} from './app-builder-utils';
 
 @injectable()
 export class AppBuilderModel {
@@ -41,7 +45,15 @@ export class AppBuilderModel {
     if (this.scopes == null) {
       return [];
     }
-    return getRefOptions(this.scopes, edges, stateName, refType, taskName);
+    const refOpts = getRefOptions(
+      this.scopes,
+      edges,
+      stateName,
+      refType,
+      taskName,
+    );
+    const cascaderOpts = convertRefOptsToCascaderOpts(refOpts);
+    return cascaderOpts;
   }
 
   updateScopes(nodeData: any) {
