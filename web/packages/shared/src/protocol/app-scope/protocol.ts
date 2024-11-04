@@ -212,6 +212,7 @@ export type Task = z.infer<typeof taskSchema>;
 export const stateSchema = z
   .object({
     name: z.string(),
+    display_name: z.string(),
     children: z.object({
       inputs: z.object({
         variables: variablesSchema,

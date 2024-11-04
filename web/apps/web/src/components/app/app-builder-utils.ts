@@ -120,7 +120,6 @@ export function convertRefOptsToCascaderOpts(
   for (const [key, variables] of Object.entries(refOptions.global)) {
     const children: CascaderOption[] = Object.entries(variables || {}).map(
       ([variableKey, variable]) => ({
-        // label: variableKey,
         label: variable?.display_name || variableKey,
         value: `{{ ${key}.${variableKey} }}`,
         field_type: variable?.type,
@@ -217,7 +216,7 @@ export function convertRefOptsToCascaderOpts(
 
   if (localOptions.length > 0) {
     cascaderOptions.push({
-      label: 'local',
+      label: 'current',
       children: localOptions,
     });
   }

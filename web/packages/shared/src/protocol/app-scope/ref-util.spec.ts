@@ -115,6 +115,7 @@ state#3
           states: {
             state_1: {
               name: 'state_1',
+              display_name: 'State#1',
               children: {
                 inputs: {
                   variables: {
@@ -122,8 +123,16 @@ state#3
                   },
                 },
                 tasks: [
-                  { name: 'task1', variables: {} },
-                  { name: 'task2', variables: {} },
+                  {
+                    name: 'task1',
+                    display_name: 'Task 1',
+                    variables: {},
+                  },
+                  {
+                    name: 'task2',
+                    display_name: 'Task 2',
+                    variables: {},
+                  },
                 ],
                 outputs: {
                   variables: {
@@ -135,6 +144,7 @@ state#3
             },
             state_2: {
               name: 'state_2',
+              display_name: 'State#2',
               children: {
                 inputs: {
                   variables: {},
@@ -198,6 +208,7 @@ state#3
             states: {
               state_1: {
                 name: 'state_1',
+                display_name: 'State#1',
                 children: {
                   inputs: { variables: {} },
                   tasks: [],
@@ -211,6 +222,7 @@ state#3
               },
               state_2: {
                 name: 'state_2',
+                display_name: 'State#2',
                 children: {
                   inputs: {
                     variables: {
@@ -220,11 +232,16 @@ state#3
                   tasks: [
                     {
                       name: 'task1',
+                      display_name: 'Task 1',
                       variables: {
-                        output_a: { type: 'text', display_name: 'Hello world' },
+                        output_a: { type: 'text', display_name: 'output_a' },
                       },
                     },
-                    { name: 'task2', variables: {} },
+                    {
+                      name: 'task2',
+                      display_name: 'Task 2',
+                      variables: {},
+                    },
                   ],
                   outputs: {
                     variables: {
@@ -275,10 +292,11 @@ state#3
               },
               "tasks": [
                 {
+                  "display_name": "Task 1",
                   "name": "task1",
                   "variables": {
                     "output_a": {
-                      "display_name": "Hello world",
+                      "display_name": "output_a",
                       "type": "text",
                     },
                   },
@@ -302,6 +320,7 @@ state#3
             states: {
               state_1: {
                 name: 'state_1',
+                display_name: 'State#1',
                 children: {
                   inputs: { variables: {} },
                   tasks: [],
@@ -315,6 +334,7 @@ state#3
               },
               state_2: {
                 name: 'state_2',
+                display_name: 'State#2',
                 children: {
                   inputs: {
                     variables: {
@@ -324,11 +344,16 @@ state#3
                   tasks: [
                     {
                       name: 'task1',
+                      display_name: 'Task 1',
                       variables: {
                         output_a: { type: 'text', display_name: 'Hello world' },
                       },
                     },
-                    { name: 'task2', variables: {} },
+                    {
+                      name: 'task2',
+                      display_name: 'Task 2',
+                      variables: {},
+                    },
                   ],
                   outputs: {
                     variables: {
@@ -397,6 +422,7 @@ state#3
           states: {
             state_1: {
               name: 'state_1',
+              display_name: 'State#1',
               children: {
                 inputs: { variables: {} },
                 tasks: [],
@@ -410,6 +436,7 @@ state#3
             },
             state_2: {
               name: 'state_2',
+              display_name: 'State#2',
               children: {
                 inputs: {
                   variables: {
@@ -419,12 +446,14 @@ state#3
                 tasks: [
                   {
                     name: 'task1',
+                    display_name: 'Task 1',
                     variables: {
                       output_a: { type: 'text', display_name: 'Hello world' },
                     },
                   },
                   {
                     name: 'task2',
+                    display_name: 'Task 2',
                     variables: {
                       output_a: { type: 'text', display_name: 'Hello world' },
                     },
@@ -473,6 +502,7 @@ state#3
             },
             "tasks": [
               {
+                "display_name": "Task 1",
                 "name": "task1",
                 "variables": {
                   "output_a": {
@@ -482,6 +512,7 @@ state#3
                 },
               },
               {
+                "display_name": "Task 2",
                 "name": "task2",
                 "variables": {
                   "output_a": {
@@ -508,6 +539,7 @@ state#3
           edges: edges,
           states: {
             state_1: {
+              display_name: 'State#1',
               name: 'state_1',
               children: {
                 inputs: { variables: {} },
@@ -522,6 +554,7 @@ state#3
             },
             state_2: {
               name: 'state_2',
+              display_name: 'State#2',
               children: {
                 inputs: {
                   variables: {
@@ -531,12 +564,14 @@ state#3
                 tasks: [
                   {
                     name: 'task1',
+                    display_name: 'Task 1',
                     variables: {
                       output_a: { type: 'text', display_name: 'Hello world' },
                     },
                   },
                   {
                     name: 'task2',
+                    display_name: 'Task 2',
                     variables: {
                       output_a: { type: 'text', display_name: 'Hello world' },
                     },
@@ -590,6 +625,7 @@ state#3
             },
             "tasks": [
               {
+                "display_name": "Task 1",
                 "name": "task1",
                 "variables": {
                   "output_a": {
@@ -599,6 +635,7 @@ state#3
                 },
               },
               {
+                "display_name": "Task 2",
                 "name": "task2",
                 "variables": {
                   "output_a": {
@@ -626,6 +663,7 @@ state#3
           states: {
             state_1: {
               name: 'state_1',
+              display_name: 'State#1',
               children: {
                 inputs: { variables: {} },
                 tasks: [],
@@ -639,6 +677,7 @@ state#3
             },
             state_2: {
               name: 'state_2',
+              display_name: 'State#2',
               children: {
                 inputs: {
                   variables: {
@@ -648,12 +687,14 @@ state#3
                 tasks: [
                   {
                     name: 'task1',
+                    display_name: 'Task 1',
                     variables: {
                       output_a: { type: 'text', display_name: 'Hello world' },
                     },
                   },
                   {
                     name: 'task2',
+                    display_name: 'Task 2',
                     variables: {
                       output_a: { type: 'text', display_name: 'Hello world' },
                     },
@@ -729,6 +770,7 @@ state#3
             },
             "tasks": [
               {
+                "display_name": "Task 1",
                 "name": "task1",
                 "variables": {
                   "output_a": {
@@ -738,6 +780,7 @@ state#3
                 },
               },
               {
+                "display_name": "Task 2",
                 "name": "task2",
                 "variables": {
                   "output_a": {

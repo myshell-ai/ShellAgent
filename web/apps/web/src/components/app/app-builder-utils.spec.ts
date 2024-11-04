@@ -535,7 +535,7 @@ describe('app builder utils', () => {
               "label": "tasks",
             },
           ],
-          "label": "local",
+          "label": "current",
         },
       ]
     `);
