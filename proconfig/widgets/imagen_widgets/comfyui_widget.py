@@ -67,6 +67,8 @@ def comfyui_run(api, workflow, prompt, schemas, user_inputs):
     for node_id, node_schema in schemas["inputs"].items():
         input_value = user_inputs[node_id]
         if "url_type" in node_schema: # file input
+            if type(input_value) != str:
+                raise ValueError(f"{node_schema['title']} is {input_value}, which is invalid")
             if is_local:
                 input_value = os.path.join(os.getcwd(), input_value)
             elif os.path.isfile(input_value):
@@ -145,6 +147,11 @@ def comfyui_run(api, workflow, prompt, schemas, user_inputs):
                 outputs[schemas["outputs"][node_id]["title"]] = node_output["output"][0]
         else:
             outputs[schemas["outputs"][node_id]["title"]] = node_output["output"][0]
+            
+    # check outputs
+    for node_id, schema in schemas["outputs"].items():
+        if schema["title"] not in outputs:
+            raise ValueError(f"{schema['title']} cannot be founded in the ComfyUI results. Please check the ComfyUI workflow.")
     return outputs
 
 
