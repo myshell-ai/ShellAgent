@@ -111,6 +111,7 @@ state#3
               global_a: { type: 'text' },
             },
           },
+          edges: [],
           states: {
             'state#1': {
               name: 'state#1',
@@ -183,6 +184,7 @@ state#3
                 global_a: { type: 'text' },
               },
             },
+            edges: [],
             states: {
               'state#1': {
                 name: 'state#1',
@@ -278,6 +280,7 @@ state#3
                 global_a: { type: 'text' },
               },
             },
+            edges: [],
             states: {
               'state#1': {
                 name: 'state#1',
@@ -365,6 +368,7 @@ state#3
               global_a: { type: 'text' },
             },
           },
+          edges: [],
           states: {
             'state#1': {
               name: 'state#1',
@@ -467,6 +471,7 @@ state#3
               global_a: { type: 'text' },
             },
           },
+          edges: [],
           states: {
             'state#1': {
               name: 'state#1',
@@ -533,6 +538,7 @@ state#3
               global_a: { type: 'text' },
             },
           },
+          edges: [],
           states: {
             'state#1': {
               name: 'state#1',
@@ -639,6 +645,7 @@ state#3
               global_a: { type: 'text' },
             },
           },
+          edges: [],
           states: {
             'state#1': {
               name: 'state#1',
@@ -745,6 +752,7 @@ state#3
               global_a: { type: 'text' },
             },
           },
+          edges: [],
           states: {
             'state#1': {
               name: 'state#1',
@@ -856,6 +864,7 @@ state#3
               global_a: { type: 'text' },
             },
           },
+          edges: [],
           states: {
             'state#1': {
               name: 'state#1',
@@ -895,6 +904,7 @@ state#3
                   render: {
                     buttons: {
                       button_a: {
+                        event: 'button_a.on_click',
                         payload: {
                           input_b: { type: 'text' },
                         },
@@ -925,6 +935,7 @@ state#3
           "local": {
             "buttons": {
               "button_a": {
+                "event": "button_a.on_click",
                 "payload": {
                   "input_b": {
                     "type": "text",
