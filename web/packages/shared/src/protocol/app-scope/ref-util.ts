@@ -44,13 +44,7 @@ export function getRefOptions(
       assignAllTasks();
       break;
     }
-    case 'state_output_key': {
-      // noops global context already assigned on top function
-      break;
-    }
     case 'state_render':
-    case 'button_payload':
-    case 'button_payload_key':
       assignStateRender();
       break;
     case 'target_input':
@@ -81,6 +75,7 @@ export function getRefOptions(
   function assignAncestralStatesOutput() {
     const ancestors = findAncestors(scopes.scopes.edges, stateName);
     ancestors.forEach((a: CustomKey) => {
+      if (a === '@@@start') return;
       const state = scopes.scopes.states[a];
       if (state == null) throw new Error(`${a} is in edges, but not in scopes`);
       ret.global[a] = state.children.outputs.variables;

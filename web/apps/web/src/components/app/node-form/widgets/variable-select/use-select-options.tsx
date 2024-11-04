@@ -32,8 +32,6 @@ export const useSelectOptions = (name?: string) => {
 
   let refType: RefType | null = null;
 
-  // const currentGroup = [...input, ...tasks, ...output];
-
   if (parent?.startsWith('condition.')) {
     refType = refTypeSchema.Enum.target_input;
   } else if (parent?.startsWith('input.')) {
@@ -42,7 +40,13 @@ export const useSelectOptions = (name?: string) => {
     refType = refTypeSchema.Enum.state_task;
   } else if (name?.startsWith('output.')) {
     refType = refTypeSchema.Enum.state_output;
+  } else if (parent?.startsWith('render.buttons.')) {
+    refType = refTypeSchema.Enum.state_render;
+  } else if (name?.startsWith('render.')) {
+    refType = refTypeSchema.Enum.state_render;
   }
+
+  console.log('refType>>>', refType, parent, name);
 
   // const globalGroup = [...context, ...states];
 
@@ -109,12 +113,11 @@ export const useSelectOptions = (name?: string) => {
   //   ];
   // }, [currentGroup, globalGroup, parent, name]);
 
-  // const refOptions = appBuilder.getRefOptions(
-  //   stateId as Lowercase<string>,
-  //   refType as RefType,
-  //   refTypeSchema.enum.state_input,
-  // );
-  const refOptions: any[] = [];
+  const refOptions = appBuilder.getRefOptions(
+    stateId as Lowercase<string>,
+    refType as RefType,
+    // refTypeSchema.enum.state_input,
+  );
 
   return refOptions;
 };

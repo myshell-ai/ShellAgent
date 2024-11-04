@@ -30,6 +30,7 @@ export const ButtonConfig = ({ values, onChange, id }: ButtonConfigProps) => {
 
   return (
     <NodeForm
+      parent={`render.buttons.${currentButtonId}`}
       key={currentButtonId}
       schema={buttonConfigSchema}
       values={values as TValues}
