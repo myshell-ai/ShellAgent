@@ -111,7 +111,7 @@ state#3
               global_a: { type: 'text' },
             },
           },
-          edges: [],
+          edges: edges,
           states: {
             'state#1': {
               name: 'state#1',
@@ -144,7 +144,7 @@ state#3
         },
       });
 
-      const options = getRefOptions(scopes, edges, 'state#2', 'state_input');
+      const options = getRefOptions(scopes, 'state#2', 'state_input');
 
       expect(options).toMatchInlineSnapshot(`
         {
@@ -184,7 +184,7 @@ state#3
                 global_a: { type: 'text' },
               },
             },
-            edges: [],
+            edges: edges,
             states: {
               'state#1': {
                 name: 'state#1',
@@ -225,7 +225,7 @@ state#3
         });
         const options = getRefOptions(
           scopes,
-          edges,
+          // edges,
           'state#2',
           'state_task',
           'task2',
@@ -280,7 +280,7 @@ state#3
                 global_a: { type: 'text' },
               },
             },
-            edges: [],
+            edges: edges,
             states: {
               'state#1': {
                 name: 'state#1',
@@ -321,7 +321,7 @@ state#3
         });
         const options = getRefOptions(
           scopes,
-          edges,
+          // edges,
           'state#2',
           'state_task',
           'task1',
@@ -368,7 +368,7 @@ state#3
               global_a: { type: 'text' },
             },
           },
-          edges: [],
+          edges: edges,
           states: {
             'state#1': {
               name: 'state#1',
@@ -412,7 +412,7 @@ state#3
           },
         },
       });
-      const options = getRefOptions(scopes, edges, 'state#2', 'state_output');
+      const options = getRefOptions(scopes, 'state#2', 'state_output');
       expect(options).toMatchInlineSnapshot(`
         {
           "global": {
@@ -538,7 +538,7 @@ state#3
               global_a: { type: 'text' },
             },
           },
-          edges: [],
+          edges: edges,
           states: {
             'state#1': {
               name: 'state#1',
@@ -582,7 +582,7 @@ state#3
           },
         },
       });
-      const options = getRefOptions(scopes, edges, 'state#2', 'state_render');
+      const options = getRefOptions(scopes, 'state#2', 'state_render');
       expect(options).toMatchInlineSnapshot(`
         {
           "global": {
@@ -645,7 +645,7 @@ state#3
               global_a: { type: 'text' },
             },
           },
-          edges: [],
+          edges: edges,
           states: {
             'state#1': {
               name: 'state#1',
@@ -689,7 +689,7 @@ state#3
           },
         },
       });
-      const options = getRefOptions(scopes, edges, 'state#2', 'button_payload');
+      const options = getRefOptions(scopes, 'state#2', 'button_payload');
       expect(options).toMatchInlineSnapshot(`
         {
           "global": {
@@ -752,7 +752,7 @@ state#3
               global_a: { type: 'text' },
             },
           },
-          edges: [],
+          edges: edges,
           states: {
             'state#1': {
               name: 'state#1',
@@ -798,7 +798,7 @@ state#3
       });
       const options = getRefOptions(
         scopes,
-        edges,
+        // edges,
         'state#2',
         'button_payload_key',
       );
@@ -864,7 +864,7 @@ state#3
               global_a: { type: 'text' },
             },
           },
-          edges: [],
+          edges: edges,
           states: {
             'state#1': {
               name: 'state#1',
@@ -917,7 +917,7 @@ state#3
           },
         },
       });
-      const options = getRefOptions(scopes, edges, 'state#2', 'target_input');
+      const options = getRefOptions(scopes, 'state#2', 'target_input');
       expect(options).toMatchInlineSnapshot(`
         {
           "global": {

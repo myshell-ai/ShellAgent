@@ -36,28 +36,17 @@ export class AppBuilderModel {
 
   @observable scopes: Scopes | null = null;
 
-  getRefOptions(
-    edges: Edges,
-    stateName: CustomKey,
-    refType: RefType,
-    taskName?: string,
-  ) {
+  getRefOptions(stateName: CustomKey, refType: RefType, taskName?: string) {
     if (this.scopes == null) {
       return [];
     }
-    const refOpts = getRefOptions(
-      this.scopes,
-      edges,
-      stateName,
-      refType,
-      taskName,
-    );
+    const refOpts = getRefOptions(this.scopes, stateName, refType, taskName);
     const cascaderOpts = convertRefOptsToCascaderOpts(refOpts);
     return cascaderOpts;
   }
 
-  updateScopes(edges: [], nodeData: any) {
-    this.scopes = convetNodeDataToScopes(nodeData);
+  updateScopes(edges: any[], nodeData: any) {
+    this.scopes = convetNodeDataToScopes(nodeData, edges);
   }
 
   onRefUpdate() {}

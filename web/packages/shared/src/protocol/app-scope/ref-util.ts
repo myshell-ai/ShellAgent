@@ -10,7 +10,7 @@ import { isEmpty, mapKeys, mapValues } from 'lodash-es';
 
 export function getRefOptions(
   scopes: Scopes,
-  edges: Edges,
+  // edges: Edges,
   stateName: CustomKey,
   refType: RefType,
   taskName?: string,
@@ -79,7 +79,7 @@ export function getRefOptions(
   }
 
   function assignAncestralStatesOutput() {
-    const ancestors = findAncestors(edges, stateName);
+    const ancestors = findAncestors(scopes.scopes.edges, stateName);
     ancestors.forEach((a: CustomKey) => {
       const state = scopes.scopes.states[a];
       if (state == null) throw new Error(`${a} is in edges, but not in scopes`);
