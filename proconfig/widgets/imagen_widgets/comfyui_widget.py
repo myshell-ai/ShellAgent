@@ -50,9 +50,10 @@ def get_media(server_address, filename, subfolder, folder_type):
 def split_media_path(media_path):
     media_path = windows_to_linux_path(media_path)
     path = Path(media_path)
-    first_part = path.parts[0]
-    second_part = str(Path(*path.parts[1:]))
-    return first_part, second_part
+    output_dir = path.parts[0]
+    subfolder = str(Path(*path.parts[1:-1]))
+    filename = path.parts[-1]
+    return output_dir, subfolder, filename
 
 def comfyui_run(api, workflow, prompt, schemas, user_inputs):
     server_address = api.split("//")[-1]
@@ -123,8 +124,8 @@ def comfyui_run(api, workflow, prompt, schemas, user_inputs):
             elif node_output_schema["items"].get("url_type") == "video":
                 videos_output = []
                 for video_path in node_output['video']:
-                    output_dir, filename = split_media_path(video_path)
-                    video_data = get_media(http_address, filename, "", output_dir)
+                    output_dir, subfolder, filename = split_media_path(video_path)
+                    video_data = get_media(http_address, filename, subfolder, output_dir)
                     save_path = windows_to_linux_path(video_path)
                     os.makedirs(os.path.dirname(save_path), exist_ok=True)
                     with open(save_path, "wb") as f:
@@ -143,8 +144,8 @@ def comfyui_run(api, workflow, prompt, schemas, user_inputs):
                 outputs[schemas["outputs"][node_id]["title"]] = save_path  
             elif node_output_schema.get("url_type") == "video":
                 video_path = node_output['video'][0]
-                output_dir, filename = split_media_path(video_path)
-                video_data = get_media(http_address, filename, "", output_dir)
+                output_dir, subfolder, filename = split_media_path(video_path)
+                video_data = get_media(http_address, filename, subfolder, output_dir)
                 save_path = windows_to_linux_path(video_path)
                 os.makedirs(os.path.dirname(save_path), exist_ok=True)
                 with open(save_path, "wb") as f:
