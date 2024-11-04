@@ -7,7 +7,7 @@ import uuid
 import websocket
 import urllib
 from proconfig.utils.misc import windows_to_linux_path
-
+from pathlib import Path
 # NON_FILE_INPUT_TYPES = ["text", "string", "number", "integer", "float"]
 
 
@@ -46,6 +46,13 @@ def get_media(server_address, filename, subfolder, folder_type):
     url_values = urllib.parse.urlencode(data)
     with urllib.request.urlopen("{}/view?{}".format(server_address, url_values)) as response:
         return response.read()
+
+def split_media_path(media_path):
+    media_path = windows_to_linux_path(media_path)
+    path = Path(media_path)
+    first_part = path.parts[0]
+    second_part = str(Path(*path.parts[1:]))
+    return first_part, second_part
 
 def comfyui_run(api, workflow, prompt, schemas, user_inputs):
     server_address = api.split("//")[-1]
@@ -116,7 +123,7 @@ def comfyui_run(api, workflow, prompt, schemas, user_inputs):
             elif node_output_schema["items"].get("url_type") == "video":
                 videos_output = []
                 for video_path in node_output['video']:
-                    output_dir, filename = os.path.split(video_path)
+                    output_dir, filename = split_media_path(video_path)
                     video_data = get_media(http_address, filename, "", output_dir)
                     save_path = windows_to_linux_path(video_path)
                     os.makedirs(os.path.dirname(save_path), exist_ok=True)
@@ -136,7 +143,7 @@ def comfyui_run(api, workflow, prompt, schemas, user_inputs):
                 outputs[schemas["outputs"][node_id]["title"]] = save_path  
             elif node_output_schema.get("url_type") == "video":
                 video_path = node_output['video'][0]
-                output_dir, filename = os.path.split(video_path)
+                output_dir, filename = split_media_path(video_path)
                 video_data = get_media(http_address, filename, "", output_dir)
                 save_path = windows_to_linux_path(video_path)
                 os.makedirs(os.path.dirname(save_path), exist_ok=True)
