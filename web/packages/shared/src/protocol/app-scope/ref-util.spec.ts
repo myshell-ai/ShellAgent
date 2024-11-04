@@ -108,7 +108,7 @@ state#3
         scopes: {
           context: {
             variables: {
-              global_a: { type: 'text' },
+              global_a: { type: 'text', value: 'hello' },
             },
           },
           edges: edges,
@@ -116,13 +116,15 @@ state#3
             state_1: {
               name: 'state_1',
               children: {
-                inputs: { variables: { input_a: { type: 'text' } } },
+                inputs: {
+                  variables: { input_a: { type: 'text', value: 'hello' } },
+                },
                 tasks: [
                   { name: 'task1', variables: {} },
                   { name: 'task2', variables: {} },
                 ],
                 outputs: {
-                  variables: { output_a: { type: 'text' } },
+                  variables: { output_a: { type: 'text', value: 'hello' } },
                   render: { buttons: {} },
                 },
               },
@@ -135,7 +137,7 @@ state#3
                 },
                 tasks: [],
                 outputs: {
-                  variables: { output_b: { type: 'text' } },
+                  variables: { output_b: { type: 'text', value: 'hello' } },
                   render: { buttons: {} },
                 },
               },
@@ -152,11 +154,13 @@ state#3
             "context": {
               "global_a": {
                 "type": "text",
+                "value": "hello",
               },
             },
             "state_1": {
               "output_a": {
                 "type": "text",
+                "value": "hello",
               },
             },
           },
@@ -181,7 +185,7 @@ state#3
           scopes: {
             context: {
               variables: {
-                global_a: { type: 'text' },
+                global_a: { type: 'text', value: 'hello' },
               },
             },
             edges: edges,
@@ -192,7 +196,7 @@ state#3
                   inputs: { variables: {} },
                   tasks: [],
                   outputs: {
-                    variables: { output_a: { type: 'text' } },
+                    variables: { output_a: { type: 'text', value: 'hello' } },
                     render: { buttons: {} },
                   },
                 },
@@ -202,20 +206,20 @@ state#3
                 children: {
                   inputs: {
                     variables: {
-                      input_b: { type: 'text' },
+                      input_b: { type: 'text', value: 'hello' },
                     },
                   },
                   tasks: [
                     {
                       name: 'task1',
                       variables: {
-                        output_a: { type: 'text' },
+                        output_a: { type: 'text', value: 'hello' },
                       },
                     },
                     { name: 'task2', variables: {} },
                   ],
                   outputs: {
-                    variables: { output_b: { type: 'text' } },
+                    variables: { output_b: { type: 'text', value: 'hello' } },
                     render: { buttons: {} },
                   },
                 },
@@ -236,11 +240,13 @@ state#3
               "context": {
                 "global_a": {
                   "type": "text",
+                  "value": "hello",
                 },
               },
               "state_1": {
                 "output_a": {
                   "type": "text",
+                  "value": "hello",
                 },
               },
             },
@@ -250,6 +256,7 @@ state#3
                 "variables": {
                   "input_b": {
                     "type": "text",
+                    "value": "hello",
                   },
                 },
               },
@@ -262,6 +269,7 @@ state#3
                   "variables": {
                     "output_a": {
                       "type": "text",
+                      "value": "hello",
                     },
                   },
                 },
@@ -277,7 +285,7 @@ state#3
           scopes: {
             context: {
               variables: {
-                global_a: { type: 'text' },
+                global_a: { type: 'text', value: 'hello' },
               },
             },
             edges: edges,
@@ -288,7 +296,7 @@ state#3
                   inputs: { variables: {} },
                   tasks: [],
                   outputs: {
-                    variables: { output_a: { type: 'text' } },
+                    variables: { output_a: { type: 'text', value: 'hello' } },
                     render: { buttons: {} },
                   },
                 },
@@ -298,20 +306,20 @@ state#3
                 children: {
                   inputs: {
                     variables: {
-                      input_b: { type: 'text' },
+                      input_b: { type: 'text', value: 'hello' },
                     },
                   },
                   tasks: [
                     {
                       name: 'task1',
                       variables: {
-                        output_a: { type: 'text' },
+                        output_a: { type: 'text', value: 'hello' },
                       },
                     },
                     { name: 'task2', variables: {} },
                   ],
                   outputs: {
-                    variables: { output_b: { type: 'text' } },
+                    variables: { output_b: { type: 'text', value: 'hello' } },
                     render: { buttons: {} },
                   },
                 },
@@ -332,11 +340,13 @@ state#3
               "context": {
                 "global_a": {
                   "type": "text",
+                  "value": "hello",
                 },
               },
               "state_1": {
                 "output_a": {
                   "type": "text",
+                  "value": "hello",
                 },
               },
             },
@@ -346,6 +356,7 @@ state#3
                 "variables": {
                   "input_b": {
                     "type": "text",
+                    "value": "hello",
                   },
                 },
               },
@@ -365,7 +376,7 @@ state#3
         scopes: {
           context: {
             variables: {
-              global_a: { type: 'text' },
+              global_a: { type: 'text', value: 'hello' },
             },
           },
           edges: edges,
@@ -376,7 +387,7 @@ state#3
                 inputs: { variables: {} },
                 tasks: [],
                 outputs: {
-                  variables: { output_a: { type: 'text' } },
+                  variables: { output_a: { type: 'text', value: 'hello' } },
                   render: { buttons: {} },
                 },
               },
@@ -386,25 +397,25 @@ state#3
               children: {
                 inputs: {
                   variables: {
-                    input_b: { type: 'text' },
+                    input_b: { type: 'text', value: 'hello' },
                   },
                 },
                 tasks: [
                   {
                     name: 'task1',
                     variables: {
-                      output_a: { type: 'text' },
+                      output_a: { type: 'text', value: 'hello' },
                     },
                   },
                   {
                     name: 'task2',
                     variables: {
-                      output_a: { type: 'text' },
+                      output_a: { type: 'text', value: 'hello' },
                     },
                   },
                 ],
                 outputs: {
-                  variables: { output_b: { type: 'text' } },
+                  variables: { output_b: { type: 'text', value: 'hello' } },
                   render: { buttons: {} },
                 },
               },
@@ -419,11 +430,13 @@ state#3
             "context": {
               "global_a": {
                 "type": "text",
+                "value": "hello",
               },
             },
             "state_1": {
               "output_a": {
                 "type": "text",
+                "value": "hello",
               },
             },
           },
@@ -433,6 +446,7 @@ state#3
               "variables": {
                 "input_b": {
                   "type": "text",
+                  "value": "hello",
                 },
               },
             },
@@ -445,6 +459,7 @@ state#3
                 "variables": {
                   "output_a": {
                     "type": "text",
+                    "value": "hello",
                   },
                 },
               },
@@ -453,6 +468,7 @@ state#3
                 "variables": {
                   "output_a": {
                     "type": "text",
+                    "value": "hello",
                   },
                 },
               },
@@ -468,7 +484,7 @@ state#3
         scopes: {
           context: {
             variables: {
-              global_a: { type: 'text' },
+              global_a: { type: 'text', value: 'hello' },
             },
           },
           edges: edges,
@@ -479,7 +495,7 @@ state#3
                 inputs: { variables: {} },
                 tasks: [],
                 outputs: {
-                  variables: { output_a: { type: 'text' } },
+                  variables: { output_a: { type: 'text', value: 'hello' } },
                   render: { buttons: {} },
                 },
               },
@@ -489,25 +505,25 @@ state#3
               children: {
                 inputs: {
                   variables: {
-                    input_b: { type: 'text' },
+                    input_b: { type: 'text', value: 'hello' },
                   },
                 },
                 tasks: [
                   {
                     name: 'task1',
                     variables: {
-                      output_a: { type: 'text' },
+                      output_a: { type: 'text', value: 'hello' },
                     },
                   },
                   {
                     name: 'task2',
                     variables: {
-                      output_a: { type: 'text' },
+                      output_a: { type: 'text', value: 'hello' },
                     },
                   },
                 ],
                 outputs: {
-                  variables: { output_b: { type: 'text' } },
+                  variables: { output_b: { type: 'text', value: 'hello' } },
                   render: { buttons: {} },
                 },
               },
@@ -522,11 +538,13 @@ state#3
             "context": {
               "global_a": {
                 "type": "text",
+                "value": "hello",
               },
             },
             "state_1": {
               "output_a": {
                 "type": "text",
+                "value": "hello",
               },
             },
           },
@@ -536,6 +554,7 @@ state#3
               "variables": {
                 "input_b": {
                   "type": "text",
+                  "value": "hello",
                 },
               },
             },
@@ -543,6 +562,7 @@ state#3
               "variables": {
                 "output_b": {
                   "type": "text",
+                  "value": "hello",
                 },
               },
             },
@@ -552,6 +572,7 @@ state#3
                 "variables": {
                   "output_a": {
                     "type": "text",
+                    "value": "hello",
                   },
                 },
               },
@@ -560,6 +581,7 @@ state#3
                 "variables": {
                   "output_a": {
                     "type": "text",
+                    "value": "hello",
                   },
                 },
               },
@@ -575,7 +597,10 @@ state#3
         scopes: {
           context: {
             variables: {
-              global_a: { type: 'text' },
+              global_a: {
+                type: 'text',
+                value: 'hello',
+              },
             },
           },
           edges: edges,
@@ -586,7 +611,12 @@ state#3
                 inputs: { variables: {} },
                 tasks: [],
                 outputs: {
-                  variables: { output_a: { type: 'text' } },
+                  variables: {
+                    output_a: {
+                      type: 'text',
+                      value: 'hello',
+                    },
+                  },
                   render: { buttons: {} },
                 },
               },
@@ -596,31 +626,48 @@ state#3
               children: {
                 inputs: {
                   variables: {
-                    input_b: { type: 'text' },
+                    input_b: {
+                      type: 'text',
+                      value: 'hello',
+                    },
                   },
                 },
                 tasks: [
                   {
                     name: 'task1',
                     variables: {
-                      output_a: { type: 'text' },
+                      output_a: {
+                        type: 'text',
+                        value: 'hello',
+                      },
                     },
                   },
                   {
                     name: 'task2',
                     variables: {
-                      output_a: { type: 'text' },
+                      output_a: {
+                        type: 'text',
+                        value: 'hello',
+                      },
                     },
                   },
                 ],
                 outputs: {
-                  variables: { output_b: { type: 'text' } },
+                  variables: {
+                    output_b: {
+                      type: 'text',
+                      value: 'hello',
+                    },
+                  },
                   render: {
                     buttons: {
                       button_a: {
                         event: 'button_a.on_click',
                         payload: {
-                          input_b: { type: 'text' },
+                          input_b: {
+                            type: 'text',
+                            value: 'hello',
+                          },
                         },
                       },
                     },
@@ -638,11 +685,13 @@ state#3
             "context": {
               "global_a": {
                 "type": "text",
+                "value": "hello",
               },
             },
             "state_1": {
               "output_a": {
                 "type": "text",
+                "value": "hello",
               },
             },
           },
@@ -653,6 +702,7 @@ state#3
                 "payload": {
                   "input_b": {
                     "type": "text",
+                    "value": "hello",
                   },
                 },
               },
@@ -661,6 +711,7 @@ state#3
               "variables": {
                 "input_b": {
                   "type": "text",
+                  "value": "hello",
                 },
               },
             },
@@ -668,6 +719,7 @@ state#3
               "variables": {
                 "output_b": {
                   "type": "text",
+                  "value": "hello",
                 },
               },
             },
@@ -677,6 +729,7 @@ state#3
                 "variables": {
                   "output_a": {
                     "type": "text",
+                    "value": "hello",
                   },
                 },
               },
@@ -685,6 +738,7 @@ state#3
                 "variables": {
                   "output_a": {
                     "type": "text",
+                    "value": "hello",
                   },
                 },
               },
