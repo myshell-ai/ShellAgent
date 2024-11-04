@@ -204,6 +204,12 @@ export const scopesSchema = z
       context: z.object({
         variables: variablesSchema,
       }),
+      edges: z.array(
+        z.object({
+          target: z.string(),
+          source: z.string(),
+        }),
+      ),
       states: z.record(customKeySchema, stateSchema),
     }),
   })

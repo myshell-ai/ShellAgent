@@ -56,7 +56,7 @@ export class AppBuilderModel {
     return cascaderOpts;
   }
 
-  updateScopes(nodeData: any) {
+  updateScopes(edges: [], nodeData: any) {
     this.scopes = convetNodeDataToScopes(nodeData);
   }
 
