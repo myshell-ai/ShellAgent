@@ -94,7 +94,12 @@ export const customKeySchema = z
 export const customEventSchema = z
   .custom<CustomEventName>()
   .superRefine((arg, ctx) => {
-    if (arg.indexOf('.') === -1) {
+    if (arg == null) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: `event name should not be null`,
+      });
+    } else if (arg.indexOf('.') === -1) {
       ctx.addIssue({
         code: z.ZodIssueCode.custom,
         message: `${arg} should concatenated by dots`,
