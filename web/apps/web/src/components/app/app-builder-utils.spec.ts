@@ -267,10 +267,12 @@ describe('app builder utils', () => {
                 },
                 "tasks": [
                   {
+                    "display_name": "Workflow Runner#1",
                     "name": "workflow_runner_1",
                     "variables": {},
                   },
                   {
+                    "display_name": "ComfyUI#1",
                     "name": "comfy_ui_1",
                     "variables": {},
                   },
@@ -376,7 +378,7 @@ describe('app builder utils', () => {
     `);
   });
 
-  it.only('convert ref opts to cascader opts', () => {
+  it('convert ref opts to cascader opts', () => {
     const input = {
       global: {
         context: {
@@ -423,19 +425,19 @@ describe('app builder utils', () => {
         tasks: [
           {
             name: 'task1',
+            display_name: 'Task 1',
             variables: {
               output_a: {
                 type: 'text',
-                display_name: 'Output A',
               },
             },
           },
           {
             name: 'task2',
+            display_name: 'Task 2',
             variables: {
               output_a: {
                 type: 'text',
-                display_name: 'Output A',
               },
             },
           },
@@ -513,21 +515,21 @@ describe('app builder utils', () => {
                   "children": [
                     {
                       "field_type": "text",
-                      "label": "Output A",
+                      "label": "output_a",
                       "value": "{{ task1.output_a }}",
                     },
                   ],
-                  "label": "task1",
+                  "label": "Task 1",
                 },
                 {
                   "children": [
                     {
                       "field_type": "text",
-                      "label": "Output A",
+                      "label": "output_a",
                       "value": "{{ task2.output_a }}",
                     },
                   ],
-                  "label": "task2",
+                  "label": "Task 2",
                 },
               ],
               "label": "tasks",
@@ -608,10 +610,11 @@ describe('app builder utils', () => {
             },
             "tasks": [
               {
+                "display_name": "GPT#1",
                 "name": "gpt_1",
                 "variables": {
                   "reply": {
-                    "display_name": "GPT#1",
+                    "display_name": "reply",
                     "type": "string|object",
                   },
                 },
@@ -852,15 +855,17 @@ describe('app builder utils', () => {
                   },
                   "tasks": [
                     {
+                      "display_name": "GPT#1",
                       "name": "gpt_1",
                       "variables": {
                         "reply": {
-                          "display_name": "GPT#1",
+                          "display_name": "reply",
                           "type": "string|object",
                         },
                       },
                     },
                     {
+                      "display_name": "GPT",
                       "name": "key_1730724856858",
                       "variables": {},
                     },

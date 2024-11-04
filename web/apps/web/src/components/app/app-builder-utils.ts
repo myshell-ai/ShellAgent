@@ -30,10 +30,11 @@ export function convertNodeDataToState(nodeData: any): State {
       },
       tasks: (nodeData.blocks || []).map((block: any) => ({
         name: block.name,
+        display_name: block.display_name,
         variables: mapValues(block.outputs.display, (v, k) => {
           return {
             type: v,
-            display_name: block.display_name,
+            display_name: k,
           };
         }), // Assuming inputs are the variables
       })),
@@ -67,6 +68,7 @@ export function convertNodeDataToState(nodeData: any): State {
     },
   };
   try {
+    // console.log(ret)
     return stateSchema.parse(ret);
   } catch (e) {
     throw e;
@@ -197,10 +199,10 @@ export function convertRefOptsToCascaderOpts(
   // Local tasks
   if (refOptions.local.tasks.length > 0) {
     const taskOptions = refOptions.local.tasks.map(task => ({
-      label: task.name,
+      label: task?.display_name || task.name,
       children: Object.entries(task.variables).map(
         ([variableKey, variable]) => ({
-          label: variable?.display_name || variableKey,
+          label: variableKey,
           value: `{{ ${task.name}.${variableKey} }}`,
           field_type: variable?.type,
         }),
