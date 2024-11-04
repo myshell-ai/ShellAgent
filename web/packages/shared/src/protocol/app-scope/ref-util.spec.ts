@@ -1,4 +1,4 @@
-import { scopesSchema, stateSchema } from '.';
+import { scopesSchema, stateSchema } from './protocol';
 import {
   findAncestors,
   getRefOptions,

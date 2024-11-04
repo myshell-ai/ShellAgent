@@ -15,7 +15,7 @@ import {
   // taskVariableSchema,
   variableSchema,
   variablesSchema,
-} from '.';
+} from './protocol';
 
 describe('protocol', () => {
   describe('customSnakeCase', () => {

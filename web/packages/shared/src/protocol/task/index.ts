@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { customKeySchema } from '../app-scope';
+import { customKeySchema } from '../app-scope/protocol';
 
 export const nodeTypeSchema = z.enum([
   'start',
