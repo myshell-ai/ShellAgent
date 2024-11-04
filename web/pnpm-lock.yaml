@@ -855,9 +855,9 @@ importers:
 
   packages/shared:
     dependencies:
-      '@shellagent/flow-engine':
-        specifier: workspace:*
-        version: link:../flow-engine
+      react:
+        specifier: ^18.3.1
+        version: 18.3.1
       zod:
         specifier: ^3.23.8
         version: 3.23.8
@@ -880,6 +880,9 @@ importers:
       '@types/lodash-es':
         specifier: ^4.17.12
         version: 4.17.12
+      '@types/react':
+        specifier: ^18.3.3
+        version: 18.3.3
       jest:
         specifier: ^29.4.1
         version: 29.7.0(@types/node@20.5.1)(ts-node@10.9.2(@swc/core@1.7.12)(@types/node@20.5.1)(typescript@5.3.3))
