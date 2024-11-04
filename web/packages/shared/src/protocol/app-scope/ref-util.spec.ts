@@ -11,12 +11,12 @@ describe('ref util', () => {
   describe('find ancestors', () => {
     it('ancestors', () => {
       const edges = [
-        { source: 'state#1', target: 'state#2' },
-        { source: 'state#0', target: 'state#1' },
+        { source: 'state_1', target: 'state_2' },
+        { source: 'state#0', target: 'state_1' },
       ];
-      expect(findAncestors(edges, 'state#2')).toMatchInlineSnapshot(`
+      expect(findAncestors(edges, 'state_2')).toMatchInlineSnapshot(`
         [
-          "state#1",
+          "state_1",
           "state#0",
         ]
       `);
@@ -27,24 +27,24 @@ describe('ref util', () => {
 state#0
   |
   v
-state#1     state#5
+state_1     state#5
   |           |
   v           v
-state#2 <-- state#4
+state_2 <-- state#4
   ^
   |
 state#3
       */
       const edges = [
-        { source: 'state#1', target: 'state#2' },
-        { source: 'state#0', target: 'state#1' },
-        { source: 'state#3', target: 'state#2' },
+        { source: 'state_1', target: 'state_2' },
+        { source: 'state#0', target: 'state_1' },
+        { source: 'state#3', target: 'state_2' },
         { source: 'state#4', target: 'state#3' },
         { source: 'state#5', target: 'state#4' },
       ];
-      expect(findAncestors(edges, 'state#2')).toMatchInlineSnapshot(`
+      expect(findAncestors(edges, 'state_2')).toMatchInlineSnapshot(`
         [
-          "state#1",
+          "state_1",
           "state#0",
           "state#3",
           "state#4",
@@ -55,15 +55,15 @@ state#3
 
     it('ancestors - no ancestors', () => {
       const edges = [
-        { source: 'state#1', target: 'state#2' },
-        { source: 'state#0', target: 'state#1' },
+        { source: 'state_1', target: 'state_2' },
+        { source: 'state#0', target: 'state_1' },
       ];
       expect(findAncestors(edges, 'state#0')).toMatchInlineSnapshot(`[]`);
     });
 
     it('ancestors - disconnected graph', () => {
       const edges = [
-        { source: 'state#1', target: 'state#2' },
+        { source: 'state_1', target: 'state_2' },
         { source: 'state#3', target: 'state#4' },
       ];
       expect(findAncestors(edges, 'state#4')).toMatchInlineSnapshot(`
@@ -74,26 +74,26 @@ state#3
     });
 
     /*
-state#1
+state_1
   |
   v
-state#2
+state_2
   |
   v
 state#3
   |
-  └───> (back to state#1)
+  └───> (back to state_1)
     */
     it('ancestors - circular dependency', () => {
       const edges = [
-        { source: 'state#1', target: 'state#2' },
-        { source: 'state#2', target: 'state#3' },
-        { source: 'state#3', target: 'state#1' }, // Circular dependency
+        { source: 'state_1', target: 'state_2' },
+        { source: 'state_2', target: 'state#3' },
+        { source: 'state#3', target: 'state_1' }, // Circular dependency
       ];
       expect(findAncestors(edges, 'state#3')).toMatchInlineSnapshot(`
         [
-          "state#2",
-          "state#1",
+          "state_2",
+          "state_1",
           "state#3",
         ]
       `);
@@ -102,7 +102,7 @@ state#3
 
   describe('get ref options', () => {
     it('state_input', () => {
-      const edges = [{ source: 'state#1', target: 'state#2' }];
+      const edges = [{ source: 'state_1', target: 'state_2' }];
 
       const scopes = scopesSchema.parse({
         scopes: {
@@ -113,8 +113,8 @@ state#3
           },
           edges: edges,
           states: {
-            'state#1': {
-              name: 'state#1',
+            state_1: {
+              name: 'state_1',
               children: {
                 inputs: { variables: { input_a: { type: 'text' } } },
                 tasks: [
@@ -127,8 +127,8 @@ state#3
                 },
               },
             },
-            'state#2': {
-              name: 'state#2',
+            state_2: {
+              name: 'state_2',
               children: {
                 inputs: {
                   variables: {},
@@ -144,7 +144,7 @@ state#3
         },
       });
 
-      const options = getRefOptions(scopes, 'state#2', 'state_input');
+      const options = getRefOptions(scopes, 'state_2', 'state_input');
 
       expect(options).toMatchInlineSnapshot(`
         {
@@ -154,7 +154,7 @@ state#3
                 "type": "text",
               },
             },
-            "state#1": {
+            "state_1": {
               "output_a": {
                 "type": "text",
               },
@@ -176,7 +176,7 @@ state#3
 
     describe('state_task', () => {
       it('state_task', () => {
-        const edges = [{ source: 'state#1', target: 'state#2' }];
+        const edges = [{ source: 'state_1', target: 'state_2' }];
         const scopes = scopesSchema.parse({
           scopes: {
             context: {
@@ -186,8 +186,8 @@ state#3
             },
             edges: edges,
             states: {
-              'state#1': {
-                name: 'state#1',
+              state_1: {
+                name: 'state_1',
                 children: {
                   inputs: { variables: {} },
                   tasks: [],
@@ -197,8 +197,8 @@ state#3
                   },
                 },
               },
-              'state#2': {
-                name: 'state#2',
+              state_2: {
+                name: 'state_2',
                 children: {
                   inputs: {
                     variables: {
@@ -226,7 +226,7 @@ state#3
         const options = getRefOptions(
           scopes,
           // edges,
-          'state#2',
+          'state_2',
           'state_task',
           'task2',
         );
@@ -238,7 +238,7 @@ state#3
                   "type": "text",
                 },
               },
-              "state#1": {
+              "state_1": {
                 "output_a": {
                   "type": "text",
                 },
@@ -272,7 +272,7 @@ state#3
       });
 
       it('state_task first task', () => {
-        const edges = [{ source: 'state#1', target: 'state#2' }];
+        const edges = [{ source: 'state_1', target: 'state_2' }];
         const scopes = scopesSchema.parse({
           scopes: {
             context: {
@@ -282,8 +282,8 @@ state#3
             },
             edges: edges,
             states: {
-              'state#1': {
-                name: 'state#1',
+              state_1: {
+                name: 'state_1',
                 children: {
                   inputs: { variables: {} },
                   tasks: [],
@@ -293,8 +293,8 @@ state#3
                   },
                 },
               },
-              'state#2': {
-                name: 'state#2',
+              state_2: {
+                name: 'state_2',
                 children: {
                   inputs: {
                     variables: {
@@ -322,7 +322,7 @@ state#3
         const options = getRefOptions(
           scopes,
           // edges,
-          'state#2',
+          'state_2',
           'state_task',
           'task1',
         );
@@ -334,7 +334,7 @@ state#3
                   "type": "text",
                 },
               },
-              "state#1": {
+              "state_1": {
                 "output_a": {
                   "type": "text",
                 },
@@ -360,7 +360,7 @@ state#3
     });
 
     it('state_output', () => {
-      const edges = [{ source: 'state#1', target: 'state#2' }];
+      const edges = [{ source: 'state_1', target: 'state_2' }];
       const scopes = scopesSchema.parse({
         scopes: {
           context: {
@@ -370,8 +370,8 @@ state#3
           },
           edges: edges,
           states: {
-            'state#1': {
-              name: 'state#1',
+            state_1: {
+              name: 'state_1',
               children: {
                 inputs: { variables: {} },
                 tasks: [],
@@ -381,8 +381,8 @@ state#3
                 },
               },
             },
-            'state#2': {
-              name: 'state#2',
+            state_2: {
+              name: 'state_2',
               children: {
                 inputs: {
                   variables: {
@@ -412,7 +412,7 @@ state#3
           },
         },
       });
-      const options = getRefOptions(scopes, 'state#2', 'state_output');
+      const options = getRefOptions(scopes, 'state_2', 'state_output');
       expect(options).toMatchInlineSnapshot(`
         {
           "global": {
@@ -421,7 +421,7 @@ state#3
                 "type": "text",
               },
             },
-            "state#1": {
+            "state_1": {
               "output_a": {
                 "type": "text",
               },
@@ -463,7 +463,7 @@ state#3
     });
 
     it('state_output_key', () => {
-      const edges = [{ source: 'state#1', target: 'state#2' }];
+      const edges = [{ source: 'state_1', target: 'state_2' }];
       const scopes = scopesSchema.parse({
         scopes: {
           context: {
@@ -471,10 +471,10 @@ state#3
               global_a: { type: 'text' },
             },
           },
-          edges: [],
+          edges: edges,
           states: {
-            'state#1': {
-              name: 'state#1',
+            state_1: {
+              name: 'state_1',
               children: {
                 inputs: { variables: {} },
                 tasks: [],
@@ -484,8 +484,8 @@ state#3
                 },
               },
             },
-            'state#2': {
-              name: 'state#2',
+            state_2: {
+              name: 'state_2',
               children: {
                 inputs: {
                   variables: {},
@@ -502,8 +502,8 @@ state#3
       });
       const options = getRefOptions(
         scopes,
-        edges,
-        'state#2',
+        // edges,
+        'state_2',
         'state_output_key',
       );
       expect(options).toMatchInlineSnapshot(`
@@ -530,7 +530,7 @@ state#3
     });
 
     it('state_render', () => {
-      const edges = [{ source: 'state#1', target: 'state#2' }];
+      const edges = [{ source: 'state_1', target: 'state_2' }];
       const scopes = scopesSchema.parse({
         scopes: {
           context: {
@@ -540,8 +540,8 @@ state#3
           },
           edges: edges,
           states: {
-            'state#1': {
-              name: 'state#1',
+            state_1: {
+              name: 'state_1',
               children: {
                 inputs: { variables: {} },
                 tasks: [],
@@ -551,8 +551,8 @@ state#3
                 },
               },
             },
-            'state#2': {
-              name: 'state#2',
+            state_2: {
+              name: 'state_2',
               children: {
                 inputs: {
                   variables: {
@@ -582,7 +582,7 @@ state#3
           },
         },
       });
-      const options = getRefOptions(scopes, 'state#2', 'state_render');
+      const options = getRefOptions(scopes, 'state_2', 'state_render');
       expect(options).toMatchInlineSnapshot(`
         {
           "global": {
@@ -591,7 +591,7 @@ state#3
                 "type": "text",
               },
             },
-            "state#1": {
+            "state_1": {
               "output_a": {
                 "type": "text",
               },
@@ -637,7 +637,7 @@ state#3
     });
 
     it('button_payload', () => {
-      const edges = [{ source: 'state#1', target: 'state#2' }];
+      const edges = [{ source: 'state_1', target: 'state_2' }];
       const scopes = scopesSchema.parse({
         scopes: {
           context: {
@@ -647,8 +647,8 @@ state#3
           },
           edges: edges,
           states: {
-            'state#1': {
-              name: 'state#1',
+            state_1: {
+              name: 'state_1',
               children: {
                 inputs: { variables: {} },
                 tasks: [],
@@ -658,8 +658,8 @@ state#3
                 },
               },
             },
-            'state#2': {
-              name: 'state#2',
+            state_2: {
+              name: 'state_2',
               children: {
                 inputs: {
                   variables: {
@@ -689,7 +689,7 @@ state#3
           },
         },
       });
-      const options = getRefOptions(scopes, 'state#2', 'button_payload');
+      const options = getRefOptions(scopes, 'state_2', 'button_payload');
       expect(options).toMatchInlineSnapshot(`
         {
           "global": {
@@ -698,7 +698,7 @@ state#3
                 "type": "text",
               },
             },
-            "state#1": {
+            "state_1": {
               "output_a": {
                 "type": "text",
               },
@@ -744,7 +744,7 @@ state#3
     });
 
     it('button_payload_key', () => {
-      const edges = [{ source: 'state#1', target: 'state#2' }];
+      const edges = [{ source: 'state_1', target: 'state_2' }];
       const scopes = scopesSchema.parse({
         scopes: {
           context: {
@@ -754,8 +754,8 @@ state#3
           },
           edges: edges,
           states: {
-            'state#1': {
-              name: 'state#1',
+            state_1: {
+              name: 'state_1',
               children: {
                 inputs: { variables: {} },
                 tasks: [],
@@ -765,8 +765,8 @@ state#3
                 },
               },
             },
-            'state#2': {
-              name: 'state#2',
+            state_2: {
+              name: 'state_2',
               children: {
                 inputs: {
                   variables: {
@@ -799,7 +799,7 @@ state#3
       const options = getRefOptions(
         scopes,
         // edges,
-        'state#2',
+        'state_2',
         'button_payload_key',
       );
       expect(options).toMatchInlineSnapshot(`
@@ -810,7 +810,7 @@ state#3
                 "type": "text",
               },
             },
-            "state#1": {
+            "state_1": {
               "output_a": {
                 "type": "text",
               },
@@ -856,7 +856,7 @@ state#3
     });
 
     it('target_input', () => {
-      const edges = [{ source: 'state#1', target: 'state#2' }];
+      const edges = [{ source: 'state_1', target: 'state_2' }];
       const scopes = scopesSchema.parse({
         scopes: {
           context: {
@@ -866,8 +866,8 @@ state#3
           },
           edges: edges,
           states: {
-            'state#1': {
-              name: 'state#1',
+            state_1: {
+              name: 'state_1',
               children: {
                 inputs: { variables: {} },
                 tasks: [],
@@ -877,8 +877,8 @@ state#3
                 },
               },
             },
-            'state#2': {
-              name: 'state#2',
+            state_2: {
+              name: 'state_2',
               children: {
                 inputs: {
                   variables: {
@@ -917,7 +917,7 @@ state#3
           },
         },
       });
-      const options = getRefOptions(scopes, 'state#2', 'target_input');
+      const options = getRefOptions(scopes, 'state_2', 'target_input');
       expect(options).toMatchInlineSnapshot(`
         {
           "global": {
@@ -926,7 +926,7 @@ state#3
                 "type": "text",
               },
             },
-            "state#1": {
+            "state_1": {
               "output_a": {
                 "type": "text",
               },
@@ -985,60 +985,60 @@ state#3
     // 被引用对象
     it('rename referenced key', () => {
       const refs = {
-        'state#1.outputs.outputs1-1': 'context.global_111',
-        'state#1.outputs.outputs21': 'context.global_111',
-        'state#2.message.text': 'state#1.outputs.output1',
+        'state_1.outputs.outputs1-1': 'context.global_111',
+        'state_1.outputs.outputs21': 'context.global_111',
+        'state_2.message.text': 'state_1.outputs.output1',
       };
 
       const ret = renameRefKey(
         refs,
-        'state#1.outputs.outputs1-1',
-        'state#1.outputs.outputs1',
+        'state_1.outputs.outputs1-1',
+        'state_1.outputs.outputs1',
       );
 
       expect(ret).toMatchInlineSnapshot(`
         {
-          "state#1.outputs.outputs1": "context.global_111",
-          "state#1.outputs.outputs21": "context.global_111",
-          "state#2.message.text": "state#1.outputs.output1",
+          "state_1.outputs.outputs1": "context.global_111",
+          "state_1.outputs.outputs21": "context.global_111",
+          "state_2.message.text": "state_1.outputs.output1",
         }
       `);
     });
 
     it('update referenced value', () => {
       const refs = {
-        'state#1.outputs.outputs1-1': 'context.global_111',
-        'state#1.outputs.outputs21': 'context.global_111',
-        'state#2.message.text': 'state#1.outputs.output1',
+        'state_1.outputs.outputs1-1': 'context.global_111',
+        'state_1.outputs.outputs21': 'context.global_111',
+        'state_2.message.text': 'state_1.outputs.output1',
       };
 
       const ret = updateRefValue(
         refs,
-        'state#1.outputs.outputs1-1',
+        'state_1.outputs.outputs1-1',
         'context.global_a',
       );
       expect(ret).toMatchInlineSnapshot(`
         {
-          "state#1.outputs.outputs1-1": "context.global_a",
-          "state#1.outputs.outputs21": "context.global_111",
-          "state#2.message.text": "state#1.outputs.output1",
+          "state_1.outputs.outputs1-1": "context.global_a",
+          "state_1.outputs.outputs21": "context.global_111",
+          "state_2.message.text": "state_1.outputs.output1",
         }
       `);
     });
 
     it('rename refer', () => {
       const refs = {
-        'state#1.outputs.outputs1-1': 'context.global_111',
-        'state#1.outputs.outputs21': 'context.global_111',
-        'state#2.message.text': 'state#1.outputs.output1',
+        'state_1.outputs.outputs1-1': 'context.global_111',
+        'state_1.outputs.outputs21': 'context.global_111',
+        'state_2.message.text': 'state_1.outputs.output1',
       };
 
       const ret = renameRefer(refs, 'context.global_111', 'context.global.a');
       expect(ret).toMatchInlineSnapshot(`
         {
-          "state#1.outputs.outputs1-1": "context.global.a",
-          "state#1.outputs.outputs21": "context.global.a",
-          "state#2.message.text": "state#1.outputs.output1",
+          "state_1.outputs.outputs1-1": "context.global.a",
+          "state_1.outputs.outputs21": "context.global.a",
+          "state_2.message.text": "state_1.outputs.output1",
         }
       `);
     });

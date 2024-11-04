@@ -11,7 +11,7 @@ import { useSchemaContext } from '@/stores/app/schema-provider';
 
 export const useSelectOptions = (name?: string) => {
   const { parent } = useFormEngineContext();
-  const stataId = useSchemaContext(state => state.id);
+  const stateId = useSchemaContext(state => state.id);
 
   const appBuilder = useInjection(AppBuilderModel);
   const {
@@ -31,81 +31,81 @@ export const useSelectOptions = (name?: string) => {
   }));
 
   const refOptions = appBuilder.getRefOptions(
-    stataId,
+    stateId,
     refTypeSchema.enum.state_input,
   );
 
-  const currentGroup = [...input, ...tasks, ...output];
+  // const currentGroup = [...input, ...tasks, ...output];
 
-  if (parent?.startsWith('condition.')) {
-    // target inputs需要payload
-    currentGroup.push(...payloads);
-  }
+  // if (parent?.startsWith('condition.')) {
+  //   // target inputs需要payload
+  //   currentGroup.push(...payloads);
+  // }
 
-  const globalGroup = [...context, ...states];
+  // const globalGroup = [...context, ...states];
 
-  const formatOptions = (items: any[]): CascaderOption[] => {
-    return items.reduce((memo, item) => {
-      const current = { ...item };
-      if (
-        parent?.startsWith('input.') &&
-        ['Input', 'Output', 'Task'].includes(current.label)
-      ) {
-        return memo;
-      }
-      if (parent?.startsWith('blocks.')) {
-        if (['Output'].includes(current.label)) {
-          return memo;
-        }
-        if (['Task'].includes(current.label)) {
-          const match = parent.match(/(\d+)$/);
-          if (match?.[1]) {
-            const parentIndex = Number(match[1]);
-            // 只展示索引小于当前任务索引的任务
-            current.children = (current.children as CascaderOption[])?.filter(
-              (_, index) => index < parentIndex,
-            );
-          }
-          if (isEmpty(current.children)) {
-            return memo;
-          }
-        }
-      } else if (
-        name?.startsWith('output.') &&
-        ['Output'].includes(current.label)
-      ) {
-        return memo;
-      } else if (
-        name?.startsWith('context.') &&
-        ['Context'].includes(current.label)
-      ) {
-        return memo;
-      }
-      memo.push({
-        label: current.label,
-        value: `{{${current.value}}}`,
-        field_type: current.field_type,
-        children: current.children?.map((child: any) => ({
-          label: child.label,
-          value: `{{${child.value}}}`,
-          field_type: child.field_type,
-          children: child.children?.map((grandchild: any) => ({
-            label: grandchild.label,
-            value: `{{${grandchild.value}}}`,
-            field_type: grandchild.field_type,
-          })),
-        })),
-      });
-      return memo;
-    }, [] as CascaderOption[]);
-  };
+  // const formatOptions = (items: any[]): CascaderOption[] => {
+  //   return items.reduce((memo, item) => {
+  //     const current = { ...item };
+  //     if (
+  //       parent?.startsWith('input.') &&
+  //       ['Input', 'Output', 'Task'].includes(current.label)
+  //     ) {
+  //       return memo;
+  //     }
+  //     if (parent?.startsWith('blocks.')) {
+  //       if (['Output'].includes(current.label)) {
+  //         return memo;
+  //       }
+  //       if (['Task'].includes(current.label)) {
+  //         const match = parent.match(/(\d+)$/);
+  //         if (match?.[1]) {
+  //           const parentIndex = Number(match[1]);
+  //           // 只展示索引小于当前任务索引的任务
+  //           current.children = (current.children as CascaderOption[])?.filter(
+  //             (_, index) => index < parentIndex,
+  //           );
+  //         }
+  //         if (isEmpty(current.children)) {
+  //           return memo;
+  //         }
+  //       }
+  //     } else if (
+  //       name?.startsWith('output.') &&
+  //       ['Output'].includes(current.label)
+  //     ) {
+  //       return memo;
+  //     } else if (
+  //       name?.startsWith('context.') &&
+  //       ['Context'].includes(current.label)
+  //     ) {
+  //       return memo;
+  //     }
+  //     memo.push({
+  //       label: current.label,
+  //       value: `{{${current.value}}}`,
+  //       field_type: current.field_type,
+  //       children: current.children?.map((child: any) => ({
+  //         label: child.label,
+  //         value: `{{${child.value}}}`,
+  //         field_type: child.field_type,
+  //         children: child.children?.map((grandchild: any) => ({
+  //           label: grandchild.label,
+  //           value: `{{${grandchild.value}}}`,
+  //           field_type: grandchild.field_type,
+  //         })),
+  //       })),
+  //     });
+  //     return memo;
+  //   }, [] as CascaderOption[]);
+  // };
 
-  const options = useMemo(() => {
-    return [
-      { label: 'current', children: formatOptions(currentGroup) },
-      { label: 'global', children: formatOptions(globalGroup) },
-    ];
-  }, [currentGroup, globalGroup, parent, name]);
+  // const options = useMemo(() => {
+  //   return [
+  //     { label: 'current', children: formatOptions(currentGroup) },
+  //     { label: 'global', children: formatOptions(globalGroup) },
+  //   ];
+  // }, [currentGroup, globalGroup, parent, name]);
 
-  return options;
+  return refOptions;
 };

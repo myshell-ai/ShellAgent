@@ -29,6 +29,6 @@
 
 export function customSnakeCase(s: unknown) {
   if (typeof s !== 'string') return s;
-  const r = s.split(/(?<![A-Z])(?=[A-Z])|\s+/);
+  const r = s.split(/(?<![A-Z])(?=[A-Z])|\#|\s+/);
   return r.map(i => i.toLowerCase()).join('_');
 }

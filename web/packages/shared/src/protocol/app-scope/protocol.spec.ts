@@ -26,7 +26,7 @@ describe('protocol', () => {
       expect(customSnakeCase('123a123b')).toBe('123a123b');
       expect(customSnakeCase('a_1')).toBe('a_1');
       expect(customSnakeCase('GPT2')).toBe('gpt2');
-      expect(customSnakeCase('State#2')).toBe('state#2');
+      expect(customSnakeCase('State#2')).toBe('state_2');
       // Can use a mask input
       expect(customSnakeCase('Image Canvas')).toBe('image_canvas');
     });
@@ -516,7 +516,7 @@ describe('render', () => {
 describe('state', () => {
   it('valid', () => {
     const a = stateSchema.parse({
-      name: 'state#1',
+      name: 'state_1',
       children: {
         inputs: {
           variables: {
@@ -569,7 +569,7 @@ describe('state', () => {
 
   it('most simple', () => {
     const a = stateSchema.parse({
-      name: 'state#1',
+      name: 'state_1',
       children: {
         inputs: {
           variables: {},
@@ -599,8 +599,8 @@ describe('scopes', () => {
         },
         edges: [],
         states: {
-          'state#1': {
-            name: 'state#1',
+          state_1: {
+            name: 'state_1',
             children: {
               inputs: {
                 variables: {

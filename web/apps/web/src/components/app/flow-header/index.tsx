@@ -39,7 +39,7 @@ const FlowHeader: React.FC<{ appId: string }> = ({ appId }) => {
   }));
 
   useEffect(() => {
-    appBuilder.updateScopes(nodeData, edges);
+    // appBuilder.updateScopes(nodeData, edges);
   }, [nodeData]);
 
   const values = useMemo(() => {

@@ -43,7 +43,7 @@ export function convertNodeDataToState(nodeData: any): State {
                 name,
                 {
                   event: button.id,
-                  payload: mapValues(button[evt].payload, v => ({
+                  payload: mapValues(button[evt]?.payload, v => ({
                     type: v.type,
                   })),
                 },

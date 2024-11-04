@@ -22,6 +22,7 @@ import {
 } from '@/stores/app/variable-provider';
 
 import {
+  CascaderOption,
   convertRefOptsToCascaderOpts,
   convetNodeDataToScopes,
 } from './app-builder-utils';
@@ -36,7 +37,11 @@ export class AppBuilderModel {
 
   @observable scopes: Scopes | null = null;
 
-  getRefOptions(stateName: CustomKey, refType: RefType, taskName?: string) {
+  getRefOptions(
+    stateName: CustomKey,
+    refType: RefType,
+    taskName?: string,
+  ): CascaderOption[] {
     if (this.scopes == null) {
       return [];
     }
