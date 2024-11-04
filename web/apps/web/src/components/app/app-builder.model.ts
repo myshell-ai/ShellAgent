@@ -1,6 +1,12 @@
 import { IEdge, INode } from '@shellagent/flow-engine';
 import { TValues } from '@shellagent/form-engine';
-import { Scopes, State } from '@shellagent/shared/protocol/app-scope';
+import {
+  State,
+  Edges,
+  RefType,
+  getRefOptions,
+  Scopes,
+} from '@shellagent/shared/protocol/app-scope';
 import { injectable } from 'inversify';
 import { makeObservable, observable } from 'mobx';
 
@@ -14,6 +20,7 @@ import {
   VariableProps,
 } from '@/stores/app/variable-provider';
 import { convetNodeDataToScopes } from './app-builder-utils';
+import { CustomKey } from '@shellagent/pro-config';
 
 @injectable()
 export class AppBuilderModel {
@@ -23,10 +30,22 @@ export class AppBuilderModel {
     makeObservable(this);
   }
 
-  // @observable scopes: Scopes | null = null;
+  @observable scopes: Scopes | null = null;
+
+  getRefOptions(
+    edges: Edges,
+    stateName: CustomKey,
+    refType: RefType,
+    taskName?: string,
+  ) {
+    if (this.scopes == null) {
+      return [];
+    }
+    return getRefOptions(this.scopes, edges, stateName, refType, taskName);
+  }
 
   updateScopes(nodeData: any) {
-    convetNodeDataToScopes(nodeData);
+    this.scopes = convetNodeDataToScopes(nodeData);
   }
 
   onRefUpdate() {}

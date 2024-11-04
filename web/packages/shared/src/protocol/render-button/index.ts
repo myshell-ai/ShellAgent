@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { customEventSchema } from '../app-scope';
+import { customEventSchema } from '../app-scope/protocol';
 
 export const ButtonSchema = z.object({
   id: customEventSchema,
