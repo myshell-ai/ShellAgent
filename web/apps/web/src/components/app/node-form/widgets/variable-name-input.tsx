@@ -1,5 +1,5 @@
 /* eslint-disable */
-import { useMemo, useState } from 'react';
+import { useState } from 'react';
 import {
   CheckIcon,
   RectangleStackIcon,
@@ -21,9 +21,7 @@ import {
 } from '@shellagent/ui';
 import { TFieldMode, useFormEngineContext } from '@shellagent/form-engine';
 
-import { useVariableContext } from '@/stores/app/variable-provider';
 import { uuid } from '@shellagent/flow-engine';
-import { observer } from 'mobx-react-lite';
 import { useInjection } from 'inversify-react';
 import { AppBuilderModel } from '@/components/app/app-builder.model.ts';
 
@@ -55,21 +53,11 @@ const ModeOptions: Array<{
 
 const VariableNameInput = (props: VariableSelectProps) => {
   const { name, value } = props;
-  // const context = useVariableContext(state => state.context);
   const { setValue, getValues } = useFormContext();
   const [mode, setMode] = useState(getValues('name_mode') || 'ui');
   const { parent } = useFormEngineContext();
 
   const IconMode = ModeOptions.find(item => item.value === mode)?.icon!;
-
-  // const options = useMemo(() => {
-  //   return (
-  //     (context?.[0]?.children?.map(item => ({
-  //       label: `Start-Context/${item.label}`,
-  //       value: item.value,
-  //     })) as ISelectProps['options']) || []
-  //   );
-  // }, [context]);
 
   const appBuilder = useInjection(AppBuilderModel);
   const context = appBuilder?.variables?.context;

@@ -92,10 +92,9 @@ export function convetNodeDataToScopes(nodeDatas: any, edges: any[]) {
     };
   });
 
-  scopesSchema.parse({
+  return scopesSchema.parse({
     scopes: ret,
   });
-  return ret;
 }
 
 export function convertRefOptsToCascaderOpts(input: any): CascaderOption[] {

@@ -46,6 +46,7 @@ export class AppBuilderModel {
       return [];
     }
     const refOpts = getRefOptions(this.scopes, stateName, refType, taskName);
+
     const cascaderOpts = convertRefOptsToCascaderOpts(refOpts);
     return cascaderOpts;
   }

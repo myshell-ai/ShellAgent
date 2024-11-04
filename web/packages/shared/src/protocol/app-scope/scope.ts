@@ -20,10 +20,7 @@ export const refTypeSchema = z.enum([
   'state_input',
   'state_task',
   'state_output',
-  'state_output_key',
   'state_render',
-  'button_payload',
-  'button_payload_key',
   'target_input',
 ]);
 
