@@ -24,22 +24,7 @@ export class AppBuilderModel {
 
   @observable scopes: Scopes | null = null;
 
-  refs: Record<string, string> = {
-    'state#1.outputs.outputs1-1': 'context.global_111',
-    'state#1.outputs.outputs21': 'context.global_111',
-    'state#2.message.text': 'state#1.outputs.output1',
-  };
-
-  // context.global_aa -> context.global_111
-  onRefUpdate() {
-    const origName = 'context.desc';
-    const name = 'context.a';
-    Object.keys(this.refs).forEach(k => {
-      if (this.refs[k] === origName) {
-        this.refs[k] = name;
-      }
-    });
-  }
+  onRefUpdate() {}
 
   updateNodeData(origName: string, name: string) {}
 

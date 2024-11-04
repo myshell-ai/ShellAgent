@@ -163,7 +163,7 @@ export const buttonSchema = z
   })
   .strict();
 
-export const buttonsSchema = z.record(customKeySchema, buttonSchema);
+export const buttonsSchema = z.record(customEventSchema, buttonSchema);
 
 export type Buttons = z.infer<typeof buttonsSchema>;
 
