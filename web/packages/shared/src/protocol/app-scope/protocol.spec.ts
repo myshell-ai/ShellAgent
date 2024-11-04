@@ -88,12 +88,14 @@ describe('protocol', () => {
       it('simple', () => {
         variableSchema.parse({
           type: 'text',
+          display_name: 'hi',
         });
       });
 
       it('recursive', () => {
         const a = variableSchema.parse({
           type: 'text',
+          display_name: 'hi',
         });
       });
     });
@@ -101,6 +103,7 @@ describe('protocol', () => {
     describe('compound type', () => {
       variableSchema.parse({
         type: 'string|object',
+        display_name: 'Hello',
       });
     });
 
@@ -109,6 +112,7 @@ describe('protocol', () => {
         expect(() => {
           variableSchema.parse({
             type: 'text_not',
+            display_name: 'hi',
             // value: 'hello',
           });
         }).toThrowErrorMatchingInlineSnapshot(`
@@ -146,9 +150,11 @@ describe('protocol', () => {
     it('simple', () => {
       taskSchema.parse({
         name: 'gpt',
+        display_name: 'hi',
         variables: {
           reply: {
             type: 'text',
+            display_name: 'hi',
           },
         },
       });
@@ -287,6 +293,7 @@ describe('state variables', () => {
     variablesSchema.parse({
       test: {
         type: 'text',
+        display_name: 'hi',
       },
     });
   });
@@ -296,6 +303,7 @@ describe('state variables', () => {
       variablesSchema.parse({
         properties: {
           type: 'text',
+          display_name: 'hi',
         },
       });
     }).toThrowErrorMatchingInlineSnapshot(`
@@ -316,6 +324,7 @@ describe('state variables', () => {
       variablesSchema.parse({
         Properties: {
           type: 'text',
+          display_name: 'hi',
         },
       });
     }).toThrowErrorMatchingInlineSnapshot(`
@@ -415,6 +424,7 @@ describe('output variables', () => {
     outputVariablesSchema.parse({
       a: {
         type: 'text',
+        display_name: 'hi',
       },
     });
   });
@@ -463,6 +473,7 @@ describe('button', () => {
       payload: {
         b: {
           type: 'text',
+          display_name: 'hi',
         },
       },
     });
@@ -477,6 +488,7 @@ describe('buttons', () => {
         payload: {
           b: {
             type: 'text',
+            display_name: 'hi',
           },
         },
       },
@@ -491,6 +503,7 @@ describe('buttons', () => {
           payload: {
             b: {
               type: 'text',
+              display_name: 'hi',
             },
           },
         },
@@ -518,6 +531,7 @@ describe('render', () => {
           payload: {
             b: {
               type: 'text',
+              display_name: 'hi',
             },
           },
         },
@@ -530,11 +544,13 @@ describe('state', () => {
   it('valid', () => {
     const a = stateSchema.parse({
       name: 'state_1',
+      display_name: 'hi',
       children: {
         inputs: {
           variables: {
             a: {
               type: 'text',
+              display_name: 'hi',
             },
           },
         },
@@ -550,9 +566,11 @@ describe('state', () => {
         tasks: [
           {
             name: 'gpt',
+            display_name: 'hi',
             variables: {
               reply: {
                 type: 'text',
+                display_name: 'hi',
               },
             },
           },
@@ -561,6 +579,7 @@ describe('state', () => {
           variables: {
             a: {
               type: 'text',
+              display_name: 'hi',
             },
           },
           render: {
@@ -570,6 +589,7 @@ describe('state', () => {
                 payload: {
                   b: {
                     type: 'text',
+                    display_name: 'hi',
                   },
                 },
               },
@@ -583,6 +603,7 @@ describe('state', () => {
   it('most simple', () => {
     const a = stateSchema.parse({
       name: 'state_1',
+      display_name: 'hi',
       children: {
         inputs: {
           variables: {},
@@ -607,6 +628,7 @@ describe('scopes', () => {
           variables: {
             global_a: {
               type: 'text',
+              display_name: 'Hello',
             },
           },
         },
@@ -614,20 +636,24 @@ describe('scopes', () => {
         states: {
           state_1: {
             name: 'state_1',
+            display_name: 'hi',
             children: {
               inputs: {
                 variables: {
                   a: {
                     type: 'text',
+                    display_name: 'Hello',
                   },
                 },
               },
               tasks: [
                 {
                   name: 'gpt',
+                  display_name: 'GPT',
                   variables: {
                     reply: {
                       type: 'text',
+                      display_name: 'reply',
                     },
                   },
                 },
@@ -636,6 +662,7 @@ describe('scopes', () => {
                 variables: {
                   a: {
                     type: 'text',
+                    display_name: 'hi',
                   },
                 },
                 render: {
@@ -645,6 +672,7 @@ describe('scopes', () => {
                       payload: {
                         b: {
                           type: 'text',
+                          display_name: 'hi',
                         },
                       },
                     },

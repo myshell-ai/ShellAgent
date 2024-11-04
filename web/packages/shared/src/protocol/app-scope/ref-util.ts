@@ -17,7 +17,10 @@ export function getRefOptions(
 ): RefOptionsOutput {
   const ret: RefOptionsOutput = {
     global: {
-      context: scopes.scopes.context.variables,
+      context: {
+        display_name: 'Start-Context',
+        variables: scopes.scopes.context.variables,
+      },
     },
     local: {
       inputs: { variables: {} },
@@ -78,7 +81,10 @@ export function getRefOptions(
       if (a === '@@@start') return;
       const state = scopes.scopes.states[a];
       if (state == null) throw new Error(`${a} is in edges, but not in scopes`);
-      ret.global[a] = state.children.outputs.variables;
+      ret.global[a] = {
+        display_name: state.display_name,
+        variables: state.children.outputs.variables,
+      };
     });
   }
 

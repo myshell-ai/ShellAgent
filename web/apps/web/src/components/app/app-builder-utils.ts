@@ -1,5 +1,6 @@
 import {
   RefOptionsOutput,
+  refOptOutputGlobalSchema,
   Scopes,
   scopesSchema,
   State,
@@ -17,6 +18,7 @@ export interface CascaderOption {
 export function convertNodeDataToState(nodeData: any): State {
   const ret = {
     name: nodeData.id,
+    display_name: nodeData.name,
     children: {
       inputs: {
         variables: Object.fromEntries(
@@ -115,10 +117,10 @@ export function convertRefOptsToCascaderOpts(
 ): CascaderOption[] {
   const cascaderOptions: CascaderOption[] = [];
 
-  // Convert global options
   const globalOptions: CascaderOption[] = [];
-  for (const [key, variables] of Object.entries(refOptions.global)) {
-    const children: CascaderOption[] = Object.entries(variables || {}).map(
+  for (const [key, val] of Object.entries(refOptions.global)) {
+    const val2 = refOptOutputGlobalSchema.parse(val);
+    const children: CascaderOption[] = Object.entries(val2.variables || {}).map(
       ([variableKey, variable]) => ({
         label: variable?.display_name || variableKey,
         value: `{{ ${key}.${variableKey} }}`,
@@ -127,7 +129,7 @@ export function convertRefOptsToCascaderOpts(
     );
 
     globalOptions.push({
-      label: key,
+      label: val2?.display_name,
       children,
     });
   }

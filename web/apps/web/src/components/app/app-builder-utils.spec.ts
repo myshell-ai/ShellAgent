@@ -1,4 +1,8 @@
 import {
+  refOptionsOutputSchema,
+  scopesSchema,
+} from '@shellagent/shared/protocol/app-scope';
+import {
   convertNodeDataToState,
   convertRefOptsToCascaderOpts,
   convetNodeDataToScopes,
@@ -278,6 +282,7 @@ describe('app builder utils', () => {
                   },
                 ],
               },
+              "display_name": "State",
               "name": "state_1",
             },
             "state_2": {
@@ -307,6 +312,7 @@ describe('app builder utils', () => {
                 },
                 "tasks": [],
               },
+              "display_name": "State",
               "name": "state_2",
             },
           },
@@ -373,24 +379,31 @@ describe('app builder utils', () => {
           },
           "tasks": [],
         },
+        "display_name": "State",
         "name": "state_2",
       }
     `);
   });
 
   it('convert ref opts to cascader opts', () => {
-    const input = {
+    const input = refOptionsOutputSchema.parse({
       global: {
         context: {
-          global_a: {
-            type: 'text',
-            display_name: 'Global A',
+          display_name: 'Start-Context',
+          variables: {
+            global_a: {
+              type: 'text',
+              display_name: 'Global A',
+            },
           },
         },
         state_1: {
-          output_a: {
-            type: 'text',
-            display_name: 'Output A',
+          display_name: 'State#1',
+          variables: {
+            output_a: {
+              type: 'text',
+              display_name: 'Output A',
+            },
           },
         },
       },
@@ -428,6 +441,7 @@ describe('app builder utils', () => {
             display_name: 'Task 1',
             variables: {
               output_a: {
+                display_name: 'output_a',
                 type: 'text',
               },
             },
@@ -437,13 +451,14 @@ describe('app builder utils', () => {
             display_name: 'Task 2',
             variables: {
               output_a: {
+                display_name: 'output_a',
                 type: 'text',
               },
             },
           },
         ],
       },
-    };
+    });
     const ret = convertRefOptsToCascaderOpts(input as any);
     expect(ret).toMatchInlineSnapshot(`
       [
@@ -457,7 +472,7 @@ describe('app builder utils', () => {
                   "value": "{{ context.global_a }}",
                 },
               ],
-              "label": "context",
+              "label": "Start-Context",
             },
             {
               "children": [
@@ -467,7 +482,7 @@ describe('app builder utils', () => {
                   "value": "{{ state_1.output_a }}",
                 },
               ],
-              "label": "state_1",
+              "label": "State#1",
             },
           ],
           "label": "global",
@@ -621,6 +636,7 @@ describe('app builder utils', () => {
               },
             ],
           },
+          "display_name": "State",
           "name": "state_2",
         }
       `);
@@ -820,6 +836,7 @@ describe('app builder utils', () => {
                   },
                   "tasks": [],
                 },
+                "display_name": "State",
                 "name": "state_1",
               },
               "state_2": {
@@ -871,6 +888,7 @@ describe('app builder utils', () => {
                     },
                   ],
                 },
+                "display_name": "State",
                 "name": "state_2",
               },
             },

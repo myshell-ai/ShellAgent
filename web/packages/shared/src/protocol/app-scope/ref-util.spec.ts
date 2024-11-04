@@ -168,15 +168,21 @@ state#3
         {
           "global": {
             "context": {
-              "global_a": {
-                "display_name": "Hello world",
-                "type": "text",
+              "display_name": "Start-Context",
+              "variables": {
+                "global_a": {
+                  "display_name": "Hello world",
+                  "type": "text",
+                },
               },
             },
             "state_1": {
-              "output_a": {
-                "display_name": "Hello world",
-                "type": "text",
+              "display_name": "State#1",
+              "variables": {
+                "output_a": {
+                  "display_name": "Hello world",
+                  "type": "text",
+                },
               },
             },
           },
@@ -265,15 +271,21 @@ state#3
           {
             "global": {
               "context": {
-                "global_a": {
-                  "display_name": "Hello world",
-                  "type": "text",
+                "display_name": "Start-Context",
+                "variables": {
+                  "global_a": {
+                    "display_name": "Hello world",
+                    "type": "text",
+                  },
                 },
               },
               "state_1": {
-                "output_a": {
-                  "display_name": "Hello world",
-                  "type": "text",
+                "display_name": "State#1",
+                "variables": {
+                  "output_a": {
+                    "display_name": "Hello world",
+                    "type": "text",
+                  },
                 },
               },
             },
@@ -377,15 +389,21 @@ state#3
           {
             "global": {
               "context": {
-                "global_a": {
-                  "display_name": "Hello world",
-                  "type": "text",
+                "display_name": "Start-Context",
+                "variables": {
+                  "global_a": {
+                    "display_name": "Hello world",
+                    "type": "text",
+                  },
                 },
               },
               "state_1": {
-                "output_a": {
-                  "display_name": "Hello world",
-                  "type": "text",
+                "display_name": "State#1",
+                "variables": {
+                  "output_a": {
+                    "display_name": "Hello world",
+                    "type": "text",
+                  },
                 },
               },
             },
@@ -475,15 +493,21 @@ state#3
         {
           "global": {
             "context": {
-              "global_a": {
-                "display_name": "Hello world",
-                "type": "text",
+              "display_name": "Start-Context",
+              "variables": {
+                "global_a": {
+                  "display_name": "Hello world",
+                  "type": "text",
+                },
               },
             },
             "state_1": {
-              "output_a": {
-                "display_name": "Hello world",
-                "type": "text",
+              "display_name": "State#1",
+              "variables": {
+                "output_a": {
+                  "display_name": "Hello world",
+                  "type": "text",
+                },
               },
             },
           },
@@ -593,15 +617,21 @@ state#3
         {
           "global": {
             "context": {
-              "global_a": {
-                "display_name": "Hello world",
-                "type": "text",
+              "display_name": "Start-Context",
+              "variables": {
+                "global_a": {
+                  "display_name": "Hello world",
+                  "type": "text",
+                },
               },
             },
             "state_1": {
-              "output_a": {
-                "display_name": "Hello world",
-                "type": "text",
+              "display_name": "State#1",
+              "variables": {
+                "output_a": {
+                  "display_name": "Hello world",
+                  "type": "text",
+                },
               },
             },
           },
@@ -728,15 +758,21 @@ state#3
         {
           "global": {
             "context": {
-              "global_a": {
-                "display_name": "Hello world",
-                "type": "text",
+              "display_name": "Start-Context",
+              "variables": {
+                "global_a": {
+                  "display_name": "Hello world",
+                  "type": "text",
+                },
               },
             },
             "state_1": {
-              "output_a": {
-                "display_name": "Hello world",
-                "type": "text",
+              "display_name": "State#1",
+              "variables": {
+                "output_a": {
+                  "display_name": "Hello world",
+                  "type": "text",
+                },
               },
             },
           },

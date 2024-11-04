@@ -26,10 +26,15 @@ export const refTypeSchema = z.enum([
 
 export type RefType = z.infer<typeof refTypeSchema>;
 
+export const refOptOutputGlobalSchema = z.object({
+  display_name: z.string(),
+  variables: variablesSchema,
+});
+
 export const refOptionsOutputSchema = z.object({
   global: z.record(
     z.union([customKeySchema, z.literal('context')]),
-    variablesSchema,
+    refOptOutputGlobalSchema,
   ),
   local: z.object({
     inputs: z.object({
