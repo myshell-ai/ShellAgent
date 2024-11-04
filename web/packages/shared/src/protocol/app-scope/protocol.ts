@@ -24,8 +24,13 @@ export const primitiveVariableTypeSchema = z.enum([
 
 export type PrimitiveVariableType = z.infer<typeof primitiveVariableTypeSchema>;
 
+// TODO: refer arktype
+export type CompoundType = string;
+
+export type VariableType = PrimitiveVariableType | CompoundType;
+
 export const variableTypeSchema = z
-  .custom<PrimitiveVariableType | string>()
+  .custom<VariableType>()
   .superRefine((arg, ctx) => {
     if (arg.indexOf('|') === -1) {
       const ret = primitiveVariableTypeSchema.safeParse(arg);
