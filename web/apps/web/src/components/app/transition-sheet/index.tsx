@@ -1,6 +1,10 @@
 'use client';
 
-import { useReactFlowStore, getColor } from '@shellagent/flow-engine';
+import {
+  useReactFlowStore,
+  getColor,
+  NodeTypeEnum,
+} from '@shellagent/flow-engine';
 import { TValues } from '@shellagent/form-engine';
 import { Drawer } from '@shellagent/ui';
 import { useInjection } from 'inversify-react';
@@ -13,6 +17,7 @@ import { useAppState } from '@/stores/app/use-app-state';
 import { transitionConfigSchema } from '@/stores/app/utils/schema';
 import { VariableProvider } from '@/stores/app/variable-provider';
 import { generateUUID } from '@/utils/common-helper';
+import { SchemaProvider } from '@/stores/app/schema-provider';
 
 import { form2EdgeData, edgeData2Form } from './utils';
 
@@ -146,14 +151,20 @@ const TransitionSheet: React.FC<{}> = () => {
       keyboard={false}
       onClose={handleClose}
       push={false}>
-      <VariableProvider id={source} eventKey={currentEdegData?.event_key}>
-        <NodeForm
-          key={sourceHandle}
-          schema={transitionConfigSchema}
-          values={values}
-          onChange={handleChange}
-        />
-      </VariableProvider>
+      <SchemaProvider
+        id={source}
+        type={NodeTypeEnum.state}
+        name=""
+        display_name="">
+        <VariableProvider id={source} eventKey={currentEdegData?.event_key}>
+          <NodeForm
+            key={sourceHandle}
+            schema={transitionConfigSchema}
+            values={values}
+            onChange={handleChange}
+          />
+        </VariableProvider>
+      </SchemaProvider>
     </Drawer>
   );
 };

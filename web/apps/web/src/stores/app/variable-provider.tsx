@@ -107,7 +107,7 @@ export function getContext(nodeData: Record<string, TValues>) {
 
   return [
     {
-      label: 'Start-Context',
+      label: 'Context',
       value: '',
       children: Object.entries(contextDataMap).map(([key, data]) => ({
         label: data?.name || key,

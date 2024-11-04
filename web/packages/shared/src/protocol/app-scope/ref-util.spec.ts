@@ -168,7 +168,7 @@ state#3
         {
           "global": {
             "context": {
-              "display_name": "Start-Context",
+              "display_name": "Context",
               "variables": {
                 "global_a": {
                   "display_name": "Hello world",
@@ -271,7 +271,7 @@ state#3
           {
             "global": {
               "context": {
-                "display_name": "Start-Context",
+                "display_name": "Context",
                 "variables": {
                   "global_a": {
                     "display_name": "Hello world",
@@ -389,7 +389,7 @@ state#3
           {
             "global": {
               "context": {
-                "display_name": "Start-Context",
+                "display_name": "Context",
                 "variables": {
                   "global_a": {
                     "display_name": "Hello world",
@@ -493,7 +493,7 @@ state#3
         {
           "global": {
             "context": {
-              "display_name": "Start-Context",
+              "display_name": "Context",
               "variables": {
                 "global_a": {
                   "display_name": "Hello world",
@@ -617,7 +617,7 @@ state#3
         {
           "global": {
             "context": {
-              "display_name": "Start-Context",
+              "display_name": "Context",
               "variables": {
                 "global_a": {
                   "display_name": "Hello world",
@@ -758,7 +758,7 @@ state#3
         {
           "global": {
             "context": {
-              "display_name": "Start-Context",
+              "display_name": "Context",
               "variables": {
                 "global_a": {
                   "display_name": "Hello world",

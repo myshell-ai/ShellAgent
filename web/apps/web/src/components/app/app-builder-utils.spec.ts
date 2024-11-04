@@ -389,7 +389,7 @@ describe('app builder utils', () => {
     const input = refOptionsOutputSchema.parse({
       global: {
         context: {
-          display_name: 'Start-Context',
+          display_name: 'Context',
           variables: {
             global_a: {
               type: 'text',
@@ -472,7 +472,7 @@ describe('app builder utils', () => {
                   "value": "{{ context.global_a }}",
                 },
               ],
-              "label": "Start-Context",
+              "label": "Context",
             },
             {
               "children": [

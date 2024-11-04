@@ -63,7 +63,7 @@ const VariableNameInput = (props: VariableSelectProps) => {
   const context = appBuilder?.variables?.context;
   const options =
     (context?.[0]?.children?.map(item => ({
-      label: `Start-Context/${item.label}`,
+      label: `Context/${item.label}`,
       value: item.value,
     })) as ISelectProps['options']) || [];
 

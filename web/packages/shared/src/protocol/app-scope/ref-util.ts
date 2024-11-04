@@ -18,7 +18,7 @@ export function getRefOptions(
   const ret: RefOptionsOutput = {
     global: {
       context: {
-        display_name: 'Start-Context',
+        display_name: 'Context',
         variables: scopes.scopes.context.variables,
       },
     },
