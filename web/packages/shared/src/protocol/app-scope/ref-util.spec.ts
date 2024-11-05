@@ -1261,7 +1261,7 @@ state#3
       `);
     });
 
-    it('remove button', () => {
+    it('remove ref opts matches prefix, e.g. remove button, remove payload', () => {
       const refs = refsSchema.parse({
         state_1: {
           'target_inputs.input_a': {
@@ -1279,7 +1279,7 @@ state#3
       });
 
       const ret = removeRefOptsPrefix(refs, {
-        prefix: 'state_1.buttons.button_a.on_click',
+        prefix: ['state_1.buttons.button_a.on_click'],
       });
 
       expect(ret).toMatchInlineSnapshot(`
@@ -1291,6 +1291,74 @@ state#3
               ],
               "ui": [
                 "state_1.buttons.button_b.on_click.payload.arg1",
+              ],
+            },
+          },
+        }
+      `);
+    });
+
+    it('remove ref opts because of edges removed', () => {
+      const refs = refsSchema.parse({
+        state_3: {
+          'target_inputs.input_a': {
+            ref: 'state_0.outptu1',
+            ui: ['state_0.outptu1', 'state_2.outptu2'],
+            raw: ['state_1.outptu1', 'state_2.outptu2'],
+          },
+        },
+      });
+
+      const ret = removeRefOptsPrefix(refs, {
+        prefix: ['state_0', 'state_1'],
+      });
+
+      expect(ret).toMatchInlineSnapshot(`
+        {
+          "state_3": {
+            "target_inputs.input_a": {
+              "raw": [
+                "state_2.outptu2",
+              ],
+              "ui": [
+                "state_2.outptu2",
+              ],
+            },
+          },
+        }
+      `);
+    });
+
+    it('remove ref opts because of button removed', () => {
+      const refs = refsSchema.parse({
+        state_3: {
+          'target_inputs.input_a': {
+            ref: 'state_1.buttons.button_c.on_click.payload.arg2',
+            ui: [
+              'state_1.buttons.button_b.on_click.payload.arg2',
+              'state_1.buttons.button_c.on_click.payload.arg2',
+            ],
+            raw: [
+              'state_1.buttons.button_d.on_click.payload.arg2',
+              'state_1.buttons.button_c.on_click.payload.arg2',
+            ],
+          },
+        },
+      });
+
+      const ret = removeRefOptsPrefix(refs, {
+        prefix: ['state_1.buttons.button_c.on_click'],
+      });
+
+      expect(ret).toMatchInlineSnapshot(`
+        {
+          "state_3": {
+            "target_inputs.input_a": {
+              "raw": [
+                "state_1.buttons.button_d.on_click.payload.arg2",
+              ],
+              "ui": [
+                "state_1.buttons.button_b.on_click.payload.arg2",
               ],
             },
           },

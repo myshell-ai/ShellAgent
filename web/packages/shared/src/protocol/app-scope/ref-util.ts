@@ -365,21 +365,24 @@ export function removeRefOptsPrefix(
   const { prefix } = param;
   return mapValues(refs, (v, k) => {
     let v2ret = mapValues(v, (v2, k2) => {
-      if (v2.ref && v2.ref.startsWith(prefix)) {
-        delete v2.ref;
+      if (v2.ref != null) {
+        const v2Ref = v2.ref;
+        if (prefix.some(p => v2Ref.startsWith(p))) {
+          delete v2.ref;
+        }
       }
       if (Array.isArray(v2.ui)) {
         v2.ui = v2.ui
-          .map(i => (i.startsWith(prefix) ? null : i))
-          .filter(i => i != null) as string[];
+          .map(i => (prefix.some(p => i.startsWith(p)) ? null : i))
+          .filter((i): i is string => i !== null);
       }
       if (!v2.ui?.length) {
         delete v2.ui;
       }
       if (Array.isArray(v2.raw)) {
         v2.raw = v2.raw
-          .map(i => (i.startsWith(prefix) ? null : i))
-          .filter(i => i != null) as string[];
+          .map(i => (prefix.some(p => i.startsWith(p)) ? null : i))
+          .filter((i): i is string => i !== null);
       }
       if (!v2.raw?.length) {
         delete v2.raw;

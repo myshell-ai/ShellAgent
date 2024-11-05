@@ -112,7 +112,7 @@ export const removeRefOptsSchema = z.object({
 });
 
 export const removeRefOptsPrefixScheam = z.object({
-  prefix: z.string(),
+  prefix: z.array(z.string()),
 });
 
 export const handleRefSceneSchema = z.union([
