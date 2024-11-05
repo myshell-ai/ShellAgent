@@ -48,6 +48,7 @@ export type SaveAppRequest = {
 
 export type SaveAppResponse = {
   success: boolean;
+  message?: string;
 };
 
 export enum EventStatusEnum {
