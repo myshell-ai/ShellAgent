@@ -1,5 +1,5 @@
 import { CustomKey, CustomEventName } from '@shellagent/pro-config';
-import { Scopes } from './protocol';
+import { customKeySchema, Scopes } from './protocol';
 import {
   changNodedataModeParamSchema,
   Edges,
@@ -16,6 +16,8 @@ import {
   renameStateNameParamSchema,
   renameStateOutputParamSchema,
   setNodedataKeyValParamSchema,
+  removeEdgeScheam,
+  Edge,
 } from './scope';
 import {
   isEmpty,
@@ -146,6 +148,27 @@ export function getRefOptions(
     const tasks = state.children.tasks;
     ret.local.tasks = tasks;
   }
+}
+
+export function findDescendants(
+  edges: Edges,
+  stateName: CustomKey,
+): CustomKey[] {
+  const descendants: CustomKey[] = [];
+  const visited = new Set<CustomKey>();
+
+  function dfs(currentNode: string) {
+    for (const edge of edges) {
+      if (edge.source === currentNode && !visited.has(edge.target)) {
+        visited.add(edge.target);
+        descendants.push(edge.target);
+        dfs(edge.target);
+      }
+    }
+  }
+
+  dfs(stateName);
+  return descendants;
 }
 
 export function findAncestors(edges: Edges, stateName: CustomKey): CustomKey[] {
@@ -364,6 +387,61 @@ export function removeRefOptsPrefix(
 ) {
   const { prefix } = param;
   return mapValues(refs, (v, k) => {
+    let v2ret = mapValues(v, (v2, k2) => {
+      if (v2.ref != null) {
+        const v2Ref = v2.ref;
+        if (prefix.some(p => v2Ref.startsWith(p))) {
+          delete v2.ref;
+        }
+      }
+      if (Array.isArray(v2.ui)) {
+        v2.ui = v2.ui
+          .map(i => (prefix.some(p => i.startsWith(p)) ? null : i))
+          .filter((i): i is string => i !== null);
+      }
+      if (!v2.ui?.length) {
+        delete v2.ui;
+      }
+      if (Array.isArray(v2.raw)) {
+        v2.raw = v2.raw
+          .map(i => (prefix.some(p => i.startsWith(p)) ? null : i))
+          .filter((i): i is string => i !== null);
+      }
+      if (!v2.raw?.length) {
+        delete v2.raw;
+      }
+      return v2;
+    });
+    v2ret = omitBy(v2ret, isEmpty);
+    return v2ret;
+  });
+}
+
+export function getBeforeAndAfterNodes(
+  edges: Edges,
+  toRemoveEdge: Edge,
+): { before: CustomKey[]; after: CustomKey[] } {
+  const before = findAncestors(edges, toRemoveEdge.source);
+  const after = findDescendants(edges, toRemoveEdge.target);
+  return {
+    before: before.concat([toRemoveEdge.source]),
+    after: after.concat([toRemoveEdge.target]),
+  };
+}
+
+export function removeEdge(
+  refs: Refs,
+  param: z.infer<typeof removeEdgeScheam>,
+) {
+  const { edges, removeEdge } = param;
+  const { before, after } = getBeforeAndAfterNodes(edges, removeEdge);
+
+  const prefix = before;
+
+  return mapValues(refs, (v, k) => {
+    if (after.indexOf(k as CustomKey) === -1) {
+      return v;
+    }
     let v2ret = mapValues(v, (v2, k2) => {
       if (v2.ref != null) {
         const v2Ref = v2.ref;

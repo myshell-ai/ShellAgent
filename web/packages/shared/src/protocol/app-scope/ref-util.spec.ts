@@ -1,3 +1,4 @@
+import { CustomKey } from '@shellagent/pro-config';
 import { scopesSchema } from './protocol';
 import {
   findAncestors,
@@ -11,17 +12,39 @@ import {
   removeNodeKey,
   removeRefOpts,
   removeRefOptsPrefix,
+  removeEdge,
+  findDescendants,
+  getBeforeAndAfterNodes,
 } from './ref-util';
-import { refsSchema } from './scope';
+import { Edge, Edges, edgeSchema, edgesSchema, refsSchema } from './scope';
 
 describe('ref util', () => {
+  describe('find descendants', () => {
+    it('descendants', () => {
+      const edges = [
+        { source: 'state_0', target: 'state_1' },
+        { source: 'state_1', target: 'state_2' },
+        { source: 'state_2', target: 'state_3' },
+        { source: 'state_2', target: 'state_5' },
+        { source: 'state_3', target: 'state_4' },
+      ];
+      expect(findDescendants(edges as Edges, 'state_2')).toMatchInlineSnapshot(`
+        [
+          "state_3",
+          "state_4",
+          "state_5",
+        ]
+      `);
+    });
+  });
+
   describe('find ancestors', () => {
     it('ancestors', () => {
       const edges = [
         { source: 'state_1', target: 'state_2' },
         { source: 'state#0', target: 'state_1' },
       ];
-      expect(findAncestors(edges, 'state_2')).toMatchInlineSnapshot(`
+      expect(findAncestors(edges as Edges, 'state_2')).toMatchInlineSnapshot(`
         [
           "state_1",
           "state#0",
@@ -49,7 +72,7 @@ state#3
         { source: 'state#4', target: 'state#3' },
         { source: 'state#5', target: 'state#4' },
       ];
-      expect(findAncestors(edges, 'state_2')).toMatchInlineSnapshot(`
+      expect(findAncestors(edges as Edges, 'state_2')).toMatchInlineSnapshot(`
         [
           "state_1",
           "state#0",
@@ -65,7 +88,9 @@ state#3
         { source: 'state_1', target: 'state_2' },
         { source: 'state#0', target: 'state_1' },
       ];
-      expect(findAncestors(edges, 'state#0')).toMatchInlineSnapshot(`[]`);
+      expect(findAncestors(edges as Edges, 'state#0')).toMatchInlineSnapshot(
+        `[]`,
+      );
     });
 
     it('ancestors - disconnected graph', () => {
@@ -73,7 +98,7 @@ state#3
         { source: 'state_1', target: 'state_2' },
         { source: 'state#3', target: 'state#4' },
       ];
-      expect(findAncestors(edges, 'state#4')).toMatchInlineSnapshot(`
+      expect(findAncestors(edges as Edges, 'state#4')).toMatchInlineSnapshot(`
         [
           "state#3",
         ]
@@ -97,7 +122,7 @@ state#3
         { source: 'state_2', target: 'state#3' },
         { source: 'state#3', target: 'state_1' }, // Circular dependency
       ];
-      expect(findAncestors(edges, 'state#3')).toMatchInlineSnapshot(`
+      expect(findAncestors(edges as Edges, 'state#3')).toMatchInlineSnapshot(`
         [
           "state_2",
           "state_1",
@@ -1298,6 +1323,36 @@ state#3
       `);
     });
 
+    it('get before and after nodes after edge removed', () => {
+      const edges = edgesSchema.parse([
+        { source: 'state_0', target: 'state_1' },
+        { source: 'state_1', target: 'state_2' },
+        { source: 'state_2', target: 'state_3' },
+        { source: 'state_2', target: 'state_5' },
+        { source: 'state_3', target: 'state_4' },
+      ]);
+      const toRemoveEdge = edgeSchema.parse({
+        source: 'state_1',
+        target: 'state_2',
+      });
+
+      const ret = getBeforeAndAfterNodes(edges, toRemoveEdge);
+      expect(ret).toMatchInlineSnapshot(`
+        {
+          "after": [
+            "state_3",
+            "state_4",
+            "state_5",
+            "state_2",
+          ],
+          "before": [
+            "state_0",
+            "state_1",
+          ],
+        }
+      `);
+    });
+
     it('remove ref opts because of edges removed', () => {
       const refs = refsSchema.parse({
         state_3: {
@@ -1307,14 +1362,41 @@ state#3
             raw: ['state_1.outptu1', 'state_2.outptu2'],
           },
         },
+        state_1: {
+          'target_inputs.input_a': {
+            ref: 'state_0.outptu1',
+            ui: ['state_0.outptu1', 'state_2.outptu2'],
+            raw: ['state_1.outptu1', 'state_2.outptu2'],
+          },
+        },
       });
 
-      const ret = removeRefOptsPrefix(refs, {
-        prefix: ['state_0', 'state_1'],
+      const ret = removeEdge(refs, {
+        edges: [
+          { source: 'state_0', target: 'state_1' },
+          { source: 'state_1', target: 'state_2' },
+          { source: 'state_2', target: 'state_3' },
+          { source: 'state_2', target: 'state_5' },
+          { source: 'state_3', target: 'state_4' },
+        ],
+        removeEdge: { source: 'state_1', target: 'state_2' },
       });
 
       expect(ret).toMatchInlineSnapshot(`
         {
+          "state_1": {
+            "target_inputs.input_a": {
+              "raw": [
+                "state_1.outptu1",
+                "state_2.outptu2",
+              ],
+              "ref": "state_0.outptu1",
+              "ui": [
+                "state_0.outptu1",
+                "state_2.outptu2",
+              ],
+            },
+          },
           "state_3": {
             "target_inputs.input_a": {
               "raw": [
@@ -1370,34 +1452,37 @@ state#3
       const refs = refsSchema.parse({
         state_3: {
           'tasks.task_3': {
-            ref: 'state_3.tasks.task_1.output_a',
-            ui: [
-              'state_3.tasks.task_2.output_a',
-              'state_3.tasks.task_1.output_a',
-            ],
-            raw: [
-              'state_3.tasks.task_1.output_a',
-              'state_3.tasks.task_1.output_a',
-            ],
+            ref: 'tasks.task_1.output_a',
+            ui: ['tasks.task_2.output_a', 'tasks.task_1.output_a'],
+            raw: ['tasks.task_1.output_a', 'tasks.task_1.output_a'],
           },
         },
       });
 
       const ret = removeRefOptsPrefix(refs, {
-        prefix: ['state_3.tasks.task_1'],
+        prefix: ['tasks.task_2'],
       });
 
       expect(ret).toMatchInlineSnapshot(`
         {
           "state_3": {
             "tasks.task_3": {
+              "raw": [
+                "tasks.task_1.output_a",
+                "tasks.task_1.output_a",
+              ],
+              "ref": "tasks.task_1.output_a",
               "ui": [
-                "state_3.tasks.task_2.output_a",
+                "tasks.task_1.output_a",
               ],
             },
           },
         }
       `);
     });
+
+    // TODO: 能不能去掉 state_1
+    // edges removeEdge
+    it('duplicate state', () => {});
   });
 });
