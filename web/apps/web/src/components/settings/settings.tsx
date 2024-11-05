@@ -10,13 +10,44 @@ import dayjs from 'dayjs';
 import { Field, FieldArray, FieldProps, Formik } from 'formik';
 import { useInjection } from 'inversify-react';
 import { observer } from 'mobx-react-lite';
+import { entries, get } from 'lodash-es';
+import { useEffect } from 'react';
 import Markdown from 'react-markdown';
 import { Box, Flex } from 'react-system';
 
 import { SettingEnvFormValue } from './settings-definitions';
 import { SettingsSideBar } from './settings-sidebar';
 import { SettingsModel } from './settings.model';
-import { useEffect } from 'react';
+
+const EnvKeys = [
+  {
+    label: 'MyShell API Key',
+    name: 'MYSHELL_API_KEY',
+    tooltip: 'You may generate it in MyShell - Settings - API Key.',
+  },
+  {
+    label: 'OpenAI API Key',
+    name: 'OPENAI_API_KEY',
+  },
+  {
+    label: 'ComfyUI Address',
+    name: 'COMFYUI_API',
+    tooltip:
+      'ComfyUI server address such as http://127.0.0.1:8188. Supports remote address.',
+  },
+  {
+    label: 'Proxy',
+    name: 'HTTP_PROXY',
+    tooltip: 'Including HTTP_PROXY and HTTPS_PROXY.',
+  },
+  // {
+  //   label: 'Proxy',
+  //   name: 'HTTPS_PROXY',
+  //   tooltip: 'Including HTTP_PROXY and HTTPS_PROXY.',
+  // }
+];
+
+const filterKey = ['HTTPS_PROXY', ...EnvKeys.map(item => item.name)];
 
 export const EnvForm = observer(() => {
   const model = useInjection(SettingsModel);
@@ -30,24 +61,75 @@ export const EnvForm = observer(() => {
     <Formik<SettingEnvFormValue>
       initialValues={{
         model_location: '',
-        envs: [{ key: '', value: '' }],
+        // envs: [{ key: '', value: '' }],
+        envs: [],
       }}
       onSubmit={values => {
-        model.saveSettingsEnv(values);
+        console.log('onSubmit: ', values);
+        const { envs, form_fields } = values;
+        model.saveSettingsEnv({
+          model_location: values.model_location,
+          envs: entries(form_fields)
+            .map(([key, value]) => ({ [key]: value }))
+            .concat(envs),
+        });
       }}>
       {formikProps => {
         model.setFormikProps(formikProps);
+
+        const values: any = {
+          // form_fields: filterKey.reduce(
+          //   (memo, key) => {
+          //     memo[key] = '';
+          //     return memo;
+          //   },
+          //   {} as Record<string, string>,
+          // ),
+          envs: [] as SettingEnvFormValue['envs'],
+        };
+        formikProps.values.envs?.forEach(item => {
+          if (filterKey.includes(item.key)) {
+            console.log('filterKey:', filterKey);
+            values[item.key] = item.value;
+          } else {
+            console.log('item:', item);
+            values.envs.push(item);
+          }
+        });
+        console.log('formikProps.values: ', formikProps.values, values);
+
         return (
-          <Form layout="vertical">
+          <Form
+            layout="horizontal"
+            labelCol={{ span: 6 }}
+            wrapperCol={{ span: 18 }}>
+            {EnvKeys.map(item => (
+              <Form.Item label={item.label} tooltip={item.tooltip}>
+                <Field name={`${item.name}`}>
+                  {({ field, form }: FieldProps) => {
+                    console.log('field: ', field, get(values, item.name));
+                    return (
+                      <Input
+                        size="large"
+                        {...field}
+                        value={get(values, item.name)}
+                        onBlur={() => form.submitForm()}
+                        placeholder="Environment key"
+                      />
+                    );
+                  }}
+                </Field>
+              </Form.Item>
+            ))}
             <FieldArray
               name="envs"
               render={arrayHelpers => (
                 <div>
-                  {formikProps.values.envs.map((env, index) => (
+                  {values.envs.map((env, index) => (
                     // eslint-disable-next-line react/no-array-index-key
                     <Box key={`fa-${index}`} mb={2}>
                       <Flex mx={-1} alignItems="center">
-                        <Box width={1 / 3} mx={1}>
+                        <Box width={1 / 4} mx={1}>
                           <Field name={`envs.${index}.key`}>
                             {({ field, form }: FieldProps) => (
                               <Input
@@ -59,7 +141,7 @@ export const EnvForm = observer(() => {
                             )}
                           </Field>
                         </Box>
-                        <Box width={2 / 3} mx={1}>
+                        <Box width={3 / 4} mx={1}>
                           <Field name={`envs.${index}.value`}>
                             {({ field, form }: FieldProps) => (
                               <Input
