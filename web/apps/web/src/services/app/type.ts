@@ -3,6 +3,7 @@ import { Automata } from '@shellagent/pro-config';
 
 import { ServerMessage } from './message-type';
 import { Metadata } from '../home/type';
+import { AppState } from '@/stores/app/app-store';
 
 export interface AppMetadata {
   name: string;
@@ -14,6 +15,7 @@ export interface AppMetadata {
 // /api/app/get_automata
 export type GetAutomataRequest = {
   app_id: string;
+  version_name?: string;
 };
 
 export type GetAutomatagResponse = {
@@ -24,6 +26,7 @@ export type GetAutomatagResponse = {
 // /api/app/get_flow
 export type GetAppFlowRequest = {
   app_id: string;
+  version_name?: string;
 };
 
 export type GetAppFlowResponse = {
@@ -45,6 +48,7 @@ export type SaveAppRequest = {
 
 export type SaveAppResponse = {
   success: boolean;
+  message?: string;
 };
 
 export enum EventStatusEnum {
@@ -147,3 +151,35 @@ export interface ExportBotResponse {
     metadata: Metadata;
   };
 }
+
+export type ReleaseAppRequest = SaveAppRequest & {
+  metadata: Metadata;
+  version_name: string;
+};
+
+export type ReleaseAppResponse = {
+  success: boolean;
+};
+
+export type GetAppVersionListRequest = {
+  app_id: string;
+};
+
+export type GetAppVersionListResponse = {
+  data: Array<{
+    version_name: string; // 用户写入 + 时间戳拼接
+    create_time: number;
+  }>;
+};
+
+export type GetShellAgentResponse = {
+  data: {
+    reactflow: {
+      reactflow: IFlow;
+      config: AppState['config'];
+    };
+    metadata: AppState['metadata'];
+    automata: Automata;
+  };
+  success: boolean;
+};
