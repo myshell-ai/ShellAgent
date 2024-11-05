@@ -1,6 +1,5 @@
-import { scopesSchema, stateSchema } from './protocol';
+import { scopesSchema } from './protocol';
 import {
-  deleteRefer,
   findAncestors,
   getRefOptions,
   renameNodedataKey,
@@ -1120,50 +1119,6 @@ state#3
             },
             "outputs.output1": {
               "ref": "state_1.output_a",
-            },
-          },
-        }
-      `);
-    });
-
-    it('delete refer', () => {
-      const refs = refsSchema.parse({
-        state_1: {
-          'outputs.outputs1-1': {
-            ref: 'context.global_111',
-            ui: [
-              'context.global_111',
-              'context.global_222',
-              'context.global_111',
-            ],
-            raw: ['context.global_111'],
-          },
-          'outputs.outputs21': {
-            ref: 'context.global_111',
-          },
-        },
-        state_2: {
-          'message.text': {
-            ref: 'state_1.outputs.output1',
-          },
-        },
-      });
-
-      const ret = deleteRefer(refs, 'state_1', 'context.global_111');
-
-      expect(ret).toMatchInlineSnapshot(`
-        {
-          "state_1": {
-            "outputs.outputs1-1": {
-              "ui": [
-                "context.global_222",
-              ],
-            },
-            "outputs.outputs21": {},
-          },
-          "state_2": {
-            "message.text": {
-              "ref": "state_1.outputs.output1",
             },
           },
         }

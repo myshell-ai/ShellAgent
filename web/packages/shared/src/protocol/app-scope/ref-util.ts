@@ -215,37 +215,6 @@ export function setNodedataKeyVal(
   });
 }
 
-export function deleteRefer(refs: Refs, stateName: string, refer: string) {
-  return mapValues(refs, (v1, k1) => {
-    if (k1 === stateName) {
-      return mapValues(v1, (v2, k2) => {
-        if (v2.ref === refer) {
-          delete v2.ref;
-        }
-        if (Array.isArray(v2.ui)) {
-          v2.ui = v2.ui
-            .map(i => (i === refer ? null : i))
-            .filter(i => i != null) as string[];
-        }
-        if (!v2.ui?.length) {
-          delete v2.ui;
-        }
-        if (Array.isArray(v2.raw)) {
-          v2.raw = v2.raw
-            .map(i => (i === refer ? null : i))
-            .filter(i => i != null) as string[];
-        }
-        if (!v2.raw?.length) {
-          delete v2.raw;
-        }
-        return v2;
-      });
-    } else {
-      return v1;
-    }
-  });
-}
-
 export function changeNodedataKeyMode(
   refs: Refs,
   param: z.infer<typeof changNodedataModeParamSchema>,
