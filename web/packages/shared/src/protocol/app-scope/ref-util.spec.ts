@@ -1,4 +1,3 @@
-import { CustomKey } from '@shellagent/pro-config';
 import { scopesSchema } from './protocol';
 import {
   findAncestors,
@@ -15,6 +14,7 @@ import {
   removeEdge,
   findDescendants,
   getBeforeAndAfterNodes,
+  duplicateState,
 } from './ref-util';
 import { Edge, Edges, edgeSchema, edgesSchema, refsSchema } from './scope';
 
@@ -1481,8 +1481,52 @@ state#3
       `);
     });
 
-    // TODO: 能不能去掉 state_1
-    // edges removeEdge
-    it('duplicate state', () => {});
+    it('duplicate state', () => {
+      const refs = refsSchema.parse({
+        state_1: {
+          'outputs.output1': {
+            ref: 'state_1.inputs.input_a',
+            ui: ['state_1.inputs.input_b', 'state_2.inputs.input_a'],
+            raw: ['context.global_a', 'state_1.inputs.input_a'],
+          },
+        },
+      });
+
+      const ret = duplicateState(refs, {
+        stateName: 'state_1',
+        duplicateStateName: 'state_1_1',
+      });
+
+      expect(ret).toMatchInlineSnapshot(`
+        {
+          "state_1": {
+            "outputs.output1": {
+              "raw": [
+                "context.global_a",
+                "state_1.inputs.input_a",
+              ],
+              "ref": "state_1.inputs.input_a",
+              "ui": [
+                "state_1.inputs.input_b",
+                "state_2.inputs.input_a",
+              ],
+            },
+          },
+          "state_1_1": {
+            "outputs.output1": {
+              "raw": [
+                "context.global_a",
+                "state_1_1.inputs",
+              ],
+              "ref": "state_1_1.inputs",
+              "ui": [
+                "state_1_1.inputs",
+                "state_2.inputs.input_a",
+              ],
+            },
+          },
+        }
+      `);
+    });
   });
 });

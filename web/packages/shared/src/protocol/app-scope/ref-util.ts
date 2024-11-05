@@ -18,8 +18,10 @@ import {
   setNodedataKeyValParamSchema,
   removeEdgeScheam,
   Edge,
+  duplicateStateSchema,
 } from './scope';
 import {
+  cloneDeep,
   isEmpty,
   isNumber,
   mapKeys,
@@ -472,6 +474,47 @@ export function removeEdge(
   });
 }
 
+export function duplicateState(
+  refs: Refs,
+  params: z.infer<typeof duplicateStateSchema>,
+) {
+  const { stateName, duplicateStateName } = params;
+  if (refs[duplicateStateName]) {
+    throw new Error(`${duplicateStateName} already exists`);
+  }
+
+  if (!isEmpty(refs[stateName])) {
+    const ref = cloneDeep(refs[stateName]);
+    refs[duplicateStateName] = mapValues(ref, (v, k) => {
+      if (v.ref && v.ref.startsWith(stateName)) {
+        v.ref = [duplicateStateName, v.ref.split('.')[1]].join('.');
+      }
+
+      if (v.raw != null && Array.isArray(v.raw)) {
+        v.raw = v.raw.map(i => {
+          if (i.startsWith(stateName)) {
+            return [duplicateStateName, i.split('.')[1]].join('.');
+          } else {
+            return i;
+          }
+        });
+      }
+      if (v.ui != null && Array.isArray(v.ui)) {
+        v.ui = v.ui.map(i => {
+          if (i.startsWith(stateName)) {
+            return [duplicateStateName, i.split('.')[1]].join('.');
+          } else {
+            return i;
+          }
+        });
+      }
+
+      return v;
+    });
+  }
+  return refs;
+}
+
 export function hanldeRefScene(refs: Refs, evt: HandleRefSceneEvent) {
   switch (evt.scene) {
     case 'set_nodedata_key_val':
@@ -503,6 +546,9 @@ export function hanldeRefScene(refs: Refs, evt: HandleRefSceneEvent) {
 
     case 'remove_edge':
       return removeEdge(refs, evt.params);
+
+    case 'duplicate_state':
+      return duplicateState(refs, evt.params);
     default:
       // @ts-expect-error
       throw new Error(`Not implemented, ${evt.scene}`);

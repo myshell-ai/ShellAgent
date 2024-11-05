@@ -121,6 +121,11 @@ export const removeEdgeScheam = z.object({
   removeEdge: edgeSchema,
 });
 
+export const duplicateStateSchema = z.object({
+  stateName: customKeySchema,
+  duplicateStateName: customKeySchema,
+});
+
 export const handleRefSceneSchema = z.union([
   // nodedata
   z.object({
@@ -169,6 +174,10 @@ export const handleRefSceneSchema = z.union([
       .literal('remove_edge')
       .describe('shortcut of remove_ref_opt_prefix'),
     params: removeEdgeScheam,
+  }),
+  z.object({
+    scene: z.literal('duplicate_state'),
+    params: duplicateStateSchema,
   }),
 ]);
 
