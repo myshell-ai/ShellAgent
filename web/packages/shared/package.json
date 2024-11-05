@@ -14,6 +14,7 @@
     "./protocol/app-scope": "./src/protocol/app-scope/index.ts",
     "./protocol/task": "./src/protocol/task/index.ts",
     "./protocol/render-button": "./src/protocol/render-button/index.ts",
+    "./protocol/extend-config": "./src/protocol/extend-config/index.ts",
     "./utils": "./src/utils/index.ts"
   },
   "devDependencies": {

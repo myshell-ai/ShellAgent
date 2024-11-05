@@ -1,6 +1,7 @@
 import { ISchema } from '@shellagent/form-engine';
 
 import { ENABLE_MIME } from '@/utils/file-types';
+import { FieldModeEnum } from '@shellagent/shared/protocol/extend-config';
 
 const startSchema: ISchema = {
   title: 'Start',
@@ -987,7 +988,7 @@ const stateConfigSchema: ISchema = {
             'x-component': 'Input',
             'x-type': 'Control',
             'x-raw': true,
-            'x-raw-default': 'ref',
+            'x-raw-default': FieldModeEnum.Enum.ref,
             'x-parent-deletable': true,
             'x-title-editable': true,
             'x-title-component-props': {
@@ -999,7 +1000,7 @@ const stateConfigSchema: ISchema = {
                   properties: {
                     name_mode: {
                       type: 'string',
-                      default: 'ui',
+                      default: FieldModeEnum.Enum.ui,
                       title: 'Mode',
                       'x-type': 'Control',
                       'x-hidden': true,
@@ -1217,7 +1218,7 @@ const stateConfigSchema: ISchema = {
           'x-switchable': true,
           'x-switchable-default': true,
           'x-raw': true,
-          'x-raw-default': 'ui',
+          'x-raw-default': FieldModeEnum.Enum.ui,
         },
         audio: {
           type: 'string',
@@ -1230,7 +1231,7 @@ const stateConfigSchema: ISchema = {
             accept: ENABLE_MIME.audio,
           },
           'x-raw': true,
-          'x-raw-default': 'ui',
+          'x-raw-default': FieldModeEnum.Enum.ui,
         },
         image: {
           type: 'string',
@@ -1243,7 +1244,7 @@ const stateConfigSchema: ISchema = {
             accept: ENABLE_MIME.image,
           },
           'x-raw': true,
-          'x-raw-default': 'ui',
+          'x-raw-default': FieldModeEnum.Enum.ui,
         },
         buttons: {
           type: 'array',
@@ -1400,8 +1401,8 @@ const buttonConfigSchema: ISchema = {
                 'x-component': 'Input',
                 'x-type': 'Control',
                 'x-raw': true,
-                'x-raw-default': 'ref',
-                'x-raw-options': ['ref'],
+                'x-raw-default': FieldModeEnum.Enum.ref,
+                'x-raw-options': [FieldModeEnum.Enum.ref],
                 'x-parent-deletable': true,
                 'x-title-editable': true,
                 'x-component-props': {

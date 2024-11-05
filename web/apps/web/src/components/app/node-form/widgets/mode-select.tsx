@@ -4,7 +4,10 @@ import {
   RectangleStackIcon,
   Square3Stack3DIcon,
 } from '@heroicons/react/24/outline';
-import { TFieldMode } from '@shellagent/form-engine';
+import {
+  FieldModeEnum,
+  FieldMode,
+} from '@shellagent/shared/protocol/extend-config';
 import {
   DropdownMenu,
   DropdownMenuTrigger,
@@ -19,29 +22,29 @@ import { useState, useMemo, useCallback } from 'react';
 
 const ModeOptions: Array<{
   label: string;
-  value: TFieldMode;
+  value: FieldMode;
   icon: HeroIcon;
 }> = [
   {
     label: 'UI Mode',
-    value: 'ui',
+    value: FieldModeEnum.Enum.ui,
     icon: RectangleStackIcon,
   },
   {
     label: 'Ref Mode',
-    value: 'ref',
+    value: FieldModeEnum.Enum.ref,
     icon: Square3Stack3DIcon,
   },
   {
     label: 'Code mode',
-    value: 'raw',
+    value: FieldModeEnum.Enum.raw,
     icon: CodeBracketSquareIcon,
   },
 ];
 
 interface IModeSelectProps {
-  defaultValue: TFieldMode;
-  onChange?: (value: TFieldMode) => void;
+  defaultValue: FieldMode;
+  onChange?: (value: FieldMode) => void;
   defaultOptions?: string[];
 }
 
@@ -50,7 +53,7 @@ export function ModeSelect({
   onChange,
   defaultOptions,
 }: IModeSelectProps) {
-  const [value, setValue] = useState<TFieldMode>(defaultValue);
+  const [value, setValue] = useState<FieldMode>(defaultValue);
 
   const options = useMemo(() => {
     if (!defaultOptions) {
@@ -60,12 +63,14 @@ export function ModeSelect({
   }, [defaultOptions]);
 
   const IconMode = useMemo(
-    () => options.find(item => item.value === (value || 'ui'))?.icon!,
+    () =>
+      options.find(item => item.value === (value || FieldModeEnum.Enum.ui))
+        ?.icon!,
     [options, value],
   );
 
   const handleChange = useCallback(
-    (value: TFieldMode) => {
+    (value: FieldMode) => {
       setValue(value);
       onChange?.(value);
     },
