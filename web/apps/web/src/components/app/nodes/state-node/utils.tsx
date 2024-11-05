@@ -83,15 +83,15 @@ export const initData = (data: FieldValues) => {
     }
 
     const { keyMap: inputKeyMap, newObj: newInput } = updateKeys(
-      draft?.input || {},
+      draft?.inputs || {},
     );
     const { keyMap: outputKeyMap, newObj: newOutput } = updateKeys(
-      draft?.output || {},
+      draft?.outputs || {},
     );
     const combinedKeyMap = { ...inputKeyMap, ...outputKeyMap, ...blockKeyMap };
 
-    draft.input = replaceKeyInData(newInput, combinedKeyMap);
-    draft.output = replaceKeyInData(newOutput, combinedKeyMap);
+    draft.inputs = replaceKeyInData(newInput, combinedKeyMap);
+    draft.outputs = replaceKeyInData(newOutput, combinedKeyMap);
     draft.render = replaceKeyInData(draft?.render || {}, combinedKeyMap);
     draft.blocks = draft.blocks?.map((block: Task) =>
       replaceKeyInData(block, combinedKeyMap),

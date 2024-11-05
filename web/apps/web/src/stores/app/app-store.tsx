@@ -307,7 +307,7 @@ export const createAppStore = () => {
           //             ...node.data,
           //             runtime_data: {
           //               ...node.data.runtime_data,
-          //               progress: data?.output?.progress,
+          //               progress: data?.outputs?.progress,
           //             },
           //           },
           //         }

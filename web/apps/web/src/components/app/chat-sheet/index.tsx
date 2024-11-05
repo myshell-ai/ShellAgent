@@ -38,7 +38,7 @@ const RunSheet: React.FC<{}> = () => {
     setRunDrawerWidth: state.setRunDrawerWidth,
   }));
 
-  const inputs = nodeData[NodeIdEnum.start]?.input as Record<string, TValues>;
+  const inputs = nodeData[NodeIdEnum.start]?.inputs as Record<string, TValues>;
   const runSchema = getSchemaByInputs(inputs);
   const prevInputs = usePrevious(inputs);
 

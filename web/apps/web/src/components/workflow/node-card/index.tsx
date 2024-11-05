@@ -59,7 +59,7 @@ const NodeCard: React.FC<
           display_name={display_name}
           name={name}
           id={id}
-          output={runtime_data?.output}>
+          outputs={runtime_data?.output}>
           <VariableProvider id={id}>{children}</VariableProvider>
         </SchemaProvider>
         <div className="absolute top-4 right-3 z-50 w-4 h-4">

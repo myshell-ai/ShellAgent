@@ -64,8 +64,8 @@ export const genNodeData = (automata: Automata): AppStore['nodeData'] => {
           type: NodeTypeEnum.state,
           name: state.name,
           render: state.render,
-          input: transformValuesToChoices(state.inputs),
-          output: state.outputs,
+          inputs: transformValuesToChoices(state.inputs),
+          outputs: state.outputs,
           blocks: state.blocks,
         };
       }
@@ -119,8 +119,8 @@ export const genAutomata: (
         name: node.data.name,
         render: nodeData[node.id]?.render,
         blocks: nodeData[node.id]?.blocks,
-        inputs: transformChoicesToValues(nodeData[node.id]?.input || {}),
-        outputs: nodeData[node.id]?.output,
+        inputs: transformChoicesToValues(nodeData[node.id]?.inputs || {}),
+        outputs: nodeData[node.id]?.outputs,
         transitions,
       } as State;
     });
@@ -138,18 +138,18 @@ export const genAutomata: (
 };
 
 export const getDelPathInfo = (
-  input: TValues,
+  inputs: TValues,
   id: string,
   basePath = '',
 ): Record<string, string | undefined> => {
-  if (typeof input !== 'object' || input === null) return {};
+  if (typeof inputs !== 'object' || inputs === null) return {};
 
   const refReg = new RegExp(`{{.*(${id})(\\.)(.*)}}`, 'g');
   const rawReg = new RegExp(`{{.*(${id})(.*)}}`, 'g');
 
   const paths: Record<string, string | undefined> = {};
 
-  Object.entries(input).forEach(([key, value]) => {
+  Object.entries(inputs).forEach(([key, value]) => {
     const currentPath = basePath ? `${basePath}.${key}` : key;
 
     if (typeof value === 'string' && rawReg.test(value)) {
@@ -223,7 +223,7 @@ export const getRefNodes: IGetInputNodesProps = ({
         value: id,
         label,
         children: Object.entries(
-          (nodeData?.[id]?.output as Record<string, any>) || {},
+          (nodeData?.[id]?.outputs as Record<string, any>) || {},
         )?.map(([key, { name }]) => {
           return {
             label: name,

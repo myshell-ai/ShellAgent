@@ -63,6 +63,8 @@ const VariableNameInput = (props: VariableSelectProps) => {
   );
   const { parent } = useFormEngineContext();
 
+  console.log('parent>>.', parent);
+
   const IconMode = ModeOptions.find(item => item.value === mode)?.icon!;
 
   const appBuilder = useInjection(AppBuilderModel);
@@ -80,12 +82,12 @@ const VariableNameInput = (props: VariableSelectProps) => {
       setValue('__changeKey__', value);
     } else {
       setValue(name, value);
-      if (parent?.startsWith('output.__context__') || !value) {
+      if (parent?.startsWith('outputs.__context__') || !value) {
         setValue('__changeKey__', uuid());
       }
     }
   };
-  const selectValue = parent?.replace('output.', '');
+  const selectValue = parent?.replace('outputs.', '');
 
   const onModeChange = (mode: string) => {
     setMode(mode);

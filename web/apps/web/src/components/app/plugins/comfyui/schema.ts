@@ -1,6 +1,6 @@
 import { ISchema, TValues } from '@shellagent/form-engine';
-import { isEmpty } from 'lodash-es';
 import { FieldModeEnum } from '@shellagent/shared/protocol/extend-config';
+import { isEmpty } from 'lodash-es';
 
 import { ENABLE_MIME } from '@/utils/file-types';
 

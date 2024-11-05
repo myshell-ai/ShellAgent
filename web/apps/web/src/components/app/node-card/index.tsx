@@ -67,7 +67,7 @@ const NodeCard: React.FC<
             display_name={display_name}
             name={name}
             id={id}
-            output={runtime_data?.output}>
+            outputs={runtime_data?.output}>
             <ContextMenu>{children}</ContextMenu>
           </SchemaProvider>
           {runtime_data?.node_status ? (

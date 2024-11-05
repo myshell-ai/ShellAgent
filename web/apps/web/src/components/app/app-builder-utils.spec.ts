@@ -2,6 +2,7 @@ import {
   refOptionsOutputSchema,
   scopesSchema,
 } from '@shellagent/shared/protocol/app-scope';
+
 import {
   convertNodeDataToState,
   convertRefOptsToCascaderOpts,

@@ -1,7 +1,7 @@
 import { ISchema } from '@shellagent/form-engine';
+import { FieldModeEnum } from '@shellagent/shared/protocol/extend-config';
 
 import { ENABLE_MIME } from '@/utils/file-types';
-import { FieldModeEnum } from '@shellagent/shared/protocol/extend-config';
 
 const startSchema: ISchema = {
   title: 'Start',
@@ -313,7 +313,7 @@ const stateConfigSchema: ISchema = {
   'x-title-size': 'h4',
   'x-class': 'space-y-3',
   properties: {
-    input: {
+    inputs: {
       type: 'object',
       title: 'Input',
       additionalProperties: {
@@ -880,7 +880,7 @@ const stateConfigSchema: ISchema = {
         draggable: true,
       },
     },
-    output: {
+    outputs: {
       type: 'object',
       title: 'Output',
       additionalProperties: {
