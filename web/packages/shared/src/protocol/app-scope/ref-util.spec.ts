@@ -11,7 +11,7 @@ import {
   renameStateOutput,
   removeNodeKey,
   removeRefOpts,
-  removeButton,
+  removeRefOptsPrefix,
 } from './ref-util';
 import { refsSchema } from './scope';
 
@@ -1323,7 +1323,7 @@ state#3
         },
       });
 
-      const ret = removeButton(refs, {
+      const ret = removeRefOptsPrefix(refs, {
         prefix: 'state_1.buttons.button_a.on_click',
       });
 
