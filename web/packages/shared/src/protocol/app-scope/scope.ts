@@ -49,3 +49,17 @@ export const refOptionsOutputSchema = z.object({
 });
 
 export type RefOptionsOutput = z.infer<typeof refOptionsOutputSchema>;
+
+export const refsSchema = z.record(
+  customKeySchema,
+  z.record(
+    z.string().describe('json path'),
+    z.object({
+      ui: z.array(z.string()),
+      raw: z.array(z.string()),
+      ref: z.string(),
+    }),
+  ),
+);
+
+export type Refs = z.infer<typeof refsSchema>;

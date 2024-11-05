@@ -7,6 +7,10 @@ import {
   RefType,
   getRefOptions,
   Scopes,
+  renameRefKey,
+  updateRefValue,
+  renameRefer,
+  deleteRefer,
 } from '@shellagent/shared/protocol/app-scope';
 import { injectable } from 'inversify';
 import { makeObservable, observable } from 'mobx';
@@ -29,13 +33,13 @@ import {
 
 @injectable()
 export class AppBuilderModel {
-  @observable variables: VariableProps | null = null;
-
   constructor() {
-    makeObservable(this);
+    // makeObservable(this);
   }
 
-  @observable scopes: Scopes | null = null;
+  scopes: Scopes | null = null;
+
+  refs: Record<string, string> = {};
 
   getRefOptions(
     stateName: CustomKey,
@@ -55,40 +59,30 @@ export class AppBuilderModel {
     this.scopes = convetNodeDataToScopes(nodeData, edges);
   }
 
-  onRefUpdate() {}
+  /*
+  addRef('state_2.ouput.untitled', 'state_1.untitled_1')
+  */
+  addRef(nodeDataKeyPath: string, refOptValuePath: string) {
+    this.refs[nodeDataKeyPath] = refOptValuePath;
+  }
 
-  updateNodeData(origName: string, name: string) {}
+  deleteRef(nodeDataKeyPath: string, refOptValuePath: string) {
+    delete this.refs[nodeDataKeyPath];
+  }
 
-  setState(name: string, state: State) {}
+  renameNodeDataKey(oldKey: string, newKey: string) {
+    this.refs = renameRefKey(this.refs, oldKey, newKey);
+  }
 
-  setVariables(
-    id: string,
-    eventKey: string | undefined,
-    deps: {
-      edges: IEdge;
-      nodes: INode;
-      nodeData: Record<string, TValues>;
-    },
-  ) {
-    const input = getInput(deps.nodeData, id);
-    const output = getOutput(deps.nodeData, id);
-    const tasks = getTasks(deps.nodeData, id);
-    const context = getContext(deps.nodeData);
+  updateNodeDataValue(nodeDataKey: string, newValue: string) {
+    this.refs = updateRefValue(this.refs, nodeDataKey, newValue);
+  }
 
-    const states = getRefNodes({
-      edges: deps.edges,
-      id,
-      nodes: deps.nodes,
-      nodeData: deps.nodeData,
-    });
-    const payloads = getPayloads(deps.nodeData, id, eventKey);
-    this.variables = {
-      input,
-      output,
-      context,
-      states,
-      tasks,
-      payloads,
-    };
+  renameRefOptValue(origRefOptVal: string, newRefOptVal: string) {
+    this.refs = renameRefer(this.refs, origRefOptVal, newRefOptVal);
+  }
+
+  deleteRefOptValue(refOptVal: string) {
+    deleteRefer(this.refs, refOptVal);
   }
 }

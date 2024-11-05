@@ -1,5 +1,6 @@
 import { scopesSchema, stateSchema } from './protocol';
 import {
+  deleteRefer,
   findAncestors,
   getRefOptions,
   renameRefer,
@@ -892,6 +893,36 @@ state#3
           "state_2.message.text": "state_1.outputs.output1",
         }
       `);
+    });
+
+    it('delete refer', () => {
+      const refs = {
+        'state_1.outputs.outputs1-1': 'context.global_111',
+        'state_1.outputs.outputs21': 'context.global_111',
+        'state_2.message.text': 'state_1.outputs.output1',
+      };
+
+      deleteRefer(refs, 'context.global_111');
+
+      expect(refs).toMatchInlineSnapshot(`
+        {
+          "state_2.message.text": "state_1.outputs.output1",
+        }
+      `);
+    });
+
+    it('toggle ref', () => {
+      const refs = {
+        'state_1.render.text': 'context.global_111',
+        'state_1.render.text[context.global_111]': 'context.global_111',
+        'state_1.render.text[input_a]': 'input_a',
+      };
+
+      function toggleMode(
+        refs: Record<string, string>,
+        refKey: string,
+        mode: 'code' | 'ref' | 'ui',
+      ) {}
     });
   });
 });

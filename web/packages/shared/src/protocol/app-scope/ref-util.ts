@@ -4,6 +4,7 @@ import {
   Edges,
   RefOptionsOutput,
   RefType,
+  Refs,
   refOptionsOutputSchema,
 } from './scope';
 import { isEmpty, mapKeys, mapValues, isNumber } from 'lodash-es';
@@ -146,7 +147,7 @@ export function convertRefsToAncestors(refOpts: RefOptionsOutput) {
 }
 
 export function renameRefKey(
-  refs: Record<string, string>,
+  refs: Refs,
   oldKey: string,
   newKey: string,
 ): Record<string, string> {
@@ -156,7 +157,7 @@ export function renameRefKey(
 }
 
 export function updateRefValue(
-  refs: Record<string, string>,
+  refs: Refs,
   key: string,
   newValue: string,
 ): Record<string, string> {
@@ -165,11 +166,17 @@ export function updateRefValue(
 }
 
 export function renameRefer(
-  refs: Record<string, string>,
+  refs: Refs,
   origRefer: string,
   newRefer: string,
 ): Record<string, string> {
   return mapValues(refs, value => {
     return value === origRefer ? newRefer : value;
+  });
+}
+
+export function deleteRefer(refs: Refs, refer: string) {
+  Object.keys(refs).forEach(k => {
+    if (refs[k] === refer) delete refs[k];
   });
 }
