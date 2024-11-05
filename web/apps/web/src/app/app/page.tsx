@@ -5,14 +5,14 @@ import { Heading, Text, Spinner } from '@shellagent/ui';
 import { useScroll } from 'ahooks';
 import { useEffect, useRef } from 'react';
 import useSWR from 'swr';
+import { useInjection } from 'inversify-react';
 
 import { CreateDialog } from '@/components/home/create-dialog';
 import { FlowCard } from '@/components/home/flow-card';
 import { fetchList } from '@/services/home';
 import { cn } from '@/utils/cn';
-
-import { useInjection } from 'inversify-react';
 import { SettingsModel } from '@/components/settings/settings.model';
+import { ImportDialog } from '@/components/home/import-dialog';
 
 export default function AppPage() {
   const contentRef = useRef(null);
@@ -48,6 +48,7 @@ export default function AppPage() {
         <Heading size="h2">App</Heading>
         <div className="flex gap-x-2">
           <CreateDialog onSuccess={onRefresh} type="app" />
+          <ImportDialog onSuccess={onRefresh} type="app" />
         </div>
       </div>
       <main className="w-full h-full overflow-auto" ref={contentRef}>
