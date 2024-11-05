@@ -131,6 +131,7 @@ export function convertRefOptsToCascaderOpts(
     if (children.length > 0) {
       globalOptions.push({
         label: val2?.display_name,
+        value: val2?.display_name,
         children,
       });
     }
@@ -152,6 +153,7 @@ export function convertRefOptsToCascaderOpts(
       ([buttonKey, button]) => {
         return {
           label: buttonKey,
+          value: buttonKey,
           children: Object.entries(button?.payload || {}).map(
             ([payloadKey, payload]) => {
               return {
@@ -167,6 +169,7 @@ export function convertRefOptsToCascaderOpts(
 
     localOptions.push({
       label: 'Payload',
+      value: 'Payload',
       children: buttonOptions,
     });
   }
@@ -175,6 +178,7 @@ export function convertRefOptsToCascaderOpts(
   if (!isEmpty(refOptions.local.inputs.variables)) {
     localOptions.push({
       label: 'Input',
+      value: 'Input',
       children: Object.entries(refOptions.local.inputs.variables).map(
         ([variableKey, variable]) => ({
           label: variable?.display_name || variableKey,
@@ -189,6 +193,7 @@ export function convertRefOptsToCascaderOpts(
   if (!isEmpty(refOptions.local.outputs.variables)) {
     localOptions.push({
       label: 'Output',
+      value: 'Output',
       children: Object.entries(refOptions.local.outputs.variables).map(
         ([variableKey, variable]) => ({
           label: variable.display_name,
@@ -203,6 +208,7 @@ export function convertRefOptsToCascaderOpts(
   if (refOptions.local.tasks.length > 0) {
     const taskOptions = refOptions.local.tasks.map(task => ({
       label: task?.display_name || task.name,
+      value: task?.display_name || task.name,
       children: Object.entries(task.variables).map(
         ([variableKey, variable]) => ({
           label: variableKey,
@@ -214,6 +220,7 @@ export function convertRefOptsToCascaderOpts(
 
     localOptions.push({
       label: 'Task',
+      value: 'Task',
       children: taskOptions,
     });
   }
