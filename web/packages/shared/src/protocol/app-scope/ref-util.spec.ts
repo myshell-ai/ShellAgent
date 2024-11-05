@@ -1365,5 +1365,39 @@ state#3
         }
       `);
     });
+
+    it('remove ref opts because of task reordered', () => {
+      const refs = refsSchema.parse({
+        state_3: {
+          'tasks.task_3': {
+            ref: 'state_3.tasks.task_1.output_a',
+            ui: [
+              'state_3.tasks.task_2.output_a',
+              'state_3.tasks.task_1.output_a',
+            ],
+            raw: [
+              'state_3.tasks.task_1.output_a',
+              'state_3.tasks.task_1.output_a',
+            ],
+          },
+        },
+      });
+
+      const ret = removeRefOptsPrefix(refs, {
+        prefix: ['state_3.tasks.task_1'],
+      });
+
+      expect(ret).toMatchInlineSnapshot(`
+        {
+          "state_3": {
+            "tasks.task_3": {
+              "ui": [
+                "state_3.tasks.task_2.output_a",
+              ],
+            },
+          },
+        }
+      `);
+    });
   });
 });

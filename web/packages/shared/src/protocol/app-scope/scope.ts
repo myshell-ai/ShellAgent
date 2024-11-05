@@ -161,9 +161,6 @@ export const handleRefSceneSchema = z.union([
     params: removeRefOptsPrefixScheam,
   }),
   z.object({
-    scene: z.literal('remove_edge').describe('shortcut of remove_ref_opt'),
-  }),
-  z.object({
     scene: z.literal('reorder_task'),
   }),
 ]);
