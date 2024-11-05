@@ -128,10 +128,12 @@ export function convertRefOptsToCascaderOpts(
       }),
     );
 
-    globalOptions.push({
-      label: val2?.display_name,
-      children,
-    });
+    if (children.length > 0) {
+      globalOptions.push({
+        label: val2?.display_name,
+        children,
+      });
+    }
   }
 
   if (globalOptions.length > 0) {
@@ -164,7 +166,7 @@ export function convertRefOptsToCascaderOpts(
     );
 
     localOptions.push({
-      label: 'buttons',
+      label: 'Payload',
       children: buttonOptions,
     });
   }
@@ -172,7 +174,7 @@ export function convertRefOptsToCascaderOpts(
   // Local inputs
   if (!isEmpty(refOptions.local.inputs.variables)) {
     localOptions.push({
-      label: 'inputs',
+      label: 'Input',
       children: Object.entries(refOptions.local.inputs.variables).map(
         ([variableKey, variable]) => ({
           label: variable?.display_name || variableKey,
@@ -186,7 +188,7 @@ export function convertRefOptsToCascaderOpts(
   // Local outputs
   if (!isEmpty(refOptions.local.outputs.variables)) {
     localOptions.push({
-      label: 'outputs',
+      label: 'Output',
       children: Object.entries(refOptions.local.outputs.variables).map(
         ([variableKey, variable]) => ({
           label: variable.display_name,
@@ -211,7 +213,7 @@ export function convertRefOptsToCascaderOpts(
     }));
 
     localOptions.push({
-      label: 'tasks',
+      label: 'Task',
       children: taskOptions,
     });
   }

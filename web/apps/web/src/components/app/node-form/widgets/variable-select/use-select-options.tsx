@@ -1,5 +1,7 @@
 import { useFormEngineContext } from '@shellagent/form-engine';
+import { CustomEventName } from '@shellagent/pro-config';
 import { useInjection } from 'inversify-react';
+import { useAppState } from '@/stores/app/use-app-state';
 import { AppBuilderModel } from '@/components/app/app-builder.model';
 import { RefType, refTypeSchema } from '@shellagent/shared/protocol/app-scope';
 import { useSchemaContext } from '@/stores/app/schema-provider';
@@ -9,6 +11,7 @@ export const useSelectOptions = (name?: string) => {
   const { parent } = useFormEngineContext();
   const stateId = useSchemaContext(state => state.id);
   const appBuilder = useInjection(AppBuilderModel);
+  const currentEdegData = useAppState(state => state.currentEdegData);
 
   const { refType, taskIndex } = useMemo(() => {
     let refType: RefType | null = null;
@@ -36,6 +39,7 @@ export const useSelectOptions = (name?: string) => {
     stateId as Lowercase<string>,
     refType as RefType,
     taskIndex,
+    currentEdegData?.event_key as CustomEventName | undefined,
   );
 
   return refOptions;

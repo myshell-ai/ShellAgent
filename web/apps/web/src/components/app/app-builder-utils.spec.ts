@@ -512,7 +512,7 @@ describe('app builder utils', () => {
                   "value": "{{input_b}}",
                 },
               ],
-              "label": "inputs",
+              "label": "Input",
             },
             {
               "children": [
@@ -522,7 +522,7 @@ describe('app builder utils', () => {
                   "value": "{{output_b}}",
                 },
               ],
-              "label": "outputs",
+              "label": "Output",
             },
             {
               "children": [
@@ -547,7 +547,7 @@ describe('app builder utils', () => {
                   "label": "Task 2",
                 },
               ],
-              "label": "tasks",
+              "label": "Task",
             },
           ],
           "label": "current",

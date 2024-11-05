@@ -1,19 +1,19 @@
-import { CustomKey } from '@shellagent/pro-config';
-import { Buttons, Scopes, Task, Variables } from './protocol';
+import { CustomKey, CustomEventName } from '@shellagent/pro-config';
+import { Scopes } from './protocol';
 import {
   Edges,
   RefOptionsOutput,
   RefType,
   refOptionsOutputSchema,
 } from './scope';
-import { isEmpty, mapKeys, mapValues, isNumber } from 'lodash-es';
+import { isEmpty, mapKeys, mapValues, isNumber, get, pickBy } from 'lodash-es';
 
 export function getRefOptions(
   scopes: Scopes,
-  // edges: Edges,
   stateName: CustomKey,
   refType: RefType,
   taskIndex?: number,
+  eventKey?: CustomEventName,
 ): RefOptionsOutput {
   const ret: RefOptionsOutput = {
     global: {
@@ -72,7 +72,10 @@ export function getRefOptions(
     const state = scopes.scopes.states[stateName];
     if (state == null) throw new Error(`cannot find ${stateName} in scopes`);
 
-    ret.local.buttons = state.children.outputs.render.buttons;
+    const buttons = state.children.outputs.render.buttons;
+    if (eventKey) {
+      ret.local.buttons = pickBy(buttons, button => button?.event === eventKey);
+    }
   }
 
   function assignAncestralStatesOutput() {
