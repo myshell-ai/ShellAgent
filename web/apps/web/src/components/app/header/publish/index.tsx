@@ -1,22 +1,24 @@
 import {
-  ChevronDownIcon,
   ArrowUpRightIcon,
   ArrowUturnLeftIcon,
+  ChevronDownIcon,
+  XMarkIcon,
 } from '@heroicons/react/24/outline';
-import { IFlow, ReactFlowInstance } from '@shellagent/flow-engine';
+import { IFlow } from '@shellagent/flow-engine';
 import {
   Button,
   Heading,
   Input,
   Text,
-  Popover,
   Separator,
   TooltipProvider,
   Tooltip,
   TooltipTrigger,
   TooltipContent,
   ScrollArea,
+  SaveIcon,
 } from '@shellagent/ui';
+import { Dropdown } from 'antd';
 import { useRequest, useBoolean } from 'ahooks';
 import dayjs from 'dayjs';
 import { isEmpty } from 'lodash-es';
@@ -142,6 +144,36 @@ export default function Publish({
     },
   });
 
+  const { run: saveData, loading: saveLoading } = useRequest(saveApp, {
+    manual: true,
+    onSuccess: result => {
+      if (result.success) {
+        toast.success('App Saved', {
+          position: 'top-center',
+          autoClose: 1000,
+          hideProgressBar: true,
+          pauseOnHover: true,
+          closeButton: false,
+        });
+      }
+    },
+    onError: error => {
+      toast.error(error.message);
+    },
+  });
+
+  const handleSave = useCallback(() => {
+    const reactflow = flowInstance?.toObject() as IFlow;
+    if (!isEmpty(reactflow)) {
+      saveData({
+        app_id,
+        reactflow,
+        automata: genAutomata(reactflow, nodeData),
+        config,
+      });
+    }
+  }, [flowInstance, nodeData, app_id, saveData, config]);
+
   const handleRelease = useCallback(async () => {
     const reactflow = flowInstance?.toObject() as IFlow;
     if (!isEmpty(reactflow)) {
@@ -180,25 +212,34 @@ export default function Publish({
   return (
     <div>
       {hiddenOperation ? (
-        <Button
-          disabled={loading}
-          loading={restoreLoading}
-          onClick={handleRestore}
-          className="w-28 px-8 ml-3"
-          size="md"
-          icon={ArrowUturnLeftIcon}>
-          Restore
-        </Button>
+        <>
+          <Link href={`${window.location.pathname}?id=${app_id}`}>
+            <Button
+              className="w-28 px-8 ml-3"
+              size="md"
+              color="default"
+              icon={XMarkIcon}>
+              Cancel
+            </Button>
+          </Link>
+          <Button
+            disabled={loading}
+            loading={restoreLoading}
+            onClick={handleRestore}
+            className="w-28 px-8 ml-3"
+            size="md"
+            icon={ArrowUturnLeftIcon}>
+            Restore
+          </Button>
+        </>
       ) : (
-        <Popover
-          openChangeCallback={onOpenChange}
-          className="w-96"
-          open={showPublishPopover}
-          asChild
-          content={
-            <div>
+        <Dropdown.Button
+          // open={showPublishPopover}
+          onOpenChange={onOpenChange}
+          dropdownRender={() => (
+            <div className="w-80 text-xs mx-4 p-3 text-left rounded-lg border border-opaque shadow-modal-default outline-none data-[state=open]:animate-in [&[data-state=open]>span]:animate-none data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 bg-surface-search-field text-subtle">
               <div className="flex flex-col gap-3">
-                <Heading size="h4">Publish Version</Heading>
+                <Heading size="h4">Version</Heading>
                 <Input
                   placeholder="please enter version name"
                   value={versionName}
@@ -206,13 +247,23 @@ export default function Publish({
                   className="col-span-3"
                   onChange={e => setVersionName(e.target.value)}
                 />
-                <Button
-                  onClick={handleRelease}
-                  size="md"
-                  className="w-full"
-                  loading={releaseLoading}>
-                  Submit
-                </Button>
+                {versionName ? (
+                  <Button
+                    onClick={handleRelease}
+                    size="md"
+                    className="w-full"
+                    loading={releaseLoading}>
+                    Save As
+                  </Button>
+                ) : (
+                  <Button
+                    onClick={handleSave}
+                    size="md"
+                    className="w-full"
+                    loading={saveLoading}>
+                    Save
+                  </Button>
+                )}
               </div>
               <Separator className="my-3" />
               <Heading size="h4">History Versions</Heading>
@@ -235,10 +286,10 @@ export default function Publish({
                             {`${item.version_name}(current)`}
                           </Text>
                           {/* {autoSavedTime && !version_name ? (
-                            <Text size="sm" color="subtlest">
-                              Updated {dayjs(autoSavedTime).fromNow()}
-                            </Text>
-                          ) : null} */}
+                          <Text size="sm" color="subtlest">
+                            Updated {dayjs(autoSavedTime).fromNow()}
+                          </Text>
+                        ) : null} */}
                         </div>
                       );
                     }
@@ -276,17 +327,25 @@ export default function Publish({
                 ) : null}
               </ScrollArea>
             </div>
-          }>
-          <Button
-            disabled={loading}
-            size="md"
-            loading={releaseLoading}
-            icon={ChevronDownIcon}
-            className="w-28 px-8 ml-3"
-            onClick={() => publishPopoverActions.setTrue()}>
-            Publish
-          </Button>
-        </Popover>
+          )}
+          buttonsRender={() => {
+            return [
+              <Button
+                size="md"
+                className="w-20 !rounded-r-none ml-3"
+                loading={saveLoading}
+                onClick={handleSave}
+                icon={SaveIcon}>
+                Save
+              </Button>,
+              <Button
+                size="md"
+                className="w-8 border-l border-surface-primary-hovered !rounded-l-none"
+                icon={ChevronDownIcon}
+              />,
+            ];
+          }}
+        />
       )}
     </div>
   );

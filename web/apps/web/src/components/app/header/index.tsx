@@ -72,37 +72,6 @@ export const Header: React.FC = observer(() => {
     },
   });
 
-  const { run: saveData, loading: saveLoading } = useRequest(saveApp, {
-    manual: true,
-    onSuccess: result => {
-      if (result.success) {
-        toast.success('App Saved', {
-          position: 'top-center',
-          autoClose: 1000,
-          hideProgressBar: true,
-          pauseOnHover: true,
-          closeButton: false,
-        });
-      }
-    },
-    onError: error => {
-      toast.error(error.message);
-    },
-  });
-
-  const handleSave = useCallback(() => {
-    const reactflow = flowInstance?.toObject() as IFlow;
-
-    if (!isEmpty(reactflow)) {
-      saveData({
-        app_id: id,
-        reactflow,
-        automata: genAutomata(reactflow, nodeData),
-        config,
-      });
-    }
-  }, [flowInstance, nodeData, id, saveData, config]);
-
   const handleRun = useCallback(async () => {
     const reactflow = flowInstance?.toObject() as IFlow;
     const automata = genAutomata(reactflow, nodeData);
@@ -185,17 +154,6 @@ export const Header: React.FC = observer(() => {
           variant="outline">
           Run
         </Button>
-        {!version_name ? (
-          <Button
-            onClick={handleSave}
-            loading={saveLoading}
-            className="w-28 px-8 border border-default shadow-button-primary1 ml-3"
-            size="md"
-            color="default"
-            icon={SaveIcon}>
-            Save
-          </Button>
-        ) : null}
         <Publish
           app_id={id}
           version_name={version_name}
