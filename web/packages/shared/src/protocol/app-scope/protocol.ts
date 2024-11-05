@@ -65,7 +65,6 @@ export const variableSchema = z
   .object({
     type: variableTypeSchema,
     display_name: z.string(),
-    // value: z.string()
   })
   .strict();
 
@@ -136,21 +135,6 @@ export const customEventSchema = z
       });
     }
   }) satisfies z.Schema<CustomEventName>;
-
-// FIX: Currently, ⁠variables should not contain a value as role of a subview.
-// But the root issue is that type and data info are mixed within the subview.
-// This should be refactored in Q4.
-// export const taskVariableSchema = z
-//   .object({
-//     type: z.literal('task'),
-//     // value: z.union([variableSchema, z.string()]),
-//   })
-//   .strict();
-
-// export const taskVariablesSchema = z.record(
-//   customKeySchema,
-//   taskVariableSchema,
-// );
 
 export const outputContextNameSchema = z
   .custom<`context.${CustomKey}`>()
@@ -228,21 +212,19 @@ export const stateSchema = z
 
 export type State = z.infer<typeof stateSchema>;
 
-export const scopesSchema = z
-  .object({
-    scopes: z.object({
-      context: z.object({
-        variables: variablesSchema,
-      }),
-      edges: z.array(
-        z.object({
-          target: z.string(),
-          source: z.string(),
-        }),
-      ),
-      states: z.record(customKeySchema, stateSchema),
+export const scopesSchema = z.object({
+  scopes: z.object({
+    context: z.object({
+      variables: variablesSchema,
     }),
-  })
-  .describe('All states in a graph includes start context');
+    edges: z.array(
+      z.object({
+        target: z.string(),
+        source: z.string(),
+      }),
+    ),
+    states: z.record(customKeySchema, stateSchema),
+  }),
+});
 
 export type Scopes = z.infer<typeof scopesSchema>;
