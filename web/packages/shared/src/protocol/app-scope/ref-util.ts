@@ -501,7 +501,10 @@ export function hanldeRefScene(refs: Refs, evt: HandleRefSceneEvent) {
     case 'remove_ref_opts_prefix':
       return removeRefOptsPrefix(refs, evt.params);
 
+    case 'remove_edge':
+      return removeEdge(refs, evt.params);
     default:
+      // @ts-expect-error
       throw new Error(`Not implemented, ${evt.scene}`);
   }
 }
