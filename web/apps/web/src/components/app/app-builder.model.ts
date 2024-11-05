@@ -1,7 +1,8 @@
 import { IEdge, INode } from '@shellagent/flow-engine';
 import { TValues } from '@shellagent/form-engine';
-import { CustomKey } from '@shellagent/pro-config';
+import { CustomKey, CustomEventName } from '@shellagent/pro-config';
 import {
+  State,
   RefType,
   getRefOptions,
   Scopes,
@@ -13,14 +14,6 @@ import { injectable } from 'inversify';
 import { makeObservable, observable } from 'mobx';
 
 import { getRefNodes } from '@/stores/app/utils/data-transformer';
-import {
-  getContext,
-  getInput,
-  getOutput,
-  getPayloads,
-  getTasks,
-  VariableProps,
-} from '@/stores/app/variable-provider';
 
 import {
   CascaderOption,
@@ -42,11 +35,18 @@ export class AppBuilderModel {
     stateName: CustomKey,
     refType: RefType,
     taskIndex?: number,
+    eventKey?: CustomEventName,
   ): CascaderOption[] {
     if (this.scopes == null) {
       return [];
     }
-    const refOpts = getRefOptions(this.scopes, stateName, refType, taskIndex);
+    const refOpts = getRefOptions(
+      this.scopes,
+      stateName,
+      refType,
+      taskIndex,
+      eventKey,
+    );
 
     const cascaderOpts = convertRefOptsToCascaderOpts(refOpts);
     return cascaderOpts;

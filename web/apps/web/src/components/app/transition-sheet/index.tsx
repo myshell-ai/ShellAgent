@@ -15,7 +15,6 @@ import NodeForm from '@/components/app/node-form';
 import { AppBuilderChatModel } from '@/components/chat/app-builder-chat.model';
 import { useAppState } from '@/stores/app/use-app-state';
 import { transitionConfigSchema } from '@/stores/app/utils/schema';
-import { VariableProvider } from '@/stores/app/variable-provider';
 import { generateUUID } from '@/utils/common-helper';
 import { SchemaProvider } from '@/stores/app/schema-provider';
 
@@ -156,14 +155,12 @@ const TransitionSheet: React.FC<{}> = () => {
         type={NodeTypeEnum.state}
         name=""
         display_name="">
-        <VariableProvider id={source} eventKey={currentEdegData?.event_key}>
-          <NodeForm
-            key={sourceHandle}
-            schema={transitionConfigSchema}
-            values={values}
-            onChange={handleChange}
-          />
-        </VariableProvider>
+        <NodeForm
+          key={sourceHandle}
+          schema={transitionConfigSchema}
+          values={values}
+          onChange={handleChange}
+        />
       </SchemaProvider>
     </Drawer>
   );

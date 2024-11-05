@@ -26,7 +26,6 @@ import { useAppStore } from '@/stores/app/app-provider';
 import { SchemaProvider } from '@/stores/app/schema-provider';
 import { useAppState } from '@/stores/app/use-app-state';
 import { stateConfigSchema } from '@/stores/app/utils/schema';
-import { VariableProvider } from '@/stores/app/variable-provider';
 
 import emitter, { EventType, useEventEmitter } from '../emitter';
 
@@ -243,40 +242,38 @@ const StateConfigSheet: React.FC<{}> = () => {
       open={stateConfigSheetOpen}
       autoFocus={false}
       push={false}>
-      <VariableProvider id={currentStateId}>
-        <SchemaProvider
-          type={NodeTypeEnum.state}
-          display_name={selectedNode?.data.display_name}
-          name={selectedNode?.data.name}
-          id={currentStateId}>
-          <DndProvider backend={HTML5Backend}>
-            <NodeForm
-              key={formKey}
-              loading={loading.getAutomata || loading.getReactFlow}
-              schema={stateConfigSchema}
-              values={nodeData[currentStateId]}
-              onChange={onChange}
-              onModeChange={onModeChange}
-              ref={nodeFormRef}
-              modeMap={fieldsModeMap?.[currentStateId] || {}}
-            />
-            <Drawer
-              open={insideSheetOpen}
-              height="95%"
-              placement="bottom"
-              className="rounded-lg"
-              closable
-              getContainer={false}
-              onClose={() =>
-                setInsideSheetOpen({ stateId: currentStateId, open: false })
-              }
-              autoFocus={false}
-              {...drawerProps}>
-              {drawerProps.children}
-            </Drawer>
-          </DndProvider>
-        </SchemaProvider>
-      </VariableProvider>
+      <SchemaProvider
+        type={NodeTypeEnum.state}
+        display_name={selectedNode?.data.display_name}
+        name={selectedNode?.data.name}
+        id={currentStateId}>
+        <DndProvider backend={HTML5Backend}>
+          <NodeForm
+            key={formKey}
+            loading={loading.getAutomata || loading.getReactFlow}
+            schema={stateConfigSchema}
+            values={nodeData[currentStateId]}
+            onChange={onChange}
+            onModeChange={onModeChange}
+            ref={nodeFormRef}
+            modeMap={fieldsModeMap?.[currentStateId] || {}}
+          />
+          <Drawer
+            open={insideSheetOpen}
+            height="95%"
+            placement="bottom"
+            className="rounded-lg"
+            closable
+            getContainer={false}
+            onClose={() =>
+              setInsideSheetOpen({ stateId: currentStateId, open: false })
+            }
+            autoFocus={false}
+            {...drawerProps}>
+            {drawerProps.children}
+          </Drawer>
+        </DndProvider>
+      </SchemaProvider>
     </Drawer>
   );
 };

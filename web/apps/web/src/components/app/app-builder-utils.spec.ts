@@ -472,6 +472,7 @@ describe('app builder utils', () => {
                   "value": "{{context.global_a}}",
                 },
               ],
+              "value": "Context",
               "label": "Context",
             },
             {
@@ -482,6 +483,7 @@ describe('app builder utils', () => {
                   "value": "{{state_1.output_a}}",
                 },
               ],
+              "value": "State#1",
               "label": "State#1",
             },
           ],
@@ -500,8 +502,10 @@ describe('app builder utils', () => {
                     },
                   ],
                   "label": "button_a",
+                  "value": "button_a",
                 },
               ],
+              "value": "buttons",
               "label": "buttons",
             },
             {
@@ -512,7 +516,8 @@ describe('app builder utils', () => {
                   "value": "{{input_b}}",
                 },
               ],
-              "label": "inputs",
+              "value": "Input",
+              "label": "Input",
             },
             {
               "children": [
@@ -522,7 +527,8 @@ describe('app builder utils', () => {
                   "value": "{{output_b}}",
                 },
               ],
-              "label": "outputs",
+              "value": "Output",
+              "label": "Output",
             },
             {
               "children": [
@@ -534,6 +540,7 @@ describe('app builder utils', () => {
                       "value": "{{task1.output_a}}",
                     },
                   ],
+                  "value": "Task 1",
                   "label": "Task 1",
                 },
                 {
@@ -544,10 +551,12 @@ describe('app builder utils', () => {
                       "value": "{{task2.output_a}}",
                     },
                   ],
+                  "value": "Task 2",
                   "label": "Task 2",
                 },
               ],
-              "label": "tasks",
+              "value": "Task",
+              "label": "Task",
             },
           ],
           "label": "current",

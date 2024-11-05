@@ -128,10 +128,13 @@ export function convertRefOptsToCascaderOpts(
       }),
     );
 
-    globalOptions.push({
-      label: val2?.display_name,
-      children,
-    });
+    if (children.length > 0) {
+      globalOptions.push({
+        label: val2?.display_name,
+        value: val2?.display_name,
+        children,
+      });
+    }
   }
 
   if (globalOptions.length > 0) {
@@ -148,6 +151,7 @@ export function convertRefOptsToCascaderOpts(
       ([buttonKey, button]) => {
         return {
           label: buttonKey,
+          value: buttonKey,
           children: Object.entries(button?.payload || {}).map(
             ([payloadKey, payload]) => {
               return {
@@ -162,14 +166,16 @@ export function convertRefOptsToCascaderOpts(
     );
 
     localOptions.push({
-      label: 'buttons',
+      label: 'Payload',
+      value: 'Payload',
       children: buttonOptions,
     });
   }
 
   if (!isEmpty(refOpts.local.inputs.variables)) {
     localOptions.push({
-      label: 'inputs',
+      label: 'Input',
+      value: 'Input',
       children: Object.entries(refOpts.local.inputs.variables).map(
         ([variableKey, variable]) => ({
           label: variable?.display_name || variableKey,
@@ -182,7 +188,8 @@ export function convertRefOptsToCascaderOpts(
 
   if (!isEmpty(refOpts.local.outputs.variables)) {
     localOptions.push({
-      label: 'outputs',
+      label: 'Output',
+      value: 'Output',
       children: Object.entries(refOpts.local.outputs.variables).map(
         ([variableKey, variable]) => ({
           label: variable.display_name,
@@ -196,6 +203,7 @@ export function convertRefOptsToCascaderOpts(
   if (refOpts.local.tasks.length > 0) {
     const taskOptions = refOpts.local.tasks.map(task => ({
       label: task?.display_name || task.name,
+      value: task?.display_name || task.name,
       children: Object.entries(task.variables).map(
         ([variableKey, variable]) => ({
           label: variableKey,
@@ -206,7 +214,8 @@ export function convertRefOptsToCascaderOpts(
     }));
 
     localOptions.push({
-      label: 'tasks',
+      label: 'Task',
+      value: 'Task',
       children: taskOptions,
     });
   }

@@ -39,6 +39,7 @@ const FlowHeader: React.FC<{ appId: string }> = ({ appId }) => {
   }));
 
   useEffect(() => {
+    (window as any).nodeData = nodeData;
     appBuilder.updateScopes(nodeData, edges);
   }, [nodeData, edges]);
 

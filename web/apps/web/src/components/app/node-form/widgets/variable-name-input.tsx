@@ -19,7 +19,11 @@ import {
   Text,
   useFormContext,
 } from '@shellagent/ui';
-import { TFieldMode, useFormEngineContext } from '@shellagent/form-engine';
+import { useFormEngineContext } from '@shellagent/form-engine';
+import {
+  FieldModeEnum,
+  FieldMode,
+} from '@shellagent/shared/protocol/extend-config';
 
 import { uuid } from '@shellagent/flow-engine';
 import { useInjection } from 'inversify-react';
@@ -36,17 +40,17 @@ interface VariableSelectProps extends ISelectProps {
 
 const ModeOptions: Array<{
   label: string;
-  value: TFieldMode;
+  value: FieldMode;
   icon: HeroIcon;
 }> = [
   {
     label: 'Custom Output Name',
-    value: 'ui',
+    value: FieldModeEnum.Enum.ui,
     icon: RectangleStackIcon,
   },
   {
     label: 'Select Output',
-    value: 'ref',
+    value: FieldModeEnum.Enum.ref,
     icon: Square3Stack3DIcon,
   },
 ];
@@ -54,7 +58,9 @@ const ModeOptions: Array<{
 const VariableNameInput = (props: VariableSelectProps) => {
   const { name, value } = props;
   const { setValue, getValues } = useFormContext();
-  const [mode, setMode] = useState(getValues('name_mode') || 'ui');
+  const [mode, setMode] = useState(
+    getValues('name_mode') || FieldModeEnum.Enum.ui,
+  );
   const { parent } = useFormEngineContext();
 
   const IconMode = ModeOptions.find(item => item.value === mode)?.icon!;
@@ -90,7 +96,7 @@ const VariableNameInput = (props: VariableSelectProps) => {
   return (
     <div className="w-full flex items-center gap-x-1.5">
       <div className="grow">
-        {mode === 'ref' ? (
+        {mode === FieldModeEnum.Enum.ref ? (
           <Select
             onValueChange={onValueChange}
             options={options}

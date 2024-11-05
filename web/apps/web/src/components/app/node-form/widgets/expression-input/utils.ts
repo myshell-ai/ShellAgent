@@ -10,7 +10,7 @@ export const flattenOptions = (options: CascaderOption[]): CascaderOption[] => {
   const flatten = (opts: CascaderOption[], parentLabel: string = '') => {
     opts.forEach(option => {
       let label = parentLabel;
-      if (option.label) {
+      if (option.value) {
         label = parentLabel ? `${parentLabel}.${option.label}` : option.label;
       }
       if (option.children && option.children.length > 0) {

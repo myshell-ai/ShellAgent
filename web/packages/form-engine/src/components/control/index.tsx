@@ -18,6 +18,10 @@ import {
 } from '@shellagent/ui';
 import { isEmpty, omit } from 'lodash-es';
 import React, { useMemo, useRef, useState } from 'react';
+import {
+  FieldMode,
+  FieldModeEnum,
+} from '@shellagent/shared/protocol/extend-config';
 
 import { ISchema } from '../../types';
 import { cn } from '../../utils/cn';
@@ -29,8 +33,6 @@ import { useFormEngineContext } from '../provider';
 interface IControlProps {
   name: string;
 }
-
-type Mode = 'raw' | 'ui' | 'ref';
 
 /**
  * @param props
@@ -83,18 +85,18 @@ const Control: React.FC<IControlProps> = props => {
 
   const mode = useMemo(() => {
     if (!xRaw) {
-      return 'ui';
+      return FieldModeEnum.Enum.ui;
     }
     if (modeMap?.[name]) {
       return modeMap?.[name];
     }
     if (refReg.test(getValues(name))) {
-      return 'ref';
+      return FieldModeEnum.Enum.ref;
     }
     if (rawReg.test(getValues(name))) {
-      return 'raw';
+      return FieldModeEnum.Enum.raw;
     }
-    return xRawDefault || 'ui';
+    return xRawDefault || FieldModeEnum.Enum.ui;
   }, [modeMap, name, xRawDefault]);
 
   let titleControl: React.ReactElement<
@@ -106,8 +108,11 @@ const Control: React.FC<IControlProps> = props => {
     return null;
   }
 
-  const handleModeChange = (mode: Mode) => {
-    setValue(name, mode === 'ui' ? getDefaultValueBySchema(schema) : '');
+  const handleModeChange = (mode: FieldMode) => {
+    setValue(
+      name,
+      mode === FieldModeEnum.Enum.ui ? getDefaultValueBySchema(schema) : '',
+    );
     onModeChange?.(name, mode);
   };
 
@@ -155,9 +160,9 @@ const Control: React.FC<IControlProps> = props => {
   };
 
   const layout =
-    mode === 'raw'
+    mode === FieldModeEnum.Enum.raw
       ? 'Vertical'
-      : xLayout === 'Horizontal' || mode === 'ref'
+      : xLayout === 'Horizontal' || mode === FieldModeEnum.Enum.ref
       ? 'Horizontal'
       : undefined;
 
@@ -220,7 +225,7 @@ const Control: React.FC<IControlProps> = props => {
           const newField: { [key: string]: FieldValues } = {};
           const valuePropsName = xValuePropsName || 'value';
           const renderFormItem = () => {
-            if (mode === 'ref') {
+            if (mode === FieldModeEnum.Enum.ref) {
               return React.createElement(components.VariableSelect, {
                 triggerClassName: 'h-6',
                 ...passProps,
@@ -228,7 +233,7 @@ const Control: React.FC<IControlProps> = props => {
                 ...newField,
               });
             }
-            if (mode === 'raw') {
+            if (mode === FieldModeEnum.Enum.raw) {
               return React.createElement(components.ExpressionInput, {
                 ...passProps,
                 ...field,

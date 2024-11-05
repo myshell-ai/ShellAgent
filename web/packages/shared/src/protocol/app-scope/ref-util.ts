@@ -1,4 +1,4 @@
-import { CustomKey } from '@shellagent/pro-config';
+import { CustomKey, CustomEventName } from '@shellagent/pro-config';
 import { Scopes } from './protocol';
 import {
   changNodedataModeParamSchema,
@@ -17,7 +17,15 @@ import {
   renameStateOutputParamSchema,
   setNodedataKeyValParamSchema,
 } from './scope';
-import { isEmpty, isNumber, mapKeys, mapValues, omit, omitBy } from 'lodash-es';
+import {
+  isEmpty,
+  isNumber,
+  mapKeys,
+  mapValues,
+  omit,
+  omitBy,
+  pickBy,
+} from 'lodash-es';
 import { z } from 'zod';
 
 export function getRefOptions(
@@ -25,6 +33,7 @@ export function getRefOptions(
   stateName: CustomKey,
   refType: RefType,
   taskIndex?: number,
+  eventKey?: CustomEventName,
 ): RefOptionsOutput {
   const ret: RefOptionsOutput = {
     global: {
@@ -83,7 +92,10 @@ export function getRefOptions(
     const state = scopes.scopes.states[stateName];
     if (state == null) throw new Error(`cannot find ${stateName} in scopes`);
 
-    ret.local.buttons = state.children.outputs.render.buttons;
+    const buttons = state.children.outputs.render.buttons;
+    if (eventKey) {
+      ret.local.buttons = pickBy(buttons, button => button?.event === eventKey);
+    }
   }
 
   function assignAncestralStatesOutput() {
