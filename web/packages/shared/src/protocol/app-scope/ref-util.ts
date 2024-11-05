@@ -392,32 +392,35 @@ export function removeRefOptsPrefix(
 }
 
 export function hanldeRefScene(refs: Refs, evt: HandleRefSceneEvent) {
-  if (evt.scene === 'set_nodedata_key_val') {
-    return setNodedataKeyVal(refs, evt.params);
+  switch (evt.scene) {
+    case 'set_nodedata_key_val':
+      return setNodedataKeyVal(refs, evt.params);
+
+    case 'rename_nodedata_key':
+      return renameNodedataKey(refs, evt.params);
+
+    case 'change_nodedata_mode':
+      return changeNodedataKeyMode(refs, evt.params);
+
+    case 'remove_nodedata_key':
+      return removeNodeKey(refs, evt.params);
+
+    case 'rename_ref_opt':
+      return renameRefOpt(refs, evt.params);
+
+    case 'rename_state_name':
+      return renameStateName(refs, evt.params);
+
+    case 'rename_state_output':
+      return renameStateOutput(refs, evt.params);
+
+    case 'remove_ref_opts':
+      return removeRefOpts(refs, evt.params);
+
+    case 'remove_ref_opts_prefix':
+      return removeRefOptsPrefix(refs, evt.params);
+
+    default:
+      throw new Error(`Not implemented, ${evt.scene}`);
   }
-  if (evt.scene === 'rename_nodedata_key') {
-    return renameNodedataKey(refs, evt.params);
-  }
-  if (evt.scene === 'change_nodedata_mode') {
-    return changeNodedataKeyMode(refs, evt.params);
-  }
-  if (evt.scene === 'remove_nodedata_key') {
-    return removeNodeKey(refs, evt.params);
-  }
-  if (evt.scene === 'rename_ref_opt') {
-    return renameRefOpt(refs, evt.params);
-  }
-  if (evt.scene === 'rename_state_name') {
-    return renameStateName(refs, evt.params);
-  }
-  if (evt.scene === 'rename_state_output') {
-    return renameStateOutput(refs, evt.params);
-  }
-  if (evt.scene === 'remove_ref_opts') {
-    return removeRefOpts(refs, evt.params);
-  }
-  if (evt.scene === 'remove_ref_opts_prefix') {
-    return removeRefOptsPrefix(refs, evt.params);
-  }
-  throw new Error(`Not implemented, ${evt.scene}`);
 }
