@@ -470,7 +470,7 @@ describe('app builder utils', () => {
                 {
                   "field_type": "text",
                   "label": "Global A",
-                  "value": "{{context.global_a}}",
+                  "value": "{{ context.global_a }}",
                 },
               ],
               "label": "Context",
@@ -481,7 +481,7 @@ describe('app builder utils', () => {
                 {
                   "field_type": "text",
                   "label": "Output A",
-                  "value": "{{state_1.output_a}}",
+                  "value": "{{ state_1.output_a }}",
                 },
               ],
               "label": "State#1",
@@ -499,7 +499,7 @@ describe('app builder utils', () => {
                     {
                       "field_type": "text",
                       "label": "Input B",
-                      "value": "{{input_b}}",
+                      "value": "{{ input_b }}",
                     },
                   ],
                   "label": "button_a",
@@ -514,7 +514,7 @@ describe('app builder utils', () => {
                 {
                   "field_type": "text",
                   "label": "Input B",
-                  "value": "{{input_b}}",
+                  "value": "{{ input_b }}",
                 },
               ],
               "label": "Input",
@@ -525,7 +525,7 @@ describe('app builder utils', () => {
                 {
                   "field_type": "text",
                   "label": "Output B",
-                  "value": "{{output_b}}",
+                  "value": "{{ output_b }}",
                 },
               ],
               "label": "Output",
@@ -538,7 +538,7 @@ describe('app builder utils', () => {
                     {
                       "field_type": "text",
                       "label": "output_a",
-                      "value": "{{task1.output_a}}",
+                      "value": "{{ task1.output_a }}",
                     },
                   ],
                   "label": "Task 1",
@@ -549,7 +549,7 @@ describe('app builder utils', () => {
                     {
                       "field_type": "text",
                       "label": "output_a",
-                      "value": "{{task2.output_a}}",
+                      "value": "{{ task2.output_a }}",
                     },
                   ],
                   "label": "Task 2",
