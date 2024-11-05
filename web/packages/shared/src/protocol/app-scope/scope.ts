@@ -1,8 +1,10 @@
 import { z } from 'zod';
 import {
   buttonsSchema,
+  customEventSchema,
   customKeySchema,
   outputVariablesSchema,
+  stateSchema,
   taskSchema,
   variablesSchema,
 } from './protocol';
@@ -55,11 +57,115 @@ export const refsSchema = z.record(
   z.record(
     z.string().describe('json path'),
     z.object({
-      ui: z.array(z.string()),
-      raw: z.array(z.string()),
-      ref: z.string(),
+      ui: z.array(z.string()).optional(),
+      raw: z.array(z.string()).optional(),
+      ref: z.string().optional(),
     }),
   ),
 );
 
 export type Refs = z.infer<typeof refsSchema>;
+
+export const setNodedataKeyValParamSchema = z.object({
+  stateName: customKeySchema,
+  key: z.string(),
+  newValue: z.string(),
+  mode: z.enum(['ref', 'ui']),
+  origVal: z.string().optional(),
+});
+
+export const renameNodedataKeyParamSchema = z.object({
+  stateName: customKeySchema,
+  oldKey: z.string(),
+  newKey: z.string(),
+});
+
+export const changNodedataModeParamSchema = z.object({
+  stateName: customKeySchema,
+  key: z.string(),
+  mode: z.enum(['ref', 'ui', 'raw']),
+});
+
+export const renameStateNameParamSchema = z.object({
+  oldName: z.string(),
+  newName: z.string(),
+});
+
+export const renameStateOutputParamSchema = z.object({
+  stateName: customKeySchema,
+  oldOutputName: z.string(),
+  newOutputName: z.string(),
+});
+
+export const renameRefOptParamSchema = z.object({
+  oldPath: z.string(),
+  newPath: z.string(),
+});
+
+export const removeNodeKeySchema = z.object({
+  stateName: customKeySchema,
+  key: z.string(),
+});
+
+export const removeRefOptsSchema = z.object({
+  paths: z.array(z.string()),
+});
+
+export const removeRefOptsPrefixScheam = z.object({
+  prefix: z.string(),
+});
+
+export const handleRefSceneSchema = z.union([
+  // nodedata
+  z.object({
+    scene: z.literal('set_nodedata_key_val'),
+    params: setNodedataKeyValParamSchema,
+  }),
+  z.object({
+    scene: z.literal('rename_nodedata_key'),
+    params: renameNodedataKeyParamSchema,
+  }),
+  z.object({
+    scene: z.literal('change_nodedata_mode'),
+    params: changNodedataModeParamSchema,
+  }),
+  z.object({
+    scene: z.literal('remove_nodedata_key'),
+    params: removeNodeKeySchema,
+  }),
+  // ref
+  z.object({
+    scene: z.literal('rename_ref_opt'),
+    params: renameRefOptParamSchema,
+  }),
+  z.object({
+    scene: z
+      .literal('rename_state_name')
+      .describe('shortcut of rename_ref_opt'),
+    params: renameStateNameParamSchema,
+  }),
+  z.object({
+    scene: z
+      .literal('rename_state_output')
+      .describe('shortcut of rename_ref_opt'),
+    params: renameStateOutputParamSchema,
+  }),
+  z.object({
+    scene: z.literal('remove_ref_opts'),
+    params: removeRefOptsSchema,
+  }),
+  z.object({
+    scene: z
+      .literal('remove_ref_opts_prefix')
+      .describe('shortcut of remove_ref_opt'),
+    params: removeRefOptsPrefixScheam,
+  }),
+  z.object({
+    scene: z.literal('remove_edge').describe('shortcut of remove_ref_opt'),
+  }),
+  z.object({
+    scene: z.literal('reorder_task'),
+  }),
+]);
+
+export type HandleRefSceneEvent = z.infer<typeof handleRefSceneSchema>;

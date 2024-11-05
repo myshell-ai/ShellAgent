@@ -1,17 +1,27 @@
 import { CustomKey } from '@shellagent/pro-config';
-import { Buttons, Scopes, Task, Variables } from './protocol';
+import { Scopes } from './protocol';
 import {
+  changNodedataModeParamSchema,
   Edges,
+  HandleRefSceneEvent,
   RefOptionsOutput,
-  RefType,
-  Refs,
   refOptionsOutputSchema,
+  Refs,
+  RefType,
+  removeRefOptsPrefixScheam,
+  removeNodeKeySchema,
+  removeRefOptsSchema,
+  renameNodedataKeyParamSchema,
+  renameRefOptParamSchema,
+  renameStateNameParamSchema,
+  renameStateOutputParamSchema,
+  setNodedataKeyValParamSchema,
 } from './scope';
-import { isEmpty, mapKeys, mapValues, isNumber } from 'lodash-es';
+import { isEmpty, isNumber, mapKeys, mapValues, omit, omitBy } from 'lodash-es';
+import { z } from 'zod';
 
 export function getRefOptions(
   scopes: Scopes,
-  // edges: Edges,
   stateName: CustomKey,
   refType: RefType,
   taskIndex?: number,
@@ -142,41 +152,262 @@ export function findAncestors(edges: Edges, stateName: CustomKey): CustomKey[] {
   return Array.from(ancestors) as CustomKey[];
 }
 
-export function convertRefsToAncestors(refOpts: RefOptionsOutput) {
-  // todo: Ensure that ⁠value is a fully qualified name, matching the ⁠protocol’s path.
-}
-
-export function renameRefKey(
+export function renameNodedataKey(
   refs: Refs,
-  oldKey: string,
-  newKey: string,
-): Record<string, string> {
-  return mapKeys(refs, (value, key) => {
-    return key === oldKey ? newKey : key;
+  params: z.infer<typeof renameNodedataKeyParamSchema>,
+): Refs {
+  const { stateName, oldKey, newKey } = params;
+  return mapValues(refs, (value, key) => {
+    if (key === stateName) {
+      return mapKeys(value, (v, k) => {
+        return k === oldKey ? newKey : k;
+      });
+    } else {
+      return value;
+    }
   });
 }
 
-export function updateRefValue(
+export function setNodedataKeyVal(
   refs: Refs,
-  key: string,
-  newValue: string,
-): Record<string, string> {
-  refs[key] = newValue;
-  return refs;
-}
+  params: z.infer<typeof setNodedataKeyValParamSchema>,
+): Refs {
+  const { mode, origVal, stateName, key, newValue } = params;
+  if (mode === 'ui' && origVal == null) {
+    throw new Error('Should specify origValue in mode ui');
+  }
 
-export function renameRefer(
-  refs: Refs,
-  origRefer: string,
-  newRefer: string,
-): Record<string, string> {
-  return mapValues(refs, value => {
-    return value === origRefer ? newRefer : value;
+  return mapValues(refs, (v1, k1) => {
+    if (k1 === stateName) {
+      return mapValues(v1, (v2, k2) => {
+        if (k2 === key) {
+          if (v2.ref) {
+            v2.ref = newValue;
+          }
+          if (origVal != null && Array.isArray(v2.ui)) {
+            v2.ui = v2.ui.map(i => (i === origVal ? newValue : i));
+          }
+        }
+        if (mode === 'ref') {
+          delete v2.ui;
+          delete v2.raw;
+        } else if (mode === 'ui') {
+          delete v2.ref;
+          delete v2.raw;
+        }
+        return v2;
+      });
+    } else {
+      return v1;
+    }
   });
 }
 
-export function deleteRefer(refs: Refs, refer: string) {
-  Object.keys(refs).forEach(k => {
-    if (refs[k] === refer) delete refs[k];
+export function deleteRefer(refs: Refs, stateName: string, refer: string) {
+  return mapValues(refs, (v1, k1) => {
+    if (k1 === stateName) {
+      return mapValues(v1, (v2, k2) => {
+        if (v2.ref === refer) {
+          delete v2.ref;
+        }
+        if (Array.isArray(v2.ui)) {
+          v2.ui = v2.ui
+            .map(i => (i === refer ? null : i))
+            .filter(i => i != null) as string[];
+        }
+        if (!v2.ui?.length) {
+          delete v2.ui;
+        }
+        if (Array.isArray(v2.raw)) {
+          v2.raw = v2.raw
+            .map(i => (i === refer ? null : i))
+            .filter(i => i != null) as string[];
+        }
+        if (!v2.raw?.length) {
+          delete v2.raw;
+        }
+        return v2;
+      });
+    } else {
+      return v1;
+    }
   });
 }
+
+export function changeNodedataKeyMode(
+  refs: Refs,
+  param: z.infer<typeof changNodedataModeParamSchema>,
+): Refs {
+  const { stateName, mode, key } = param;
+  return mapValues(refs, (v1, k1) => {
+    if (k1 === stateName) {
+      return mapValues(v1, (v2, k2) => {
+        if (k2 === key) {
+          if (mode === 'raw') {
+            delete v2.ref;
+            delete v2.ui;
+          }
+          if (mode === 'ui') {
+            delete v2.raw;
+            delete v2.ref;
+          }
+          if (mode === 'ref') {
+            delete v2.ui;
+            delete v2.raw;
+          }
+        }
+        return v2;
+      });
+    } else {
+      return v1;
+    }
+  });
+}
+
+export function renameRefOpt(
+  refs: Refs,
+  param: z.infer<typeof renameRefOptParamSchema>,
+): Refs {
+  const { oldPath, newPath } = param;
+  return mapValues(refs, (v, k) => {
+    return mapValues(v, (v2, k2) => {
+      if (v2.ref && v2.ref === oldPath) {
+        v2.ref = newPath;
+      }
+      if (v2.raw != null && Array.isArray(v2.raw)) {
+        v2.raw = v2.raw.map(i => (i === oldPath ? newPath : i));
+      }
+      if (v2.ui != null && Array.isArray(v2.ui)) {
+        v2.ui = v2.ui.map(i => (i === oldPath ? newPath : i));
+      }
+      return v2;
+    });
+  });
+}
+
+export function renameStateName(
+  refs: Refs,
+  param: z.infer<typeof renameStateNameParamSchema>,
+): Refs {
+  const { oldName, newName } = param;
+  return mapValues(refs, (v, k) => {
+    return mapValues(v, (v2, k2) => {
+      if (v2.ref && v2.ref.startsWith(oldName)) {
+        v2.ref = [newName, v2.ref.split('.')[1]].join('.');
+      }
+      if (v2.raw != null && Array.isArray(v2.raw)) {
+        v2.raw = v2.raw.map(i => {
+          if (i.startsWith(oldName)) {
+            return [newName, i.split('.')[1]].join('.');
+          } else {
+            return i;
+          }
+        });
+      }
+      if (v2.ui != null && Array.isArray(v2.ui)) {
+        v2.ui = v2.ui.map(i => {
+          if (i.startsWith(oldName)) {
+            return [newName, i.split('.')[1]].join('.');
+          } else {
+            return i;
+          }
+        });
+      }
+      return v2;
+    });
+  });
+}
+
+export function renameStateOutput(
+  refs: Refs,
+  param: z.infer<typeof renameStateOutputParamSchema>,
+): Refs {
+  const { stateName, oldOutputName, newOutputName } = param;
+  return renameRefOpt(refs, {
+    oldPath: [stateName, oldOutputName].join('.'),
+    newPath: [stateName, newOutputName].join('.'),
+  });
+}
+
+export function removeNodeKey(
+  refs: Refs,
+  param: z.infer<typeof removeNodeKeySchema>,
+) {
+  const { stateName, key } = param;
+  return mapValues(refs, (v, k) => {
+    if (k === stateName) {
+      return omit(v, key);
+    } else {
+      return v;
+    }
+  });
+}
+
+export function removeRefOpts(
+  refs: Refs,
+  param: z.infer<typeof removeRefOptsSchema>,
+) {
+  const { paths } = param;
+  return mapValues(refs, (v1, k1) => {
+    let v = mapValues(v1, (v2, k2) => {
+      if (v2.ref != null && paths.indexOf(v2.ref) > -1) {
+        delete v2.ref;
+      }
+      if (Array.isArray(v2.ui)) {
+        v2.ui = v2.ui
+          .map(i => (paths.indexOf(i) > -1 ? null : i))
+          .filter(i => i != null) as string[];
+      }
+      if (!v2.ui?.length) {
+        delete v2.ui;
+      }
+      if (Array.isArray(v2.raw)) {
+        v2.raw = v2.raw
+          .map(i => (paths.indexOf(i) > -1 ? null : i))
+          .filter(i => i != null) as string[];
+      }
+      if (!v2.raw?.length) {
+        delete v2.raw;
+      }
+      return v2;
+    });
+
+    v = omitBy(v, isEmpty);
+    return v;
+  });
+}
+
+export function removeButton(
+  refs: Refs,
+  param: z.infer<typeof removeRefOptsPrefixScheam>,
+) {
+  const { prefix } = param;
+  return mapValues(refs, (v, k) => {
+    let v2ret = mapValues(v, (v2, k2) => {
+      if (v2.ref && v2.ref.startsWith(prefix)) {
+        delete v2.ref;
+      }
+      if (Array.isArray(v2.ui)) {
+        v2.ui = v2.ui
+          .map(i => (i.startsWith(prefix) ? null : i))
+          .filter(i => i != null) as string[];
+      }
+      if (!v2.ui?.length) {
+        delete v2.ui;
+      }
+      if (Array.isArray(v2.raw)) {
+        v2.raw = v2.raw
+          .map(i => (i.startsWith(prefix) ? null : i))
+          .filter(i => i != null) as string[];
+      }
+      if (!v2.raw?.length) {
+        delete v2.raw;
+      }
+      return v2;
+    });
+    v2ret = omitBy(v2ret, isEmpty);
+    return v2ret;
+  });
+}
+
+export function hanldeRefScene(refs: Refs, evt: HandleRefSceneEvent) {}

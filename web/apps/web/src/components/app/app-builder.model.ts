@@ -2,15 +2,12 @@ import { IEdge, INode } from '@shellagent/flow-engine';
 import { TValues } from '@shellagent/form-engine';
 import { CustomKey } from '@shellagent/pro-config';
 import {
-  State,
-  Edges,
   RefType,
   getRefOptions,
   Scopes,
-  renameRefKey,
-  updateRefValue,
-  renameRefer,
-  deleteRefer,
+  HandleRefSceneEvent,
+  hanldeRefScene,
+  Refs,
 } from '@shellagent/shared/protocol/app-scope';
 import { injectable } from 'inversify';
 import { makeObservable, observable } from 'mobx';
@@ -39,7 +36,7 @@ export class AppBuilderModel {
 
   scopes: Scopes | null = null;
 
-  refs: Record<string, string> = {};
+  refs: Refs = {};
 
   getRefOptions(
     stateName: CustomKey,
@@ -59,30 +56,7 @@ export class AppBuilderModel {
     this.scopes = convetNodeDataToScopes(nodeData, edges);
   }
 
-  /*
-  addRef('state_2.ouput.untitled', 'state_1.untitled_1')
-  */
-  addRef(nodeDataKeyPath: string, refOptValuePath: string) {
-    this.refs[nodeDataKeyPath] = refOptValuePath;
-  }
-
-  deleteRef(nodeDataKeyPath: string, refOptValuePath: string) {
-    delete this.refs[nodeDataKeyPath];
-  }
-
-  renameNodeDataKey(oldKey: string, newKey: string) {
-    this.refs = renameRefKey(this.refs, oldKey, newKey);
-  }
-
-  updateNodeDataValue(nodeDataKey: string, newValue: string) {
-    this.refs = updateRefValue(this.refs, nodeDataKey, newValue);
-  }
-
-  renameRefOptValue(origRefOptVal: string, newRefOptVal: string) {
-    this.refs = renameRefer(this.refs, origRefOptVal, newRefOptVal);
-  }
-
-  deleteRefOptValue(refOptVal: string) {
-    deleteRefer(this.refs, refOptVal);
+  hanldeRefScene(evt: HandleRefSceneEvent) {
+    hanldeRefScene(this.refs, evt);
   }
 }

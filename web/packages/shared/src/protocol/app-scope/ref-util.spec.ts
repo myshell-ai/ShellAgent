@@ -3,10 +3,17 @@ import {
   deleteRefer,
   findAncestors,
   getRefOptions,
-  renameRefer,
-  renameRefKey,
-  updateRefValue,
+  renameNodedataKey,
+  changeNodedataKeyMode,
+  setNodedataKeyVal,
+  renameRefOpt,
+  renameStateName,
+  renameStateOutput,
+  removeNodeKey,
+  removeRefOpts,
+  removeButton,
 } from './ref-util';
+import { refsSchema } from './scope';
 
 describe('ref util', () => {
   describe('find ancestors', () => {
@@ -835,94 +842,499 @@ state#3
 
   describe('refs', () => {
     // 被引用对象
-    it('rename referenced key', () => {
-      const refs = {
-        'state_1.outputs.outputs1-1': 'context.global_111',
-        'state_1.outputs.outputs21': 'context.global_111',
-        'state_2.message.text': 'state_1.outputs.output1',
-      };
+    it('rename nodedata key', () => {
+      const refs = refsSchema.parse({
+        state_1: {
+          'outputs.outputs1-1': {
+            ref: 'context.global_111',
+          },
+          'outputs.outputs21': {
+            ref: 'context.global_111',
+          },
+        },
+        state_2: {
+          'message.text': {
+            ref: 'state_1.outputs.output1',
+          },
+        },
+        state_2_1: {
+          // 'message.text': 'state_1.outputs.output1',
+        },
+      });
 
-      const ret = renameRefKey(
-        refs,
-        'state_1.outputs.outputs1-1',
-        'state_1.outputs.outputs1',
-      );
+      const ret = renameNodedataKey(refs, {
+        stateName: 'state_1',
+        oldKey: 'outputs.outputs1-1',
+        newKey: 'outputs.outputs1',
+      });
 
       expect(ret).toMatchInlineSnapshot(`
         {
-          "state_1.outputs.outputs1": "context.global_111",
-          "state_1.outputs.outputs21": "context.global_111",
-          "state_2.message.text": "state_1.outputs.output1",
+          "state_1": {
+            "outputs.outputs1": {
+              "ref": "context.global_111",
+            },
+            "outputs.outputs21": {
+              "ref": "context.global_111",
+            },
+          },
+          "state_2": {
+            "message.text": {
+              "ref": "state_1.outputs.output1",
+            },
+          },
+          "state_2_1": {},
         }
       `);
     });
 
-    it('update referenced value', () => {
-      const refs = {
-        'state_1.outputs.outputs1-1': 'context.global_111',
-        'state_1.outputs.outputs21': 'context.global_111',
-        'state_2.message.text': 'state_1.outputs.output1',
-      };
+    describe('update ref value', () => {
+      it('ref', () => {
+        const refs = refsSchema.parse({
+          state_1: {
+            'outputs.outputs1-1': {
+              ref: 'context.global_111',
+              ui: [
+                'context.global_111',
+                'context.global_222',
+                'context.global_111',
+              ],
+              raw: ['context.global_111', 'context.global_aaa'],
+            },
+            'outputs.outputs21': {
+              ref: 'context.global_111',
+            },
+          },
+          /*
+            state_1 -> state_1_1
+            output1 -> output12
+          */
+          state_2: {
+            'message.text': {
+              ref: 'state_1.output1',
+            },
+          },
+        });
 
-      const ret = updateRefValue(
-        refs,
-        'state_1.outputs.outputs1-1',
-        'context.global_a',
-      );
+        const ret = setNodedataKeyVal(refs, {
+          stateName: 'state_1',
+          key: 'outputs.outputs1-1',
+          newValue: 'context.global_a',
+          mode: 'ref',
+          origVal: 'context.global_111',
+        });
+        expect(ret).toMatchInlineSnapshot(`
+          {
+            "state_1": {
+              "outputs.outputs1-1": {
+                "ref": "context.global_a",
+              },
+              "outputs.outputs21": {
+                "ref": "context.global_111",
+              },
+            },
+            "state_2": {
+              "message.text": {
+                "ref": "state_1.output1",
+              },
+            },
+          }
+        `);
+      });
+
+      it('ui', () => {
+        const refs = refsSchema.parse({
+          state_1: {
+            'outputs.outputs1-1': {
+              ref: 'context.global_111',
+              ui: [
+                'context.global_111',
+                'context.global_222',
+                'context.global_111',
+              ],
+              raw: ['context.global_111', 'context.global_aaa'],
+            },
+            'outputs.outputs21': {
+              ref: 'context.global_111',
+            },
+          },
+          state_2: {
+            'message.text': {
+              ref: 'state_1.outputs.output1',
+            },
+          },
+        });
+
+        const ret = setNodedataKeyVal(refs, {
+          stateName: 'state_1',
+          key: 'outputs.outputs1-1',
+          newValue: 'context.global_a',
+          mode: 'ui',
+          origVal: 'context.global_111',
+        });
+        expect(ret).toMatchInlineSnapshot(`
+          {
+            "state_1": {
+              "outputs.outputs1-1": {
+                "ui": [
+                  "context.global_a",
+                  "context.global_222",
+                  "context.global_a",
+                ],
+              },
+              "outputs.outputs21": {},
+            },
+            "state_2": {
+              "message.text": {
+                "ref": "state_1.outputs.output1",
+              },
+            },
+          }
+        `);
+      });
+    });
+
+    it('rename ref opt', () => {
+      const refs = refsSchema.parse({
+        state_2: {
+          'outputs.output1': {
+            ref: 'state_1.output1',
+          },
+          'message.text': {
+            ui: ['state_1.output1', 'state_1.output2'],
+          },
+          'message.image': {
+            raw: ['context.global_a', 'state_1.output1'],
+          },
+        },
+      });
+      const ret = renameRefOpt(refs, {
+        oldPath: 'state_1.output1',
+        newPath: 'state_1.output_a',
+      });
       expect(ret).toMatchInlineSnapshot(`
         {
-          "state_1.outputs.outputs1-1": "context.global_a",
-          "state_1.outputs.outputs21": "context.global_111",
-          "state_2.message.text": "state_1.outputs.output1",
+          "state_2": {
+            "message.image": {
+              "raw": [
+                "context.global_a",
+                "state_1.output_a",
+              ],
+            },
+            "message.text": {
+              "ui": [
+                "state_1.output_a",
+                "state_1.output2",
+              ],
+            },
+            "outputs.output1": {
+              "ref": "state_1.output_a",
+            },
+          },
         }
       `);
     });
 
-    it('rename refer', () => {
-      const refs = {
-        'state_1.outputs.outputs1-1': 'context.global_111',
-        'state_1.outputs.outputs21': 'context.global_111',
-        'state_2.message.text': 'state_1.outputs.output1',
-      };
+    it('rename state name', () => {
+      const refs = refsSchema.parse({
+        state_2: {
+          'outputs.output1': {
+            ref: 'state_1.output1',
+          },
+          'message.text': {
+            ui: ['state_1.output1', 'state_1.output2'],
+          },
+          'message.image': {
+            raw: ['context.global_a', 'state_1.output1'],
+          },
+        },
+      });
 
-      const ret = renameRefer(refs, 'context.global_111', 'context.global.a');
+      const ret = renameStateName(refs, {
+        oldName: 'state_1',
+        newName: 'state_1_1',
+      });
       expect(ret).toMatchInlineSnapshot(`
         {
-          "state_1.outputs.outputs1-1": "context.global.a",
-          "state_1.outputs.outputs21": "context.global.a",
-          "state_2.message.text": "state_1.outputs.output1",
+          "state_2": {
+            "message.image": {
+              "raw": [
+                "context.global_a",
+                "state_1_1.output1",
+              ],
+            },
+            "message.text": {
+              "ui": [
+                "state_1_1.output1",
+                "state_1_1.output2",
+              ],
+            },
+            "outputs.output1": {
+              "ref": "state_1_1.output1",
+            },
+          },
+        }
+      `);
+    });
+
+    it('rename state output', () => {
+      const refs = refsSchema.parse({
+        state_2: {
+          'outputs.output1': {
+            ref: 'state_1.output1',
+          },
+          'message.text': {
+            ui: ['state_1.output1', 'state_1.output2'],
+          },
+          'message.image': {
+            raw: ['context.global_a', 'state_1.output1'],
+          },
+        },
+      });
+
+      const ret = renameStateOutput(refs, {
+        stateName: 'state_1',
+        oldOutputName: 'output1',
+        newOutputName: 'output_a',
+      });
+      expect(ret).toMatchInlineSnapshot(`
+        {
+          "state_2": {
+            "message.image": {
+              "raw": [
+                "context.global_a",
+                "state_1.output_a",
+              ],
+            },
+            "message.text": {
+              "ui": [
+                "state_1.output_a",
+                "state_1.output2",
+              ],
+            },
+            "outputs.output1": {
+              "ref": "state_1.output_a",
+            },
+          },
         }
       `);
     });
 
     it('delete refer', () => {
-      const refs = {
-        'state_1.outputs.outputs1-1': 'context.global_111',
-        'state_1.outputs.outputs21': 'context.global_111',
-        'state_2.message.text': 'state_1.outputs.output1',
-      };
+      const refs = refsSchema.parse({
+        state_1: {
+          'outputs.outputs1-1': {
+            ref: 'context.global_111',
+            ui: [
+              'context.global_111',
+              'context.global_222',
+              'context.global_111',
+            ],
+            raw: ['context.global_111'],
+          },
+          'outputs.outputs21': {
+            ref: 'context.global_111',
+          },
+        },
+        state_2: {
+          'message.text': {
+            ref: 'state_1.outputs.output1',
+          },
+        },
+      });
 
-      deleteRefer(refs, 'context.global_111');
+      const ret = deleteRefer(refs, 'state_1', 'context.global_111');
 
-      expect(refs).toMatchInlineSnapshot(`
+      expect(ret).toMatchInlineSnapshot(`
         {
-          "state_2.message.text": "state_1.outputs.output1",
+          "state_1": {
+            "outputs.outputs1-1": {
+              "ui": [
+                "context.global_222",
+              ],
+            },
+            "outputs.outputs21": {},
+          },
+          "state_2": {
+            "message.text": {
+              "ref": "state_1.outputs.output1",
+            },
+          },
         }
       `);
     });
 
-    it('toggle ref', () => {
-      const refs = {
-        'state_1.render.text': 'context.global_111',
-        'state_1.render.text[context.global_111]': 'context.global_111',
-        'state_1.render.text[input_a]': 'input_a',
-      };
+    it('change nodedata key mode', () => {
+      const refs = refsSchema.parse({
+        state_1: {
+          'outputs.outputs1-1': {
+            ref: 'context.global_111',
+            ui: [
+              'context.global_111',
+              'context.global_222',
+              'context.global_111',
+            ],
+            raw: ['context.global_111'],
+          },
+          'outputs.outputs21': {
+            ref: 'context.global_111',
+          },
+        },
+        state_2: {
+          'message.text': {
+            ref: 'state_1.outputs.output1',
+          },
+        },
+      });
 
-      function toggleMode(
-        refs: Record<string, string>,
-        refKey: string,
-        mode: 'code' | 'ref' | 'ui',
-      ) {}
+      const rets = changeNodedataKeyMode(refs, {
+        stateName: 'state_1',
+        key: 'outputs.outputs1-1',
+        mode: 'raw',
+      });
+
+      expect(rets).toMatchInlineSnapshot(`
+        {
+          "state_1": {
+            "outputs.outputs1-1": {
+              "raw": [
+                "context.global_111",
+              ],
+            },
+            "outputs.outputs21": {
+              "ref": "context.global_111",
+            },
+          },
+          "state_2": {
+            "message.text": {
+              "ref": "state_1.outputs.output1",
+            },
+          },
+        }
+      `);
+    });
+
+    it('remove node key', () => {
+      const refs = refsSchema.parse({
+        state_2: {
+          'outputs.output1': {
+            ref: 'state_1.output1',
+          },
+          'message.text': {
+            ui: ['state_1.output1', 'state_1.output2'],
+          },
+          'message.image': {
+            raw: ['context.global_a', 'state_1.output1'],
+          },
+        },
+      });
+      const ret = removeNodeKey(refs, {
+        stateName: 'state_2',
+        key: 'outputs.output1',
+      });
+
+      expect(ret).toMatchInlineSnapshot(`
+        {
+          "state_2": {
+            "message.image": {
+              "raw": [
+                "context.global_a",
+                "state_1.output1",
+              ],
+            },
+            "message.text": {
+              "ui": [
+                "state_1.output1",
+                "state_1.output2",
+              ],
+            },
+          },
+        }
+      `);
+    });
+
+    it('remove ref opt', () => {
+      const refs = refsSchema.parse({
+        state_1: {
+          'inputs.arg1': {
+            ref: 'context.global_a',
+          },
+          'outputs.arg1': {
+            ref: 'state_1.inputs.input_a',
+          },
+          'render.buttons.button_a.on_click.payload.arg1': {
+            ref: 'state_1.inputs.input_a',
+          },
+          'render.message.text': {
+            ui: ['outputs.output1', 'state_0.outputs.output2'],
+          },
+          'render.message.image': {
+            raw: [
+              'context.global_a',
+              'state_1.buttons.button_a.on_click.payload.arg1',
+            ],
+          },
+        },
+      });
+
+      const ret = removeRefOpts(refs, {
+        paths: ['context.global_a', 'state_1.inputs.input_a'],
+      });
+
+      expect(ret).toMatchInlineSnapshot(`
+        {
+          "state_1": {
+            "render.message.image": {
+              "raw": [
+                "state_1.buttons.button_a.on_click.payload.arg1",
+              ],
+            },
+            "render.message.text": {
+              "ui": [
+                "outputs.output1",
+                "state_0.outputs.output2",
+              ],
+            },
+          },
+        }
+      `);
+    });
+
+    it('remove button', () => {
+      const refs = refsSchema.parse({
+        state_1: {
+          'target_inputs.input_a': {
+            ref: 'state_1.buttons.button_a.on_click.payload.arg1',
+            ui: [
+              'state_1.buttons.button_b.on_click.payload.arg1',
+              'state_1.buttons.button_a.on_click.payload.arg3',
+            ],
+            raw: [
+              'state_1.buttons.button_a.on_click.payload.arg1',
+              'state_1.buttons.button_c.on_click.payload.arg2',
+            ],
+          },
+        },
+      });
+
+      const ret = removeButton(refs, {
+        prefix: 'state_1.buttons.button_a.on_click',
+      });
+
+      expect(ret).toMatchInlineSnapshot(`
+        {
+          "state_1": {
+            "target_inputs.input_a": {
+              "raw": [
+                "state_1.buttons.button_c.on_click.payload.arg2",
+              ],
+              "ui": [
+                "state_1.buttons.button_b.on_click.payload.arg1",
+              ],
+            },
+          },
+        }
+      `);
     });
   });
 });
