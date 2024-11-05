@@ -349,6 +349,7 @@ export default function Publish({
       ) : (
         <Dropdown.Button
           onOpenChange={onOpenChange}
+          /* eslint-disable react/no-unstable-nested-components */
           dropdownRender={() => (
             <DropdownRender
               versionData={versionData}
