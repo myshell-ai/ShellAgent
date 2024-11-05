@@ -91,11 +91,11 @@ export function getRefOptions(
   function assignButtonsPayload() {
     const state = scopes.scopes.states[stateName];
     if (state == null) throw new Error(`cannot find ${stateName} in scopes`);
+    if (refType === 'target_input' && eventKey == null)
+      throw new Error(`should provide eventKey if refType is target_input`);
 
     const buttons = state.children.outputs.render.buttons;
-    if (eventKey) {
-      ret.local.buttons = pickBy(buttons, button => button?.event === eventKey);
-    }
+    ret.local.buttons = pickBy(buttons, button => button?.event === eventKey);
   }
 
   function assignAncestralStatesOutput() {

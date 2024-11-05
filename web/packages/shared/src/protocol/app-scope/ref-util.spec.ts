@@ -761,7 +761,13 @@ state#3
           },
         },
       });
-      const options = getRefOptions(scopes, 'state_2', 'target_input');
+      const options = getRefOptions(
+        scopes,
+        'state_2',
+        'target_input',
+        undefined,
+        'button_a.on_click',
+      );
       expect(options).toMatchInlineSnapshot(`
         {
           "global": {

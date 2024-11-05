@@ -57,7 +57,7 @@ describe('app builder utils', () => {
           ],
           text: '{{untitled_input_1}}\n{{untitled_output_1}}',
         },
-        input: {
+        inputs: {
           untitled_input_1: {
             name: 'Untitled Input',
             type: 'text',
@@ -69,7 +69,7 @@ describe('app builder utils', () => {
             user_input: true,
           },
         },
-        output: {
+        outputs: {
           untitled_output_1: {
             type: 'text',
             value: '',
@@ -127,7 +127,7 @@ describe('app builder utils', () => {
             },
           ],
         },
-        input: {},
+        inputs: {},
       },
     };
     const edges = [
@@ -473,8 +473,8 @@ describe('app builder utils', () => {
                   "value": "{{context.global_a}}",
                 },
               ],
-              "value": "Context",
               "label": "Context",
+              "value": "Context",
             },
             {
               "children": [
@@ -484,8 +484,8 @@ describe('app builder utils', () => {
                   "value": "{{state_1.output_a}}",
                 },
               ],
-              "value": "State#1",
               "label": "State#1",
+              "value": "State#1",
             },
           ],
           "label": "global",
@@ -506,8 +506,8 @@ describe('app builder utils', () => {
                   "value": "button_a",
                 },
               ],
-              "value": "buttons",
-              "label": "buttons",
+              "label": "Payload",
+              "value": "Payload",
             },
             {
               "children": [
@@ -517,8 +517,8 @@ describe('app builder utils', () => {
                   "value": "{{input_b}}",
                 },
               ],
-              "value": "Input",
               "label": "Input",
+              "value": "Input",
             },
             {
               "children": [
@@ -528,8 +528,8 @@ describe('app builder utils', () => {
                   "value": "{{output_b}}",
                 },
               ],
-              "value": "Output",
               "label": "Output",
+              "value": "Output",
             },
             {
               "children": [
@@ -541,8 +541,8 @@ describe('app builder utils', () => {
                       "value": "{{task1.output_a}}",
                     },
                   ],
-                  "value": "Task 1",
                   "label": "Task 1",
+                  "value": "Task 1",
                 },
                 {
                   "children": [
@@ -552,12 +552,12 @@ describe('app builder utils', () => {
                       "value": "{{task2.output_a}}",
                     },
                   ],
-                  "value": "Task 2",
                   "label": "Task 2",
+                  "value": "Task 2",
                 },
               ],
-              "value": "Task",
               "label": "Task",
+              "value": "Task",
             },
           ],
           "label": "current",
@@ -573,7 +573,7 @@ describe('app builder utils', () => {
         type: 'state',
         name: 'State',
         render: {},
-        input: {
+        inputs: {
           untitled_input_1: {
             name: 'input_1',
             type: 'text',
@@ -693,14 +693,14 @@ describe('app builder utils', () => {
               },
             ],
           },
-          input: {
+          inputs: {
             untitled_input_2: {
               name: 'Untitled Input',
               type: 'text',
               user_input: true,
             },
           },
-          output: {
+          outputs: {
             untitled_output_2: {
               type: 'text',
               value: '',
@@ -734,7 +734,7 @@ describe('app builder utils', () => {
             image: '',
             text: '{{__context__7b_7b_name_7d_7d__2__}}',
           },
-          input: {
+          inputs: {
             untitled_input_1: {
               name: 'Untitled Input',
               type: 'text',
@@ -742,7 +742,7 @@ describe('app builder utils', () => {
               default_value: '{{state_1.untitled_output_2}}',
             },
           },
-          output: {
+          outputs: {
             untitled_output_1: {
               type: 'text',
               value: '{{__context__7b_7b_name_7d_7d__2__}}',
