@@ -20,7 +20,13 @@ import {
 } from '@shellagent/ui';
 import { isEmpty } from 'lodash-es';
 import dynamic from 'next/dynamic';
-import React, { useEffect, useMemo, forwardRef } from 'react';
+import React, {
+  useEffect,
+  useMemo,
+  forwardRef,
+  useImperativeHandle,
+  useRef,
+} from 'react';
 
 import FileUpload from '@/components/common/uploader';
 import { useSchemaContext } from '@/stores/app/schema-provider';
@@ -40,6 +46,7 @@ import {
   VariableNameInput,
 } from './widgets';
 import { OpenImageCanvas } from '../../image-canvas/open-image-canvas';
+import { useFieldWatch } from './hook/use-field-watch';
 
 const TasksConfig = dynamic(
   () => import('./widgets/tasks-config').then(module => module.TasksConfig),
@@ -71,10 +78,16 @@ const NodeForm = forwardRef<FormRef, NodeFormProps>(
     },
     ref,
   ) => {
+    const innerRef = useRef<FormRef>(null);
+
+    useImperativeHandle(ref, () => innerRef.current!);
+
     const { schema: formSchema, formKey } = useSchemaContext(state => ({
       schema: state.schema,
       formKey: state.formKey,
     }));
+
+    useFieldWatch(innerRef);
 
     const currentSchema = schema || formSchema;
     const defaultValues = useMemo(
@@ -93,7 +106,7 @@ const NodeForm = forwardRef<FormRef, NodeFormProps>(
     }
     return (
       <MemoizedFormEngine
-        ref={ref}
+        ref={innerRef}
         key={formKey}
         onChange={onChange}
         mode="onChange"

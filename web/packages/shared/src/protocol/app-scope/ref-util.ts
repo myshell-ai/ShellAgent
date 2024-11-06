@@ -17,6 +17,7 @@ import {
   renameStateOutputParamSchema,
   setNodedataKeyValParamSchema,
 } from './scope';
+import { reservedStateNameSchema } from '../node';
 import {
   isEmpty,
   isNumber,
@@ -101,7 +102,7 @@ export function getRefOptions(
   function assignAncestralStatesOutput() {
     const ancestors = findAncestors(scopes.scopes.edges, stateName);
     ancestors.forEach((a: CustomKey) => {
-      if (a === '@@@start') return;
+      if (a === reservedStateNameSchema.enum.start) return;
       const state = scopes.scopes.states[a];
       if (state == null) throw new Error(`${a} is in edges, but not in scopes`);
       ret.global[a] = {

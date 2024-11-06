@@ -1256,6 +1256,21 @@ const stateConfigSchema: ISchema = {
         },
       },
     },
+    id: {
+      type: 'string',
+      default: '',
+      'x-hidden': true,
+    },
+    name: {
+      type: 'string',
+      default: '',
+      'x-hidden': true,
+    },
+    type: {
+      type: 'string',
+      default: 'state',
+      'x-hidden': true,
+    },
   },
 };
 

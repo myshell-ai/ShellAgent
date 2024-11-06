@@ -5,6 +5,7 @@ import {
   State,
   stateSchema,
 } from '@shellagent/shared/protocol/app-scope';
+import { reservedStateNameSchema } from '@shellagent/shared/protocol/node';
 import { mapValues, isEmpty } from 'lodash-es';
 
 export interface CascaderOption {
@@ -76,7 +77,7 @@ export function convetNodeDataToScopes(nodeDatas: any, edges: any[]) {
   const ret = Object.keys(nodeDatas).reduce(
     (acc, k) => {
       const v = nodeDatas[k];
-      if (k === '@@@start') {
+      if (k === reservedStateNameSchema.enum.start) {
         acc.context = {
           variables: mapValues(v.context, v => ({
             type: v.type,

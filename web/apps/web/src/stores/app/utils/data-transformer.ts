@@ -115,8 +115,8 @@ export const genAutomata: (
       });
 
       blocks[node.id as Lowercase<string>] = {
-        type: 'state',
-        name: node.data.name,
+        type: nodeData[node.id]?.type || 'state',
+        name: nodeData[node.id]?.name,
         render: nodeData[node.id]?.render,
         blocks: nodeData[node.id]?.blocks,
         inputs: transformChoicesToValues(nodeData[node.id]?.inputs || {}),

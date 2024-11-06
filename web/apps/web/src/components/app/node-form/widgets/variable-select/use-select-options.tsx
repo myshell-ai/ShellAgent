@@ -1,6 +1,7 @@
 import { useFormEngineContext } from '@shellagent/form-engine';
 import { CustomEventName } from '@shellagent/pro-config';
 import { RefType, refTypeSchema } from '@shellagent/shared/protocol/app-scope';
+import { reservedKeySchema } from '@shellagent/shared/protocol/pro-config';
 import { useInjection } from 'inversify-react';
 import { useMemo } from 'react';
 
@@ -18,18 +19,23 @@ export const useSelectOptions = (name?: string) => {
     let refType: RefType | null = null;
     let taskIndex: number | undefined;
 
-    if (parent?.startsWith('condition.')) {
+    if (parent?.startsWith(`${reservedKeySchema.Enum.condition}.`)) {
       refType = refTypeSchema.Enum.target_input;
-    } else if (parent?.startsWith('inputs.')) {
+    } else if (parent?.startsWith(`${reservedKeySchema.Enum.inputs}.`)) {
       refType = refTypeSchema.Enum.state_input;
-    } else if (parent?.startsWith('blocks.')) {
+    } else if (parent?.startsWith(`${reservedKeySchema.Enum.blocks}.`)) {
       refType = refTypeSchema.Enum.state_task;
       taskIndex = Number(parent.split('.')?.[1]);
-    } else if (name?.startsWith('outputs.')) {
+    } else if (name?.startsWith(`${reservedKeySchema.Enum.outputs}.`)) {
       refType = refTypeSchema.Enum.state_output;
-    } else if (parent?.startsWith('render.buttons.')) {
-      refType = refTypeSchema.Enum.state_render;
-    } else if (name?.startsWith('render.')) {
+    } else if (
+      parent?.startsWith(
+        `${reservedKeySchema.Enum.render}.${reservedKeySchema.Enum.buttons}.`,
+      ) ||
+      name?.startsWith(
+        `${reservedKeySchema.Enum.render}.${reservedKeySchema.Enum.buttons}.`,
+      )
+    ) {
       refType = refTypeSchema.Enum.state_render;
     }
 

@@ -36,11 +36,7 @@ import {
 import { useDuplicateState } from './hook/use-duplicate-state';
 import emitter, { EventType, useEventEmitter } from '../../emitter';
 
-const StateNode: React.FC<NodeProps<StateNodeType>> = ({
-  id,
-  selected,
-  data,
-}) => {
+const StateNode: React.FC<NodeProps<StateNodeType>> = ({ selected, data }) => {
   const stateFormRef = useRef<FormRef>(null);
   const {
     setNodeData,
@@ -98,16 +94,24 @@ const StateNode: React.FC<NodeProps<StateNodeType>> = ({
   const nodeRef = useRef<HTMLElement | null>(null);
 
   useEffect(() => {
-    nodeRef.current = document.querySelector(`[data-id=${id}]`) as HTMLElement;
-  }, [id]);
+    nodeRef.current = document.querySelector(
+      `[data-id=${data.id}]`,
+    ) as HTMLElement;
+  }, [data.id]);
+
+  useEffect(() => {
+    stateFormRef.current?.setValue('id', data.id);
+    stateFormRef.current?.setValue('name', data.display_name);
+    stateFormRef.current?.setValue('type', data.type);
+  }, [data]);
 
   useKeyPress(
     ['delete', 'backspace'],
     e => {
       if (selected && e.target === nodeRef.current) {
-        delNodeData(id);
+        delNodeData(data.id);
         onDelNode({ id: data.id });
-        if (currentStateId === id) {
+        if (currentStateId === data.id) {
           setStateConfigSheetOpen(currentStateId, false);
         }
       }
@@ -125,7 +129,7 @@ const StateNode: React.FC<NodeProps<StateNodeType>> = ({
       }
       if (selected) {
         setCurrentCopyStateData({
-          ...nodeData[id],
+          ...nodeData[data.id],
           ...data,
         });
       }
@@ -153,9 +157,9 @@ const StateNode: React.FC<NodeProps<StateNodeType>> = ({
 
   const onModeChange = useCallback(
     (name: string, mode: TFieldMode) => {
-      setFieldsModeMap({ id, name, mode });
+      setFieldsModeMap({ id: data.id, name, mode });
     },
-    [id, setFieldsModeMap],
+    [data.id, setFieldsModeMap],
   );
 
   const onChange = useCallback(
@@ -190,7 +194,7 @@ const StateNode: React.FC<NodeProps<StateNodeType>> = ({
         edge: {
           type: EdgeTypeEnum.custom,
           data: {
-            id,
+            id: data.id,
             custom: true,
             type: EdgeDataTypeEnum.ALWAYS,
             source: connection.source,
@@ -217,7 +221,7 @@ const StateNode: React.FC<NodeProps<StateNodeType>> = ({
           try {
             const displayName = getTaskDisplayName(
               item,
-              nodeData[id]?.blocks as Task[],
+              nodeData[data.id]?.blocks as Task[],
             );
             const newTask = TaskSchema.parse({
               type: 'task',
@@ -234,10 +238,13 @@ const StateNode: React.FC<NodeProps<StateNodeType>> = ({
             });
 
             setNodeData({
-              id,
+              id: data.id,
               data: {
-                ...nodeData[id],
-                blocks: [...((nodeData[id]?.blocks as Task[]) || []), newTask],
+                ...nodeData[data.id],
+                blocks: [
+                  ...((nodeData[data.id]?.blocks as Task[]) || []),
+                  newTask,
+                ],
               },
             });
             setFormKey(uuid());
@@ -252,7 +259,7 @@ const StateNode: React.FC<NodeProps<StateNodeType>> = ({
         }
       },
     }),
-    [setNodeData, nodeData, id],
+    [setNodeData, nodeData, data.id],
   );
 
   const dropRef = useRef<HTMLDivElement>(null);
@@ -272,8 +279,8 @@ const StateNode: React.FC<NodeProps<StateNodeType>> = ({
             modeMap={fieldsModeMap?.[data.id] || {}}
           />
         </NodeCard>
-        <SourceHandle onConnect={handleConnect} id={`custom_${id}`} />
-        <TargetHandle id={id} />
+        <SourceHandle onConnect={handleConnect} id={`custom_${data.id}`} />
+        <TargetHandle id={data.id} />
       </DndProvider>
     </div>
   );

@@ -15,6 +15,8 @@
     "./protocol/task": "./src/protocol/task/index.ts",
     "./protocol/render-button": "./src/protocol/render-button/index.ts",
     "./protocol/extend-config": "./src/protocol/extend-config/index.ts",
+    "./protocol/pro-config": "./src/protocol/pro-config/index.ts",
+    "./protocol/node": "./src/protocol/node/index.ts",
     "./utils": "./src/utils/index.ts"
   },
   "devDependencies": {
