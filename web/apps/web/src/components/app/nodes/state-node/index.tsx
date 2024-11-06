@@ -99,12 +99,6 @@ const StateNode: React.FC<NodeProps<StateNodeType>> = ({ selected, data }) => {
     ) as HTMLElement;
   }, [data.id]);
 
-  useEffect(() => {
-    stateFormRef.current?.setValue('id', data.id);
-    stateFormRef.current?.setValue('name', data.display_name);
-    stateFormRef.current?.setValue('type', data.type);
-  }, [data]);
-
   useKeyPress(
     ['delete', 'backspace'],
     e => {
@@ -164,7 +158,13 @@ const StateNode: React.FC<NodeProps<StateNodeType>> = ({ selected, data }) => {
 
   const onChange = useCallback(
     (values: TValues) => {
-      const newData = { id: data.id as NodeId, data: values };
+      const newValues = {
+        ...values,
+        id: data.id,
+        name: data.display_name,
+        type: data.type,
+      };
+      const newData = { id: data.id as NodeId, data: newValues };
 
       setNodeData(newData);
       emitter.emit(EventType.STATE_FORM_CHANGE, {
@@ -247,10 +247,11 @@ const StateNode: React.FC<NodeProps<StateNodeType>> = ({ selected, data }) => {
                 ],
               },
             });
-            setFormKey(uuid());
+            const key = `${new Date().valueOf()}`;
+            setFormKey(key);
             emitter.emit(EventType.STATE_FORM_CHANGE, {
               id: data.id as NodeId,
-              data: `${new Date().valueOf()}`,
+              data: key,
               type: 'StateCard',
             });
           } catch (error) {

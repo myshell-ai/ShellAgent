@@ -8,6 +8,11 @@ import {
   FieldModeEnum,
   FieldMode,
 } from '@shellagent/shared/protocol/extend-config';
+import { RefSceneEnum } from '@shellagent/shared/protocol/app-scope';
+
+import { useInjection } from 'inversify-react';
+import { AppBuilderModel } from '@/components/app/app-builder.model';
+import { useSchemaContext } from '@/stores/app/schema-provider';
 import {
   DropdownMenu,
   DropdownMenuTrigger,
@@ -43,6 +48,7 @@ const ModeOptions: Array<{
 ];
 
 interface IModeSelectProps {
+  name: string;
   defaultValue: FieldMode;
   onChange?: (value: FieldMode) => void;
   defaultOptions?: string[];
@@ -52,8 +58,11 @@ export function ModeSelect({
   defaultValue,
   onChange,
   defaultOptions,
+  name,
 }: IModeSelectProps) {
   const [value, setValue] = useState<FieldMode>(defaultValue);
+  const appBuilder = useInjection(AppBuilderModel);
+  const stateId = useSchemaContext(state => state.id);
 
   const options = useMemo(() => {
     if (!defaultOptions) {
@@ -73,8 +82,16 @@ export function ModeSelect({
     (value: FieldMode) => {
       setValue(value);
       onChange?.(value);
+      appBuilder.hanldeRefScene({
+        scene: RefSceneEnum.Enum.change_nodedata_mode,
+        params: {
+          stateName: stateId as Lowercase<string>,
+          mode: value,
+          key: name,
+        },
+      });
     },
-    [onChange],
+    [appBuilder.hanldeRefScene, name, stateId],
   );
 
   return (

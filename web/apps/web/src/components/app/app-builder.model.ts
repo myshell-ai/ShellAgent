@@ -58,5 +58,6 @@ export class AppBuilderModel {
 
   hanldeRefScene(evt: HandleRefSceneEvent) {
     this.refs = hanldeRefScene(this.refs, evt);
+    console.log('this.refs>>', this.refs);
   }
 }
