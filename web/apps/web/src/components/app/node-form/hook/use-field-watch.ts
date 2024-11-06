@@ -8,12 +8,7 @@ import { AppBuilderModel } from '@/components/app/app-builder.model';
 
 import { FormRef } from '@shellagent/ui';
 import { useEffect, useRef, useCallback } from 'react';
-import { get, values } from 'lodash-es';
-
-enum ChangeType {
-  ReplaceKey = 'replaceKey',
-  AddKey = 'addKey',
-}
+import { get, merge } from 'lodash-es';
 
 export function useFieldWatch(
   formRef: React.RefObject<FormRef>,
@@ -24,6 +19,33 @@ export function useFieldWatch(
   const prevValuesRef = useRef<Map<string, TValues | undefined>>(new Map());
   const appBuilder = useInjection(AppBuilderModel);
 
+  // 替换key
+  const replaceKey = (
+    parentPath: string,
+    oldKey: string,
+    newKey: string,
+    value?: TValues,
+  ) => {
+    let parentValue = formRef.current?.getValues(parentPath);
+    // 避免影响对象顺序
+    parentValue = Object.keys(parentValue).reduce(
+      (prev: { [key: string]: any }, curr) => {
+        if (curr === oldKey) {
+          const oldValue = parentValue[curr];
+          prev[newKey] =
+            typeof oldValue === 'object' && value
+              ? merge(oldValue, value)
+              : value || oldValue;
+        } else {
+          prev[curr] = parentValue[curr];
+        }
+        return prev;
+      },
+      {},
+    );
+    formRef.current?.setValue(parentPath, parentValue);
+  };
+
   const handleChange = useCallback(
     (newValue: TValues, prevValue?: TValues, name?: string) => {
       if (!name) return;
@@ -31,19 +53,25 @@ export function useFieldWatch(
       // 处理context
       if (name.startsWith(reservedKeySchema.Enum.context)) {
         // 从完整路径中提取context key
-        const contextKey = name.split('.')[1];
+        const contextKey = name.replace(
+          `${reservedKeySchema.Enum.context}.`,
+          '',
+        );
 
         // 获取新旧值中对应的context对象
-        const oldContext = get(prevValue, ['context', contextKey]);
-        const newContext = get(newValue, ['context', contextKey]);
+        const oldContext: TValues | undefined = get(prevValue, [
+          'context',
+          contextKey,
+        ]);
+        const newContext: TValues | undefined = get(newValue, [
+          'context',
+          contextKey,
+        ]);
 
-        // 比较name是否发生变化
-        // 修改name
         if (oldContext?.name !== newContext?.name) {
           // 生成新的key
-          const newKey = customSnakeCase(newContext.name || '');
-          console.log('>>>>', contextKey, newKey);
-          // replaceKey(name, newKey);
+          const newKey = customSnakeCase(newContext?.name || '');
+          replaceKey(reservedKeySchema.Enum.context, contextKey, newKey);
         } else {
         }
       } else if (name.startsWith(reservedKeySchema.Enum.inputs)) {
@@ -53,30 +81,6 @@ export function useFieldWatch(
     },
     [],
   );
-
-  // const replaceKey = (path: TPath, key: string, value?: TValue) => {
-  //   const { parent: parentName } = fields[path] || {};
-  //   let parentValue = getValues(parentName);
-  //   const oldKey = path.replace(`${parentName}.`, '');
-  //   const newKey = key;
-  //   // 避免影响对象顺序
-  //   parentValue = Object.keys(parentValue).reduce(
-  //     (prev: { [key: string]: any }, curr) => {
-  //       if (curr === oldKey) {
-  //         const oldValue = parentValue[curr];
-  //         prev[newKey] =
-  //           typeof oldValue === 'object' && value
-  //             ? merge(oldValue, value)
-  //             : value || oldValue;
-  //       } else {
-  //         prev[curr] = parentValue[curr];
-  //       }
-  //       return prev;
-  //     },
-  //     {},
-  //   );
-  //   setValue(parentName, parentValue);
-  // };
 
   useEffect(() => {
     if (!formRef.current) return;
