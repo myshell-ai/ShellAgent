@@ -9,12 +9,13 @@ import {
   variablesSchema,
 } from './protocol';
 
-export const edgesSchema = z.array(
-  z.object({
-    source: z.string(),
-    target: z.string(),
-  }),
-);
+export const edgeSchema = z.object({
+  source: customKeySchema,
+  target: customKeySchema,
+});
+export type Edge = z.infer<typeof edgeSchema>;
+
+export const edgesSchema = z.array(edgeSchema);
 
 export type Edges = z.infer<typeof edgesSchema>;
 
@@ -112,7 +113,17 @@ export const removeRefOptsSchema = z.object({
 });
 
 export const removeRefOptsPrefixScheam = z.object({
-  prefix: z.string(),
+  prefix: z.array(z.string()),
+});
+
+export const removeEdgeScheam = z.object({
+  edges: edgesSchema,
+  removeEdge: edgeSchema,
+});
+
+export const duplicateStateSchema = z.object({
+  stateName: customKeySchema,
+  duplicateStateName: customKeySchema,
 });
 
 export const handleRefSceneSchema = z.union([
@@ -155,16 +166,18 @@ export const handleRefSceneSchema = z.union([
     params: removeRefOptsSchema,
   }),
   z.object({
-    scene: z
-      .literal('remove_ref_opts_prefix')
-      .describe('shortcut of remove_ref_opt'),
+    scene: z.literal('remove_ref_opts_prefix'),
     params: removeRefOptsPrefixScheam,
   }),
   z.object({
-    scene: z.literal('remove_edge').describe('shortcut of remove_ref_opt'),
+    scene: z
+      .literal('remove_edge')
+      .describe('shortcut of remove_ref_opt_prefix'),
+    params: removeEdgeScheam,
   }),
   z.object({
-    scene: z.literal('reorder_task'),
+    scene: z.literal('duplicate_state'),
+    params: duplicateStateSchema,
   }),
 ]);
 

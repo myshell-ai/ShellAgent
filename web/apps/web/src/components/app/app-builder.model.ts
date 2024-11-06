@@ -57,6 +57,6 @@ export class AppBuilderModel {
   }
 
   hanldeRefScene(evt: HandleRefSceneEvent) {
-    hanldeRefScene(this.refs, evt);
+    this.refs = hanldeRefScene(this.refs, evt);
   }
 }

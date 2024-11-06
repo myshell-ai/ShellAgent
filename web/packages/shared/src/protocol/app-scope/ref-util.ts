@@ -1,5 +1,5 @@
 import { CustomKey, CustomEventName } from '@shellagent/pro-config';
-import { Scopes } from './protocol';
+import { customKeySchema, Scopes } from './protocol';
 import {
   changNodedataModeParamSchema,
   Edges,
@@ -16,9 +16,13 @@ import {
   renameStateNameParamSchema,
   renameStateOutputParamSchema,
   setNodedataKeyValParamSchema,
+  removeEdgeScheam,
+  Edge,
+  duplicateStateSchema,
 } from './scope';
 import { reservedStateNameSchema } from '../node';
 import {
+  cloneDeep,
   isEmpty,
   isNumber,
   mapKeys,
@@ -92,11 +96,11 @@ export function getRefOptions(
   function assignButtonsPayload() {
     const state = scopes.scopes.states[stateName];
     if (state == null) throw new Error(`cannot find ${stateName} in scopes`);
+    if (refType === 'target_input' && eventKey == null)
+      throw new Error(`should provide eventKey if refType is target_input`);
 
     const buttons = state.children.outputs.render.buttons;
-    if (eventKey) {
-      ret.local.buttons = pickBy(buttons, button => button?.event === eventKey);
-    }
+    ret.local.buttons = pickBy(buttons, button => button?.event === eventKey);
   }
 
   function assignAncestralStatesOutput() {
@@ -147,6 +151,27 @@ export function getRefOptions(
     const tasks = state.children.tasks;
     ret.local.tasks = tasks;
   }
+}
+
+export function findDescendants(
+  edges: Edges,
+  stateName: CustomKey,
+): CustomKey[] {
+  const descendants: CustomKey[] = [];
+  const visited = new Set<CustomKey>();
+
+  function dfs(currentNode: string) {
+    for (const edge of edges) {
+      if (edge.source === currentNode && !visited.has(edge.target)) {
+        visited.add(edge.target);
+        descendants.push(edge.target);
+        dfs(edge.target);
+      }
+    }
+  }
+
+  dfs(stateName);
+  return descendants;
 }
 
 export function findAncestors(edges: Edges, stateName: CustomKey): CustomKey[] {
@@ -206,37 +231,6 @@ export function setNodedataKeyVal(
           delete v2.raw;
         } else if (mode === 'ui') {
           delete v2.ref;
-          delete v2.raw;
-        }
-        return v2;
-      });
-    } else {
-      return v1;
-    }
-  });
-}
-
-export function deleteRefer(refs: Refs, stateName: string, refer: string) {
-  return mapValues(refs, (v1, k1) => {
-    if (k1 === stateName) {
-      return mapValues(v1, (v2, k2) => {
-        if (v2.ref === refer) {
-          delete v2.ref;
-        }
-        if (Array.isArray(v2.ui)) {
-          v2.ui = v2.ui
-            .map(i => (i === refer ? null : i))
-            .filter(i => i != null) as string[];
-        }
-        if (!v2.ui?.length) {
-          delete v2.ui;
-        }
-        if (Array.isArray(v2.raw)) {
-          v2.raw = v2.raw
-            .map(i => (i === refer ? null : i))
-            .filter(i => i != null) as string[];
-        }
-        if (!v2.raw?.length) {
           delete v2.raw;
         }
         return v2;
@@ -390,28 +384,31 @@ export function removeRefOpts(
   });
 }
 
-export function removeButton(
+export function removeRefOptsPrefix(
   refs: Refs,
   param: z.infer<typeof removeRefOptsPrefixScheam>,
 ) {
   const { prefix } = param;
   return mapValues(refs, (v, k) => {
     let v2ret = mapValues(v, (v2, k2) => {
-      if (v2.ref && v2.ref.startsWith(prefix)) {
-        delete v2.ref;
+      if (v2.ref != null) {
+        const v2Ref = v2.ref;
+        if (prefix.some(p => v2Ref.startsWith(p))) {
+          delete v2.ref;
+        }
       }
       if (Array.isArray(v2.ui)) {
         v2.ui = v2.ui
-          .map(i => (i.startsWith(prefix) ? null : i))
-          .filter(i => i != null) as string[];
+          .map(i => (prefix.some(p => i.startsWith(p)) ? null : i))
+          .filter((i): i is string => i !== null);
       }
       if (!v2.ui?.length) {
         delete v2.ui;
       }
       if (Array.isArray(v2.raw)) {
         v2.raw = v2.raw
-          .map(i => (i.startsWith(prefix) ? null : i))
-          .filter(i => i != null) as string[];
+          .map(i => (prefix.some(p => i.startsWith(p)) ? null : i))
+          .filter((i): i is string => i !== null);
       }
       if (!v2.raw?.length) {
         delete v2.raw;
@@ -423,4 +420,138 @@ export function removeButton(
   });
 }
 
-export function hanldeRefScene(refs: Refs, evt: HandleRefSceneEvent) {}
+export function getBeforeAndAfterNodes(
+  edges: Edges,
+  toRemoveEdge: Edge,
+): { before: CustomKey[]; after: CustomKey[] } {
+  const before = findAncestors(edges, toRemoveEdge.source);
+  const after = findDescendants(edges, toRemoveEdge.target);
+  return {
+    before: before.concat([toRemoveEdge.source]),
+    after: after.concat([toRemoveEdge.target]),
+  };
+}
+
+export function removeEdge(
+  refs: Refs,
+  param: z.infer<typeof removeEdgeScheam>,
+) {
+  const { edges, removeEdge } = param;
+  const { before, after } = getBeforeAndAfterNodes(edges, removeEdge);
+
+  const prefix = before;
+
+  return mapValues(refs, (v, k) => {
+    if (after.indexOf(k as CustomKey) === -1) {
+      return v;
+    }
+    let v2ret = mapValues(v, (v2, k2) => {
+      if (v2.ref != null) {
+        const v2Ref = v2.ref;
+        if (prefix.some(p => v2Ref.startsWith(p))) {
+          delete v2.ref;
+        }
+      }
+      if (Array.isArray(v2.ui)) {
+        v2.ui = v2.ui
+          .map(i => (prefix.some(p => i.startsWith(p)) ? null : i))
+          .filter((i): i is string => i !== null);
+      }
+      if (!v2.ui?.length) {
+        delete v2.ui;
+      }
+      if (Array.isArray(v2.raw)) {
+        v2.raw = v2.raw
+          .map(i => (prefix.some(p => i.startsWith(p)) ? null : i))
+          .filter((i): i is string => i !== null);
+      }
+      if (!v2.raw?.length) {
+        delete v2.raw;
+      }
+      return v2;
+    });
+    v2ret = omitBy(v2ret, isEmpty);
+    return v2ret;
+  });
+}
+
+export function duplicateState(
+  refs: Refs,
+  params: z.infer<typeof duplicateStateSchema>,
+) {
+  const { stateName, duplicateStateName } = params;
+  if (refs[duplicateStateName]) {
+    throw new Error(`${duplicateStateName} already exists`);
+  }
+
+  if (!isEmpty(refs[stateName])) {
+    const ref = cloneDeep(refs[stateName]);
+    refs[duplicateStateName] = mapValues(ref, (v, k) => {
+      if (v.ref && v.ref.startsWith(stateName)) {
+        v.ref = [duplicateStateName, v.ref.split('.')[1]].join('.');
+      }
+
+      if (v.raw != null && Array.isArray(v.raw)) {
+        v.raw = v.raw.map(i => {
+          if (i.startsWith(stateName)) {
+            return [duplicateStateName, i.split('.')[1]].join('.');
+          } else {
+            return i;
+          }
+        });
+      }
+      if (v.ui != null && Array.isArray(v.ui)) {
+        v.ui = v.ui.map(i => {
+          if (i.startsWith(stateName)) {
+            return [duplicateStateName, i.split('.')[1]].join('.');
+          } else {
+            return i;
+          }
+        });
+      }
+
+      return v;
+    });
+  }
+  return refs;
+}
+
+export function hanldeRefScene(refs: Refs, evt: HandleRefSceneEvent) {
+  switch (evt.scene) {
+    case 'set_nodedata_key_val':
+      return setNodedataKeyVal(refs, evt.params);
+
+    case 'rename_nodedata_key':
+      return renameNodedataKey(refs, evt.params);
+
+    case 'change_nodedata_mode':
+      return changeNodedataKeyMode(refs, evt.params);
+
+    case 'remove_nodedata_key':
+      return removeNodeKey(refs, evt.params);
+
+    case 'rename_ref_opt':
+      return renameRefOpt(refs, evt.params);
+
+    case 'rename_state_name':
+      return renameStateName(refs, evt.params);
+
+    case 'rename_state_output':
+      return renameStateOutput(refs, evt.params);
+
+    case 'remove_ref_opts':
+      return removeRefOpts(refs, evt.params);
+
+    case 'remove_ref_opts_prefix':
+      return removeRefOptsPrefix(refs, evt.params);
+
+    case 'remove_edge':
+      return removeEdge(refs, evt.params);
+
+    case 'duplicate_state':
+      return duplicateState(refs, evt.params);
+    default:
+      // @ts-expect-error
+      throw new Error(`Not implemented, ${evt.scene}`);
+  }
+}
