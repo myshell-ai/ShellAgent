@@ -219,8 +219,8 @@ export const scopesSchema = z.object({
     }),
     edges: z.array(
       z.object({
-        target: z.string(),
-        source: z.string(),
+        target: customKeySchema,
+        source: customKeySchema,
       }),
     ),
     states: z.record(customKeySchema, stateSchema),
