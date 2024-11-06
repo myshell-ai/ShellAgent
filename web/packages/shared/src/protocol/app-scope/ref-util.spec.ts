@@ -2,13 +2,10 @@ import { scopesSchema } from './protocol';
 import {
   findAncestors,
   getRefOptions,
-  renameNodedataKey,
   changeNodedataKeyMode,
   setNodedataKeyVal,
   renameRefOpt,
   renameStateName,
-  renameStateOutput,
-  removeNodeKey,
   removeRefOpts,
   removeRefOptsPrefix,
   removeEdge,
@@ -871,53 +868,6 @@ state#3
   });
 
   describe('refs', () => {
-    // 被引用对象
-    it('rename nodedata key', () => {
-      const refs = refsSchema.parse({
-        state_1: {
-          'outputs.outputs1-1': {
-            ref: 'context.global_111',
-          },
-          'outputs.outputs21': {
-            ref: 'context.global_111',
-          },
-        },
-        state_2: {
-          'message.text': {
-            ref: 'state_1.outputs.output1',
-          },
-        },
-        state_2_1: {
-          // 'message.text': 'state_1.outputs.output1',
-        },
-      });
-
-      const ret = renameNodedataKey(refs, {
-        stateName: 'state_1',
-        oldKey: 'outputs.outputs1-1',
-        newKey: 'outputs.outputs1',
-      });
-
-      expect(ret).toMatchInlineSnapshot(`
-        {
-          "state_1": {
-            "outputs.outputs1": {
-              "ref": "context.global_111",
-            },
-            "outputs.outputs21": {
-              "ref": "context.global_111",
-            },
-          },
-          "state_2": {
-            "message.text": {
-              "ref": "state_1.outputs.output1",
-            },
-          },
-          "state_2_1": {},
-        }
-      `);
-    });
-
     describe('update ref value', () => {
       it('ref', () => {
         const refs = refsSchema.parse({
@@ -1107,49 +1057,6 @@ state#3
       `);
     });
 
-    it('rename state output', () => {
-      const refs = refsSchema.parse({
-        state_2: {
-          'outputs.output1': {
-            ref: 'state_1.output1',
-          },
-          'message.text': {
-            ui: ['state_1.output1', 'state_1.output2'],
-          },
-          'message.image': {
-            raw: ['context.global_a', 'state_1.output1'],
-          },
-        },
-      });
-
-      const ret = renameStateOutput(refs, {
-        stateName: 'state_1',
-        oldOutputName: 'output1',
-        newOutputName: 'output_a',
-      });
-      expect(ret).toMatchInlineSnapshot(`
-        {
-          "state_2": {
-            "message.image": {
-              "raw": [
-                "context.global_a",
-                "state_1.output_a",
-              ],
-            },
-            "message.text": {
-              "ui": [
-                "state_1.output_a",
-                "state_1.output2",
-              ],
-            },
-            "outputs.output1": {
-              "ref": "state_1.output_a",
-            },
-          },
-        }
-      `);
-    });
-
     it('change nodedata key mode', () => {
       const refs = refsSchema.parse({
         state_1: {
@@ -1194,45 +1101,6 @@ state#3
           "state_2": {
             "message.text": {
               "ref": "state_1.outputs.output1",
-            },
-          },
-        }
-      `);
-    });
-
-    it('remove node key', () => {
-      const refs = refsSchema.parse({
-        state_2: {
-          'outputs.output1': {
-            ref: 'state_1.output1',
-          },
-          'message.text': {
-            ui: ['state_1.output1', 'state_1.output2'],
-          },
-          'message.image': {
-            raw: ['context.global_a', 'state_1.output1'],
-          },
-        },
-      });
-      const ret = removeNodeKey(refs, {
-        stateName: 'state_2',
-        key: 'outputs.output1',
-      });
-
-      expect(ret).toMatchInlineSnapshot(`
-        {
-          "state_2": {
-            "message.image": {
-              "raw": [
-                "context.global_a",
-                "state_1.output1",
-              ],
-            },
-            "message.text": {
-              "ui": [
-                "state_1.output1",
-                "state_1.output2",
-              ],
             },
           },
         }

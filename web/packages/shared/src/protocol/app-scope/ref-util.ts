@@ -1,5 +1,5 @@
 import { CustomKey, CustomEventName } from '@shellagent/pro-config';
-import { customKeySchema, Scopes } from './protocol';
+import { Scopes } from './protocol';
 import {
   changNodedataModeParamSchema,
   Edges,
@@ -9,12 +9,9 @@ import {
   Refs,
   RefType,
   removeRefOptsPrefixScheam,
-  removeNodeKeySchema,
   removeRefOptsSchema,
-  renameNodedataKeyParamSchema,
   renameRefOptParamSchema,
   renameStateNameParamSchema,
-  renameStateOutputParamSchema,
   setNodedataKeyValParamSchema,
   removeEdgeScheam,
   Edge,
@@ -25,9 +22,7 @@ import {
   cloneDeep,
   isEmpty,
   isNumber,
-  mapKeys,
   mapValues,
-  omit,
   omitBy,
   pickBy,
 } from 'lodash-es';
@@ -190,21 +185,21 @@ export function findAncestors(edges: Edges, stateName: CustomKey): CustomKey[] {
   return Array.from(ancestors) as CustomKey[];
 }
 
-export function renameNodedataKey(
-  refs: Refs,
-  params: z.infer<typeof renameNodedataKeyParamSchema>,
-): Refs {
-  const { stateName, oldKey, newKey } = params;
-  return mapValues(refs, (value, key) => {
-    if (key === stateName) {
-      return mapKeys(value, (v, k) => {
-        return k === oldKey ? newKey : k;
-      });
-    } else {
-      return value;
-    }
-  });
-}
+// export function renameNodedataKey(
+//   refs: Refs,
+//   params: z.infer<typeof renameNodedataKeyParamSchema>,
+// ): Refs {
+//   const { stateName, oldKey, newKey } = params;
+//   return mapValues(refs, (value, key) => {
+//     if (key === stateName) {
+//       return mapKeys(value, (v, k) => {
+//         return k === oldKey ? newKey : k;
+//       });
+//     } else {
+//       return value;
+//     }
+//   });
+// }
 
 export function setNodedataKeyVal(
   refs: Refs,
@@ -322,31 +317,6 @@ export function renameStateName(
       }
       return v2;
     });
-  });
-}
-
-export function renameStateOutput(
-  refs: Refs,
-  param: z.infer<typeof renameStateOutputParamSchema>,
-): Refs {
-  const { stateName, oldOutputName, newOutputName } = param;
-  return renameRefOpt(refs, {
-    oldPath: [stateName, oldOutputName].join('.'),
-    newPath: [stateName, newOutputName].join('.'),
-  });
-}
-
-export function removeNodeKey(
-  refs: Refs,
-  param: z.infer<typeof removeNodeKeySchema>,
-) {
-  const { stateName, key } = param;
-  return mapValues(refs, (v, k) => {
-    if (k === stateName) {
-      return omit(v, key);
-    } else {
-      return v;
-    }
   });
 }
 
@@ -521,23 +491,14 @@ export function hanldeRefScene(refs: Refs, evt: HandleRefSceneEvent) {
     case 'set_nodedata_key_val':
       return setNodedataKeyVal(refs, evt.params);
 
-    case 'rename_nodedata_key':
-      return renameNodedataKey(refs, evt.params);
-
     case 'change_nodedata_mode':
       return changeNodedataKeyMode(refs, evt.params);
-
-    case 'remove_nodedata_key':
-      return removeNodeKey(refs, evt.params);
 
     case 'rename_ref_opt':
       return renameRefOpt(refs, evt.params);
 
     case 'rename_state_name':
       return renameStateName(refs, evt.params);
-
-    case 'rename_state_output':
-      return renameStateOutput(refs, evt.params);
 
     case 'remove_ref_opts':
       return removeRefOpts(refs, evt.params);

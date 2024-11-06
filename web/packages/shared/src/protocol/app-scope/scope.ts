@@ -1,10 +1,8 @@
 import { z } from 'zod';
 import {
   buttonsSchema,
-  customEventSchema,
   customKeySchema,
   outputVariablesSchema,
-  stateSchema,
   taskSchema,
   variablesSchema,
 } from './protocol';
@@ -75,11 +73,11 @@ export const setNodedataKeyValParamSchema = z.object({
   origVal: z.string().optional(),
 });
 
-export const renameNodedataKeyParamSchema = z.object({
-  stateName: customKeySchema,
-  oldKey: z.string(),
-  newKey: z.string(),
-});
+// export const renameNodedataKeyParamSchema = z.object({
+//   stateName: customKeySchema,
+//   oldKey: z.string(),
+//   newKey: z.string(),
+// });
 
 export const changNodedataModeParamSchema = z.object({
   stateName: customKeySchema,
@@ -92,20 +90,9 @@ export const renameStateNameParamSchema = z.object({
   newName: z.string(),
 });
 
-export const renameStateOutputParamSchema = z.object({
-  stateName: customKeySchema,
-  oldOutputName: z.string(),
-  newOutputName: z.string(),
-});
-
 export const renameRefOptParamSchema = z.object({
   oldPath: z.string(),
   newPath: z.string(),
-});
-
-export const removeNodeKeySchema = z.object({
-  stateName: customKeySchema,
-  key: z.string(),
 });
 
 export const removeRefOptsSchema = z.object({
@@ -143,24 +130,16 @@ export const RefSceneEnum = z.enum([
 export type RefScene = z.infer<typeof RefSceneEnum>;
 
 export const handleRefSceneSchema = z.union([
-  // nodedata
+  // nodedata change form item value
   z.object({
     scene: z.literal('set_nodedata_key_val'),
     params: setNodedataKeyValParamSchema,
   }),
   z.object({
-    scene: z.literal('rename_nodedata_key'),
-    params: renameNodedataKeyParamSchema,
-  }),
-  z.object({
     scene: z.literal('change_nodedata_mode'),
     params: changNodedataModeParamSchema,
   }),
-  z.object({
-    scene: z.literal('remove_nodedata_key'),
-    params: removeNodeKeySchema,
-  }),
-  // ref
+  // ref update ref option key, should traverse all refs to find and replace
   z.object({
     scene: z.literal('rename_ref_opt'),
     params: renameRefOptParamSchema,
@@ -170,12 +149,6 @@ export const handleRefSceneSchema = z.union([
       .literal('rename_state_name')
       .describe('shortcut of rename_ref_opt'),
     params: renameStateNameParamSchema,
-  }),
-  z.object({
-    scene: z
-      .literal('rename_state_output')
-      .describe('shortcut of rename_ref_opt'),
-    params: renameStateOutputParamSchema,
   }),
   z.object({
     scene: z.literal('remove_ref_opts'),
