@@ -152,7 +152,7 @@ export function convertRefOptsToCascaderOpts(
             ([payloadKey, payload]) => {
               return {
                 label: payload?.display_name || payloadKey,
-                value: `{{ ${payloadKey} }}`,
+                value: `{{ payload.${payloadKey} }}`,
                 field_type: payload?.type,
               };
             },

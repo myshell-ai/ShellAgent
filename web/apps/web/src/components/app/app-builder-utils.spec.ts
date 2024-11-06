@@ -499,7 +499,7 @@ describe('app builder utils', () => {
                     {
                       "field_type": "text",
                       "label": "Input B",
-                      "value": "{{ input_b }}",
+                      "value": "{{ payload.input_b }}",
                     },
                   ],
                   "label": "button_a",
