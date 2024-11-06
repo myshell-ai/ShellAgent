@@ -11,18 +11,18 @@ import {
   saveSettingEnvFormUrl,
   SettingEnvFormValue,
   DefaultEnvs,
+  DefaultEnvsMap,
 } from './settings-definitions';
 
 export type SidebarValue = 'Environment' | 'SoftwareUpdate';
 
 const formatEnvs2Form = (envs: SettingEnvFormValue['envs']) => {
   const keysMap = new Map(envs.map(item => [item.key, item]));
-  const extraKeys = new Set(DefaultEnvs.map(item => item.name));
   const result = DefaultEnvs.map(
     ({ name }) => keysMap.get(name) || { key: name, value: '' },
   );
   envs.forEach(item => {
-    if (!extraKeys.has(item.key)) {
+    if (!DefaultEnvsMap.has(item.key)) {
       result.push(item);
     }
   });

@@ -20,8 +20,13 @@ import { observer } from 'mobx-react-lite';
 import { useEffect } from 'react';
 import Markdown from 'react-markdown';
 import { Box, Flex } from 'react-system';
+import { toast } from 'react-toastify';
 
-import { SettingEnvFormValue, DefaultEnvs } from './settings-definitions';
+import {
+  SettingEnvFormValue,
+  DefaultEnvs,
+  DefaultEnvsMap,
+} from './settings-definitions';
 import { SettingsSideBar } from './settings-sidebar';
 import { SettingsModel } from './settings.model';
 
@@ -96,6 +101,24 @@ export const EnvForm = observer(() => {
                                 <Input
                                   size="large"
                                   {...field}
+                                  onChange={e => {
+                                    if (
+                                      DefaultEnvsMap.has(e.target.value?.trim())
+                                    ) {
+                                      toast.error(
+                                        `The value "${e.target.value}" is not allowed!`,
+                                        {
+                                          position: 'top-center',
+                                          autoClose: 1000,
+                                          hideProgressBar: true,
+                                          pauseOnHover: true,
+                                          closeButton: false,
+                                        },
+                                      );
+                                    } else {
+                                      field.onChange(e);
+                                    }
+                                  }}
                                   onBlur={() => form.submitForm()}
                                   placeholder="Environment key"
                                 />

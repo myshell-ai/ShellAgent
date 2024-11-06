@@ -39,3 +39,5 @@ export const DefaultEnvs = [
     hidden: true,
   },
 ];
+
+export const DefaultEnvsMap = new Set(DefaultEnvs.map(item => item.name));
