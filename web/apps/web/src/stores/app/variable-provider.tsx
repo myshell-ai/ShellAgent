@@ -147,7 +147,7 @@ export const VariableProvider: React.FC<VariableProviderProps> = ({
         children: Object.entries(payload).map(
           ([value, data]: [string, any]) => ({
             label: data?.name,
-            value,
+            value: `payload.${value}`,
             field_type: 'string',
           }),
         ),
