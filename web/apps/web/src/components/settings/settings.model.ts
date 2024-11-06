@@ -30,15 +30,13 @@ const formatEnvs2Form = (envs: SettingEnvFormValue['envs']) => {
 };
 
 const formatEnvs2Api = (envs: SettingEnvFormValue['envs']) => {
-  return envs.map(item => {
-    const key = item.key.trim();
-    let value = item.value;
+  return envs.map(({ key, value }) => {
     // HTTPS_PROXY / HTTPS_PROXYS
     if (key === 'HTTPS_PROXY') {
-      value = envs.find(env => env.key === 'HTTP_PROXY')?.value || value;
+      value = envs.find(env => env.key === 'HTTP_PROXY')?.value || '';
     }
     return {
-      key,
+      key: key.trim(),
       value: value.trim(),
     };
   });
