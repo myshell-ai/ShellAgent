@@ -126,6 +126,22 @@ export const duplicateStateSchema = z.object({
   duplicateStateName: customKeySchema,
 });
 
+export const RefSceneEnum = z.enum([
+  'set_nodedata_key_val',
+  'rename_nodedata_key',
+  'change_nodedata_mode',
+  'remove_nodedata_key',
+  'rename_ref_opt',
+  'rename_state_name',
+  'rename_state_output',
+  'remove_ref_opts',
+  'remove_ref_opts_prefix',
+  'remove_edge',
+  'duplicate_state',
+]);
+
+export type RefScene = z.infer<typeof RefSceneEnum>;
+
 export const handleRefSceneSchema = z.union([
   // nodedata
   z.object({
