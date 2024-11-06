@@ -287,7 +287,7 @@ async def check_repo_status():
         except KeyError:
             # If branch not found, raise HTTP exception
             raise HTTPException(
-                status_code=404, 
+                status_code=400, 
                 detail=f"Branch '{branch}' not found in remote repository"
             )
     else:
