@@ -32,7 +32,12 @@ export type VariableType = PrimitiveVariableType | CompoundType;
 export const variableTypeSchema = z
   .custom<VariableType>()
   .superRefine((arg, ctx) => {
-    if (arg.indexOf('|') === -1) {
+    if (arg == null) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: `should not be empty`,
+      });
+    } else if (arg.indexOf('|') === -1) {
       const ret = primitiveVariableTypeSchema.safeParse(arg);
       if (!ret.success) {
         ret.error?.issues.forEach(iss => ctx.addIssue(iss));

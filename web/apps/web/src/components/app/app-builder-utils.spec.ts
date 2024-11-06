@@ -906,5 +906,76 @@ describe('app builder utils', () => {
         }
       `);
     });
+
+    it('case#3', () => {
+      const nodeData = {
+        '@@@start': {
+          id: '@@@start',
+          type: 'start',
+          context: {
+            qweqweqwe: {
+              type: 'text',
+              value: '',
+              name: 'qweqweqwe',
+            },
+            aaaaa: {
+              type: 'text',
+              value: '',
+              name: 'aaaaa',
+            },
+            ccccc: {
+              type: 'text',
+              value: '',
+              name: 'ccccc',
+            },
+            'bbbb_asad_@as_hhh': {
+              type: 'text',
+              value: '',
+              name: '阿珂建设南大街卡',
+            },
+          },
+        },
+        state_1: {
+          blocks: [],
+          transition: {},
+          id: 'state_1',
+          name: 'State#1',
+          type: 'state',
+          inputs: {
+            '1111': {
+              name: '1111',
+              type: 'text',
+              user_input: true,
+            },
+            '2222': {
+              name: '2222_1',
+            },
+            '2222_': {
+              name: '2222_',
+              type: 'text',
+              user_input: true,
+            },
+          },
+          outputs: {},
+          render: {},
+        },
+      };
+      expect(() => convetNodeDataToScopes(nodeData, []))
+        .toThrowErrorMatchingInlineSnapshot(`
+        "[
+          {
+            "code": "custom",
+            "message": "should not be empty",
+            "path": [
+              "children",
+              "inputs",
+              "variables",
+              "2222",
+              "type"
+            ]
+          }
+        ]"
+      `);
+    });
   });
 });
