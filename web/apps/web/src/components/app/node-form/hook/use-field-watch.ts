@@ -1,7 +1,10 @@
 import { useFormContext, useWatch } from '@shellagent/ui';
 import { useFormEngineContext, TValues } from '@shellagent/form-engine';
 import { reservedKeySchema } from '@shellagent/shared/protocol/pro-config';
+import { RefSceneEnum } from '@shellagent/shared/protocol/app-scope';
 import { customSnakeCase } from '@shellagent/shared/utils';
+import { useInjection } from 'inversify-react';
+import { AppBuilderModel } from '@/components/app/app-builder.model';
 
 import { FormRef } from '@shellagent/ui';
 import { useEffect, useRef, useCallback } from 'react';
@@ -19,6 +22,7 @@ export function useFieldWatch(
   },
 ) {
   const prevValuesRef = useRef<Map<string, TValues | undefined>>(new Map());
+  const appBuilder = useInjection(AppBuilderModel);
 
   const handleChange = useCallback(
     (newValue: TValues, prevValue?: TValues, name?: string) => {
