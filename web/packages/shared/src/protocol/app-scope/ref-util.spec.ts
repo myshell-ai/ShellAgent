@@ -1427,5 +1427,30 @@ state#3
         }
       `);
     });
+    it('case#2', () => {
+      const refs = {
+        state_1: {
+          'render.text': {
+            ref: '',
+          },
+        },
+      };
+      const evt = {
+        scene: 'change_nodedata_mode',
+        params: {
+          stateName: 'state_1',
+          mode: 'ref',
+        } as const,
+      };
+      expect(() => {
+        hanldeRefScene(refs, {
+          scene: 'change_nodedata_mode',
+          // @ts-expect-error
+          params: evt.params,
+        });
+      }).toThrowErrorMatchingInlineSnapshot(
+        `"key should not be empty: state_1, ref"`,
+      );
+    });
   });
 });

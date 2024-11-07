@@ -255,6 +255,8 @@ export function changeNodedataKeyMode(
   param: z.infer<typeof changNodedataModeParamSchema>,
 ): Refs {
   const { stateName, mode, key } = param;
+  if (key == undefined)
+    throw new Error(`key should not be empty: ${stateName}, ${mode}`);
   return mapValues(refs, (v1, k1) => {
     if (k1 === stateName) {
       return mapValues(v1, (v2, k2) => {
