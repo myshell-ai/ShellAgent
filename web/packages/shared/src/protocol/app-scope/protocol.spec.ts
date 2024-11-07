@@ -685,4 +685,37 @@ describe('scopes', () => {
       },
     });
   });
+  it('case#1', () => {
+    expect(() => {
+      stateSchema.parse({
+        name: 'state_1',
+        display_name: 'State#1',
+        children: {
+          inputs: {
+            variables: {
+              1111: { type: 'text', display_name: '1111' },
+              2222: { type: undefined, display_name: '2222_1' },
+              '2222_': { type: 'text', display_name: '2222_' },
+            },
+          },
+          tasks: [],
+          outputs: { variables: {}, render: { buttons: {} } },
+        },
+      });
+    }).toThrowErrorMatchingInlineSnapshot(`
+      "[
+        {
+          "code": "custom",
+          "message": "should not be empty",
+          "path": [
+            "children",
+            "inputs",
+            "variables",
+            "2222",
+            "type"
+          ]
+        }
+      ]"
+    `);
+  });
 });
