@@ -13,6 +13,7 @@ import {
   getBeforeAndAfterNodes,
   duplicateState,
   hanldeRefScene,
+  removeEmptyLeaves,
 } from './ref-util';
 import { Edge, Edges, edgeSchema, edgesSchema, refsSchema } from './scope';
 
@@ -949,17 +950,14 @@ state#3
         const ret = setNodedataKeyVal(refs, {
           stateName: 'state_1',
           key: 'outputs.outputs1-1',
-          newValue: 'context.global_a',
+          newValue: ['context.global_a'],
           mode: 'ui',
-          origVal: 'context.global_111',
         });
         expect(ret).toMatchInlineSnapshot(`
           {
             "state_1": {
               "outputs.outputs1-1": {
                 "ui": [
-                  "context.global_a",
-                  "context.global_222",
                   "context.global_a",
                 ],
               },
@@ -1427,6 +1425,77 @@ state#3
         }
       `);
     });
+
+    it('case#1-1', () => {
+      const input = {
+        scene: 'set_nodedata_key_val',
+        params: {
+          stateName: 'state_1',
+          key: 'render.text',
+          newValue: '{{ context.test_a }}',
+          mode: 'ref',
+        } as const,
+      };
+      const rets = hanldeRefScene(
+        {
+          state_1: {
+            'render.text': {},
+          },
+        },
+        {
+          scene: 'set_nodedata_key_val',
+          params: input.params,
+        },
+      );
+      expect(rets).toMatchInlineSnapshot(`
+        {
+          "state_1": {
+            "render.text": {
+              "ref": "{{ context.test_a }}",
+            },
+          },
+        }
+      `);
+    });
+    it('case#1-2', () => {
+      const input = {
+        scene: 'set_nodedata_key_val',
+        params: {
+          stateName: 'state_1',
+          key: 'render.text',
+          newValue: [
+            '{{ context.test_a }}',
+            '{{ context.test_b }}',
+          ] as string[],
+          mode: 'ui',
+        } as const,
+      };
+      const rets = hanldeRefScene(
+        {
+          state_1: {
+            'render.text': {
+              ui: [],
+            },
+          },
+        },
+        {
+          scene: 'set_nodedata_key_val',
+          params: input.params,
+        },
+      );
+      expect(rets).toMatchInlineSnapshot(`
+        {
+          "state_1": {
+            "render.text": {
+              "ui": [
+                "{{ context.test_a }}",
+                "{{ context.test_b }}",
+              ],
+            },
+          },
+        }
+      `);
+    });
     it('case#2', () => {
       const refs = {
         state_1: {
@@ -1451,6 +1520,119 @@ state#3
       }).toThrowErrorMatchingInlineSnapshot(
         `"key should not be empty: state_1, ref"`,
       );
+    });
+
+    it('case#3', () => {
+      const refs = {
+        state_1: {
+          'render.text': {
+            ref: '{{ context.test_a }}',
+          },
+        },
+      };
+      const evt = {
+        scene: 'change_nodedata_mode',
+        params: {
+          stateName: 'state_1',
+          mode: 'ui',
+          key: 'render.text',
+        },
+      } as const;
+      const ret = hanldeRefScene(refs, {
+        scene: 'change_nodedata_mode',
+        params: evt.params,
+      });
+      expect(ret).toMatchInlineSnapshot(`{}`);
+    });
+  });
+
+  describe('removeEmptyLeaves', () => {
+    it('case#1', () => {
+      const refs = {
+        state_1: {
+          'render.text': {},
+        },
+      };
+      const ret = removeEmptyLeaves(refs);
+      expect(ret).toMatchInlineSnapshot(`{}`);
+    });
+
+    it('case#2', () => {
+      const refs = {
+        state_1: {
+          'render.text': {
+            ref: 'hi',
+          },
+        },
+      };
+      const ret = removeEmptyLeaves(refs);
+      expect(ret).toMatchInlineSnapshot(`
+        {
+          "state_1": {
+            "render.text": {
+              "ref": "hi",
+            },
+          },
+        }
+      `);
+    });
+    it('case#3', () => {
+      const refs = {
+        state_1: {
+          'render.text': {},
+          'render.image': {
+            ref: '{{ context.a }}',
+          },
+        },
+      };
+      const ret = removeEmptyLeaves(refs);
+      expect(ret).toMatchInlineSnapshot(`
+        {
+          "state_1": {
+            "render.image": {
+              "ref": "{{ context.a }}",
+            },
+          },
+        }
+      `);
+    });
+
+    it('case#4', () => {
+      const refs = {
+        state_1: {
+          'outputs.outputs1-1': {
+            raw: ['context.global_111'],
+          },
+          'outputs.outputs21': {
+            ref: 'context.global_111',
+          },
+        },
+        state_2: {
+          'message.text': {
+            ref: 'state_1.outputs.output1',
+          },
+        },
+      };
+      const ret = removeEmptyLeaves(refs);
+      expect(ret).toMatchInlineSnapshot(`
+        {
+          "state_1": {
+            "outputs.outputs1-1": {
+              "raw": [
+                "context.global_111",
+              ],
+            },
+            "outputs.outputs21": {
+              "ref": "context.global_111",
+            },
+          },
+          "state_2": {
+            "message.text": {
+              "ref": "state_1.outputs.output1",
+            },
+          },
+        }
+      `);
     });
   });
 });

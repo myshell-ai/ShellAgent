@@ -20,13 +20,18 @@ import {
 import { reservedStateNameSchema } from '../node';
 import {
   cloneDeep,
+  isArray,
   isEmpty,
   isNumber,
+  isObject,
   mapValues,
   omitBy,
   pickBy,
+  set,
+  transform,
 } from 'lodash-es';
 import { z } from 'zod';
+import { Ref } from 'react';
 
 export function getRefOptions(
   scopes: Scopes,
@@ -187,56 +192,17 @@ export function findAncestors(edges: Edges, stateName: CustomKey): CustomKey[] {
   return Array.from(ancestors) as CustomKey[];
 }
 
-// export function renameNodedataKey(
-//   refs: Refs,
-//   params: z.infer<typeof renameNodedataKeyParamSchema>,
-// ): Refs {
-//   const { stateName, oldKey, newKey } = params;
-//   return mapValues(refs, (value, key) => {
-//     if (key === stateName) {
-//       return mapKeys(value, (v, k) => {
-//         return k === oldKey ? newKey : k;
-//       });
-//     } else {
-//       return value;
-//     }
-//   });
-// }
-
 export function setNodedataKeyVal(
   refs: Refs,
   params: z.infer<typeof setNodedataKeyValParamSchema>,
 ): Refs {
-  const { mode, origVal, stateName, key, newValue } = params;
-  if (mode === 'ui' && origVal == null) {
-    throw new Error('Should specify origValue in mode ui');
-  }
-  if (refs[stateName] == null) {
-    let v;
-    if (mode === 'ref') {
-      v = {
-        [mode]: newValue,
-      };
-    } else {
-      v = {
-        [mode]: [newValue],
-      };
-    }
-    refs[stateName] = {
-      [key]: v,
-    };
-  }
+  const { mode, stateName, key, newValue } = params;
+
+  set(refs, [stateName, key, mode], newValue);
+
   return mapValues(refs, (v1, k1) => {
     if (k1 === stateName) {
       return mapValues(v1, (v2, k2) => {
-        if (k2 === key) {
-          if (v2.ref) {
-            v2.ref = newValue;
-          }
-          if (origVal != null && Array.isArray(v2.ui)) {
-            v2.ui = v2.ui.map(i => (i === origVal ? newValue : i));
-          }
-        }
         if (mode === 'ref') {
           delete v2.ui;
           delete v2.raw;
@@ -259,7 +225,8 @@ export function changeNodedataKeyMode(
   const { stateName, mode, key } = param;
   if (key == undefined)
     throw new Error(`key should not be empty: ${stateName}, ${mode}`);
-  return mapValues(refs, (v1, k1) => {
+
+  const ret = mapValues(refs, (v1, k1) => {
     if (k1 === stateName) {
       return mapValues(v1, (v2, k2) => {
         if (k2 === key) {
@@ -282,6 +249,8 @@ export function changeNodedataKeyMode(
       return v1;
     }
   });
+
+  return removeEmptyLeaves(ret) as Refs;
 }
 
 export function renameRefOpt(
@@ -533,4 +502,23 @@ export function hanldeRefScene(refs: Refs, evt: HandleRefSceneEvent) {
       // @ts-expect-error
       throw new Error(`Not implemented, ${evt.scene}`);
   }
+}
+
+export function removeEmptyLeaves(obj: Record<string, unknown>) {
+  return transform(
+    obj,
+    (result: Record<string, unknown>, value, key) => {
+      if (isObject(value) && !isArray(value)) {
+        const cleanedValue = removeEmptyLeaves(
+          value as Record<string, unknown>,
+        );
+        if (!isEmpty(cleanedValue)) {
+          result[key] = cleanedValue;
+        }
+      } else if (!isEmpty(value)) {
+        result[key] = value;
+      }
+    },
+    {},
+  );
 }
