@@ -74,6 +74,8 @@ export function getRefOptions(
       assignStateRender();
       assignButtonsPayload();
       break;
+    case 'state_output_key':
+    // noops
     default: {
       // noops
     }
