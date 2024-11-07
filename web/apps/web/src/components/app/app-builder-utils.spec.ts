@@ -472,7 +472,7 @@ describe('app builder utils', () => {
                 {
                   "field_type": "text",
                   "label": "Global A",
-                  "value": "{{ context.global_a }}",
+                  "value": "__context__global_a__",
                 },
               ],
               "label": "Context",

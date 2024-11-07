@@ -66,19 +66,20 @@ export const refsSchema = z.record(
 
 export type Refs = z.infer<typeof refsSchema>;
 
-export const setNodedataKeyValParamSchema = z.object({
-  stateName: customKeySchema,
-  key: z.string(),
-  newValue: z.string(),
-  mode: z.enum(['ref', 'ui']),
-  origVal: z.string().optional(),
-});
-
-// export const renameNodedataKeyParamSchema = z.object({
-//   stateName: customKeySchema,
-//   oldKey: z.string(),
-//   newKey: z.string(),
-// });
+export const setNodedataKeyValParamSchema = z.union([
+  z.object({
+    mode: z.literal('ref'),
+    stateName: customKeySchema,
+    key: z.string(),
+    newValue: z.string(),
+  }),
+  z.object({
+    mode: z.literal('ui'),
+    stateName: customKeySchema,
+    key: z.string(),
+    newValue: z.array(z.string()),
+  }),
+]);
 
 export const changNodedataModeParamSchema = z.object({
   stateName: customKeySchema,

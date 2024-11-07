@@ -117,11 +117,20 @@ export function convertRefOptsToCascaderOpts(
   Object.entries(refOpts.global).forEach(([key, val]) => {
     const val2 = refOptOutputGlobalSchema.parse(val);
     const children: CascaderOption[] = Object.entries(val2.variables || {}).map(
-      ([variableKey, variable]) => ({
-        label: variable?.display_name || variableKey,
-        value: `{{ ${key}.${variableKey} }}`,
-        field_type: variable?.type,
-      }),
+      ([variableKey, variable]) => {
+        console.log(key);
+        let val;
+        if (key === 'context') {
+          val = `__context__${variableKey}__`;
+        } else {
+          val = `{{ ${key}.${variableKey} }}`;
+        }
+        return {
+          label: variable?.display_name || variableKey,
+          value: val,
+          field_type: variable?.type,
+        };
+      },
     );
 
     if (children.length > 0) {
