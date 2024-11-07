@@ -56,7 +56,8 @@ const ModeOptions: Array<{
 ];
 
 const VariableNameInput = (props: VariableSelectProps) => {
-  const { name, value } = props;
+  const { name, value, onChange } = props;
+  console.log('name>>>>', name);
   const { setValue, getValues } = useFormContext();
   const [mode, setMode] = useState(
     getValues('name_mode') || FieldModeEnum.Enum.ui,
@@ -78,10 +79,12 @@ const VariableNameInput = (props: VariableSelectProps) => {
   const onValueChange = (value: string) => {
     if (value.startsWith('__context__')) {
       const item = options?.find(item => item.value === value);
-      setValue(name, item?.label);
+      // setValue(name, item?.label);
+      onChange?.(item?.label || '');
       setValue('__changeKey__', value);
     } else {
-      setValue(name, value);
+      // setValue(name, value);
+      onChange?.(value);
       if (parent?.startsWith('outputs.__context__') || !value) {
         setValue('__changeKey__', uuid());
       }
@@ -114,10 +117,7 @@ const VariableNameInput = (props: VariableSelectProps) => {
             }
           />
         ) : (
-          <Input
-            onChange={e => onValueChange(e.target.value)}
-            value={value || 'Untitled'}
-          />
+          <Input onChange={e => onValueChange(e.target.value)} value={value} />
         )}
       </div>
       <DropdownMenu>

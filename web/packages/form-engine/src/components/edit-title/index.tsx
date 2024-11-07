@@ -110,7 +110,6 @@ const EditTitle = React.forwardRef<HTMLInputElement, IEditTitleProps>(
         if (__changeKey__) {
           replaceKey(path, __changeKey__, data);
         } else {
-          console.log('.....', path, formData);
           setValue(path, formData);
         }
         setIsOpenDialog(false);
