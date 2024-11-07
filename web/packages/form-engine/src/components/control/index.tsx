@@ -356,6 +356,7 @@ const Control: React.FC<IControlProps> = props => {
                           defaultValue: mode,
                           disabled: xRawDisabled,
                           defaultOptions: xRawOptions,
+                          name,
                         })
                       : null}
                     {xParentDeletable || xDeletable ? (

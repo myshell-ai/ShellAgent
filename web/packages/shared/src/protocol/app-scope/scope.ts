@@ -130,40 +130,40 @@ export type RefScene = z.infer<typeof RefSceneEnum>;
 export const handleRefSceneSchema = z.union([
   // nodedata change form item value
   z.object({
-    scene: z.literal('set_nodedata_key_val'),
+    scene: z.literal(RefSceneEnum.Enum.set_nodedata_key_val),
     params: setNodedataKeyValParamSchema,
   }),
   z.object({
-    scene: z.literal('change_nodedata_mode'),
+    scene: z.literal(RefSceneEnum.Enum.change_nodedata_mode),
     params: changNodedataModeParamSchema,
   }),
   // ref update ref option key, should traverse all refs to find and replace
   z.object({
-    scene: z.literal('rename_ref_opt'),
+    scene: z.literal(RefSceneEnum.Enum.rename_ref_opt),
     params: renameRefOptParamSchema,
   }),
   z.object({
     scene: z
-      .literal('rename_state_name')
+      .literal(RefSceneEnum.Enum.rename_state_name)
       .describe('shortcut of rename_ref_opt'),
     params: renameStateNameParamSchema,
   }),
   z.object({
-    scene: z.literal('remove_ref_opts'),
+    scene: z.literal(RefSceneEnum.Enum.remove_ref_opts),
     params: removeRefOptsSchema,
   }),
   z.object({
-    scene: z.literal('remove_ref_opts_prefix'),
+    scene: z.literal(RefSceneEnum.Enum.remove_ref_opts_prefix),
     params: removeRefOptsPrefixScheam,
   }),
   z.object({
     scene: z
-      .literal('remove_edge')
+      .literal(RefSceneEnum.Enum.remove_edge)
       .describe('shortcut of remove_ref_opt_prefix'),
     params: removeEdgeScheam,
   }),
   z.object({
-    scene: z.literal('duplicate_state'),
+    scene: z.literal(RefSceneEnum.Enum.duplicate_state),
     params: duplicateStateSchema,
   }),
 ]);
