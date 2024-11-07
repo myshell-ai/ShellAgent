@@ -23,6 +23,7 @@ export const refTypeSchema = z.enum([
   'state_output',
   'state_render',
   'target_input',
+  'state_output_key',
 ]);
 
 export type RefType = z.infer<typeof refTypeSchema>;
