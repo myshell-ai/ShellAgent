@@ -20,7 +20,7 @@ export const getSchemaByInputs = (inputs: TValues): ISchema => {
           'x-component': 'FileUpload',
           'x-title-size': 'h4',
           'x-raw': true,
-          // 'x-raw-default': 'ref',
+          'x-raw-default': 'ref',
           'x-component-props': {
             accept: ENABLE_MIME.audio,
           },
@@ -36,7 +36,7 @@ export const getSchemaByInputs = (inputs: TValues): ISchema => {
           'x-type': 'Control',
           'x-component': 'FileUpload',
           'x-raw': true,
-          // 'x-raw-default': 'ref',
+          'x-raw-default': 'ref',
           'x-title-size': 'h4',
           'x-component-props': {
             accept: ENABLE_MIME.image,
@@ -52,6 +52,8 @@ export const getSchemaByInputs = (inputs: TValues): ISchema => {
           'x-layout': 'Vertical',
           'x-type': 'Control',
           'x-component': 'FileUpload',
+          'x-raw': true,
+          'x-raw-default': 'ref',
           'x-title-size': 'h4',
           'x-component-props': {
             accept: ENABLE_MIME.video,
@@ -67,6 +69,8 @@ export const getSchemaByInputs = (inputs: TValues): ISchema => {
           'x-layout': 'Vertical',
           'x-type': 'Control',
           'x-component': 'FileUpload',
+          'x-raw': true,
+          'x-raw-default': 'ref',
           'x-title-size': 'h4',
           'x-component-props': {
             accept: ENABLE_MIME.other,
@@ -83,6 +87,8 @@ export const getSchemaByInputs = (inputs: TValues): ISchema => {
           'x-type': 'Control',
           'x-component': 'FileUpload',
           'x-title-size': 'h4',
+          'x-raw': true,
+          'x-raw-default': 'ref',
           'x-component-props': {
             accept: ENABLE_MIME.all,
           },
