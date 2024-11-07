@@ -134,41 +134,67 @@ export function useFieldWatch(
 
   // 处理 outputs 变化的函数
   const handleOutputsChange = useCallback(
-    debounce((newValue: TValues, prevValue: TValues, outputsKey: string) => {
-      const oldOutputs = get(prevValue, ['outputs', outputsKey]);
-      const newOutputs = get(newValue, ['outputs', outputsKey]);
+    debounce((newValue: TValues, prevValue: TValues, name: string) => {
+      if (name === reservedKeySchema.Enum.outputs) {
+        const oldOuputs: TValues = get(prevValue, name);
+        const newOuputs: TValues = get(newValue, name);
+        const diffPath = getDiffPath(oldOuputs, newOuputs);
+        diffPath.forEach(diff => {
+          switch (diff.type) {
+            case DiffTypeEnum.Deleted:
+              appBuilder.hanldeRefScene({
+                scene: RefSceneEnum.Enum.remove_ref_opts,
+                params: {
+                  paths: [`${stateId}.${name}.${diff.path}`],
+                },
+              });
+              break;
+            default:
+              break;
+          }
+        });
+      } else {
+        const outputName = name.split('.')[1];
+        const prevOutputsValue: TValues = get(prevValue, [
+          reservedKeySchema.Enum.outputs,
+          outputName,
+        ]);
+        const newOutputsValue: TValues = get(newValue, [
+          reservedKeySchema.Enum.outputs,
+          outputName,
+        ]);
 
-      if (oldOutputs?.name && newOutputs?.name) {
-        if (oldOutputs?.name !== newOutputs?.name) {
-          replaceKey(formRef, {
-            parentPath: reservedKeySchema.Enum.outputs,
-            oldKey: outputsKey,
-            newKey: customSnakeCase(newOutputs?.name || ''),
-            value: newOutputs,
-          });
+        if (
+          isString(prevOutputsValue?.name) &&
+          isString(newOutputsValue?.name)
+        ) {
+          if (prevOutputsValue.name !== newOutputsValue.name) {
+            const newKey = customSnakeCase(newOutputsValue.name || '');
+            appBuilder.hanldeRefScene({
+              scene: RefSceneEnum.Enum.rename_ref_opt,
+              params: {
+                oldPath: name,
+                newPath: `${reservedKeySchema.Enum.context}.${newKey}`,
+              },
+            });
+            // todo 会触发DiffTypeEnum.Deleted
+            replaceKey(formRef, {
+              parentPath: reservedKeySchema.Enum.outputs,
+              oldKey: outputName,
+              newKey,
+              value: newOutputsValue,
+            });
+          }
         }
       }
-    }, 300),
+    }, 100),
     [],
   );
 
   // 处理 blocks 变化的函数
   const handleBlocksChange = useCallback(
-    debounce((newValue: TValues, prevValue: TValues, blocksKey: string) => {
-      const oldBlocks = get(prevValue, ['blocks', blocksKey]);
-      const newBlocks = get(newValue, ['blocks', blocksKey]);
-
-      if (oldBlocks?.name && newBlocks?.name) {
-        if (oldBlocks?.name !== newBlocks?.name) {
-          replaceKey(formRef, {
-            parentPath: reservedKeySchema.Enum.blocks,
-            oldKey: blocksKey,
-            newKey: customSnakeCase(newBlocks?.name || ''),
-            value: newBlocks,
-          });
-        }
-      }
-    }, 300),
+    debounce((newValue: TValues, prevValue: TValues, blocksKey: string) => {},
+    300),
     [],
   );
 
@@ -204,11 +230,9 @@ export function useFieldWatch(
     } else if (name.startsWith(reservedKeySchema.Enum.inputs)) {
       handleInputsChange(newValue, prevValue, name);
     } else if (name.startsWith(reservedKeySchema.Enum.outputs)) {
-      const outputsKey = name.split('.')[1];
-      handleOutputsChange(newValue, prevValue, outputsKey);
+      handleOutputsChange(newValue, prevValue, name);
     } else if (name.startsWith(reservedKeySchema.Enum.blocks)) {
-      const blocksKey = name.split('.')[1];
-      handleBlocksChange(newValue, prevValue, blocksKey);
+      handleBlocksChange(newValue, prevValue, name);
     } else if (name.startsWith(reservedKeySchema.Enum.render)) {
       const renderKey = name.split('.')[1];
       handleRenderChange(newValue, prevValue, renderKey);
