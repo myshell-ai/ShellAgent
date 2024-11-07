@@ -236,18 +236,19 @@ export const AppBuilderChat = () => {
         Array.isArray(serverMessage.embedObjs) &&
         serverMessage.embedObjs.length > 0
       ) {
+        const embedObjsTxt = serverMessage.embedObjs
+          .map(i => {
+            const url =
+              typeof i.url === 'string' && i.url.indexOf('https://') > -1
+                ? i.url
+                : `/api/files/${i.url}`;
+            return `<img src="${url}" width="1024" />`;
+          })
+          .join('\n\n');
         displayMessage.text = `
-          ${displayMessage.text}
-          ${serverMessage.embedObjs
-            .map(i => {
-              const url =
-                typeof i.url === 'string' && i.url.indexOf('https://') > -1
-                  ? i.url
-                  : `/api/files/${i.url}`;
-              return `<img src="${url}" width="1024" />`;
-            })
-            .join('\n\n')}
-          `;
+${displayMessage.text}
+${embedObjsTxt}
+`;
       }
       if (serverMessage.componentContainer) {
         const componentContainer =
