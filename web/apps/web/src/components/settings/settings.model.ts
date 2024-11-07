@@ -10,9 +10,37 @@ import {
   loadSettingEnvFormUrl,
   saveSettingEnvFormUrl,
   SettingEnvFormValue,
+  DefaultEnvs,
+  DefaultEnvsMap,
 } from './settings-definitions';
 
 export type SidebarValue = 'Environment' | 'SoftwareUpdate';
+
+const formatEnvs2Form = (envs: SettingEnvFormValue['envs']) => {
+  const keysMap = new Map(envs.map(item => [item.key, item]));
+  const result = DefaultEnvs.map(
+    ({ name }) => keysMap.get(name) || { key: name, value: '' },
+  );
+  envs.forEach(item => {
+    if (!DefaultEnvsMap.has(item.key)) {
+      result.push(item);
+    }
+  });
+  return result;
+};
+
+const formatEnvs2Api = (envs: SettingEnvFormValue['envs']) => {
+  return envs.map(({ key, value }) => {
+    // HTTPS_PROXY / HTTPS_PROXYS
+    if (key === 'HTTPS_PROXY') {
+      value = envs.find(env => env.key === 'HTTP_PROXY')?.value || '';
+    }
+    return {
+      key: key.trim(),
+      value: value.trim(),
+    };
+  });
+};
 
 @injectable()
 export class SettingsModel {
@@ -54,6 +82,8 @@ export class SettingsModel {
   @observable isToRestart = false;
 
   @observable isRestarting = false;
+
+  @observable isLoadLoading = false;
 
   @observable checkRet: Partial<{
     has_new_stable: true;
@@ -235,6 +265,7 @@ export class SettingsModel {
   async loadSettingsEnv() {
     const settingsDisabled = process.env.NEXT_PUBLIC_DISABLE_SETTING === 'yes';
     if (settingsDisabled) return null;
+    this.isLoadLoading = true;
     try {
       const res = await axios.get<SettingEnvFormValue>(loadSettingEnvFormUrl, {
         headers: {
@@ -243,11 +274,17 @@ export class SettingsModel {
       });
       const ret: any = res.data;
       this.envs = new Map();
-      ret?.envs.forEach((item: any) => {
+      const envs = formatEnvs2Form(ret?.envs);
+      envs.forEach((item: any) => {
         this.envs.set(item.key, item.value);
       });
-      return res.data;
+      this.isLoadLoading = false;
+      return {
+        ...res.data,
+        envs,
+      };
     } catch (e: any) {
+      this.isLoadLoading = false;
       this.emitter.emitter.emit('message.error', e.message);
       return null;
     }
@@ -259,11 +296,18 @@ export class SettingsModel {
       value?.envs.forEach((item: any) => {
         this.envs.set(item.key, item.value);
       });
-      await axios.post(saveSettingEnvFormUrl, value, {
-        headers: {
-          'Content-Type': 'application/json',
+      await axios.post(
+        saveSettingEnvFormUrl,
+        {
+          ...value,
+          envs: formatEnvs2Api(value.envs),
         },
-      });
+        {
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        },
+      );
     } catch (e: any) {
       this.emitter.emitter.emit('message.error', e.message);
     }
