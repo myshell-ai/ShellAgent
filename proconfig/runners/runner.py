@@ -20,6 +20,7 @@ from proconfig.core import Automata, Workflow, State
 from proconfig.core.common import GLOBAL_CACHE_MODE
 from proconfig.core.variables import Variable
 from proconfig.core.constant import return_breakpoint_cache_dir
+from proconfig.core.chat import SessionState
 from proconfig.runners.utils import empty_callback_fn, _max_input_len_helper, _get_config_by_index_helper
 
 import psutil
@@ -468,23 +469,23 @@ class Runner(BaseModel):
         self.callback(event_type="state_end", inputs=None, outputs=outputs, create_time=state_start_time, task_status='succeeded', )
         return context, renders, local_vars, output_vars
     
-    def run_automata(self, automata: Automata, sess_state: dict, environ: dict, payload: dict = {}):
+    def run_automata(self, automata: Automata, sess_state: SessionState, payload: dict = {}):
+        environ = sess_state.environ
         # payload includes inputs from the form
-        current_state_name = sess_state.get("current_state", automata.initial)
-        context = sess_state.get("context", automata.context)
+        current_state_name = sess_state.current_state or automata.initial
+        context = sess_state.context or automata.context
         # modify context
-        for k, v in automata.context.items():
+        for k, v in context.items():
             if isinstance(v, Variable):
-                automata.context[k] = v.value
+                context[k] = v.value
         environ[GLOBAL_CACHE_MODE] = automata.properties.cache
-        if "state_outputs" not in sess_state:
-            sess_state["state_outputs"] = {}
+
         while True:
             current_state = automata.blocks[current_state_name]
-            payload.update(sess_state["state_outputs"])
+            payload.update(sess_state.state_outputs)
             context, render, local_vars, output_vars = self.run_state(current_state, context, environ, payload)
             # save the output_vars to sess_state
-            sess_state["state_outputs"][current_state_name] = output_vars
+            sess_state.state_outputs[current_state_name] = output_vars
             payload[current_state_name] = output_vars
             if "ALWAYS" in (current_state.transitions or {}):
                 transition_case = automata.evaluate_conditional_transitions("ALWAYS", current_state.transitions["ALWAYS"], local_vars)
@@ -492,8 +493,8 @@ class Runner(BaseModel):
             else:
                 break
         
-        sess_state["current_state"] = current_state_name
-        sess_state["context"] = context
+        sess_state.current_state = current_state_name
+        sess_state.context = context
         
         # obtain the mapping from event to next_state_name and target_inputs
         event_mapping = {}
@@ -504,14 +505,14 @@ class Runner(BaseModel):
         for button_id, button in enumerate(render.get("buttons", [])):
             event_name = button["on_click"]
             if isinstance(event_name, dict):
-                payload = event_name.get("payload", {})
+                event_payload = event_name.get("payload", {})
                 event_name = event_name["event"]
             else:
-                payload = {}
+                event_payload = {}
             events.append({
                 "event_key": f"BUTTON_{button_id}",
                 "event_name": event_name,
-                "payload": payload
+                "payload": event_payload
             })
             
         events.append({
@@ -522,7 +523,10 @@ class Runner(BaseModel):
             
         for event_item in events:
             event_name = event_item["event_name"]
-            payload = event_item["payload"]
+            event_payload = event_item["payload"]
+            for payload_key, payload_value in event_payload.items():
+                if type(payload_value) == dict:
+                    event_payload[payload_key] = payload_value["value"]
                 
             # handle payload
             transition = local_transitions.get(event_name, None)
@@ -542,12 +546,12 @@ class Runner(BaseModel):
             # get the target_inputs from transition
             target_inputs_transition = {}
             for k, v in transition_case.target_inputs.items():
-                target_inputs_transition[k] = calc_expression(v, {'payload': payload, **local_vars}) # the target_inputs defined by the transition
+                target_inputs_transition[k] = calc_expression(v, {'payload': event_payload, **local_vars}) # the target_inputs defined by the transition
             
             # get the target inputs
             target_inputs = automata.blocks[target_state].inputs
             
-            visible_variables = {"context": context, **local_vars, **sess_state["state_outputs"]}
+            visible_variables = {"context": context, **local_vars, **sess_state.state_outputs}
             if event_name == "CHAT":
                 target_inputs = {k: v for k, v in target_inputs.items() if v.user_input and v.source == "IM"}
             else:
@@ -563,4 +567,8 @@ class Runner(BaseModel):
                 "target_inputs": target_inputs,
                 "target_inputs_transition": target_inputs_transition, # the target_inputs from the transition
             }
-        return sess_state, render, event_mapping
+            
+        message_count = sess_state.message_count
+        event_mapping = {f'MESSAGE_{message_count}_{k}' if k != "CHAT" else k: v for k, v in event_mapping.items()}
+        sess_state.event_mapping.update(event_mapping)
+        return sess_state, render
