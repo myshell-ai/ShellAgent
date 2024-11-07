@@ -8,7 +8,7 @@ import { AppBuilderModel } from '@/components/app/app-builder.model';
 
 import { FormRef } from '@shellagent/ui';
 import { useEffect, useRef, useCallback, useMemo } from 'react';
-import { get, merge, cloneDeep, isEqual } from 'lodash-es';
+import { get, merge, cloneDeep, isEqual, debounce } from 'lodash-es';
 
 enum DiffTypeEnum {
   Added = 'added',
@@ -48,10 +48,13 @@ export function useFieldWatch(
       const parentValue = formRef.current?.getValues(parentPath);
       if (!parentValue) return;
 
-      const newParentValue = Object.keys(parentValue).reduce(
+      // 使用数组保存所有的键，以维持顺序
+      const keys = Object.keys(parentValue);
+      const newParentValue = keys.reduce(
         (prev: { [key: string]: any }, curr) => {
           if (curr === oldKey) {
             const oldValue = parentValue[curr];
+            // 使用新的key，但保持在相同位置
             prev[newKey] =
               typeof oldValue === 'object' && value
                 ? merge(oldValue, value)
@@ -151,18 +154,30 @@ export function useFieldWatch(
     return diffs;
   };
 
-  const handleChange = (
-    newValue: TValues,
-    prevValue: TValues,
-    name?: string,
-  ) => {
-    if (!name) return;
-    // 处理context
-    if (name.startsWith(reservedKeySchema.Enum.context)) {
-      // 从完整路径中提取context key
-      const contextKey = name.replace(`${reservedKeySchema.Enum.context}.`, '');
+  // 处理 inputs 变化的函数
+  const handleInputsChange = useCallback(
+    debounce((newValue: TValues, prevValue: TValues, inputsKey: string) => {
+      const oldInputs = get(prevValue, ['inputs', inputsKey]);
+      const newInputs = get(newValue, ['inputs', inputsKey]);
 
-      // 获取新旧值中对应的context对象
+      if (oldInputs?.name && newInputs?.name) {
+        if (oldInputs?.name !== newInputs?.name) {
+          console.log('inputs', oldInputs, newInputs);
+          replaceKey({
+            parentPath: reservedKeySchema.Enum.inputs,
+            oldKey: inputsKey,
+            newKey: customSnakeCase(newInputs?.name || ''),
+            value: newInputs,
+          });
+        }
+      }
+    }, 300),
+    [replaceKey],
+  );
+
+  // 处理 context 变化的函数
+  const handleContextChange = useCallback(
+    debounce((newValue: TValues, prevValue: TValues, contextKey: string) => {
       const oldContext: TValues | undefined = get(prevValue, [
         'context',
         contextKey,
@@ -171,8 +186,8 @@ export function useFieldWatch(
         'context',
         contextKey,
       ]);
+
       if (oldContext?.name !== newContext?.name) {
-        // 生成新的key
         const newKey = customSnakeCase(newContext?.name || '');
         replaceKey({
           parentPath: reservedKeySchema.Enum.context,
@@ -181,22 +196,92 @@ export function useFieldWatch(
           value: newContext,
         });
       }
-      // 更新ref引用
-      // appBuilder.hanldeRefScene({
-      //   scene: RefSceneEnum.Enum.rename_ref_opt,
-      //   params: {
-      //     oldPath: `${parentPath}.${oldKey}`,
-      //     newPath: `${parentPath}.${newKey}`
-      //   }
-      // });
+    }, 300),
+    [replaceKey],
+  );
+
+  // 处理 outputs 变化的函数
+  const handleOutputsChange = useCallback(
+    debounce((newValue: TValues, prevValue: TValues, outputsKey: string) => {
+      const oldOutputs = get(prevValue, ['outputs', outputsKey]);
+      const newOutputs = get(newValue, ['outputs', outputsKey]);
+
+      if (oldOutputs?.name && newOutputs?.name) {
+        if (oldOutputs?.name !== newOutputs?.name) {
+          replaceKey({
+            parentPath: reservedKeySchema.Enum.outputs,
+            oldKey: outputsKey,
+            newKey: customSnakeCase(newOutputs?.name || ''),
+            value: newOutputs,
+          });
+        }
+      }
+    }, 300),
+    [replaceKey],
+  );
+
+  // 处理 blocks 变化的函数
+  const handleBlocksChange = useCallback(
+    debounce((newValue: TValues, prevValue: TValues, blocksKey: string) => {
+      const oldBlocks = get(prevValue, ['blocks', blocksKey]);
+      const newBlocks = get(newValue, ['blocks', blocksKey]);
+
+      if (oldBlocks?.name && newBlocks?.name) {
+        if (oldBlocks?.name !== newBlocks?.name) {
+          replaceKey({
+            parentPath: reservedKeySchema.Enum.blocks,
+            oldKey: blocksKey,
+            newKey: customSnakeCase(newBlocks?.name || ''),
+            value: newBlocks,
+          });
+        }
+      }
+    }, 300),
+    [replaceKey],
+  );
+
+  // 处理 render 变化的函数
+  const handleRenderChange = useCallback(
+    debounce((newValue: TValues, prevValue: TValues, renderKey: string) => {
+      const oldRender = get(prevValue, ['render', renderKey]);
+      const newRender = get(newValue, ['render', renderKey]);
+
+      if (oldRender?.name && newRender?.name) {
+        if (oldRender?.name !== newRender?.name) {
+          replaceKey({
+            parentPath: reservedKeySchema.Enum.render,
+            oldKey: renderKey,
+            newKey: customSnakeCase(newRender?.name || ''),
+            value: newRender,
+          });
+        }
+      }
+    }, 300),
+    [replaceKey],
+  );
+
+  const handleChange = (
+    newValue: TValues,
+    prevValue: TValues,
+    name?: string,
+  ) => {
+    if (!name) return;
+
+    if (name.startsWith(reservedKeySchema.Enum.context)) {
+      const contextKey = name.replace(`${reservedKeySchema.Enum.context}.`, '');
+      handleContextChange(newValue, prevValue, contextKey);
     } else if (name.startsWith(reservedKeySchema.Enum.inputs)) {
-      console.log('inputs', name);
+      const inputsKey = name.split('.')[1];
+      handleInputsChange(newValue, prevValue, inputsKey);
     } else if (name.startsWith(reservedKeySchema.Enum.outputs)) {
-      console.log('outputs', name);
+      const outputsKey = name.split('.')[1];
+      handleOutputsChange(newValue, prevValue, outputsKey);
     } else if (name.startsWith(reservedKeySchema.Enum.blocks)) {
-      console.log('blocks', name);
+      const blocksKey = name.split('.')[1];
+      handleBlocksChange(newValue, prevValue, blocksKey);
     } else if (name.startsWith(reservedKeySchema.Enum.render)) {
-      console.log('render', name);
+      const renderKey = name.split('.')[1];
+      handleRenderChange(newValue, prevValue, renderKey);
     }
   };
 
