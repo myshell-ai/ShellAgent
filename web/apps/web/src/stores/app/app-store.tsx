@@ -5,8 +5,8 @@ import {
   ReactFlowInstance,
   NodeStatusEnum,
 } from '@shellagent/flow-engine';
-import { Automata } from '@shellagent/pro-config';
 import { TValues, TFieldMode } from '@shellagent/form-engine';
+import { Automata } from '@shellagent/pro-config';
 import { produce, setAutoFreeze } from 'immer';
 import { createStore } from 'zustand/vanilla';
 import { computed } from 'zustand-computed-state';

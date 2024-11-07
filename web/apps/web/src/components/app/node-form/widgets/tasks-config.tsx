@@ -112,7 +112,9 @@ const TaskItem = ({
         e.stopPropagation();
         onClick(e);
       }}
-      className={`relative group h-8 flex items-center bg-surface-container-default rounded-lg p-2 text-default font-medium cursor-pointer ${isDragging ? 'opacity-50' : ''}`}>
+      className={`relative group h-8 flex items-center bg-surface-container-default rounded-lg p-2 text-default font-medium cursor-pointer ${
+        isDragging ? 'opacity-50' : ''
+      }`}>
       {draggable && (
         <div
           ref={dragRef}

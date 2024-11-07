@@ -1,9 +1,10 @@
 import { IFlow } from '@shellagent/flow-engine';
 import { Automata } from '@shellagent/pro-config';
 
+import { AppState } from '@/stores/app/app-store';
+
 import { ServerMessage } from './message-type';
 import { Metadata } from '../home/type';
-import { AppState } from '@/stores/app/app-store';
 
 export interface AppMetadata {
   name: string;

@@ -1,6 +1,7 @@
-import type { SaveResponse, UpdateDependencyRequest } from './services/type';
-import SHA256 from 'crypto-js/sha256';
 import encHex from 'crypto-js/enc-hex';
+import SHA256 from 'crypto-js/sha256';
+
+import type { SaveResponse, UpdateDependencyRequest } from './services/type';
 
 export function isValidUrl(url: string) {
   if (!url) {
@@ -71,14 +72,11 @@ export function formatFormData2Dependency(
 ) {
   return {
     ...data,
-    missing_models: data?.missing_models?.reduce(
-      (acc, curr) => {
-        const { id, ...rest } = curr;
-        acc[id] = rest;
-        return acc;
-      },
-      {} as Record<string, UpdateDependencyRequest['missing_models'][string]>,
-    ),
+    missing_models: data?.missing_models?.reduce((acc, curr) => {
+      const { id, ...rest } = curr;
+      acc[id] = rest;
+      return acc;
+    }, {} as Record<string, UpdateDependencyRequest['missing_models'][string]>),
   };
 }
 
@@ -89,11 +87,10 @@ export function generateHash() {
     typeof window.crypto.randomUUID === 'function'
   ) {
     return window.crypto.randomUUID().replace(/-/g, '');
-  } else {
-    const timestamp = new Date().getTime().toString();
-    const random = Math.random().toString();
-    const data = timestamp + random;
-    const hash = SHA256(data);
-    return hash.toString(encHex).slice(0, 32);
   }
+  const timestamp = new Date().getTime().toString();
+  const random = Math.random().toString();
+  const data = timestamp + random;
+  const hash = SHA256(data);
+  return hash.toString(encHex).slice(0, 32);
 }

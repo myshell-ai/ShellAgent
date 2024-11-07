@@ -4,17 +4,9 @@ import {
   PlayIcon,
 } from '@heroicons/react/24/outline';
 import { IFlow } from '@shellagent/flow-engine';
-import {
-  Button,
-  Heading,
-  IconButton,
-  Input,
-  SaveIcon,
-  Text,
-} from '@shellagent/ui';
+import { Button, Heading, IconButton, Input, Text } from '@shellagent/ui';
 import { useRequest } from 'ahooks';
 import { useInjection } from 'inversify-react';
-import { isEmpty } from 'lodash-es';
 import { observer } from 'mobx-react-lite';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
@@ -23,16 +15,15 @@ import { toast } from 'react-toastify';
 import { useShallow } from 'zustand/react/shallow';
 
 import { AppBuilderChatModel } from '@/components/chat/app-builder-chat.model';
-import { saveApp } from '@/services/app';
 import { editItem } from '@/services/home';
 import { useAppStore } from '@/stores/app/app-provider';
 import { useAppState } from '@/stores/app/use-app-state';
 import { genAutomata } from '@/stores/app/utils/data-transformer';
 import { validateAutomata } from '@/stores/app/utils/date-validate';
 
-import { ExportDialog } from '../export-dialog';
 import { ExtraActions } from './extra-action';
 import Publish from './publish';
+import { ExportDialog } from '../export-dialog';
 
 export const Header: React.FC = observer(() => {
   const appBuilderChatModel = useInjection(AppBuilderChatModel);

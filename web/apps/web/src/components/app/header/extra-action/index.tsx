@@ -1,20 +1,20 @@
 'use client';
 
 import { EllipsisVerticalIcon } from '@heroicons/react/24/outline';
+import { Automata } from '@shellagent/pro-config';
 import {
   DropdownMenu,
   DropdownMenuTrigger,
   DropdownMenuContent,
   DropdownMenuItem,
 } from '@shellagent/ui';
-import { Automata } from '@shellagent/pro-config';
 import { useState } from 'react';
 import { toast } from 'react-toastify';
 import { useShallow } from 'zustand/react/shallow';
 
-import { cn } from '@/utils/cn';
 import { useAppStore } from '@/stores/app/app-provider';
 import { ShellAgent } from '@/stores/app/app-store';
+import { cn } from '@/utils/cn';
 
 import ImportModal from './import-modal';
 
@@ -27,7 +27,7 @@ export const ExtraActions = () => {
   );
 
   const onConfirm = (data: ShellAgent) => {
-    return new Promise((resolve, reject) => {
+    return new Promise(resolve => {
       initAppBuilder({
         reactflow: {
           nodes: [],
