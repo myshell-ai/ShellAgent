@@ -12,6 +12,7 @@ import {
   findDescendants,
   getBeforeAndAfterNodes,
   duplicateState,
+  hanldeRefScene,
 } from './ref-util';
 import { Edge, Edges, edgeSchema, edgesSchema, refsSchema } from './scope';
 
@@ -1395,6 +1396,61 @@ state#3
           },
         }
       `);
+    });
+  });
+
+  describe('cases', () => {
+    it('case#1', () => {
+      const input = {
+        scene: 'set_nodedata_key_val',
+        params: {
+          stateName: 'state_1',
+          key: 'render.text',
+          newValue: '{{ context.test_a }}',
+          mode: 'ref',
+        } as const,
+      };
+      const rets = hanldeRefScene(
+        {},
+        {
+          scene: 'set_nodedata_key_val',
+          params: input.params,
+        },
+      );
+      expect(rets).toMatchInlineSnapshot(`
+        {
+          "state_1": {
+            "render.text": {
+              "ref": "{{ context.test_a }}",
+            },
+          },
+        }
+      `);
+    });
+    it('case#2', () => {
+      const refs = {
+        state_1: {
+          'render.text': {
+            ref: '',
+          },
+        },
+      };
+      const evt = {
+        scene: 'change_nodedata_mode',
+        params: {
+          stateName: 'state_1',
+          mode: 'ref',
+        } as const,
+      };
+      expect(() => {
+        hanldeRefScene(refs, {
+          scene: 'change_nodedata_mode',
+          // @ts-expect-error
+          params: evt.params,
+        });
+      }).toThrowErrorMatchingInlineSnapshot(
+        `"key should not be empty: state_1, ref"`,
+      );
     });
   });
 });

@@ -209,7 +209,21 @@ export function setNodedataKeyVal(
   if (mode === 'ui' && origVal == null) {
     throw new Error('Should specify origValue in mode ui');
   }
-
+  if (refs[stateName] == null) {
+    let v;
+    if (mode === 'ref') {
+      v = {
+        [mode]: newValue,
+      };
+    } else {
+      v = {
+        [mode]: [newValue],
+      };
+    }
+    refs[stateName] = {
+      [key]: v,
+    };
+  }
   return mapValues(refs, (v1, k1) => {
     if (k1 === stateName) {
       return mapValues(v1, (v2, k2) => {
@@ -241,6 +255,8 @@ export function changeNodedataKeyMode(
   param: z.infer<typeof changNodedataModeParamSchema>,
 ): Refs {
   const { stateName, mode, key } = param;
+  if (key == undefined)
+    throw new Error(`key should not be empty: ${stateName}, ${mode}`);
   return mapValues(refs, (v1, k1) => {
     if (k1 === stateName) {
       return mapValues(v1, (v2, k2) => {

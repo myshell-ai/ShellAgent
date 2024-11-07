@@ -1,3 +1,5 @@
+'use client';
+
 import './reflect-metadata-client-side';
 
 import { ChatNewModel } from '@shellagent/ui';
@@ -21,7 +23,10 @@ import { EmitterModel } from '@/utils/emitter.model';
 import { ModalModel } from '@/utils/modal.model';
 import { RequestModel } from '@/utils/request.model';
 
-(window as any).toJS = toJS;
+if (typeof window !== 'undefined') {
+  // Client-side-only code
+  (window as any).toJS = toJS;
+}
 
 export const container = new Container();
 
@@ -79,4 +84,15 @@ container.bind('ImageCanvasModel').to(ImageCanvasModel).inSingletonScope();
 container.bind(OpenImageCanvasModel).toSelf().inSingletonScope();
 
 // refactor app builder
-container.bind(AppBuilderModel).toSelf().inSingletonScope();
+container
+  .bind(AppBuilderModel)
+  .toSelf()
+  .inSingletonScope()
+  .onActivation((_ctx: interfaces.Context, model: AppBuilderModel) => {
+    if (typeof window !== 'undefined') {
+      (window as any)._get_app_builder_model_refs = function () {
+        return model.refs;
+      };
+    }
+    return model;
+  });
