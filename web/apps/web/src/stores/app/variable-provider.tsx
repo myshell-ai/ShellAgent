@@ -157,14 +157,6 @@ export const VariableProvider: React.FC<VariableProviderProps> = ({
 
   const appBuilder = useInjection(AppBuilderModel);
 
-  useEffect(() => {
-    appBuilder.setVariables(id, eventKey, {
-      edges,
-      nodes,
-      nodeData,
-    });
-  }, [nodeData]);
-
   const inputs = useMemo<TScope>(() => {
     return getInput(nodeData, id);
   }, [nodeData, id]);

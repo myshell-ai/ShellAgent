@@ -903,7 +903,6 @@ state#3
           key: 'outputs.outputs1-1',
           newValue: 'context.global_a',
           mode: 'ref',
-          origVal: 'context.global_111',
         });
         expect(ret).toMatchInlineSnapshot(`
           {
