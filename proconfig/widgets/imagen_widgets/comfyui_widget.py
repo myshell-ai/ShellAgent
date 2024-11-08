@@ -8,6 +8,7 @@ import websocket
 import urllib
 from proconfig.utils.misc import windows_to_linux_path
 from pathlib import Path
+import requests
 # NON_FILE_INPUT_TYPES = ["text", "string", "number", "integer", "float"]
 
 
@@ -163,6 +164,26 @@ def comfyui_run(api, workflow, prompt, schemas, user_inputs):
     return outputs
 
 
+def comfyui_run_myshell(workflow_id, inputs, extra_headers):
+    url = "https://openapi.myshell.ai/public/v1/workflow/run"
+    headers = {
+        "x-myshell-openapi-key": os.environ["MYSHELL_DEPLOY_API_KEY"],
+        "Content-Type": "application/json",
+        **extra_headers,
+    }
+    
+    inputs = {k: v for k, v in inputs.items() if k not in ['callback', 'widget_run_id'] }
+    data = {
+        "workflow_id": workflow_id,
+        "input": json.dumps(inputs)
+    }
+    
+    response = requests.post(url, headers=headers, json=data)
+    # Parse the JSON response
+    if response.status_code == 200:
+        return json.loads(response.json()['result'])
+    else:
+        raise ValueError(f"workflow {workflow_id} failed to run")
 
 @WIDGETS.register_module()
 class ComfyUIWidget(BaseWidget):
@@ -173,14 +194,21 @@ class ComfyUIWidget(BaseWidget):
     
     def execute(self, environ, config):
         comfy_extra_inputs = config.pop("comfy_extra_inputs")
-        comfy_workflow_root = os.path.join(os.environ["PROCONFIG_PROJECT_ROOT"], "comfy_workflow")
-        shellagent_json = json.load(open(os.path.join(comfy_workflow_root, comfy_extra_inputs["comfy_workflow_id"], "workflow.shellagent.json")))
-        
-        outputs = comfyui_run(
-            comfy_extra_inputs["api"],
-            shellagent_json["workflow"],
-            shellagent_json["workflow_api"],
-            shellagent_json["schemas"],
-            config
-        )
+
+        if "MYSHELL_DEPLOY_API_KEY" in os.environ:
+            outputs = comfyui_run_myshell(
+                comfy_extra_inputs["comfy_workflow_id"],
+                config,
+                environ["MYSHELL_HEADERS"],
+            )
+        else:    
+            comfy_workflow_root = os.path.join(os.environ["PROCONFIG_PROJECT_ROOT"], "comfy_workflow")
+            shellagent_json = json.load(open(os.path.join(comfy_workflow_root, comfy_extra_inputs["comfy_workflow_id"], "workflow.shellagent.json")))
+            outputs = comfyui_run(
+                comfy_extra_inputs["api"],
+                shellagent_json["workflow"],
+                shellagent_json["workflow_api"],
+                shellagent_json["schemas"],
+                config
+            )
         return outputs

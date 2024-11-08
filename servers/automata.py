@@ -637,6 +637,7 @@ class MyShellRunAppRequest(BaseModel):
     proconfig_json: str
     user_input: MyShellUserInput
     store_session: str = "" # json string
+    headers: Dict = {}
 
 class MyShellRunAppResponse(BaseModel):
     store_session: str # json string
@@ -673,6 +674,9 @@ def run_automata_stateless_impl(request: MyShellRunAppRequest):
         sess_state = SessionState()
     else:
         sess_state = json.loads(request.store_session)
+        
+    sess_state.environ["MYSHELL_HEADERS"] = request.headers
+    sess_state.environ["CURRENT_TASK_ID"] = hash_dict(request.headers)
         
     payload = prepare_payload(automata, request.user_input, sess_state)
     sess_state, render = runner.run_automata(automata, sess_state, payload)
