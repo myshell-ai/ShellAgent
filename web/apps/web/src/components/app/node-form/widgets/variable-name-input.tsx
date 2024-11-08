@@ -14,22 +14,22 @@ import {
   HeroIcon,
   IconButton,
   Input,
-  ISelectProps,
-  Select,
+  Cascader,
+  CascaderOption,
   Text,
   useFormContext,
 } from '@shellagent/ui';
-import { useFormEngineContext } from '@shellagent/form-engine';
+import { RefType, refTypeSchema } from '@shellagent/shared/protocol/app-scope';
 import {
   FieldModeEnum,
   FieldMode,
 } from '@shellagent/shared/protocol/extend-config';
+import { useSchemaContext } from '@/stores/app/schema-provider';
 
-import { uuid } from '@shellagent/flow-engine';
 import { useInjection } from 'inversify-react';
 import { AppBuilderModel } from '@/components/app/app-builder.model.ts';
 
-interface VariableSelectProps extends ISelectProps {
+interface VariableSelectProps {
   name: string;
   value?: string;
   onChange?: (value: string) => void;
@@ -56,41 +56,25 @@ const ModeOptions: Array<{
 ];
 
 const VariableNameInput = (props: VariableSelectProps) => {
-  const { name, value, onChange } = props;
-  console.log('name>>>>', name);
+  const { value, onChange } = props;
   const { setValue, getValues } = useFormContext();
+  const stateName = useSchemaContext(state => state.id);
   const [mode, setMode] = useState(
     getValues('name_mode') || FieldModeEnum.Enum.ui,
   );
-  const { parent } = useFormEngineContext();
-
-  console.log('parent>>.', parent);
 
   const IconMode = ModeOptions.find(item => item.value === mode)?.icon!;
 
   const appBuilder = useInjection(AppBuilderModel);
-  const context = appBuilder?.variables?.context;
-  const options =
-    (context?.[0]?.children?.map(item => ({
-      label: `Context/${item.label}`,
-      value: item.value,
-    })) as ISelectProps['options']) || [];
+
+  const contextOptions = appBuilder.getRefOptions(
+    stateName as Lowercase<string>,
+    refTypeSchema.Enum.state_output_key,
+  );
 
   const onValueChange = (value: string) => {
-    if (value.startsWith('__context__')) {
-      const item = options?.find(item => item.value === value);
-      // setValue(name, item?.label);
-      onChange?.(item?.label || '');
-      setValue('__changeKey__', value);
-    } else {
-      // setValue(name, value);
-      onChange?.(value);
-      if (parent?.startsWith('outputs.__context__') || !value) {
-        setValue('__changeKey__', uuid());
-      }
-    }
+    onChange?.(value);
   };
-  const selectValue = parent?.replace('outputs.', '');
 
   const onModeChange = (mode: string) => {
     setMode(mode);
@@ -102,19 +86,14 @@ const VariableNameInput = (props: VariableSelectProps) => {
     <div className="w-full flex items-center gap-x-1.5">
       <div className="grow">
         {mode === FieldModeEnum.Enum.ref ? (
-          <Select
+          <Cascader
+            className="w-44"
+            emptyText="No variable"
+            placeholder="Please select variable"
+            showParentLabel
+            options={contextOptions as CascaderOption[]}
+            value={value}
             onValueChange={onValueChange}
-            options={options}
-            placeholder={
-              options?.length ? 'Please select Output' : 'No Context'
-            }
-            value={
-              options?.find(
-                item =>
-                  item.value === selectValue ||
-                  item.value === getValues('__changeKey__'),
-              )?.value
-            }
           />
         ) : (
           <Input onChange={e => onValueChange(e.target.value)} value={value} />
