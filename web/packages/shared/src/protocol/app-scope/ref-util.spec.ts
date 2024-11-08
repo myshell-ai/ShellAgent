@@ -1544,6 +1544,48 @@ state#3
       });
       expect(ret).toMatchInlineSnapshot(`{}`);
     });
+
+    it('case#4', () => {
+      const refs = {
+        state_1: {
+          'outputs.__context__123__.value': {
+            ref: '{{ wwqkaa }}',
+          },
+          'outputs.__context__3__.value': {
+            ref: '{{ untitled_input_1 }}',
+          },
+          'outputs.{{_untitled_input_1_}}.value': {
+            ref: '{{ test }}',
+          },
+        },
+      };
+      const evt = {
+        scene: 'remove_ref_opts',
+        params: {
+          paths: ['inputs.test'],
+        } as const,
+      };
+      const ret = hanldeRefScene(refs, {
+        scene: 'remove_ref_opts',
+        // @ts-expect-error
+        params: evt.params,
+      });
+      expect(ret).toMatchInlineSnapshot(`
+        {
+          "state_1": {
+            "outputs.__context__123__.value": {
+              "ref": "{{ wwqkaa }}",
+            },
+            "outputs.__context__3__.value": {
+              "ref": "{{ untitled_input_1 }}",
+            },
+            "outputs.{{_untitled_input_1_}}.value": {
+              "ref": "{{ test }}",
+            },
+          },
+        }
+      `);
+    });
   });
 
   describe('removeEmptyLeaves', () => {
