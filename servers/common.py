@@ -25,6 +25,12 @@ SAVE_ROOTS = {
     "app": APP_SAVE_ROOT,
     "workflow": WORKFLOW_SAVE_ROOT
 }
+
+TEMPLATES_ROOTS = {
+    "app": os.path.join(PROJECT_ROOT, "templates", "app"),
+    "workflow": os.path.join(PROJECT_ROOT, "templates", "workflow"),
+}
+
 LAST_CHECK_FILE = os.path.join(PROJECT_ROOT, 'last_check_time.json')
 AUTO_UPDATE_FILE = os.path.join(PROJECT_ROOT, 'data', 'auto_update_settings.json')
 
@@ -119,6 +125,50 @@ async def fetch_workflow_list(params: Dict):
     return JSONResponse(content=result)
 
 
+@app.post('/api/template_list')
+async def fetch_workflow_list(params: Dict):
+    SAVE_ROOT = TEMPLATES_ROOTS.get(params["type"])
+
+    if not SAVE_ROOT:
+        raise HTTPException(status_code=400, detail="Invalid type specified")
+
+    # List workflow IDs
+    workflow_ids = [item for item in os.listdir(SAVE_ROOT) if not item.startswith(".")][::-1]
+    data = []
+
+    for workflow_id in workflow_ids:
+        reactflow_file = os.path.join(SAVE_ROOT, workflow_id, "latest", "reactflow.json")
+        metadata_file = os.path.join(SAVE_ROOT, workflow_id, "latest", "metadata.json")
+        metadata = {}
+
+        if os.path.isfile(metadata_file):
+            with open(metadata_file) as f:
+                metadata.update(json.load(f))
+
+        if os.path.isfile(reactflow_file):
+            create_time, update_time, update_timestamp = get_file_times(reactflow_file)
+            metadata['create_time'] = create_time
+            metadata['update_time'] = update_time
+
+        item = {
+            'id': workflow_id,
+            'metadata': metadata,
+            'timestamp': os.path.getmtime(reactflow_file)
+        }
+        data.append(item)
+
+    # Sort data by timestamp in descending order
+    data = sorted(data, key=lambda x: x['timestamp'], reverse=True)
+    result = {
+        "data": data,
+        "success": True,
+        "message": ""
+    }
+
+    return JSONResponse(content=result)
+
+
+
 def get_unique_workflow_id(SAVE_ROOT):
     workflow_ids = os.listdir(SAVE_ROOT)
     while True:
@@ -131,6 +181,8 @@ def get_unique_workflow_id(SAVE_ROOT):
 @app.post('/api/create')
 async def create_workflow(params: Dict):
     SAVE_ROOT = SAVE_ROOTS.get(params["type"])
+    
+    template_id = params.get("template_id", "")
 
     if not SAVE_ROOT:
         raise HTTPException(status_code=400, detail="Invalid type specified")
@@ -145,10 +197,20 @@ async def create_workflow(params: Dict):
         json.dump(params, f, indent=2)
 
     # Initialize reactflow and proconfig
-    for filename in ["proconfig.json", "reactflow.json"]:
+    
+    filenames = ["proconfig.json", "reactflow.json"]
+    if params["type"] == "app":
+        filenames += ["automata.json"]
+        
+    for filename in filenames:
         filepath = os.path.join(SAVE_ROOT, workflow_id, "latest", filename)
+        if template_id != "":
+            template_path = os.path.join(TEMPLATES_ROOTS[params["type"]], template_id, "latest", filename)
+            json_data = json.load(open(template_path))
+        else:
+            json_data = {}
         with open(filepath, "w") as f:
-            json.dump({}, f)
+            json.dump(json_data, f, indent=2)
 
     result = {
         "data": {
