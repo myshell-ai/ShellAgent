@@ -1,4 +1,5 @@
 import { TValues } from '@shellagent/form-engine';
+import { Modal } from 'antd';
 import { reservedKeySchema } from '@shellagent/shared/protocol/pro-config';
 import { RefSceneEnum } from '@shellagent/shared/protocol/app-scope';
 import { customSnakeCase } from '@shellagent/shared/utils';
@@ -7,9 +8,11 @@ import { AppBuilderModel } from '@/components/app/app-builder.model';
 
 import { FormRef } from '@shellagent/ui';
 import { useEffect, useRef, useCallback } from 'react';
-import { get, cloneDeep, isEqual, debounce, isString } from 'lodash-es';
+import { get, cloneDeep, isEqual, debounce } from 'lodash-es';
 import { replaceKey, getDiffPath, DiffTypeEnum } from './form-utils';
 import { useSchemaContext } from '@/stores/app/schema-provider';
+
+const { warn } = Modal;
 
 export function useFieldWatch(formRef: React.RefObject<FormRef>) {
   const prevValuesRef = useRef<Record<string, TValues | undefined>>({});
@@ -28,9 +31,16 @@ export function useFieldWatch(formRef: React.RefObject<FormRef>) {
 
         switch (type) {
           case DiffTypeEnum.Deleted:
-            appBuilder.hanldeRefScene({
-              scene: RefSceneEnum.Enum.remove_ref_opts,
-              params: { paths: [`${name}.${path}`] },
+            warn({
+              title: 'Delete Warning',
+              content: `delete path: ${name}.${path}`,
+              mask: false,
+              onOk() {
+                appBuilder.hanldeRefScene({
+                  scene: RefSceneEnum.Enum.remove_ref_opts,
+                  params: { paths: [`${name}.${path}`] },
+                });
+              },
             });
             break;
           case DiffTypeEnum.Modified:
@@ -79,12 +89,18 @@ export function useFieldWatch(formRef: React.RefObject<FormRef>) {
 
         switch (type) {
           case DiffTypeEnum.Deleted:
-            appBuilder.hanldeRefScene({
-              scene: RefSceneEnum.Enum.remove_ref_opts,
-              params: { paths: [`${basePath}.${path}`] },
+            warn({
+              title: 'Delete Warning',
+              content: `delete path: ${name}.${path}`,
+              mask: false,
+              onOk() {
+                appBuilder.hanldeRefScene({
+                  scene: RefSceneEnum.Enum.remove_ref_opts,
+                  params: { paths: [`${basePath}.${path}`] },
+                });
+              },
             });
             break;
-
           case DiffTypeEnum.Modified:
             if (
               path?.split('.').pop() === 'name' &&
@@ -130,12 +146,18 @@ export function useFieldWatch(formRef: React.RefObject<FormRef>) {
 
         switch (type) {
           case DiffTypeEnum.Deleted:
-            appBuilder.hanldeRefScene({
-              scene: RefSceneEnum.Enum.remove_ref_opts,
-              params: { paths: [`${basePath}.${path}`] },
+            warn({
+              title: 'Delete Warning',
+              content: `delete path: ${name}.${path}`,
+              mask: false,
+              onOk() {
+                appBuilder.hanldeRefScene({
+                  scene: RefSceneEnum.Enum.remove_ref_opts,
+                  params: { paths: [`${basePath}.${path}`] },
+                });
+              },
             });
             break;
-
           case DiffTypeEnum.Modified:
             if (
               path?.split('.').pop() === 'name' &&
@@ -151,7 +173,6 @@ export function useFieldWatch(formRef: React.RefObject<FormRef>) {
               });
             }
             break;
-
           case DiffTypeEnum.Renamed:
             appBuilder.hanldeRefScene({
               scene: RefSceneEnum.Enum.rename_ref_opt,
@@ -181,9 +202,16 @@ export function useFieldWatch(formRef: React.RefObject<FormRef>) {
 
         switch (type) {
           case DiffTypeEnum.Deleted:
-            appBuilder.hanldeRefScene({
-              scene: RefSceneEnum.Enum.remove_ref_opts,
-              params: { paths: [`${blocksPath}.${path}`] },
+            warn({
+              title: 'Delete Warning',
+              content: `delete path: ${name}.${path}`,
+              mask: false,
+              onOk() {
+                appBuilder.hanldeRefScene({
+                  scene: RefSceneEnum.Enum.remove_ref_opts,
+                  params: { paths: [`${blocksPath}.${path}`] },
+                });
+              },
             });
             break;
 
@@ -233,9 +261,16 @@ export function useFieldWatch(formRef: React.RefObject<FormRef>) {
 
         switch (type) {
           case DiffTypeEnum.Deleted:
-            appBuilder.hanldeRefScene({
-              scene: RefSceneEnum.Enum.remove_ref_opts,
-              params: { paths: [`${renderPath}.${path}`] },
+            warn({
+              title: 'Delete Warning',
+              content: `delete path: ${name}.${path}`,
+              mask: false,
+              onOk() {
+                appBuilder.hanldeRefScene({
+                  scene: RefSceneEnum.Enum.remove_ref_opts,
+                  params: { paths: [`${renderPath}.${path}`] },
+                });
+              },
             });
             break;
 
