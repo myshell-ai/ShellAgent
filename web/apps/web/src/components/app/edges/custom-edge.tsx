@@ -10,7 +10,9 @@ import { useKeyPress } from 'ahooks';
 import React, { useState, useRef, useEffect } from 'react';
 
 import { useAppState } from '@/stores/app/use-app-state';
-
+import { useInjection } from 'inversify-react';
+import { AppBuilderModel } from '@/components/app/app-builder.model';
+import { RefSceneEnum } from '@shellagent/shared/protocol/app-scope';
 import { EventButton } from './event-button';
 import { CustomEdgeData } from './type';
 
@@ -31,6 +33,7 @@ export const CustomEdge = ({
 }: EdgeProps<CustomEdgeData>) => {
   const buttonRef = useRef<HTMLDivElement>(null);
   const [buttonWidth, setButtonWidth] = useState(0);
+  const appBuilder = useInjection(AppBuilderModel);
 
   const setTransitionSheetOpen = useAppState(
     state => state.setTransitionSheetOpen,
@@ -66,6 +69,7 @@ export const CustomEdge = ({
   });
 
   const onDelEdge = useReactFlowStore(state => state.onDelEdge);
+  const edges = useReactFlowStore(state => state.edges);
 
   // const edges = useReactFlowStore(state => state.edges);
 
@@ -77,6 +81,16 @@ export const CustomEdge = ({
   useKeyPress(['delete', 'backspace'], () => {
     if (selected) {
       onDelEdge({ id });
+      appBuilder.hanldeRefScene({
+        scene: RefSceneEnum.Enum.remove_edge,
+        params: {
+          edges: edges as any,
+          removeEdge: {
+            target: target as Lowercase<string>,
+            source: source as Lowercase<string>,
+          },
+        },
+      });
     }
   });
 
