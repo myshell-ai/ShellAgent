@@ -69,11 +69,11 @@ export const Header: React.FC<{ container: HTMLElement | null }> = ({
   const params = useSearchParams();
   const router = useRouter();
   const flowId = params.get('id');
-  const version_name = params.get('version_name');
+  const version = params.get('version');
   const [autoSavedTime, setAutoSavedTime] = useState('');
   const [versionName, setVersionName] = useState('');
   const [showPublishPopover, publishPopoverActions] = useBoolean(false);
-  const hiddenOperation = !!version_name;
+  const hiddenOperation = !!version;
 
   const {
     config,
@@ -135,13 +135,7 @@ export const Header: React.FC<{ container: HTMLElement | null }> = ({
   } = useRequest(fetchWorkflowVersionList, {
     manual: true,
     onError: error => {
-      toast.error(error.message, {
-        position: 'top-center',
-        autoClose: 1000,
-        hideProgressBar: true,
-        pauseOnHover: true,
-        closeButton: false,
-      });
+      toast.error(error.message);
     },
   });
 
@@ -322,7 +316,7 @@ export const Header: React.FC<{ container: HTMLElement | null }> = ({
   );
 
   useUpdateEffect(() => {
-    if (!version_name && !loading.getProConfig && !loading.getReactFlow) {
+    if (!version && !loading.getProConfig && !loading.getReactFlow) {
       handleAutoSave();
     }
   }, [debouncedValues]);
@@ -503,7 +497,7 @@ export const Header: React.FC<{ container: HTMLElement | null }> = ({
                               <Text color="subtle" className="block w-full">
                                 {`${item.version_name}(current)`}
                               </Text>
-                              {autoSavedTime && !version_name ? (
+                              {autoSavedTime && !version ? (
                                 <Text size="sm" color="subtlest">
                                   Updated {dayjs(autoSavedTime).fromNow()}
                                 </Text>
@@ -514,7 +508,7 @@ export const Header: React.FC<{ container: HTMLElement | null }> = ({
                         return (
                           <Link
                             className="flex justify-between items-center w-full p-1.5 rounded-md hover:bg-surface-hovered group/menu"
-                            href={`${window.location.pathname}?id=${flowId}&version_name=${item.version_name}`}
+                            href={`${window.location.pathname}?id=${flowId}&version=${item.version_name}`}
                             prefetch={false}>
                             <div>
                               <TooltipProvider>

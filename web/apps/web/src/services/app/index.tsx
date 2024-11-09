@@ -3,7 +3,6 @@ import {
   FetchEventSourceInit,
 } from '@microsoft/fetch-event-source';
 import type { Fetcher } from 'swr';
-import { isNil, omitBy } from 'lodash-es';
 
 import {
   GetAutomataRequest,
@@ -17,10 +16,6 @@ import {
   InitBotResponse,
   ExportBotRequest,
   ExportBotResponse,
-  ReleaseAppRequest,
-  ReleaseAppResponse,
-  GetAppVersionListRequest,
-  GetAppVersionListResponse,
 } from './type';
 import { APIFetch } from '../base';
 
@@ -37,7 +32,7 @@ export const fetchAutomata: Fetcher<
   GetAutomataRequest
 > = params => {
   return APIFetch.post<GetAutomatagResponse>('/api/app/get_automata', {
-    body: omitBy(params, isNil),
+    body: params,
   });
 };
 
@@ -47,7 +42,7 @@ export const fetchFlow: Fetcher<
   GetAppFlowRequest
 > = params => {
   return APIFetch.post<GetAppFlowResponse>('/api/app/get_flow', {
-    body: omitBy(params, isNil),
+    body: params,
   });
 };
 
@@ -94,20 +89,6 @@ export const runApp = (
 // 导出App
 export const exportApp = (params: ExportBotRequest) => {
   return APIFetch.post<ExportBotResponse>('/api/app/export', {
-    body: params,
-  });
-};
-
-// 获取Version列表
-export const fetchAppVersionList = (params: GetAppVersionListRequest) => {
-  return APIFetch.post<GetAppVersionListResponse>('/api/app/get_version_list', {
-    body: params,
-  });
-};
-
-// 发版
-export const releaseApp = (params: ReleaseAppRequest) => {
-  return APIFetch.post<ReleaseAppResponse>('/api/app/release', {
     body: params,
   });
 };

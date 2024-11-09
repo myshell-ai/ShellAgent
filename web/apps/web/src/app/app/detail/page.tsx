@@ -8,8 +8,6 @@ import dynamic from 'next/dynamic';
 import { useSearchParams } from 'next/navigation';
 import { useEffect, useRef } from 'react';
 import { useShallow } from 'zustand/react/shallow';
-import { DndProvider } from 'react-dnd';
-import { HTML5Backend } from 'react-dnd-html5-backend';
 
 import { edgeTypes, materialList, nodeTypes } from '@/components/app/constants';
 import FlowHeader from '@/components/app/flow-header';
@@ -48,7 +46,6 @@ export default function AppBuilderDetail() {
   const appBuilderChatModel = useInjection(AppBuilderChatModel);
 
   const appId = params.get('id') as string;
-  const version_name = params.get('version_name') as string;
 
   const { setFlowInstance, getReactFlow, loading, getAutomata, getFlowList } =
     useAppStore(
@@ -69,19 +66,19 @@ export default function AppBuilderDetail() {
   useEffect(() => {
     if (flowInstance) {
       setFlowInstance(flowInstance);
-      getReactFlow({ app_id: appId, version_name }, flowInstance);
+      getReactFlow({ app_id: appId }, flowInstance);
     }
-  }, [flowInstance, appId, version_name]);
+  }, [flowInstance, appId]);
 
   useEffect(() => {
     appBuilderChatModel.closeRunDrawer();
   }, [appId]);
 
   useEffect(() => {
-    getAutomata({ app_id: appId, version_name });
+    getAutomata({ app_id: appId });
     getWidgetList({});
     getFlowList({ type: 'workflow' });
-  }, [appId, version_name]);
+  }, [appId]);
 
   // 退出页面初始化状态
   useEffect(() => {
@@ -91,34 +88,32 @@ export default function AppBuilderDetail() {
   }, []);
 
   return (
-    <DndProvider backend={HTML5Backend}>
-      <div className="h-full flex flex-col bg-surface">
-        <header>
-          <Header />
-        </header>
-        <main
-          id="workflow"
-          style={{ height: 'calc(100vh - 60px)', position: 'relative' }}>
-          <FlowEngine
-            listLoading={false}
-            loading={loading.getAutomata || loading.getReactFlow}
-            ref={flowRef}
-            nodeTypes={nodeTypes}
-            edgeTypes={edgeTypes}
-            materialList={materialList}
-            footerExtra={<ListFooterExtra />}
-            header={
-              <>
-                <FlowHeader appId={appId} version_name={version_name} />
-                <StateConfigSheet />
-                <TransitionSheet />
-              </>
-            }
-          />
-          <ChatSheet />
-          <ImageCanvasDialog />
-        </main>
-      </div>
-    </DndProvider>
+    <div className="h-full flex flex-col bg-surface">
+      <header>
+        <Header />
+      </header>
+      <main
+        id="workflow"
+        style={{ height: 'calc(100vh - 60px)', position: 'relative' }}>
+        <FlowEngine
+          listLoading={false}
+          loading={loading.getAutomata || loading.getReactFlow}
+          ref={flowRef}
+          nodeTypes={nodeTypes}
+          edgeTypes={edgeTypes}
+          materialList={materialList}
+          footerExtra={<ListFooterExtra />}
+          header={
+            <>
+              <FlowHeader appId={appId} />
+              <StateConfigSheet />
+              <TransitionSheet />
+            </>
+          }
+        />
+        <ChatSheet />
+        <ImageCanvasDialog />
+      </main>
+    </div>
   );
 }

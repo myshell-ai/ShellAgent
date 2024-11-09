@@ -4,14 +4,7 @@
 
 import { PlusOutlined } from '@ant-design/icons';
 import { css } from '@emotion/react';
-import {
-  AButton,
-  contentPadding,
-  Icon,
-  TrashIcon,
-  Text,
-  Spinner,
-} from '@shellagent/ui';
+import { AButton, contentPadding, Icon, TrashIcon, Text } from '@shellagent/ui';
 import { Button, Card, Divider, Form, Input, Modal, Switch, theme } from 'antd';
 import dayjs from 'dayjs';
 import { Field, FieldArray, FieldProps, Formik } from 'formik';
@@ -20,13 +13,8 @@ import { observer } from 'mobx-react-lite';
 import { useEffect } from 'react';
 import Markdown from 'react-markdown';
 import { Box, Flex } from 'react-system';
-import { toast } from 'react-toastify';
 
-import {
-  SettingEnvFormValue,
-  DefaultEnvs,
-  DefaultEnvsMap,
-} from './settings-definitions';
+import { SettingEnvFormValue } from './settings-definitions';
 import { SettingsSideBar } from './settings-sidebar';
 import { SettingsModel } from './settings.model';
 
@@ -38,19 +26,11 @@ export const EnvForm = observer(() => {
     }
   }, [model.modal.isOpen, model.sidebar]);
 
-  if (model.isLoadLoading) {
-    return (
-      <div className="w-full h-full flex justify-center items-center">
-        <Spinner className="text-brand" />
-      </div>
-    );
-  }
-
   return (
     <Formik<SettingEnvFormValue>
       initialValues={{
         model_location: '',
-        envs: [],
+        envs: [{ key: '', value: '' }],
       }}
       onSubmit={values => {
         model.saveSettingsEnv(values);
@@ -58,99 +38,52 @@ export const EnvForm = observer(() => {
       {formikProps => {
         model.setFormikProps(formikProps);
         return (
-          <Form
-            layout="horizontal"
-            labelCol={{ span: 6 }}
-            wrapperCol={{ span: 18 }}>
+          <Form layout="vertical">
             <FieldArray
               name="envs"
               render={arrayHelpers => (
                 <div>
-                  {formikProps.values.envs.map((env, index) => {
-                    const defaultEnv = DefaultEnvs.find(
-                      item => item.name === env.key,
-                    );
-                    if (defaultEnv) {
-                      return (
-                        <Form.Item
-                          label={defaultEnv.label}
-                          hidden={defaultEnv.hidden}
-                          tooltip={defaultEnv.tooltip}>
-                          <Field name={`envs.${index}.value`}>
-                            {({ field, form }: FieldProps) => {
-                              return (
-                                <Input
-                                  size="large"
-                                  {...field}
-                                  onBlur={() => form.submitForm()}
-                                  placeholder="Environment value"
-                                />
-                              );
-                            }}
+                  {formikProps.values.envs.map((env, index) => (
+                    // eslint-disable-next-line react/no-array-index-key
+                    <Box key={`fa-${index}`} mb={2}>
+                      <Flex mx={-1} alignItems="center">
+                        <Box width={1 / 3} mx={1}>
+                          <Field name={`envs.${index}.key`}>
+                            {({ field, form }: FieldProps) => (
+                              <Input
+                                size="large"
+                                {...field}
+                                onBlur={() => form.submitForm()}
+                                placeholder="Environment key"
+                              />
+                            )}
                           </Field>
-                        </Form.Item>
-                      );
-                    }
-                    return (
-                      // eslint-disable-next-line react/no-array-index-key
-                      <Box key={`fa-${index}`} mb={2}>
-                        <Flex mx={-1} alignItems="center">
-                          <Box width={1 / 4} mx={1}>
-                            <Field name={`envs.${index}.key`}>
-                              {({ field, form }: FieldProps) => (
-                                <Input
-                                  size="large"
-                                  {...field}
-                                  onChange={e => {
-                                    if (
-                                      DefaultEnvsMap.has(e.target.value?.trim())
-                                    ) {
-                                      toast.error(
-                                        `The value "${e.target.value}" is not allowed!`,
-                                        {
-                                          position: 'top-center',
-                                          autoClose: 1000,
-                                          hideProgressBar: true,
-                                          pauseOnHover: true,
-                                          closeButton: false,
-                                        },
-                                      );
-                                    } else {
-                                      field.onChange(e);
-                                    }
-                                  }}
-                                  onBlur={() => form.submitForm()}
-                                  placeholder="Environment key"
-                                />
-                              )}
-                            </Field>
-                          </Box>
-                          <Box width={3 / 4} mx={1}>
-                            <Field name={`envs.${index}.value`}>
-                              {({ field, form }: FieldProps) => (
-                                <Input
-                                  size="large"
-                                  {...field}
-                                  onBlur={() => form.submitForm()}
-                                  placeholder="Environment value"
-                                />
-                              )}
-                            </Field>
-                          </Box>
-                          <Flex mx={1} alignItems="center">
-                            <Icon
-                              className="cursor-pointer"
-                              onClick={() => {
-                                arrayHelpers.remove(index);
-                                formikProps.submitForm();
-                              }}
-                              component={TrashIcon}
-                            />
-                          </Flex>
+                        </Box>
+                        <Box width={2 / 3} mx={1}>
+                          <Field name={`envs.${index}.value`}>
+                            {({ field, form }: FieldProps) => (
+                              <Input
+                                size="large"
+                                {...field}
+                                onBlur={() => form.submitForm()}
+                                placeholder="Environment value"
+                              />
+                            )}
+                          </Field>
+                        </Box>
+                        <Flex mx={1} alignItems="center">
+                          <Icon
+                            className="cursor-pointer"
+                            onClick={() => {
+                              arrayHelpers.remove(index);
+                              formikProps.submitForm();
+                            }}
+                            component={TrashIcon}
+                          />
                         </Flex>
-                      </Box>
-                    );
-                  })}
+                      </Flex>
+                    </Box>
+                  ))}
                   <Button
                     css={css`
                       color: var(--ant-color-primary);

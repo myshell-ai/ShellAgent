@@ -31,23 +31,19 @@ import { genAutomata } from '@/stores/app/utils/data-transformer';
 import { validateAutomata } from '@/stores/app/utils/date-validate';
 
 import { ExportDialog } from '../export-dialog';
-import { ExtraActions } from './extra-action';
-import Publish from './publish';
 
 export const Header: React.FC = observer(() => {
   const appBuilderChatModel = useInjection(AppBuilderChatModel);
   const params = useSearchParams();
-  const version_name = params.get('version_name') as string;
 
   const id = params.get('id') as string;
-  const { metadata, flowInstance, nodeData, config, loading, updateMetadata } =
+  const { metadata, flowInstance, updateMetadata, nodeData, config } =
     useAppStore(
       useShallow(state => ({
         config: state.config,
         metadata: state.metadata,
         nodeData: state.nodeData,
         flowInstance: state.flowInstance,
-        loading: state.loading,
         updateMetadata: state.updateMetadata,
       })),
     );
@@ -71,6 +67,37 @@ export const Header: React.FC = observer(() => {
       toast.error(error.message);
     },
   });
+
+  const { run: saveData, loading: saveLoading } = useRequest(saveApp, {
+    manual: true,
+    onSuccess: result => {
+      if (result.success) {
+        toast.success('App Saved', {
+          position: 'top-center',
+          autoClose: 1000,
+          hideProgressBar: true,
+          pauseOnHover: true,
+          closeButton: false,
+        });
+      }
+    },
+    onError: error => {
+      toast.error(error.message);
+    },
+  });
+
+  const handleSave = useCallback(() => {
+    const reactflow = flowInstance?.toObject() as IFlow;
+
+    if (!isEmpty(reactflow)) {
+      saveData({
+        app_id: params.get('id') as string,
+        reactflow,
+        automata: genAutomata(reactflow, nodeData),
+        config,
+      });
+    }
+  }, [flowInstance, nodeData, params, saveData, config]);
 
   const handleRun = useCallback(async () => {
     const reactflow = flowInstance?.toObject() as IFlow;
@@ -154,16 +181,14 @@ export const Header: React.FC = observer(() => {
           variant="outline">
           Run
         </Button>
-        <Publish
-          app_id={id}
-          version_name={version_name}
-          config={config}
-          nodeData={nodeData}
-          flowInstance={flowInstance}
-          metadata={metadata}
-          loading={loading.getAutomata || loading.getReactFlow}
-        />
-        <ExtraActions />
+        <Button
+          onClick={handleSave}
+          loading={saveLoading}
+          className="w-28 px-8 border border-default shadow-button-primary1 ml-3"
+          size="md"
+          icon={SaveIcon}>
+          Save
+        </Button>
       </div>
     </div>
   );

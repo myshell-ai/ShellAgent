@@ -20,6 +20,8 @@ import { FormRef } from '@shellagent/ui';
 import { useKeyPress } from 'ahooks';
 import { isEqual } from 'lodash-es';
 import React, { useCallback, useRef, useEffect, useState } from 'react';
+import { DndProvider } from 'react-dnd';
+import { HTML5Backend } from 'react-dnd-html5-backend';
 
 import { EdgeDataTypeEnum, EdgeTypeEnum } from '@/components/app/edges';
 import NodeCard from '@/components/app/node-card';
@@ -266,19 +268,21 @@ const StateNode: React.FC<NodeProps<StateNodeType>> = ({ selected, data }) => {
 
   return (
     <div ref={dropRef}>
-      <NodeCard selected={selected} {...data}>
-        <NodeForm
-          key={formKey}
-          ref={stateFormRef}
-          loading={loading}
-          values={nodeData[data.id]}
-          onChange={onChange}
-          onModeChange={onModeChange}
-          modeMap={fieldsModeMap?.[data.id] || {}}
-        />
-      </NodeCard>
-      <SourceHandle onConnect={handleConnect} id={`custom_${data.id}`} />
-      <TargetHandle id={data.id} />
+      <DndProvider backend={HTML5Backend}>
+        <NodeCard selected={selected} {...data}>
+          <NodeForm
+            key={formKey}
+            ref={stateFormRef}
+            loading={loading}
+            values={nodeData[data.id]}
+            onChange={onChange}
+            onModeChange={onModeChange}
+            modeMap={fieldsModeMap?.[data.id] || {}}
+          />
+        </NodeCard>
+        <SourceHandle onConnect={handleConnect} id={`custom_${data.id}`} />
+        <TargetHandle id={data.id} />
+      </DndProvider>
     </div>
   );
 };

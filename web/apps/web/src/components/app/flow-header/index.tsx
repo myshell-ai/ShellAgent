@@ -18,10 +18,7 @@ const relativeTime = require('dayjs/plugin/relativeTime');
 
 dayjs.extend(relativeTime);
 
-const FlowHeader: React.FC<{ appId: string; version_name: string }> = ({
-  appId,
-  version_name,
-}) => {
+const FlowHeader: React.FC<{ appId: string }> = ({ appId }) => {
   const [autoSavedTime, setAutoSavedTime] = useState('');
   const [autoSavedSuccess, setAutoSavedSuccess] = useState(true);
   const { config, nodeData, flowInstance, loading } = useAppStore(
@@ -95,15 +92,15 @@ const FlowHeader: React.FC<{ appId: string; version_name: string }> = ({
   }, [appId, flowInstance, nodeData, config]);
 
   useEffect(() => {
-    if (!version_name && !loading.getAutomata && !loading.getReactFlow) {
+    if (!loading.getAutomata && !loading.getReactFlow) {
       handleAutoSave();
     }
-  }, [debouncedValues, version_name]);
+  }, [debouncedValues]);
 
   return (
     <div className="absolute right-3 w-full text-right z-10">
       <div className="h-5">
-        {autoSavedTime && !version_name && autoSavedSuccess ? (
+        {autoSavedTime && autoSavedSuccess ? (
           <Text size="sm" color="subtlest">
             Auto Saved {dayjs(autoSavedTime).format('HH:mm:ss')}
           </Text>
@@ -111,11 +108,6 @@ const FlowHeader: React.FC<{ appId: string; version_name: string }> = ({
         {!autoSavedSuccess ? (
           <Text size="sm" color="critical">
             Auto Saved Error
-          </Text>
-        ) : null}
-        {version_name ? (
-          <Text size="sm" color="subtlest">
-            Current preview version: {version_name}
           </Text>
         ) : null}
       </div>
