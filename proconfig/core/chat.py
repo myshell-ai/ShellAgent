@@ -1,6 +1,7 @@
 from enum import Enum
 from typing import List, Optional, Dict, Union, Literal, Any
 from pydantic import BaseModel
+from proconfig.core.variables import Variable, Input, Value
 
 
 ServerMessageStatus = Literal['PENDING', 'PROCESSING', 'DONE', 'ERROR', 'DELETED']
@@ -181,3 +182,18 @@ class ServerMessage(BaseModel):
     replyId: Optional[str] = "" # TODO: where to put the text?
     componentContainer: Optional[MessageComponentsContainer] = None
     inputSetting: Optional[MessageInputSetting] = None
+
+class EventItem(BaseModel):
+    target_state: str
+    target_inputs: Dict[str, Union[Input, Value]] = {}
+    target_inputs_transition: Dict = {}
+    
+    
+class SessionState(BaseModel):
+    message_count: int = 0
+    event_mapping: Dict[str, EventItem] = {}
+    environ: Dict = {}
+    current_state: str = None
+    state_outputs: Dict = {}
+    context: Dict[str, Union[Variable, Value]] = None
+    

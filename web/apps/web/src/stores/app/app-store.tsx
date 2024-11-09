@@ -5,6 +5,7 @@ import {
   ReactFlowInstance,
   NodeStatusEnum,
 } from '@shellagent/flow-engine';
+import { Automata } from '@shellagent/pro-config';
 import { TValues, TFieldMode } from '@shellagent/form-engine';
 import { produce, setAutoFreeze } from 'immer';
 import { createStore } from 'zustand/vanilla';
@@ -56,6 +57,13 @@ export type AppState = {
   >;
 };
 
+export type ShellAgent = {
+  reactflow: IFlow;
+  config: AppState['config'];
+  metadata: AppState['metadata'];
+  automata: Automata;
+};
+
 export type AppAction = {
   initReactFlow: (reactflow: IFlow) => void;
   initNodeData: (nodeData: Record<string, TValues>) => void;
@@ -64,6 +72,7 @@ export type AppAction = {
   setNodeData: (params: { id: string; data: TValues }) => void;
   setFlowInstance: (instance: ReactFlowInstance) => void;
   getAutomata: (params: GetAutomataRequest) => void;
+  initAppBuilder: (params: ShellAgent) => void;
   getFlowList: (params: GetListRequest) => void;
   getReactFlow: (
     params: GetAppFlowRequest,
@@ -201,6 +210,25 @@ export const createAppStore = () => {
             }),
           );
         }
+      },
+      initAppBuilder: ({ reactflow, config, metadata, automata }) => {
+        const instance = get().flowInstance;
+        if (instance) {
+          instance.setNodes(
+            reactflow?.nodes.length ? reactflow.nodes : defaultFlow.nodes,
+          );
+          instance.setEdges(
+            reactflow?.edges.length ? reactflow.edges : defaultFlow.edges,
+          );
+          instance.setViewport(reactflow?.viewport || defaultFlow.viewport);
+        }
+        set(
+          produce(state => {
+            state.config = config || initState.config;
+            state.metadata = metadata;
+            state.nodeData = genNodeData(automata);
+          }),
+        );
       },
       getAutomata: async params => {
         try {

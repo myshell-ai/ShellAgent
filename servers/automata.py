@@ -24,7 +24,8 @@ from proconfig.utils.pytree import tree_map
 from proconfig.core.chat import (
     ServerMessage, MessageComponentsContainer, MessageComponentsButton, 
     MessageComponentsButtonAction, MessageComponentsTypeEnum, MessageInputSetting, 
-    EmbedObj, EmbedObjStatus, EmbedObjType
+    EmbedObj, EmbedObjStatus, EmbedObjType,
+    SessionState
 )
 
 from fastapi import FastAPI, HTTPException
@@ -270,12 +271,6 @@ from proconfig.core.chat import ServerMessage, MessageComponentsContainer, Messa
     EmbedObjStatus, EmbedObjType
 
 
-
-class ProConfigEvent(BaseModel):
-    target_state: str = ""
-    automata: dict = None
-    sess_id: str = ""
-    payload: Dict[str, Any] = {}
     
 class RunAppRequest(BaseModel):
     form_data: Dict[str, Any] = {}
@@ -291,7 +286,6 @@ class RunAppRequest(BaseModel):
     
 
 sess_id_to_automata = {}
-sess_states = {}
 
 def generate_sess_id():
     return str(uuid.uuid1())
@@ -318,6 +312,19 @@ async def init_bot(data: dict):
 
     return JSONResponse(content=return_data)
     
+    
+# def init_empty_sess_state():
+#     sess_state = {}
+#     sess_state["message_count"] = sess_state.get("message_count", 0)
+#     sess_state[EVENT_MAPPING_KEY] = sess_state.get(EVENT_MAPPING_KEY, {})
+#     sess_state["environ"] = sess_state.get("environ", {})
+#     return sess_state
+
+
+
+
+sess_states: Dict[str, SessionState] = {}
+
 # SSE
 clients = []
 tasks_queue = []
@@ -328,9 +335,7 @@ async def app_run(event_data: RunAppRequest):
     automata = sess_id_to_automata[event_data.session_id]
     
     sess_id = event_data.session_id
-    sess_state = sess_states.get(sess_id, {})
-    sess_state["message_count"] = sess_state.get("message_count", 0)
-    sess_state[EVENT_MAPPING_KEY] = sess_state.get(EVENT_MAPPING_KEY, {})
+    sess_state = sess_states.get(sess_id, SessionState())
     
     # Decide the event_name
     if event_data.messageType == 15:
@@ -342,21 +347,21 @@ async def app_run(event_data: RunAppRequest):
     else:
         event_name = None
     
-    target_state = automata.initial if event_name is None else sess_state[EVENT_MAPPING_KEY][event_name]["target_state"]
+    target_state = automata.initial if event_name is None else sess_state.event_mapping[event_name]["target_state"]
     payload = {}
     if event_name is not None:
-        payload.update(sess_state[EVENT_MAPPING_KEY][event_name].get("target_inputs_transition", {}))
+        payload.update(sess_state.event_mapping[event_name].get("target_inputs_transition", {}))
     payload.update(event_data.form_data)
         
-    sess_state["current_state"] = target_state
+    sess_state.current_state = target_state
     
     task_id = str(uuid.uuid4().hex)
     if task_id not in tasks_queue:
         tasks_queue.append(task_id)
         print("updated tasks_queue:", tasks_queue)
         
-    sess_state["environ"] = sess_state.get("environ", {})
-    environ = sess_state["environ"]
+
+    environ = sess_state.environ
     environ["CURRENT_TASK_ID"] = sess_id
 
     # Define generator for streaming
@@ -376,7 +381,7 @@ async def app_run(event_data: RunAppRequest):
     client_queue = queue.Queue()
     
     # Start the thread to execute automata
-    threading.Thread(target=execute_automata, args=(task_id, client_queue, automata, environ, payload, sess_id, sess_state)).start()
+    threading.Thread(target=execute_automata, args=(task_id, client_queue, automata, payload, sess_id, sess_state)).start()
     
     # Create StreamingResponse for SSE
     resp = StreamingResponse(generate(client_queue), media_type='text/event-stream')
@@ -554,7 +559,7 @@ def parse_server_message(session_id, render, event_mapping, message_count):
     )
     return server_message
 
-def execute_automata(task_id, client_queue, automata, environ, payload, sess_id, sess_state):
+def execute_automata(task_id, client_queue, automata, payload, sess_id, sess_state):
     def callback(
         event_type=Literal['app_start', 'app_end', 'state_start', 'state_end', 'state_exit', 'task_start', 'task_end'],
         inputs=None,
@@ -603,14 +608,11 @@ def execute_automata(task_id, client_queue, automata, environ, payload, sess_id,
     create_time = time.time()
     runner = Runner(callback=callback)
     try:
-        sess_state, render, event_mapping = runner.run_automata(automata, sess_state, environ, payload)
+        sess_state, render = runner.run_automata(automata, sess_state, payload)
         # add message count
-        message_count = sess_state["message_count"]
-        event_mapping = {f'MESSAGE_{message_count}_{k}' if k != "CHAT" else k: v for k, v in event_mapping.items()}
-        sess_state[EVENT_MAPPING_KEY].update(event_mapping)
         sess_states[sess_id] = sess_state
-        server_message = parse_server_message(sess_id, render, event_mapping, sess_state["message_count"])
-        sess_state["message_count"] += 1
+        server_message = parse_server_message(sess_id, render, sess_state.event_mapping, sess_state.message_count)
+        sess_state.message_count += 1
         callback('state_exit', server_message=server_message.model_dump(), create_time=create_time, finish_time=time.time(), task_status="succeeded")
     except Exception as e:
         error_message_detail = traceback.format_exc()
@@ -621,3 +623,77 @@ def execute_automata(task_id, client_queue, automata, environ, payload, sess_id,
         assert tasks_queue[0] == task_id
         tasks_queue.pop(0)
         print("after tasks queue:", tasks_queue)
+        
+        
+class MyShellUserInput(BaseModel):
+    type: str
+    form: Dict[str, Any] = {}
+    button_id: str = ""
+    text: str = ""
+    embeded_objects: List[str] = None # not used
+    
+    
+class MyShellRunAppRequest(BaseModel):
+    proconfig_json: str
+    user_input: MyShellUserInput
+    store_session: str = "" # json string
+    headers: Dict = {}
+
+class MyShellRunAppResponse(BaseModel):
+    store_session: str # json string
+    render_result: ServerMessage
+    
+
+def prepare_payload(automata: Automata, event_data: MyShellUserInput, sess_state: SessionState):
+    # Decide the event_name
+    if event_data.type == "15":
+        event_name = event_data.button_id
+    elif event_data.type == "1":
+        event_name = "CHAT"
+        # Build the form data
+        event_data.form[CHAT_MESSAGE] = event_data.text
+    else:
+        event_name = None
+    
+    target_state = automata.initial if event_name is None else sess_state.event_mapping[event_name].target_state
+    payload = {}
+    if event_name is not None:
+        payload.update(getattr(sess_state.event_mapping[event_name], "target_inputs_transition", {}))
+    payload.update(event_data.form)
+    sess_state.current_state = target_state
+    return payload
+    
+
+def run_automata_stateless_impl(request: MyShellRunAppRequest):
+    # first version: no sse
+    runner = Runner()
+    automata = json.loads(request.proconfig_json)
+    automata = Automata.model_validate(automata)  # Validate input
+    
+    if request.store_session == "":
+        sess_state = SessionState()
+    else:
+        sess_state = json.loads(request.store_session)
+        
+    sess_state.environ["MYSHELL_HEADERS"] = request.headers
+    sess_state.environ["CURRENT_TASK_ID"] = hash_dict(request.headers)
+        
+    payload = prepare_payload(automata, request.user_input, sess_state)
+    sess_state, render = runner.run_automata(automata, sess_state, payload)
+    server_message = parse_server_message("", render, sess_state.event_mapping, sess_state.message_count)
+    sess_state.message_count += 1
+    sess_state_str = sess_state.model_dump_json()
+    
+    try:
+        result = MyShellRunAppResponse(
+            store_session=sess_state_str,
+            render_result=server_message
+        )
+    except:
+        import pdb; pdb.set_trace()
+    return result
+    
+    
+@app.post('/api/app/run_stateless')
+async def run_automata_stateless(request: MyShellRunAppRequest):
+    return run_automata_stateless_impl(request)
