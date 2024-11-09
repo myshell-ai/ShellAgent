@@ -18,7 +18,6 @@ export const useSelectOptions = (name?: string) => {
   const { refType, taskIndex } = useMemo(() => {
     let refType: RefType | null = null;
     let taskIndex: number | undefined;
-
     if (parent?.startsWith(`${reservedKeySchema.Enum.condition}.`)) {
       refType = refTypeSchema.Enum.target_input;
     } else if (parent?.startsWith(`${reservedKeySchema.Enum.inputs}.`)) {
@@ -32,9 +31,7 @@ export const useSelectOptions = (name?: string) => {
       parent?.startsWith(
         `${reservedKeySchema.Enum.render}.${reservedKeySchema.Enum.buttons}.`,
       ) ||
-      name?.startsWith(
-        `${reservedKeySchema.Enum.render}.${reservedKeySchema.Enum.buttons}.`,
-      )
+      name?.startsWith(`${reservedKeySchema.Enum.render}`)
     ) {
       refType = refTypeSchema.Enum.state_render;
     }
