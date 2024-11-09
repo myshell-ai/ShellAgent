@@ -30,14 +30,14 @@ const VariableSelect = (props: VariableSelectProps) => {
   const stateId = useSchemaContext(state => state.id);
 
   const handleChange = useCallback(
-    (val: string) => {
+    (val: string, parent?: string) => {
       onChange?.({ target: { value: val } });
 
       const replacedString = val.replace(contextReg, 'context.$1');
 
       const newValue = contextReg.test(val)
         ? removeBrackets(replacedString)
-        : `${stateId}.${removeBrackets(val)}`;
+        : `${stateId}.${parent ? `${parent}.` : ''}${removeBrackets(val)}`;
 
       appBuilder.hanldeRefScene({
         scene: RefSceneEnum.Enum.set_nodedata_key_val,

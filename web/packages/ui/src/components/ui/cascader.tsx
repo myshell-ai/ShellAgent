@@ -24,12 +24,13 @@ interface CascaderOption {
   value?: string;
   disabled?: boolean;
   children?: CascaderOption[];
+  parent?: string;
 }
 
 interface CommonP {
   value?: string;
   defaultValue?: string;
-  onValueChange: (value: string) => void;
+  onValueChange: (value: string, parent?: string) => void;
   className?: ClassNameValue;
 }
 
@@ -50,7 +51,7 @@ function CascaderContent({
 }: {
   options: CascaderOption[];
   value?: string;
-  onValueChange: (value: string) => void;
+  onValueChange: (value: string, parent?: string) => void;
   className?: ClassNameValue;
   emptyText?: string;
 }) {
@@ -87,7 +88,9 @@ function CascaderContent({
                                   value === child.value,
                               },
                             )}
-                            onChange={() => onValueChange(child.value!)}>
+                            onChange={() =>
+                              onValueChange(child.value!, child.parent)
+                            }>
                             <Text size="sm">{child.label}</Text>
                           </DropdownMenuItem>
                         )}
@@ -110,7 +113,7 @@ function CascaderContent({
                         value === option.value,
                     },
                   )}
-                  onChange={() => onValueChange(option.value!)}>
+                  onChange={() => onValueChange(option.value!, option.parent)}>
                   <Text size="sm">{option.label}</Text>
                 </DropdownMenuItem>
               )}
@@ -168,7 +171,10 @@ function Cascader(props: P) {
                   className="absolute top-0 left-0 h-4 w-4 text-icon-subtle opacity-0 group-hover:opacity-100 group-hover:bg-gray-200 group-hover:rounded-full p-1"
                   onClick={e => {
                     e.stopPropagation();
-                    onValueChange(clearByDefault ? defaultValue! : '');
+                    onValueChange(
+                      clearByDefault ? defaultValue! : '',
+                      undefined,
+                    );
                   }}
                 />
               </div>
@@ -231,7 +237,7 @@ function NestDropdownMenuRender(props: NestDropDownP) {
                     'bg-surface-container-selected-default':
                       value === opt.value,
                   })}
-                  onClick={() => onValueChange(opt.value!)}>
+                  onClick={() => onValueChange(opt.value!, opt.parent)}>
                   <Text size="sm">{opt.label}</Text>
                   {value === opt.value && (
                     <Check className="h-4 w-4 text-surface-primary-default ml-1" />

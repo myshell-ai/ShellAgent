@@ -12,6 +12,7 @@ export interface CascaderOption {
   label: string;
   value?: string;
   field_type?: string;
+  parent?: string;
   children?: CascaderOption[];
 }
 
@@ -173,9 +174,11 @@ export function convertRefOptsToCascaderOpts(
                 label: payload?.display_name || payloadKey,
                 value: `{{ payload.${payloadKey} }}`,
                 field_type: payload?.type,
+                parent: 'buttons',
               };
             },
           ),
+          parent: 'render',
         };
       },
     );
@@ -191,11 +194,13 @@ export function convertRefOptsToCascaderOpts(
     localOptions.push({
       label: 'Input',
       value: 'Input',
+
       children: Object.entries(refOpts.local.inputs.variables).map(
         ([variableKey, variable]) => ({
           label: variable?.display_name || variableKey,
           value: `{{ ${variableKey} }}`,
           field_type: variable?.type,
+          parent: 'inputs',
         }),
       ),
     });
@@ -205,11 +210,13 @@ export function convertRefOptsToCascaderOpts(
     localOptions.push({
       label: 'Output',
       value: 'Output',
+
       children: Object.entries(refOpts.local.outputs.variables).map(
         ([variableKey, variable]) => ({
           label: variable.display_name,
           value: `{{ ${variableKey} }}`,
           field_type: variable.type,
+          parent: 'outputs',
         }),
       ),
     });
@@ -219,11 +226,13 @@ export function convertRefOptsToCascaderOpts(
     const taskOptions = refOpts.local.tasks.map(task => ({
       label: task?.display_name || task.name,
       value: task?.display_name || task.name,
+      parent: 'blocks',
       children: Object.entries(task.variables).map(
         ([variableKey, variable]) => ({
           label: variableKey,
           value: `{{ ${task.name}.${variableKey} }}`,
           field_type: variable?.type,
+          parent: 'blocks',
         }),
       ),
     }));
