@@ -31,7 +31,6 @@ import {
   transform,
 } from 'lodash-es';
 import { z } from 'zod';
-import { Ref } from 'react';
 
 export function getRefOptions(
   scopes: Scopes,
