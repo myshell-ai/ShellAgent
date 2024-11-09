@@ -47,6 +47,7 @@ export default function AppPage() {
         <Heading size="h2">App</Heading>
         <div className="flex gap-x-2">
           <CreateDialog onSuccess={onRefresh} type="app" />
+          <ImportDialog onSuccess={onRefresh} type="app" />
         </div>
       </div>
       <main className="w-full h-full overflow-auto" ref={contentRef}>
