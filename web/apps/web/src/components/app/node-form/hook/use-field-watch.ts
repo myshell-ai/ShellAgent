@@ -188,8 +188,6 @@ export function useFieldWatch(formRef: React.RefObject<FormRef>) {
             break;
 
           case DiffTypeEnum.Modified:
-            console.log('modified', path, oldValue, diffNewValue);
-
             if (path?.split('.').pop() === 'display_name') {
               const blockName = `blocks.${name?.split('.')?.[1]}.name`;
               formRef.current?.setValue(
@@ -219,20 +217,54 @@ export function useFieldWatch(formRef: React.RefObject<FormRef>) {
 
   // 处理 render 变化的函数
   const handleRenderChange = useCallback(
-    debounce((newValue: TValues, prevValue: TValues, renderKey: string) => {
-      const oldRender = get(prevValue, ['render', renderKey]);
-      const newRender = get(newValue, ['render', renderKey]);
+    debounce((newValue: TValues, prevValue: TValues, name: string) => {
+      const oldButtons = get(prevValue, [
+        reservedKeySchema.Enum.render,
+        reservedKeySchema.Enum.buttons,
+      ]);
+      const newButtons = get(newValue, [
+        reservedKeySchema.Enum.render,
+        reservedKeySchema.Enum.buttons,
+      ]);
 
-      if (oldRender?.name && newRender?.name) {
-        if (oldRender?.name !== newRender?.name) {
-          replaceKey(formRef, {
-            parentPath: reservedKeySchema.Enum.render,
-            oldKey: renderKey,
-            newKey: customSnakeCase(newRender?.name || ''),
-            value: newRender,
-          });
+      getDiffPath(oldButtons, newButtons).forEach(diff => {
+        const { type, path, oldValue, newValue: diffNewValue } = diff;
+        const renderPath = `${stateId}.${reservedKeySchema.Enum.render}`;
+
+        switch (type) {
+          case DiffTypeEnum.Deleted:
+            appBuilder.hanldeRefScene({
+              scene: RefSceneEnum.Enum.remove_ref_opts,
+              params: { paths: [`${renderPath}.${path}`] },
+            });
+            break;
+
+          case DiffTypeEnum.Modified:
+            if (path?.split('.').pop() === 'content') {
+              const buttonId = `blocks.${name?.split('.')?.[1]}.id`;
+              const buttonEvent = `blocks.${
+                name?.split('.')?.[1]
+              }.on_click.event`;
+              const event = `${customSnakeCase(`diffNewValue?.name`)}.on_click`;
+              formRef.current?.setValue(buttonId, event);
+              formRef.current?.setValue(buttonEvent, event);
+            }
+
+            // TODO state重命名
+            appBuilder.hanldeRefScene({
+              scene: RefSceneEnum.Enum.rename_ref_opt,
+              params: {
+                oldPath: `${renderPath}.${path}`,
+                newPath: `${renderPath}.${customSnakeCase(
+                  diffNewValue?.name || '',
+                )}`,
+              },
+            });
+            break;
+          default:
+            break;
         }
-      }
+      });
     }, 300),
     [],
   );
