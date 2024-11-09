@@ -118,7 +118,6 @@ export const duplicateStateSchema = z.object({
 export const RefSceneEnum = z.enum([
   'set_nodedata_key_val',
   'change_nodedata_mode',
-  'remove_nodedata_key',
   'rename_ref_opt',
   'rename_state_name',
   'remove_ref_opts',

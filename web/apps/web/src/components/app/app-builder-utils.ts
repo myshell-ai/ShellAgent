@@ -129,15 +129,15 @@ export function convertRefOptsToCascaderOpts(
     const val2 = refOptOutputGlobalSchema.parse(val);
     const children: CascaderOption[] = Object.entries(val2.variables || {}).map(
       ([variableKey, variable]) => {
-        let val;
+        let value;
         if (key === 'context') {
-          val = `__context__${variableKey}__`;
+          value = `{{ __context__${variableKey}__ }}`;
         } else {
-          val = `{{ ${key}.${variableKey} }}`;
+          value = `{{ ${key}.${variableKey} }}`;
         }
         return {
           label: variable?.display_name || variableKey,
-          value: val,
+          value,
           field_type: variable?.type,
         };
       },

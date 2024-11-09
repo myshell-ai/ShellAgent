@@ -21,6 +21,8 @@ export function removeBrackets(str: string): string {
   return str.replace(/^\s*{{\s*|\s*}}\s*$/g, '');
 }
 
+const contextReg = /__context__([a-z0-9_]+)__/g;
+
 const VariableSelect = (props: VariableSelectProps) => {
   const { name, onChange, value, ...rest } = props;
   const options = useSelectOptions(name);
@@ -31,14 +33,18 @@ const VariableSelect = (props: VariableSelectProps) => {
     (val: string) => {
       onChange?.({ target: { value: val } });
 
-      // const newPath = `${stateId}.${removeBrackets(val)}`;
+      const replacedString = val.replace(contextReg, 'context.$1');
+
+      const newValue = contextReg.test(val)
+        ? removeBrackets(replacedString)
+        : `${stateId}.${removeBrackets(val)}`;
 
       appBuilder.hanldeRefScene({
         scene: RefSceneEnum.Enum.set_nodedata_key_val,
         params: {
           stateName: stateId as Lowercase<string>,
           key: name,
-          newValue: val,
+          newValue,
           mode: 'ref',
         },
       });
