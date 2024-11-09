@@ -8,11 +8,14 @@ import { useCallback } from 'react';
 
 import { useAppStore } from '@/stores/app/app-provider';
 import { useAppState } from '@/stores/app/use-app-state';
+import { RefSceneEnum } from '@shellagent/shared/protocol/app-scope';
+import { customSnakeCase } from '@shellagent/shared/utils';
 import {
   getKeyboardKeyCodeBySystem,
   isEventTargetInputArea,
 } from '@/utils/common-helper';
-
+import { useInjection } from 'inversify-react';
+import { AppBuilderModel } from '@/components/app/app-builder.model';
 import { initData } from '../utils';
 
 export const usePasteState = ({
@@ -23,6 +26,7 @@ export const usePasteState = ({
   const { setNodeData } = useAppStore(state => ({
     setNodeData: state.setNodeData,
   }));
+  const appBuilder = useInjection(AppBuilderModel);
 
   const { reactFlowWrapper, viewport, onAddNode } = useReactFlowStore(
     state => ({
@@ -37,10 +41,19 @@ export const usePasteState = ({
   }));
 
   const pasteState = useCallback(() => {
-    const newId = uuid();
     const newData = initData(data);
+    const displayName = `${newData?.display_name} Copy`;
+    const newId = customSnakeCase(displayName) as Lowercase<string>;
 
     setNodeData({ id: newId, data: newData });
+
+    appBuilder.hanldeRefScene({
+      scene: RefSceneEnum.Enum.duplicate_state,
+      params: {
+        stateName: data.id as Lowercase<string>,
+        duplicateStateName: newId,
+      },
+    });
 
     const position = getCanvasCenter(reactFlowWrapper, viewport);
     onAddNode({
@@ -48,9 +61,10 @@ export const usePasteState = ({
       position,
       data: {
         id: newId,
-        name: data.name || '',
-        display_name: 'State',
+        name: data?.name || '',
+        display_name: displayName,
       },
+      isCopy: true,
     });
   }, [setNodeData, data, reactFlowWrapper, viewport, onAddNode]);
 
