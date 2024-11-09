@@ -20,47 +20,42 @@ export function useFieldWatch(formRef: React.RefObject<FormRef>) {
   // 处理 context 变化的函数
   const handleContextChange = useCallback(
     debounce((newValue: TValues, prevValue: TValues, name: string) => {
-      const oldContext: TValues = get(
-        prevValue,
-        reservedKeySchema.Enum.context,
-      );
-      const newContext: TValues = get(newValue, reservedKeySchema.Enum.context);
-      const diffPath = getDiffPath(oldContext, newContext);
-      diffPath.forEach(diff => {
-        switch (diff.type) {
+      const oldContext = get(prevValue, reservedKeySchema.Enum.context);
+      const newContext = get(newValue, reservedKeySchema.Enum.context);
+
+      getDiffPath(oldContext, newContext).forEach(diff => {
+        const { type, path, oldValue, newValue: diffNewValue } = diff;
+
+        switch (type) {
           case DiffTypeEnum.Deleted:
             appBuilder.hanldeRefScene({
               scene: RefSceneEnum.Enum.remove_ref_opts,
-              params: {
-                paths: [`${name}.${diff.path}`],
-              },
+              params: { paths: [`${name}.${path}`] },
             });
             break;
           case DiffTypeEnum.Modified:
-            if (diff.oldValue && diff.newValue) {
-              if (diff.oldValue !== diff.newValue) {
-                const oldKey = name.split('.')[1];
-                const newKey = customSnakeCase(diff.newValue || '');
-                const value = get(newContext, oldKey);
-                replaceKey(formRef, {
-                  parentPath: reservedKeySchema.Enum.context,
-                  oldKey,
-                  newKey,
-                  value,
-                });
-              }
+            if (
+              path?.split('.').pop() === 'name' &&
+              oldValue &&
+              diffNewValue &&
+              oldValue !== diffNewValue
+            ) {
+              replaceKey(formRef, {
+                parentPath: reservedKeySchema.Enum.context,
+                oldKey: name.split('.')[1],
+                newKey: customSnakeCase(diffNewValue),
+                value: get(newContext, name.split('.')[1]),
+              });
             }
             break;
           case DiffTypeEnum.Renamed:
-            const oldPath = `${reservedKeySchema.Enum.context}.${diff.path}`;
-            const newPath = `${
-              reservedKeySchema.Enum.context
-            }.${customSnakeCase(diff.newValue?.name || '')}`;
             appBuilder.hanldeRefScene({
               scene: RefSceneEnum.Enum.rename_ref_opt,
               params: {
-                oldPath,
-                newPath,
+                oldPath: `${reservedKeySchema.Enum.context}.${path}`,
+                newPath: `${reservedKeySchema.Enum.context}.${customSnakeCase(
+                  diffNewValue?.name || '',
+                )}`,
               },
             });
             break;
@@ -75,55 +70,50 @@ export function useFieldWatch(formRef: React.RefObject<FormRef>) {
   // 处理 inputs 变化的函数
   const handleInputsChange = useCallback(
     debounce((newValue: TValues, prevValue: TValues, name: string) => {
-      if (name === reservedKeySchema.Enum.inputs) {
-        const oldInputs: TValues = get(prevValue, name);
-        const newInputs: TValues = get(newValue, name);
-        const diffPath = getDiffPath(oldInputs, newInputs);
-        diffPath.forEach(diff => {
-          switch (diff.type) {
-            case DiffTypeEnum.Deleted:
-              appBuilder.hanldeRefScene({
-                scene: RefSceneEnum.Enum.remove_ref_opts,
-                params: {
-                  paths: [`${stateId}.${name}.${diff.path}`],
-                },
-              });
-              break;
-            default:
-              break;
-          }
-        });
-      } else {
-        const inputName = name.split('.')[1];
-        const prevInputsValue: TValues = get(prevValue, [
-          reservedKeySchema.Enum.inputs,
-          inputName,
-        ]);
-        const newInputsValue: TValues = get(newValue, [
-          reservedKeySchema.Enum.inputs,
-          inputName,
-        ]);
+      const oldInputs = get(prevValue, reservedKeySchema.Enum.inputs);
+      const newInputs = get(newValue, reservedKeySchema.Enum.inputs);
 
-        if (isString(prevInputsValue?.name) && newInputsValue?.name) {
-          if (prevInputsValue.name !== newInputsValue.name) {
-            const newKey = customSnakeCase(newInputsValue.name || '');
+      getDiffPath(oldInputs, newInputs).forEach(diff => {
+        const { type, path, oldValue, newValue: diffNewValue } = diff;
+        const basePath = `${stateId}.${reservedKeySchema.Enum.inputs}`;
+
+        switch (type) {
+          case DiffTypeEnum.Deleted:
+            appBuilder.hanldeRefScene({
+              scene: RefSceneEnum.Enum.remove_ref_opts,
+              params: { paths: [`${basePath}.${path}`] },
+            });
+            break;
+
+          case DiffTypeEnum.Modified:
+            if (
+              path?.split('.').pop() === 'name' &&
+              oldValue &&
+              diffNewValue &&
+              oldValue !== diffNewValue
+            ) {
+              replaceKey(formRef, {
+                parentPath: reservedKeySchema.Enum.inputs,
+                oldKey: name.split('.')[1],
+                newKey: customSnakeCase(diffNewValue),
+                value: get(newInputs, name.split('.')[1]),
+              });
+            }
+            break;
+
+          case DiffTypeEnum.Renamed:
             appBuilder.hanldeRefScene({
               scene: RefSceneEnum.Enum.rename_ref_opt,
               params: {
-                oldPath: `${stateId}.${reservedKeySchema.Enum.inputs}.${inputName}`,
-                newPath: `${stateId}.${reservedKeySchema.Enum.inputs}.${newKey}`,
+                oldPath: `${basePath}.${path}`,
+                newPath: `${basePath}.${customSnakeCase(
+                  diffNewValue?.name || '',
+                )}`,
               },
             });
-            // todo 会触发DiffTypeEnum.Deleted
-            replaceKey(formRef, {
-              parentPath: reservedKeySchema.Enum.inputs,
-              oldKey: inputName,
-              newKey,
-              value: newInputsValue,
-            });
-          }
+            break;
         }
-      }
+      });
     }, 300),
     [stateId, appBuilder.hanldeRefScene],
   );
@@ -131,68 +121,100 @@ export function useFieldWatch(formRef: React.RefObject<FormRef>) {
   // 处理 outputs 变化的函数
   const handleOutputsChange = useCallback(
     debounce((newValue: TValues, prevValue: TValues, name: string) => {
-      if (name === reservedKeySchema.Enum.outputs) {
-        const oldOuputs: TValues = get(prevValue, name);
-        const newOuputs: TValues = get(newValue, name);
-        const diffPath = getDiffPath(oldOuputs, newOuputs);
-        diffPath.forEach(diff => {
-          switch (diff.type) {
-            case DiffTypeEnum.Deleted:
-              appBuilder.hanldeRefScene({
-                scene: RefSceneEnum.Enum.remove_ref_opts,
-                params: {
-                  paths: [`${stateId}.${name}.${diff.path}`],
-                },
-              });
-              break;
-            default:
-              break;
-          }
-        });
-      } else {
-        const outputName = name.split('.')[1];
-        const prevOutputsValue: TValues = get(prevValue, [
-          reservedKeySchema.Enum.outputs,
-          outputName,
-        ]);
-        const newOutputsValue: TValues = get(newValue, [
-          reservedKeySchema.Enum.outputs,
-          outputName,
-        ]);
+      const oldOuputs = get(prevValue, reservedKeySchema.Enum.outputs);
+      const newOutputs = get(newValue, reservedKeySchema.Enum.outputs);
+      const basePath = `${stateId}.${reservedKeySchema.Enum.outputs}`;
 
-        if (
-          isString(prevOutputsValue?.name) &&
-          isString(newOutputsValue?.name)
-        ) {
-          if (prevOutputsValue.name !== newOutputsValue.name) {
-            const newKey = customSnakeCase(newOutputsValue.name || '');
+      getDiffPath(oldOuputs, newOutputs).forEach(diff => {
+        const { type, path, oldValue, newValue: diffNewValue } = diff;
+
+        switch (type) {
+          case DiffTypeEnum.Deleted:
+            appBuilder.hanldeRefScene({
+              scene: RefSceneEnum.Enum.remove_ref_opts,
+              params: { paths: [`${basePath}.${path}`] },
+            });
+            break;
+
+          case DiffTypeEnum.Modified:
+            if (
+              path?.split('.').pop() === 'name' &&
+              oldValue &&
+              diffNewValue &&
+              oldValue !== diffNewValue
+            ) {
+              replaceKey(formRef, {
+                parentPath: reservedKeySchema.Enum.outputs,
+                oldKey: name.split('.')[1],
+                newKey: customSnakeCase(diffNewValue),
+                value: get(newOutputs, name.split('.')[1]),
+              });
+            }
+            break;
+
+          case DiffTypeEnum.Renamed:
             appBuilder.hanldeRefScene({
               scene: RefSceneEnum.Enum.rename_ref_opt,
               params: {
-                oldPath: name,
-                newPath: `${reservedKeySchema.Enum.context}.${newKey}`,
+                oldPath: `${basePath}.${path}`,
+                newPath: `${basePath}.${customSnakeCase(
+                  diffNewValue?.name || '',
+                )}`,
               },
             });
-            // todo 会触发DiffTypeEnum.Deleted
-            replaceKey(formRef, {
-              parentPath: reservedKeySchema.Enum.outputs,
-              oldKey: outputName,
-              newKey,
-              value: newOutputsValue,
-            });
-          }
+            break;
         }
-      }
+      });
     }, 100),
-    [],
+    [stateId, appBuilder.hanldeRefScene],
   );
 
   // 处理 blocks 变化的函数
   const handleBlocksChange = useCallback(
     debounce((newValue: TValues, prevValue: TValues, name: string) => {
-      console.log('blocks>>.', newValue, prevValue, name);
-    }, 300),
-    [],
+      const oldBlocks = get(prevValue, reservedKeySchema.Enum.blocks);
+      const newBlocks = get(newValue, reservedKeySchema.Enum.blocks);
+
+      getDiffPath(oldBlocks, newBlocks).forEach(diff => {
+        const { type, path, oldValue, newValue: diffNewValue } = diff;
+        const blocksPath = `${stateId}.${reservedKeySchema.Enum.blocks}`;
+
+        switch (type) {
+          case DiffTypeEnum.Deleted:
+            appBuilder.hanldeRefScene({
+              scene: RefSceneEnum.Enum.remove_ref_opts,
+              params: { paths: [`${blocksPath}.${path}`] },
+            });
+            break;
+
+          case DiffTypeEnum.Modified:
+            console.log('modified', path, oldValue, diffNewValue);
+
+            if (path?.split('.').pop() === 'display_name') {
+              const blockName = `blocks.${name?.split('.')?.[1]}.name`;
+              formRef.current?.setValue(
+                blockName,
+                customSnakeCase(diffNewValue?.name || ''),
+              );
+            }
+
+            // TODO state重命名
+            appBuilder.hanldeRefScene({
+              scene: RefSceneEnum.Enum.rename_ref_opt,
+              params: {
+                oldPath: `${blocksPath}.${path}`,
+                newPath: `${blocksPath}.${customSnakeCase(
+                  diffNewValue?.name || '',
+                )}`,
+              },
+            });
+            break;
+          default:
+            break;
+        }
+      });
+    }, 100),
+    [appBuilder.hanldeRefScene, stateId],
   );
 
   // 处理 render 变化的函数
@@ -250,7 +272,6 @@ export function useFieldWatch(formRef: React.RefObject<FormRef>) {
       const prevValue = prevValuesRef.current;
 
       if (!isEqual(newValue, prevValue)) {
-        console.log('?????', name, newValue);
         handleChange(newValue, prevValue, name);
       }
 

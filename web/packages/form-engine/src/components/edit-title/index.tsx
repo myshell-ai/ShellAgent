@@ -43,7 +43,7 @@ export interface IEditTitleProps extends InputProps {
 const EditTitle = React.forwardRef<HTMLInputElement, IEditTitleProps>(
   (props, ref) => {
     const formRef = useRef<FormRef>(null);
-    const { components, replaceKey } = useFormEngineContext();
+    const { components } = useFormEngineContext();
     const [isOpenDialog, setIsOpenDialog] = useState(false);
     const { getValues, setValue } = useFormContext();
     const {
@@ -106,12 +106,7 @@ const EditTitle = React.forwardRef<HTMLInputElement, IEditTitleProps>(
       if (Object.keys(errors).length > 0) {
         return;
       } else {
-        const { __changeKey__, ...data } = formData;
-        if (__changeKey__) {
-          replaceKey(path, __changeKey__, data);
-        } else {
-          setValue(path, formData);
-        }
+        setValue(path, formData);
         setIsOpenDialog(false);
       }
     };

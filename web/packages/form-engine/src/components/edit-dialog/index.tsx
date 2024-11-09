@@ -58,7 +58,9 @@ const EditDialog = (props: IEditDialogProps) => {
       return;
     } else {
       for (const key in formData) {
-        setValue(`${name}.${key}`, formData[key]);
+        if (formData[key] !== undefined) {
+          setValue(`${name}.${key}`, formData[key]);
+        }
       }
       setIsOpen(false);
     }

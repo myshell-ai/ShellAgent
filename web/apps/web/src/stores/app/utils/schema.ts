@@ -116,7 +116,6 @@ const startSchema: ISchema = {
             type: 'string',
             'x-component': 'Input',
             'x-type': 'Control',
-            'x-raw': true,
             'x-parent-deletable': true,
             'x-title-editable': true,
             'x-component-props': {
@@ -188,7 +187,6 @@ const startSchema: ISchema = {
                           when: '$this.value === "image"',
                           fullfill: {
                             schema: {
-                              'x-raw': true,
                               'x-component': 'FileUpload',
                               'x-component-props': {
                                 accept: ENABLE_MIME.audio,
@@ -201,7 +199,6 @@ const startSchema: ISchema = {
                           when: '$this.value === "audio"',
                           fullfill: {
                             schema: {
-                              'x-raw': true,
                               'x-component': 'FileUpload',
                               'x-component-props': {
                                 accept: ENABLE_MIME.audio,
@@ -259,7 +256,6 @@ const startSchema: ISchema = {
                     description: {
                       type: 'string',
                       title: 'Description',
-                      'x-raw': true,
                       'x-component': 'Textarea',
                       'x-layout': 'Vertical',
                       'x-class': 'border-0 bg-inherit rounded-lg p-0 pt-3',

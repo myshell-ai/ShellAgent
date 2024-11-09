@@ -182,26 +182,50 @@ describe('form-utils', () => {
       ]);
     });
 
-    it('should detect modified fields', () => {
+    it('should detect modified fields to empty string', () => {
       const oldValue = {
-        type: 'text',
-        value: '',
-        name: 'aaaa',
+        '4': {
+          name: '4',
+          type: 'text',
+          user_input: true,
+        },
+        '12': {
+          name: '12',
+          type: 'text',
+          user_input: true,
+        },
+        '111': {
+          name: '111',
+          type: 'text',
+          user_input: true,
+        },
       };
       const newValue = {
-        type: 'text',
-        value: '',
-        name: 'ccccc',
+        '4': {
+          name: '4',
+          type: 'text',
+          user_input: true,
+        },
+        '12': {
+          name: '12',
+          type: 'text',
+          user_input: true,
+        },
+        '111': {
+          name: '',
+          type: 'text',
+          user_input: true,
+        },
       };
 
       const result = getDiffPath(oldValue, newValue);
 
       expect(result).toEqual([
         {
-          path: 'name',
+          path: '111.name',
           type: DiffTypeEnum.Modified,
-          oldValue: oldValue.name,
-          newValue: newValue.name,
+          oldValue: oldValue['111'].name,
+          newValue: newValue['111'].name,
         },
       ]);
     });

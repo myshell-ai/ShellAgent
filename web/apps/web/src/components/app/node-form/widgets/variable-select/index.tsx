@@ -17,6 +17,10 @@ interface VariableSelectProps extends ISelectProps {
   placeholder?: string;
 }
 
+export function removeBrackets(str: string): string {
+  return str.replace(/^\s*{{\s*|\s*}}\s*$/g, '');
+}
+
 const VariableSelect = (props: VariableSelectProps) => {
   const { name, onChange, value, ...rest } = props;
   const options = useSelectOptions(name);
@@ -26,6 +30,9 @@ const VariableSelect = (props: VariableSelectProps) => {
   const handleChange = useCallback(
     (val: string) => {
       onChange?.({ target: { value: val } });
+
+      // const newPath = `${stateId}.${removeBrackets(val)}`;
+
       appBuilder.hanldeRefScene({
         scene: RefSceneEnum.Enum.set_nodedata_key_val,
         params: {

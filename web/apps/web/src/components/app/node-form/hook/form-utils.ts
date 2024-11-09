@@ -57,19 +57,12 @@ export const getDiffPath = (
   // 基础情况处理
   if (newObj === prevObj) return [];
 
-  // 处理非对象类���或空值
   if (
     !prevObj ||
     !newObj ||
     typeof prevObj !== 'object' ||
     typeof newObj !== 'object'
   ) {
-    if (!prevObj) {
-      return [{ path, type: DiffTypeEnum.Added, newValue: newObj }];
-    }
-    if (!newObj) {
-      return [{ path, type: DiffTypeEnum.Deleted, oldValue: prevObj }];
-    }
     return [
       {
         path,

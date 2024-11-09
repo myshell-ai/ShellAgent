@@ -69,8 +69,13 @@ export function convertNodeDataToState(nodeData: any): State {
       },
     },
   };
-
-  return stateSchema.parse(ret);
+  // TODO blocks 的type有问题
+  try {
+    return stateSchema.parse(ret);
+  } catch (e) {
+    console.error(e);
+    return ret;
+  }
 }
 
 export function convetNodeDataToScopes(nodeDatas: any, edges: any[]) {
@@ -103,9 +108,15 @@ export function convetNodeDataToScopes(nodeDatas: any, edges: any[]) {
     };
   });
 
-  return scopesSchema.parse({
-    scopes: ret,
-  });
+  // TODO blocks 的type有问题
+  try {
+    return scopesSchema.parse({
+      scopes: ret,
+    });
+  } catch (e) {
+    console.error(e);
+    return ret;
+  }
 }
 
 export function convertRefOptsToCascaderOpts(
@@ -118,7 +129,6 @@ export function convertRefOptsToCascaderOpts(
     const val2 = refOptOutputGlobalSchema.parse(val);
     const children: CascaderOption[] = Object.entries(val2.variables || {}).map(
       ([variableKey, variable]) => {
-        console.log(key);
         let val;
         if (key === 'context') {
           val = `__context__${variableKey}__`;
