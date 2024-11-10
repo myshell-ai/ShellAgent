@@ -60,6 +60,7 @@ export interface AddNodeProps {
     icon?: string;
     id?: string;
   };
+  isCopy?: boolean;
 }
 
 export interface DelNodeProps {
@@ -172,7 +173,7 @@ export const FlowStoreProvider = ({ children }: FlowStoreProviderProps) => {
   };
 
   const onAddNode = useCallback(
-    ({ type, position, data }: AddNodeProps) => {
+    ({ type, position, data, isCopy }: AddNodeProps) => {
       const { name, display_name: displayName } = data;
       const lastNodeName =
         findLast(nodes, node => node.data.name === name)?.data.display_name ||
@@ -185,7 +186,7 @@ export const FlowStoreProvider = ({ children }: FlowStoreProviderProps) => {
         draft[name] = index;
       });
 
-      const nodeName = getNodeName(displayName, index);
+      const nodeName = isCopy ? displayName : getNodeName(displayName, index);
       const id = customSnakeCase(nodeName);
 
       setNodes(
