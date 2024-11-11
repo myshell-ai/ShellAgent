@@ -8,6 +8,9 @@ import { useClickAway } from 'ahooks';
 import { Dropdown } from 'antd';
 import { useState, useRef, useCallback } from 'react';
 import { useDrag, useDrop } from 'react-dnd';
+import { useInjection } from 'inversify-react';
+import { AppBuilderModel } from '@/components/app/app-builder.model';
+import { RefSceneEnum } from '@shellagent/shared/protocol/app-scope';
 
 import { materialList } from '@/components/app/constants';
 import { TaskList } from '@/components/app/task-list';
@@ -122,6 +125,7 @@ const TasksConfig = ({
   const [open, setOpen] = useState(false);
   const { getValues } = useFormContext();
   const values = getValues(name) as Task[];
+  const appBuilder = useInjection(AppBuilderModel);
 
   const { currentStateId, setInsideSheetOpen } = useAppState(state => state);
 
@@ -183,7 +187,6 @@ const TasksConfig = ({
       const updatedTasks = [...values];
       updatedTasks.splice(dragIndex, 1);
       updatedTasks.splice(hoverIndex, 0, draggedTask);
-
       onChange(updatedTasks);
     },
     [values, onChange],

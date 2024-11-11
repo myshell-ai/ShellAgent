@@ -7,6 +7,7 @@ export enum DiffTypeEnum {
   Deleted = 'deleted',
   Modified = 'modified',
   Renamed = 'renamed',
+  Reordered = 'reordered',
 }
 
 export interface DiffResult {
@@ -14,6 +15,8 @@ export interface DiffResult {
   type: DiffTypeEnum;
   oldValue?: any;
   newValue?: any;
+  fromIndex?: number;
+  toIndex?: number;
 }
 
 export const replaceKey = (
@@ -50,8 +53,8 @@ export const replaceKey = (
 };
 
 export const getDiffPath = (
-  prevObj: TValues,
-  newObj: TValues,
+  prevObj: any,
+  newObj: any,
   path = '',
 ): DiffResult[] => {
   // 基础情况处理
@@ -63,20 +66,47 @@ export const getDiffPath = (
     typeof prevObj !== 'object' ||
     typeof newObj !== 'object'
   ) {
-    if (!prevObj) {
-      return [{ path, type: DiffTypeEnum.Added, newValue: newObj }];
+    if (prevObj !== newObj) {
+      return [
+        {
+          path,
+          type: DiffTypeEnum.Modified,
+          oldValue: prevObj,
+          newValue: newObj,
+        },
+      ];
     }
-    if (!newObj) {
-      return [{ path, type: DiffTypeEnum.Deleted, oldValue: prevObj }];
+    return [];
+  }
+
+  // 添加数组重排序检测
+  if (Array.isArray(prevObj) && Array.isArray(newObj)) {
+    const isReordered =
+      prevObj.length === newObj.length &&
+      prevObj.every(item => newObj.some(newItem => isEqual(item, newItem))) &&
+      !isEqual(prevObj, newObj);
+
+    if (isReordered) {
+      // 找出第一个位置发生变化的元素
+      const fromIndex = prevObj.findIndex(
+        (item, index) => !isEqual(item, newObj[index]),
+      );
+      // 找出该元素在新数组中的位置
+      const toIndex = newObj.findIndex(item =>
+        isEqual(item, prevObj[fromIndex]),
+      );
+
+      return [
+        {
+          path: '',
+          type: DiffTypeEnum.Reordered,
+          oldValue: prevObj,
+          newValue: newObj,
+          fromIndex,
+          toIndex,
+        },
+      ];
     }
-    return [
-      {
-        path,
-        type: DiffTypeEnum.Modified,
-        oldValue: prevObj,
-        newValue: newObj,
-      },
-    ];
   }
 
   const diffs: DiffResult[] = [];

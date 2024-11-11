@@ -1,10 +1,12 @@
 import { ISelectProps, Cascader, CascaderOption } from '@shellagent/ui';
 import { RefSceneEnum } from '@shellagent/shared/protocol/app-scope';
+import { removeBrackets } from '@shellagent/shared/utils';
 import { useCallback } from 'react';
 import { useSelectOptions } from './use-select-options';
 import { useInjection } from 'inversify-react';
 import { AppBuilderModel } from '@/components/app/app-builder.model';
 import { useSchemaContext } from '@/stores/app/schema-provider';
+import { useFormEngineContext } from '@shellagent/form-engine';
 interface IVariableValue {
   target: { value: string };
 }
@@ -17,10 +19,6 @@ interface VariableSelectProps extends ISelectProps {
   placeholder?: string;
 }
 
-export function removeBrackets(str: string): string {
-  return str.replace(/^\s*{{\s*|\s*}}\s*$/g, '');
-}
-
 const contextReg = /__context__([a-z0-9_]+)__/g;
 
 const VariableSelect = (props: VariableSelectProps) => {
@@ -28,22 +26,25 @@ const VariableSelect = (props: VariableSelectProps) => {
   const options = useSelectOptions(name);
   const appBuilder = useInjection(AppBuilderModel);
   const stateId = useSchemaContext(state => state.id);
+  const { parent } = useFormEngineContext();
 
   const handleChange = useCallback(
-    (val: string, parent?: string) => {
+    (val: string, parentKey?: string) => {
       onChange?.({ target: { value: val } });
 
       const replacedString = val.replace(contextReg, 'context.$1');
 
       const newValue = contextReg.test(val)
         ? removeBrackets(replacedString)
-        : `${stateId}.${parent ? `${parent}.` : ''}${removeBrackets(val)}`;
+        : `${stateId}.${parentKey ? `${parentKey}.` : ''}${removeBrackets(
+            val,
+          )}`;
 
       appBuilder.hanldeRefScene({
         scene: RefSceneEnum.Enum.set_nodedata_key_val,
         params: {
           stateName: stateId as Lowercase<string>,
-          key: name,
+          key: `${parent ? `${parent}.` : ''}${name}`,
           newValue,
           mode: 'ref',
         },

@@ -27,7 +27,13 @@
 //     .join('_');
 // }
 
+export const removeBrackets = (key: string): string => {
+  return key.replace(/\{\{\s*(.*?)\s*\}\}/g, '$1');
+};
+
 export function customSnakeCase(s: string) {
-  const r = s.split(/(?<![A-Z])(?=[A-Z])|\#|\s+/);
+  if (!s) return s;
+  const str = removeBrackets(s);
+  const r = str.split(/(?<![A-Z])(?=[A-Z])|\#|\s+/);
   return r.map(i => i.toLowerCase()).join('_');
 }

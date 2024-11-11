@@ -26,7 +26,7 @@ import { AppStore } from '../app-store';
 function replaceContext2Form(data: any) {
   const jsonString = JSON.stringify(data);
   const replacedString = jsonString.replace(
-    /context.([a-z0-9_]+)/g,
+    /context\.([a-z0-9_]+)/g,
     '__context__$1__',
   );
   const replacedData = JSON.parse(replacedString);

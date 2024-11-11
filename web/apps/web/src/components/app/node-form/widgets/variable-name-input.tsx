@@ -19,7 +19,7 @@ import {
   Text,
   useFormContext,
 } from '@shellagent/ui';
-import { RefType, refTypeSchema } from '@shellagent/shared/protocol/app-scope';
+import { refTypeSchema } from '@shellagent/shared/protocol/app-scope';
 import {
   FieldModeEnum,
   FieldMode,

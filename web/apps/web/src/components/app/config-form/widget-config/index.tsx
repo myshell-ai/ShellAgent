@@ -151,6 +151,8 @@ export const WidgetConfig: React.FC<WidgetConfigProps> = props => {
       />
     );
   }
+
+  console.log('parent>>>', parent);
   return (
     <StandardWidgetConfig
       {...props}
