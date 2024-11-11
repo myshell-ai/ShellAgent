@@ -15,6 +15,8 @@ import { edgeTypes, materialList, nodeTypes } from '@/components/app/constants';
 import FlowHeader from '@/components/app/flow-header';
 import { Header } from '@/components/app/header';
 import { AppBuilderChatModel } from '@/components/chat/app-builder-chat.model';
+import { AppBuilderModel } from '@/components/app/app-builder.model';
+
 import { ListFooterExtra } from '@/components/common/list-footer-extra';
 import { ImageCanvasDialog } from '@/components/image-canvas/open-image-canvas';
 import { useAppStore } from '@/stores/app/app-provider';
@@ -46,6 +48,7 @@ export default function AppBuilderDetail() {
   const flowRef = useRef<FlowRef>(null);
   const flowInstance = flowRef.current?.getFlowInstance();
   const appBuilderChatModel = useInjection(AppBuilderChatModel);
+  const appBuilder = useInjection(AppBuilderModel);
 
   const appId = params.get('id') as string;
   const version_name = params.get('version_name') as string;
@@ -69,7 +72,9 @@ export default function AppBuilderDetail() {
   useEffect(() => {
     if (flowInstance) {
       setFlowInstance(flowInstance);
-      getReactFlow({ app_id: appId, version_name }, flowInstance);
+      getReactFlow({ app_id: appId, version_name }, flowInstance, config => {
+        appBuilder.initRefs(config?.refs || {});
+      });
     }
   }, [flowInstance, appId, version_name]);
 

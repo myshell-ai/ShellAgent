@@ -26,13 +26,14 @@ import {
   GetListResponse,
 } from '@/services/home/type';
 import { genNodeData } from '@/stores/app/utils/data-transformer';
-
+import { Refs } from '@shellagent/shared/protocol/app-scope';
 setAutoFreeze(false);
 
 export type AppState = {
   metadata: Metadata;
   config: {
     fieldsModeMap: Record<string, Record<string, TFieldMode>>;
+    refs: Refs;
   };
   userInputs: TValues;
   nodeData: Record<string, TValues>;
@@ -76,6 +77,7 @@ export type AppAction = {
   getReactFlow: (
     params: GetAppFlowRequest,
     instance: ReactFlowInstance,
+    callback?: (config: AppState['config']) => void,
   ) => void;
   onChatMessage: (params: EventSourceMessage) => void;
   clearRuntimeData: () => void;
@@ -85,6 +87,7 @@ export type AppAction = {
     name: string;
     mode: TFieldMode;
   }) => void;
+  setRefs: (refs: Refs) => void;
   setResetData: (data: { path: string; value?: string }) => void;
   clearResetData: (path: string) => void;
   delConfigMap: (id: string) => void;
@@ -106,6 +109,7 @@ export type AppStore = AppState & AppAction;
 export const initState: AppState = {
   config: {
     fieldsModeMap: {},
+    refs: {},
   },
   metadata: {
     name: '',
@@ -163,6 +167,12 @@ export const createAppStore = () => {
           }),
         );
       },
+      setRefs: refs =>
+        set(
+          produce(state => {
+            state.config.refs = refs;
+          }),
+        ),
       setUserInputs: userInputs =>
         set(
           produce(state => {
@@ -237,7 +247,7 @@ export const createAppStore = () => {
           );
         }
       },
-      getReactFlow: async (params, instance) => {
+      getReactFlow: async (params, instance, callback) => {
         try {
           set(
             produce(state => {
@@ -245,6 +255,7 @@ export const createAppStore = () => {
             }),
           );
           const { reactflow, config, metadata } = await fetchFlow(params);
+          callback?.(config as AppState['config']);
 
           if (instance) {
             instance.setNodes(
@@ -369,6 +380,7 @@ export const createAppStore = () => {
         set(
           produce(state => {
             delete state.config.fieldsModeMap?.[id];
+            delete state.config.refs?.[id];
           }),
         );
       },

@@ -11,7 +11,6 @@ import {
   TargetHandle,
   useDrop,
   useReactFlowStore,
-  uuid,
 } from '@shellagent/flow-engine';
 import { TFieldMode, TValues } from '@shellagent/form-engine';
 import { Task, TaskSchema } from '@shellagent/shared/protocol/task';
@@ -108,9 +107,9 @@ const StateNode: React.FC<NodeProps<StateNodeType>> = ({ selected, data }) => {
         delNodeData(data.id);
         onDelNode({ id: data.id });
         appBuilder.hanldeRefScene({
-          scene: RefSceneEnum.Enum.remove_ref_opts_prefix,
+          scene: RefSceneEnum.Enum.remove_state,
           params: {
-            prefix: [data.id],
+            stateName: data.id as Lowercase<string>,
           },
         });
         if (currentStateId === data.id) {

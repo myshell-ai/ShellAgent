@@ -1510,12 +1510,12 @@ state#3
         params: {
           stateName: 'state_1',
           mode: 'ref',
+          key: 'render.text',
         } as const,
       };
       expect(() => {
         hanldeRefScene(refs, {
           scene: 'change_nodedata_mode',
-          // @ts-expect-error
           params: evt.params,
         });
       }).toThrowErrorMatchingInlineSnapshot(

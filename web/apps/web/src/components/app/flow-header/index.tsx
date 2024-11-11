@@ -24,12 +24,13 @@ const FlowHeader: React.FC<{ appId: string; version_name: string }> = ({
 }) => {
   const [autoSavedTime, setAutoSavedTime] = useState('');
   const [autoSavedSuccess, setAutoSavedSuccess] = useState(true);
-  const { config, nodeData, flowInstance, loading } = useAppStore(
+  const { config, nodeData, flowInstance, loading, setRefs } = useAppStore(
     useShallow(state => ({
       config: state.config,
       nodeData: state.nodeData,
       flowInstance: state.flowInstance,
       loading: state.loading,
+      setRefs: state.setRefs,
     })),
   );
 
@@ -45,6 +46,10 @@ const FlowHeader: React.FC<{ appId: string; version_name: string }> = ({
     (window as any).nodeData = nodeData;
     appBuilder.updateScopes(nodeData, edges);
   }, [nodeData, edges]);
+
+  useEffect(() => {
+    setRefs(appBuilder.refs);
+  }, [appBuilder.refs]);
 
   const values = useMemo(() => {
     return {

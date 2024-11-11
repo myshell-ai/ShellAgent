@@ -1,8 +1,5 @@
-import { IEdge, INode } from '@shellagent/flow-engine';
-import { TValues } from '@shellagent/form-engine';
 import { CustomKey, CustomEventName } from '@shellagent/pro-config';
 import {
-  State,
   RefType,
   getRefOptions,
   Scopes,
@@ -11,9 +8,6 @@ import {
   Refs,
 } from '@shellagent/shared/protocol/app-scope';
 import { injectable } from 'inversify';
-import { makeObservable, observable } from 'mobx';
-
-import { getRefNodes } from '@/stores/app/utils/data-transformer';
 
 import {
   CascaderOption,
@@ -54,6 +48,10 @@ export class AppBuilderModel {
 
   updateScopes(nodeData: any, edges: any = []) {
     this.scopes = convetNodeDataToScopes(nodeData, edges);
+  }
+
+  initRefs(refs: Refs) {
+    this.refs = refs;
   }
 
   hanldeRefScene(evt: HandleRefSceneEvent) {

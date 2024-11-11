@@ -40,7 +40,7 @@ export const ExtraActions = () => {
         },
         config: {
           fieldsModeMap: {},
-          schemaModeMap: {},
+          refs: {},
         },
         metadata: data.metadata,
         automata: {} as Automata,
