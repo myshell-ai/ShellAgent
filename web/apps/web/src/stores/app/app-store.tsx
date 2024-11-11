@@ -33,7 +33,6 @@ export type AppState = {
   metadata: Metadata;
   config: {
     fieldsModeMap: Record<string, Record<string, TFieldMode>>;
-    schemaModeMap: Record<string, string>;
   };
   userInputs: TValues;
   nodeData: Record<string, TValues>;
@@ -81,7 +80,6 @@ export type AppAction = {
   onChatMessage: (params: EventSourceMessage) => void;
   clearRuntimeData: () => void;
   updateMetadata: (params: { metadata: Partial<Metadata> }) => void;
-  setSchemaModeMap: (params: { id: string; mode: string }) => void;
   setFieldsModeMap: (params: {
     id: string;
     name: string;
@@ -108,8 +106,6 @@ export type AppStore = AppState & AppAction;
 export const initState: AppState = {
   config: {
     fieldsModeMap: {},
-    // node schema mode
-    schemaModeMap: {},
   },
   metadata: {
     name: '',
@@ -154,16 +150,6 @@ export const createAppStore = () => {
             state.flowInstance = instance;
           }),
         ),
-      setSchemaModeMap: ({ id, mode }) => {
-        set(
-          produce(state => {
-            if (!state.config?.schemaModeMap) {
-              state.config.schemaModeMap = {};
-            }
-            state.config.schemaModeMap[id] = mode;
-          }),
-        );
-      },
       setFieldsModeMap: ({ id, name, mode }) => {
         set(
           produce(state => {
@@ -324,25 +310,6 @@ export const createAppStore = () => {
             ),
           );
         }
-        if (type === EventStatusEnum.state_exit) {
-          // TODO @shane addMessage
-          // get().flowInstance?.setNodes(nodes =>
-          //   nodes.map(node =>
-          //     node.id === data?.node_id
-          //       ? {
-          //           ...node,
-          //           data: {
-          //             ...node.data,
-          //             runtime_data: {
-          //               ...node.data.runtime_data,
-          //               progress: data?.outputs?.progress,
-          //             },
-          //           },
-          //         }
-          //       : node,
-          //   ),
-          // );
-        }
         if (type === EventStatusEnum.state_end) {
           get().flowInstance?.setNodes(nodes => {
             const node = nodes.find(node => node.id === data?.node_id);
@@ -402,7 +369,6 @@ export const createAppStore = () => {
         set(
           produce(state => {
             delete state.config.fieldsModeMap?.[id];
-            delete state.config.schemaModeMap?.[id];
           }),
         );
       },

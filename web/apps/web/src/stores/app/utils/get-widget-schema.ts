@@ -421,55 +421,17 @@ function addAttributesToPrimitive(schema: JsonSchema7): ISchema {
 }
 
 const getSchemaByWidget = ({
-  mode,
   input_schema,
   output_schema,
-  multi_input_schema,
 }: {
-  mode: string;
   input_schema?: JsonSchema7 | Record<string, JsonSchema7>;
   output_schema?: JsonSchema7;
-  multi_input_schema: boolean;
 }): ISchema => {
   const properties: { [key: string]: ISchema } = {};
   if (!isEmpty(input_schema)) {
-    let schema;
-    if (!multi_input_schema) {
-      schema = resolveRefs(input_schema as JsonSchema7, input_schema);
-      schema.title = 'Input';
-      properties.inputs = addCustomUIProperties(schema);
-    } else {
-      const newProperties: { [key: string]: ISchema } = {};
-      for (const key in input_schema) {
-        if (Object.prototype.hasOwnProperty.call(input_schema, key)) {
-          newProperties[key] = {
-            ...resolveRefs(
-              (input_schema as Record<string, JsonSchema7>)[key],
-              (input_schema as Record<string, JsonSchema7>)[key],
-            ),
-            title: 'Input',
-            'x-hidden': key !== mode,
-            'x-suffix': 'ModeTabs',
-          };
-        }
-      }
-      properties.inputs = {
-        ...addCustomUIProperties({
-          type: 'object',
-          properties: newProperties,
-        }),
-        'x-type': 'Section',
-        'x-default-expand': false,
-        'x-collapsible': false,
-        'x-class': 'mt-0 space-y-0',
-      };
-      if (properties.inputs.properties?.basic) {
-        set(properties.inputs.properties?.basic, 'title', 'Input');
-      }
-      if (properties.inputs.properties?.advanced) {
-        set(properties.inputs.properties?.advanced, 'title', 'Input');
-      }
-    }
+    const schema = resolveRefs(input_schema as JsonSchema7, input_schema);
+    schema.title = 'Input';
+    properties.inputs = addCustomUIProperties(schema);
   }
 
   const types = getTypesFromSchema(output_schema!);

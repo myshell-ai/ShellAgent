@@ -16,9 +16,7 @@ type SchemaState = {
   id: string;
   name: string;
   schema: ISchema;
-  schemaMode: string;
   fieldMode: Record<string, TFieldMode>;
-  multiSchema: boolean;
   outputs?: Record<string, any>;
   outputSchema: JsonSchema7;
   formKey: string;
@@ -26,7 +24,6 @@ type SchemaState = {
 };
 
 type SchemaAction = {
-  setSchemaMode: (mode: string) => void;
   setFieldMode: (field: string, mode: TFieldMode) => void;
 };
 
@@ -36,11 +33,8 @@ export const initState: SchemaStore = {
   id: '',
   name: '',
   schema: {},
-  schemaMode: 'basic',
-  setSchemaMode: () => {},
   fieldMode: {},
   setFieldMode: () => {},
-  multiSchema: true,
   outputSchema: {},
   formKey: generateUUID(),
   type: NodeTypeEnum.state,
@@ -83,29 +77,10 @@ export const SchemaProvider: React.FC<SchemaProviderProps> = ({
     }));
   };
 
-  const { widgetSchema, getWidgetSchema, schemaModeMap, setSchemaModeMap } =
-    useWorkflowStore(state => ({
-      widgetSchema: state.widgetSchema,
-      getWidgetSchema: state.getWidgetSchema,
-      schemaModeMap: state.config?.schemaModeMap || {},
-      setSchemaModeMap: state.setSchemaModeMap,
-    }));
-
-  const schemaMode = useMemo(
-    () => schemaModeMap[id] || initState.schemaMode,
-    [schemaModeMap, id],
-  );
-
-  const setSchemaMode = (mode: string) => {
-    setSchemaModeMap({ id, mode });
-  };
-
-  const multiSchema = useMemo(() => {
-    if (!name || !widgetSchema) {
-      return false;
-    }
-    return widgetSchema[name]?.multi_input_schema;
-  }, [widgetSchema, name]);
+  const { widgetSchema, getWidgetSchema } = useWorkflowStore(state => ({
+    widgetSchema: state.widgetSchema,
+    getWidgetSchema: state.getWidgetSchema,
+  }));
 
   useEffect(() => {
     if (name && !widgetSchema[name] && type === NodeTypeEnum.widget) {
@@ -133,12 +108,10 @@ export const SchemaProvider: React.FC<SchemaProviderProps> = ({
     }
 
     return getSchemaByWidget({
-      mode: schemaMode,
       input_schema: widgetSchema?.[name]?.input_schema,
       output_schema: widgetSchema?.[name]?.output_schema,
-      multi_input_schema: widgetSchema?.[name]?.multi_input_schema,
     });
-  }, [id, name, display_name, widgetSchema, schemaMode, type]);
+  }, [id, name, display_name, widgetSchema, type]);
 
   const outputSchema = useMemo(
     () => widgetSchema?.[name]?.output_schema,
@@ -150,11 +123,8 @@ export const SchemaProvider: React.FC<SchemaProviderProps> = ({
       id,
       name,
       schema,
-      schemaMode,
-      setSchemaMode,
       fieldMode,
       setFieldMode,
-      multiSchema,
       outputs,
       outputSchema,
       formKey,
@@ -164,11 +134,8 @@ export const SchemaProvider: React.FC<SchemaProviderProps> = ({
       id,
       name,
       schema,
-      schemaMode,
-      setSchemaMode,
       fieldMode,
       setFieldMode,
-      multiSchema,
       outputs,
       outputSchema,
       formKey,

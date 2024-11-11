@@ -34,7 +34,6 @@ import { useSchemaContext } from '@/stores/app/schema-provider';
 import FormSkeleton from './form-skeleton';
 import {
   ExpressionInput,
-  ModeTabs,
   VariableSelect,
   ModeSelect,
   Render,
@@ -129,7 +128,6 @@ const NodeForm = forwardRef<FormRef, NodeFormProps>(
           VariableSelect,
           JSONView,
           FileUpload,
-          ModeTabs,
           ModeSelect,
           TasksConfig,
           Render,

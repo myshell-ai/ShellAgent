@@ -65,7 +65,6 @@ const StandardWidgetConfig: React.FC<CommonWidgetConfigProps> = ({
 
   const schema = useMemo(() => {
     const schema = getSchemaByWidget({
-      mode: 'basic',
       ...widgetSchema[values?.widget_class_name],
     });
     // Special process ImageCanvasWidget
