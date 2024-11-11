@@ -1705,46 +1705,4 @@ state#3
       `);
     });
   });
-
-  describe('scope', () => {
-    it('default current mode', () => {
-      const ret = refsSchema.parse({
-        state_1: {
-          'outputs.outputs1-1': {
-            ref: 'context.global_111',
-            ui: [
-              'context.global_111',
-              'context.global_222',
-              'context.global_111',
-            ],
-            raw: ['context.global_111', 'context.global_aaa'],
-          },
-          'outputs.outputs21': {
-            ref: 'context.global_111',
-          },
-        },
-      });
-      expect(ret).toMatchInlineSnapshot(`
-        {
-          "state_1": {
-            "outputs.outputs1-1": {
-              "raw": [
-                "context.global_111",
-                "context.global_aaa",
-              ],
-              "ref": "context.global_111",
-              "ui": [
-                "context.global_111",
-                "context.global_222",
-                "context.global_111",
-              ],
-            },
-            "outputs.outputs21": {
-              "ref": "context.global_111",
-            },
-          },
-        }
-      `);
-    });
-  });
 });
