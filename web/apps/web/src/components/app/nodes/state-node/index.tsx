@@ -20,8 +20,11 @@ import { FormRef } from '@shellagent/ui';
 import { useKeyPress } from 'ahooks';
 import { isEqual } from 'lodash-es';
 import React, { useCallback, useRef, useEffect, useState } from 'react';
+import { RefSceneEnum } from '@shellagent/shared/protocol/app-scope';
 
 import { EdgeDataTypeEnum, EdgeTypeEnum } from '@/components/app/edges';
+import { useInjection } from 'inversify-react';
+import { AppBuilderModel } from '@/components/app/app-builder.model';
 import NodeCard from '@/components/app/node-card';
 import NodeForm from '@/components/app/node-form';
 import { useAppStore } from '@/stores/app/app-provider';
@@ -36,6 +39,7 @@ import emitter, { EventType, useEventEmitter } from '../../emitter';
 
 const StateNode: React.FC<NodeProps<StateNodeType>> = ({ selected, data }) => {
   const stateFormRef = useRef<FormRef>(null);
+  const appBuilder = useInjection(AppBuilderModel);
   const {
     setNodeData,
     nodeData,
@@ -103,6 +107,12 @@ const StateNode: React.FC<NodeProps<StateNodeType>> = ({ selected, data }) => {
       if (selected && e.target === nodeRef.current) {
         delNodeData(data.id);
         onDelNode({ id: data.id });
+        appBuilder.hanldeRefScene({
+          scene: RefSceneEnum.Enum.remove_ref_opts_prefix,
+          params: {
+            prefix: [data.id],
+          },
+        });
         if (currentStateId === data.id) {
           setStateConfigSheetOpen(currentStateId, false);
         }
