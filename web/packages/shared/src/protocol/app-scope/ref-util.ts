@@ -16,6 +16,7 @@ import {
   removeEdgeScheam,
   Edge,
   duplicateStateSchema,
+  removeStateParamSchema,
 } from './scope';
 import { reservedStateNameSchema } from '../node';
 import {
@@ -472,6 +473,20 @@ export function duplicateState(
   return refs;
 }
 
+export function removeState(
+  refs: Refs,
+  params: z.infer<typeof removeStateParamSchema>,
+) {
+  if (refs[params.stateName] == null) {
+    throw new Error(`cannot remove ${params.stateName}, refs not exist`);
+  }
+  delete refs[params.stateName];
+  refs = removeRefOptsPrefix(refs, {
+    prefix: [params.stateName],
+  });
+  return removeEmptyLeaves(refs) as Refs;
+}
+
 export function hanldeRefScene(refs: Refs, evt: HandleRefSceneEvent) {
   switch (evt.scene) {
     case 'set_nodedata_key_val':
@@ -497,6 +512,8 @@ export function hanldeRefScene(refs: Refs, evt: HandleRefSceneEvent) {
 
     case 'duplicate_state':
       return duplicateState(refs, evt.params);
+    case 'remove_state':
+      return removeState(refs, evt.params);
     default:
       // @ts-expect-error
       throw new Error(`Not implemented, ${evt.scene}`);
