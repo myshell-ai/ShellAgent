@@ -891,4 +891,470 @@ describe('form-utils', () => {
       ]);
     });
   });
+
+  describe('getDiffPath Ouputs', () => {
+    // add
+    it('outputs add from empty', () => {
+      const oldValue = {};
+      const newValue = {
+        untitled_context_1: {
+          type: 'text',
+          value: '',
+          name: 'Untitled Context',
+        },
+      };
+
+      const result = getDiffPath(oldValue, newValue);
+
+      expect(result).toEqual([
+        {
+          path: 'untitled_context_1',
+          type: DiffTypeEnum.Added,
+          newValue: newValue.untitled_context_1,
+        },
+      ]);
+    });
+
+    it('outputs add from non-empty', () => {
+      const oldValue = {
+        untitled_output_1: {
+          type: 'text',
+          value: '',
+          name: 'Untitled Output',
+        },
+      };
+
+      const newValue = {
+        untitled_output_1: {
+          type: 'text',
+          value: '',
+          name: 'Untitled Output',
+        },
+        untitled_output_2: {
+          type: 'text',
+          value: '',
+          name: 'Untitled Output',
+        },
+      };
+
+      const result = getDiffPath(oldValue, newValue);
+
+      expect(result).toEqual([
+        {
+          path: 'untitled_output_2',
+          type: DiffTypeEnum.Added,
+          newValue: newValue.untitled_output_2,
+        },
+      ]);
+    });
+
+    // delete
+    it('outputs delete from non-empty', () => {
+      const oldValue = {
+        untitled_output_1: {
+          type: 'text',
+          value: '',
+          name: 'Untitled Output',
+        },
+        untitled_output_2: {
+          type: 'text',
+          value: '',
+          name: 'Untitled Output',
+        },
+      };
+      const newValue = {
+        untitled_output_1: {
+          type: 'text',
+          value: '',
+          name: 'Untitled Output',
+        },
+      };
+
+      const result = getDiffPath(oldValue, newValue);
+
+      expect(result).toEqual([
+        {
+          path: 'untitled_output_2',
+          type: DiffTypeEnum.Deleted,
+          oldValue: oldValue.untitled_output_2,
+        },
+      ]);
+    });
+
+    it('outputs delete to empty', () => {
+      const oldValue = {
+        untitled_output_1: {
+          type: 'text',
+          value: '',
+          name: 'Untitled Output',
+        },
+      };
+      const newValue = {};
+
+      const result = getDiffPath(oldValue, newValue);
+
+      expect(result).toEqual([
+        {
+          path: 'untitled_output_1',
+          type: DiffTypeEnum.Deleted,
+          oldValue: oldValue.untitled_output_1,
+        },
+      ]);
+    });
+
+    // modify
+    it('outputs modified to non-empty', () => {
+      const oldValue = {
+        untitled_output_3: {
+          type: 'text',
+          value: '',
+          name: 'Untitled Output',
+        },
+      };
+      const newValue = {
+        untitled_output_3: {
+          type: 'text',
+          value: '{{ __context__1__ }}',
+          name: 'Untitled Output',
+        },
+      };
+
+      const result = getDiffPath(oldValue, newValue);
+
+      expect(result).toEqual([
+        {
+          path: 'untitled_output_3.value',
+          type: DiffTypeEnum.Modified,
+          oldValue: oldValue.untitled_output_3.value,
+          newValue: newValue.untitled_output_3.value,
+        },
+      ]);
+    });
+
+    it('outputs modified to empty', () => {
+      const oldValue = {
+        untitled_output_3: {
+          type: 'text',
+          value: '{{ __context__1__ }}',
+          name: 'Untitled Output',
+        },
+      };
+      const newValue = {
+        untitled_output_3: {
+          type: 'text',
+          value: '',
+          name: 'Untitled Output',
+        },
+      };
+
+      const result = getDiffPath(oldValue, newValue);
+
+      expect(result).toEqual([
+        {
+          path: 'untitled_output_3.value',
+          type: DiffTypeEnum.Modified,
+          oldValue: oldValue.untitled_output_3.value,
+          newValue: newValue.untitled_output_3.value,
+        },
+      ]);
+    });
+
+    it('outputs rename', () => {
+      const oldValue = {
+        '222': {
+          type: 'text',
+          value: '',
+          name: '333',
+          name_mode: 'ui',
+        },
+      };
+      const newValue = {
+        '333': {
+          type: 'text',
+          value: '',
+          name: '333',
+          name_mode: 'ui',
+        },
+      };
+      const result = getDiffPath(oldValue, newValue);
+
+      expect(result).toEqual([
+        {
+          path: '222',
+          type: DiffTypeEnum.Renamed,
+          oldValue: oldValue['222'],
+          newValue: newValue['333'],
+        },
+      ]);
+    });
+
+    it('outputs rename context', () => {
+      const oldValue = {
+        __context__1__: {
+          type: 'text',
+          value: '',
+          name: '{{ __context__1__ }}',
+          name_mode: 'ref',
+        },
+      };
+      const newValue = {
+        __context__2__: {
+          type: 'text',
+          value: '',
+          name: '{{ __context__2__ }}',
+          name_mode: 'ref',
+        },
+      };
+
+      const result = getDiffPath(oldValue, newValue);
+
+      expect(result).toEqual([
+        {
+          path: '__context__1__',
+          type: DiffTypeEnum.Renamed,
+          oldValue: oldValue.__context__1__,
+          newValue: newValue.__context__2__,
+        },
+      ]);
+    });
+  });
+
+  describe('getDiffPath Render Buttons', () => {
+    it('buttons add', () => {
+      const oldValue = [
+        {
+          content: 'button1',
+          on_click: {
+            event: 'button_1.on_click',
+            payload: {},
+          },
+          id: 'button_1.on_click',
+          description: '',
+        },
+      ];
+      const newValue = [
+        {
+          content: 'button1',
+          on_click: {
+            event: 'button_1.on_click',
+            payload: {},
+          },
+          id: 'button_1.on_click',
+          description: '',
+        },
+        {
+          content: 'Button#1',
+          on_click: {
+            event: 'button_1.on_click',
+            payload: {},
+          },
+          id: 'button_1.on_click',
+          description: '',
+        },
+      ];
+
+      const result = getDiffPath(oldValue, newValue);
+
+      expect(result).toEqual([
+        {
+          path: '1',
+          type: DiffTypeEnum.Added,
+          newValue: newValue[1],
+        },
+      ]);
+    });
+
+    it('buttons delete', () => {
+      const oldValue = [
+        {
+          content: 'Button#1',
+          on_click: {
+            event: 'button_1.on_click',
+            payload: {},
+          },
+          id: 'button_1.on_click',
+          description: '',
+        },
+      ];
+      const newValue: any[] = [];
+
+      const result = getDiffPath(oldValue, newValue);
+
+      expect(result).toEqual([
+        {
+          path: '0',
+          type: DiffTypeEnum.Deleted,
+          oldValue: oldValue[0],
+        },
+      ]);
+    });
+
+    it('buttons modified value', () => {
+      const oldValue = [
+        {
+          content: 'Button#1',
+          on_click: {
+            event: 'button_1.on_click',
+            payload: {},
+          },
+          id: 'button_1.on_click',
+          description: '',
+        },
+      ];
+      const newValue = [
+        {
+          content: 'Button#1',
+          on_click: {
+            event: 'button_1.on_click',
+            payload: {},
+          },
+          id: 'button_1.on_click',
+          description: '123',
+        },
+      ];
+
+      const result = getDiffPath(oldValue, newValue);
+
+      expect(result).toEqual([
+        {
+          path: '0.description',
+          type: DiffTypeEnum.Modified,
+          oldValue: oldValue[0].description,
+          newValue: newValue[0].description,
+        },
+      ]);
+    });
+
+    it('buttons rename', () => {
+      const oldValue = [
+        {
+          content: '12',
+          on_click: {
+            event: 'button_1.on_click',
+            payload: {
+              untitled_payload_1: {
+                type: 'text',
+                value: '',
+                name: 'Untitled Payload',
+              },
+            },
+          },
+          id: 'button_1.on_click',
+          description: '123',
+        },
+      ];
+
+      const newValue = [
+        {
+          content: '123',
+          on_click: {
+            event: 'button_1.on_click',
+            payload: {
+              untitled_payload_1: {
+                type: 'text',
+                value: '',
+                name: 'Untitled Payload',
+              },
+            },
+          },
+          id: 'button_1.on_click',
+          description: '123',
+        },
+      ];
+
+      const result = getDiffPath(oldValue, newValue);
+
+      expect(result).toEqual([
+        {
+          path: '0.content',
+          type: DiffTypeEnum.Modified,
+          oldValue: oldValue[0].content,
+          newValue: newValue[0].content,
+        },
+      ]);
+    });
+
+    it('buttons payload add', () => {
+      const oldValue = [
+        {
+          content: 'click',
+          on_click: {
+            event: 'button_1.on_click',
+            payload: {},
+          },
+          id: 'button_1.on_click',
+          description: '',
+        },
+      ];
+      const newValue = [
+        {
+          content: 'click',
+          on_click: {
+            event: 'button_1.on_click',
+            payload: {
+              untitled_payload_2: {
+                type: 'text',
+                value: '',
+                name: 'Untitled Payload',
+              },
+            },
+          },
+          id: 'button_1.on_click',
+          description: '',
+        },
+      ];
+
+      const result = getDiffPath(oldValue, newValue);
+
+      expect(result).toEqual([
+        {
+          path: '0.on_click.payload.untitled_payload_2',
+          type: DiffTypeEnum.Added,
+          newValue: newValue[0].on_click.payload.untitled_payload_2,
+        },
+      ]);
+    });
+
+    it('buttons payload delete', () => {
+      const oldValue = [
+        {
+          content: 'click',
+          on_click: {
+            event: 'button_1.on_click',
+            payload: {
+              untitled_payload_2: {
+                type: 'text',
+                value: '',
+                name: 'Untitled Payload',
+              },
+            },
+          },
+          id: 'button_1.on_click',
+          description: '',
+        },
+      ];
+
+      const newValue = [
+        {
+          content: 'click',
+          on_click: {
+            event: 'button_1.on_click',
+            payload: {},
+          },
+          id: 'button_1.on_click',
+          description: '',
+        },
+      ];
+
+      const result = getDiffPath(oldValue, newValue);
+
+      expect(result).toEqual([
+        {
+          path: '0.on_click.payload.untitled_payload_2',
+          type: DiffTypeEnum.Deleted,
+          oldValue: oldValue[0].on_click.payload.untitled_payload_2,
+        },
+      ]);
+    });
+  });
 });

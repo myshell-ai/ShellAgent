@@ -1,19 +1,16 @@
 import { TValues } from '@shellagent/form-engine';
-import { Modal } from 'antd';
 import { reservedKeySchema } from '@shellagent/shared/protocol/pro-config';
 import { RefSceneEnum } from '@shellagent/shared/protocol/app-scope';
 import { customSnakeCase } from '@shellagent/shared/utils';
 import { useInjection } from 'inversify-react';
 import { AppBuilderModel } from '@/components/app/app-builder.model';
-import { toast } from 'react-toastify';
 
 import { FormRef } from '@shellagent/ui';
 import { useEffect, useRef, useCallback } from 'react';
 import { get, cloneDeep, isEqual, debounce } from 'lodash-es';
 import { replaceKey, getDiffPath, DiffTypeEnum } from './form-utils';
 import { useSchemaContext } from '@/stores/app/schema-provider';
-
-const { warn } = Modal;
+import { refReg } from '@/utils/common-helper';
 
 export function useFieldWatch(formRef: React.RefObject<FormRef>) {
   const prevValuesRef = useRef<Record<string, TValues | undefined>>({});
@@ -32,16 +29,9 @@ export function useFieldWatch(formRef: React.RefObject<FormRef>) {
 
         switch (type) {
           case DiffTypeEnum.Deleted:
-            warn({
-              title: 'Delete Warning',
-              content: `delete path: ${name}.${path}`,
-              mask: false,
-              onOk() {
-                appBuilder.hanldeRefScene({
-                  scene: RefSceneEnum.Enum.remove_ref_opts,
-                  params: { paths: [`${name}.${path}`] },
-                });
-              },
+            appBuilder.hanldeRefScene({
+              scene: RefSceneEnum.Enum.remove_ref_opts,
+              params: { paths: [`${name}.${path}`] },
             });
             break;
           case DiffTypeEnum.Modified:
@@ -84,24 +74,15 @@ export function useFieldWatch(formRef: React.RefObject<FormRef>) {
       const oldInputs = get(prevValue, reservedKeySchema.Enum.inputs);
       const newInputs = get(newValue, reservedKeySchema.Enum.inputs);
 
-      console.log('inputs>>>', oldInputs, newInputs);
-
       getDiffPath(oldInputs, newInputs).forEach(diff => {
         const { type, path, oldValue, newValue: diffNewValue } = diff;
         const basePath = `${stateId}.${reservedKeySchema.Enum.inputs}`;
 
         switch (type) {
           case DiffTypeEnum.Deleted:
-            warn({
-              title: 'Delete Warning',
-              content: `delete path: ${name}.${path}`,
-              mask: false,
-              onOk() {
-                appBuilder.hanldeRefScene({
-                  scene: RefSceneEnum.Enum.remove_ref_opts,
-                  params: { paths: [`${basePath}.${path}`] },
-                });
-              },
+            appBuilder.hanldeRefScene({
+              scene: RefSceneEnum.Enum.remove_ref_opts,
+              params: { paths: [`${basePath}.${path}`] },
             });
             break;
           case DiffTypeEnum.Modified:
@@ -144,21 +125,15 @@ export function useFieldWatch(formRef: React.RefObject<FormRef>) {
       const newOutputs = get(newValue, reservedKeySchema.Enum.outputs);
       const basePath = `${stateId}.${reservedKeySchema.Enum.outputs}`;
 
+      console.log('outputs>>>', oldOuputs, newOutputs, name);
       getDiffPath(oldOuputs, newOutputs).forEach(diff => {
         const { type, path, oldValue, newValue: diffNewValue } = diff;
 
         switch (type) {
           case DiffTypeEnum.Deleted:
-            warn({
-              title: 'Delete Warning',
-              content: `delete path: ${name}.${path}`,
-              mask: false,
-              onOk() {
-                appBuilder.hanldeRefScene({
-                  scene: RefSceneEnum.Enum.remove_ref_opts,
-                  params: { paths: [`${basePath}.${path}`] },
-                });
-              },
+            appBuilder.hanldeRefScene({
+              scene: RefSceneEnum.Enum.remove_ref_opts,
+              params: { paths: [`${basePath}.${path}`] },
             });
             break;
           case DiffTypeEnum.Modified:
@@ -168,12 +143,17 @@ export function useFieldWatch(formRef: React.RefObject<FormRef>) {
               diffNewValue &&
               oldValue !== diffNewValue
             ) {
-              replaceKey(formRef, {
-                parentPath: reservedKeySchema.Enum.outputs,
-                oldKey: name.split('.')[1],
-                newKey: customSnakeCase(diffNewValue),
-                value: get(newOutputs, name.split('.')[1]),
-              });
+              if (refReg.test(diffNewValue)) {
+                // todo 处理context rename
+                debugger;
+              } else {
+                replaceKey(formRef, {
+                  parentPath: reservedKeySchema.Enum.outputs,
+                  oldKey: name.split('.')[1],
+                  newKey: customSnakeCase(diffNewValue),
+                  value: get(newOutputs, name.split('.')[1]),
+                });
+              }
             }
             break;
           case DiffTypeEnum.Renamed:
@@ -208,16 +188,9 @@ export function useFieldWatch(formRef: React.RefObject<FormRef>) {
 
         switch (type) {
           case DiffTypeEnum.Deleted:
-            warn({
-              title: 'Delete Warning',
-              content: `delete path: ${name}.${blockName}`,
-              mask: false,
-              onOk() {
-                appBuilder.hanldeRefScene({
-                  scene: RefSceneEnum.Enum.remove_ref_opts,
-                  params: { paths: [`${blocksPath}.${blockName}`] },
-                });
-              },
+            appBuilder.hanldeRefScene({
+              scene: RefSceneEnum.Enum.remove_ref_opts,
+              params: { paths: [`${blocksPath}.${blockName}`] },
             });
             break;
 
@@ -268,46 +241,36 @@ export function useFieldWatch(formRef: React.RefObject<FormRef>) {
         reservedKeySchema.Enum.buttons,
       ]);
 
+      console.log('render>>>', oldButtons, newButtons, name);
+
       getDiffPath(oldButtons, newButtons).forEach(diff => {
         const { type, path, oldValue, newValue: diffNewValue } = diff;
         const renderPath = `${stateId}.${reservedKeySchema.Enum.render}`;
 
         switch (type) {
           case DiffTypeEnum.Deleted:
-            warn({
-              title: 'Delete Warning',
-              content: `delete path: ${name}.${path}`,
-              mask: false,
-              onOk() {
-                appBuilder.hanldeRefScene({
-                  scene: RefSceneEnum.Enum.remove_ref_opts,
-                  params: { paths: [`${renderPath}.${path}`] },
-                });
-              },
+            appBuilder.hanldeRefScene({
+              scene: RefSceneEnum.Enum.remove_ref_opts,
+              params: { paths: [`${renderPath}.${path}`] },
             });
             break;
 
           case DiffTypeEnum.Modified:
             if (path?.split('.').pop() === 'content') {
-              const buttonId = `blocks.${name?.split('.')?.[1]}.id`;
-              const buttonEvent = `blocks.${
-                name?.split('.')?.[1]
-              }.on_click.event`;
-              const event = `${customSnakeCase(`diffNewValue?.name`)}.on_click`;
-              formRef.current?.setValue(buttonId, event);
-              formRef.current?.setValue(buttonEvent, event);
+              const event = `${customSnakeCase(`${diffNewValue}`)}.on_click`;
+              formRef.current?.setValue(`${name}.id`, event);
+              formRef.current?.setValue(`${name}.on_click.event`, event);
+
+              // TODO 处理payload rename
+              appBuilder.hanldeRefScene({
+                scene: RefSceneEnum.Enum.rename_ref_opt,
+                params: {
+                  oldPath: `${renderPath}.${oldValue}`,
+                  newPath: `${renderPath}.${customSnakeCase(diffNewValue)}`,
+                },
+              });
             }
 
-            // TODO state重命名
-            appBuilder.hanldeRefScene({
-              scene: RefSceneEnum.Enum.rename_ref_opt,
-              params: {
-                oldPath: `${renderPath}.${path}`,
-                newPath: `${renderPath}.${customSnakeCase(
-                  diffNewValue?.name || '',
-                )}`,
-              },
-            });
             break;
           default:
             break;
@@ -354,7 +317,6 @@ export function useFieldWatch(formRef: React.RefObject<FormRef>) {
       const prevValue = prevValuesRef.current;
 
       if (!isEqual(newValue, prevValue)) {
-        console.log('change>>', name, newValue, prevValue);
         handleChange(newValue, prevValue, name);
       }
 

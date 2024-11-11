@@ -136,7 +136,7 @@ export const isEventTargetInputArea = (target: HTMLElement) => {
   return false;
 };
 
-const refReg = /{{.*}}/;
+export const refReg = /{{.*}}/;
 
 export const filterVariable = (data: Record<string, any>) => {
   return reduce(
