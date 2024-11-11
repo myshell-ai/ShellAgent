@@ -115,6 +115,11 @@ export const duplicateStateSchema = z.object({
   duplicateStateName: customKeySchema,
 });
 
+export const removeStateParamSchema = z.object({
+  stateName: customKeySchema,
+});
+
+
 export const RefSceneEnum = z.enum([
   'set_nodedata_key_val',
   'change_nodedata_mode',
@@ -124,6 +129,7 @@ export const RefSceneEnum = z.enum([
   'remove_ref_opts_prefix',
   'remove_edge',
   'duplicate_state',
+  'remove_state',
 ]);
 
 export type RefScene = z.infer<typeof RefSceneEnum>;
@@ -166,6 +172,10 @@ export const handleRefSceneSchema = z.union([
   z.object({
     scene: z.literal(RefSceneEnum.Enum.duplicate_state),
     params: duplicateStateSchema,
+  }),
+  z.object({
+    scene: z.literal(RefSceneEnum.Enum.remove_state),
+    params: removeStateParamSchema,
   }),
 ]);
 

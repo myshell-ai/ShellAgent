@@ -16,6 +16,7 @@ import {
   removeEdgeScheam,
   Edge,
   duplicateStateSchema,
+  removeStateParamSchema,
 } from './scope';
 import { reservedStateNameSchema } from '../node';
 import {
@@ -470,6 +471,20 @@ export function duplicateState(
     });
   }
   return refs;
+}
+
+export function removeState(
+  refs: Refs,
+  params: z.infer<typeof removeStateParamSchema>,
+) {
+  if (refs[params.stateName] == null) {
+    throw new Error(`cannot remove ${params.stateName}, refs not exist`)
+  }
+  delete refs[params.stateName]
+  refs = removeRefOptsPrefix(refs, {
+    prefix: [params.stateName]
+  })
+  return removeEmptyLeaves(refs) as Refs
 }
 
 export function hanldeRefScene(refs: Refs, evt: HandleRefSceneEvent) {

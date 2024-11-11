@@ -1,3 +1,4 @@
+import { CustomKey } from '@shellagent/pro-config';
 import { scopesSchema } from './protocol';
 import {
   findAncestors,
@@ -14,6 +15,7 @@ import {
   duplicateState,
   hanldeRefScene,
   removeEmptyLeaves,
+  removeState,
 } from './ref-util';
 import { Edge, Edges, edgeSchema, edgesSchema, refsSchema } from './scope';
 
@@ -1580,6 +1582,41 @@ state#3
             },
             "outputs.{{_untitled_input_1_}}.value": {
               "ref": "{{ test }}",
+            },
+          },
+        }
+      `);
+    });
+
+    it('case#5', () => {
+      const refs = {
+        state_1: {
+          'render.text': {
+            ref: 'state_1_copy.untitled_context_3',
+          },
+          'render.image': {
+            ref: 'context.untitled_context_3',
+          },
+        },
+        state_1_copy: {
+          'render.text': {
+            ref: 'context.untitled_context_3',
+          },
+        },
+      };
+      const evt = {
+        scene: 'remove_state',
+        params: {
+          stateName: 'state_1_copy' as CustomKey,
+        },
+      };
+
+      const ret = removeState(refs, evt.params);
+      expect(ret).toMatchInlineSnapshot(`
+        {
+          "state_1": {
+            "render.image": {
+              "ref": "context.untitled_context_3",
             },
           },
         }
