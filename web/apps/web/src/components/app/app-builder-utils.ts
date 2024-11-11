@@ -70,13 +70,7 @@ export function convertNodeDataToState(nodeData: any): State {
       },
     },
   };
-  // TODO blocks 的type有问题
-  try {
-    return stateSchema.parse(ret);
-  } catch (e) {
-    console.error(e);
-    return ret;
-  }
+  return stateSchema.parse(ret);
 }
 
 export function convetNodeDataToScopes(nodeDatas: any, edges: any[]) {
@@ -110,14 +104,9 @@ export function convetNodeDataToScopes(nodeDatas: any, edges: any[]) {
   });
 
   // TODO blocks 的type有问题
-  try {
-    return scopesSchema.parse({
-      scopes: ret,
-    });
-  } catch (e) {
-    console.error(e);
-    return ret;
-  }
+  return scopesSchema.parse({
+    scopes: ret,
+  });
 }
 
 export function convertRefOptsToCascaderOpts(

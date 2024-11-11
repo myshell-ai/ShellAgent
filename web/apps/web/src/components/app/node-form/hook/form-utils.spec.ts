@@ -267,5 +267,48 @@ describe('form-utils', () => {
         },
       ]);
     });
+
+    // inputs
+    it('should detect add fields to inputs', () => {
+      const oldValue = {};
+      const newValue = {
+        untitled_input_4: {
+          name: 'Untitled Input',
+          type: 'text',
+          user_input: true,
+        },
+      };
+
+      const result = getDiffPath(oldValue, newValue);
+
+      expect(result).toEqual([
+        {
+          path: 'untitled_input_4',
+          type: DiffTypeEnum.Added,
+          newValue: newValue['untitled_input_4'],
+        },
+      ]);
+    });
+
+    it('should detect delete fields to inputs', () => {
+      const oldValue = {
+        untitled_input_4: {
+          name: 'Untitled Input',
+          type: 'text',
+          user_input: true,
+        },
+      };
+      const newValue = {};
+
+      const result = getDiffPath(oldValue, newValue);
+
+      expect(result).toEqual([
+        {
+          path: 'untitled_input_4',
+          type: DiffTypeEnum.Deleted,
+          oldValue: oldValue['untitled_input_4'],
+        },
+      ]);
+    });
   });
 });

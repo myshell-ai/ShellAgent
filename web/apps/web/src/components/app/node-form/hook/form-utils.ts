@@ -63,6 +63,12 @@ export const getDiffPath = (
     typeof prevObj !== 'object' ||
     typeof newObj !== 'object'
   ) {
+    if (!prevObj) {
+      return [{ path, type: DiffTypeEnum.Added, newValue: newObj }];
+    }
+    if (!newObj) {
+      return [{ path, type: DiffTypeEnum.Deleted, oldValue: prevObj }];
+    }
     return [
       {
         path,
