@@ -910,9 +910,11 @@ state#3
           {
             "state_1": {
               "outputs.outputs1-1": {
+                "currentMode": "ref",
                 "ref": "context.global_a",
               },
               "outputs.outputs21": {
+                "currentMode": "ref",
                 "ref": "context.global_111",
               },
             },
@@ -958,11 +960,14 @@ state#3
           {
             "state_1": {
               "outputs.outputs1-1": {
+                "currentMode": "ui",
                 "ui": [
                   "context.global_a",
                 ],
               },
-              "outputs.outputs21": {},
+              "outputs.outputs21": {
+                "currentMode": "ui",
+              },
             },
             "state_2": {
               "message.text": {
@@ -1090,6 +1095,7 @@ state#3
         {
           "state_1": {
             "outputs.outputs1-1": {
+              "currentMode": "raw",
               "raw": [
                 "context.global_111",
               ],
@@ -1420,6 +1426,7 @@ state#3
         {
           "state_1": {
             "render.text": {
+              "currentMode": "ref",
               "ref": "{{ context.test_a }}",
             },
           },
@@ -1452,6 +1459,7 @@ state#3
         {
           "state_1": {
             "render.text": {
+              "currentMode": "ref",
               "ref": "{{ context.test_a }}",
             },
           },
@@ -1488,6 +1496,7 @@ state#3
         {
           "state_1": {
             "render.text": {
+              "currentMode": "ui",
               "ui": [
                 "{{ context.test_a }}",
                 "{{ context.test_b }}",
@@ -1496,31 +1505,6 @@ state#3
           },
         }
       `);
-    });
-    it('case#2', () => {
-      const refs = {
-        state_1: {
-          'render.text': {
-            ref: '',
-          },
-        },
-      };
-      const evt = {
-        scene: 'change_nodedata_mode',
-        params: {
-          stateName: 'state_1',
-          mode: 'ref',
-          key: 'render.text',
-        } as const,
-      };
-      expect(() => {
-        hanldeRefScene(refs, {
-          scene: 'change_nodedata_mode',
-          params: evt.params,
-        });
-      }).toThrowErrorMatchingInlineSnapshot(
-        `"key should not be empty: state_1, ref"`,
-      );
     });
 
     it('case#3', () => {
@@ -1543,7 +1527,15 @@ state#3
         scene: 'change_nodedata_mode',
         params: evt.params,
       });
-      expect(ret).toMatchInlineSnapshot(`{}`);
+      expect(ret).toMatchInlineSnapshot(`
+        {
+          "state_1": {
+            "render.text": {
+              "currentMode": "ui",
+            },
+          },
+        }
+      `);
     });
 
     it('case#4', () => {

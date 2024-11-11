@@ -12,6 +12,7 @@ import {
   scopesSchema,
   stateSchema,
   taskSchema,
+  taskVariablesSchema,
   // taskVariableSchema,
   variableSchema,
   variablesSchema,
@@ -284,6 +285,13 @@ describe('protocol', () => {
           }
         ]"
       `);
+    });
+  });
+
+  describe('taskVariablesSchema', () => {
+    taskVariablesSchema.parse({
+      type: 'any string',
+      display_name: 'hi',
     });
   });
 });

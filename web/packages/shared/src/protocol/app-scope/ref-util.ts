@@ -17,6 +17,7 @@ import {
   Edge,
   duplicateStateSchema,
   removeStateParamSchema,
+  refsSchema,
 } from './scope';
 import { reservedStateNameSchema } from '../node';
 import {
@@ -200,22 +201,27 @@ export function setNodedataKeyVal(
 
   set(refs, [stateName, key, mode], newValue);
 
-  return mapValues(refs, (v1, k1) => {
-    if (k1 === stateName) {
-      return mapValues(v1, (v2, k2) => {
-        if (mode === 'ref') {
-          delete v2.ui;
-          delete v2.raw;
-        } else if (mode === 'ui') {
-          delete v2.ref;
-          delete v2.raw;
+  return refsSchema.parse(
+    removeEmptyLeaves(
+      mapValues(refs, (v1, k1) => {
+        if (k1 === stateName) {
+          return mapValues(v1, (v2, k2) => {
+            if (mode === 'ref') {
+              delete v2.ui;
+              delete v2.raw;
+            } else if (mode === 'ui') {
+              delete v2.ref;
+              delete v2.raw;
+            }
+            v2.currentMode = mode;
+            return v2;
+          });
+        } else {
+          return v1;
         }
-        return v2;
-      });
-    } else {
-      return v1;
-    }
-  });
+      }),
+    ),
+  );
 }
 
 export function changeNodedataKeyMode(
@@ -242,6 +248,7 @@ export function changeNodedataKeyMode(
             delete v2.ui;
             delete v2.raw;
           }
+          v2.currentMode = mode;
         }
         return v2;
       });
@@ -250,7 +257,7 @@ export function changeNodedataKeyMode(
     }
   });
 
-  return removeEmptyLeaves(ret) as Refs;
+  return refsSchema.parse(removeEmptyLeaves(ret));
 }
 
 export function renameRefOpt(
@@ -258,20 +265,24 @@ export function renameRefOpt(
   param: z.infer<typeof renameRefOptParamSchema>,
 ): Refs {
   const { oldPath, newPath } = param;
-  return mapValues(refs, (v, k) => {
-    return mapValues(v, (v2, k2) => {
-      if (v2.ref && v2.ref === oldPath) {
-        v2.ref = newPath;
-      }
-      if (v2.raw != null && Array.isArray(v2.raw)) {
-        v2.raw = v2.raw.map(i => (i === oldPath ? newPath : i));
-      }
-      if (v2.ui != null && Array.isArray(v2.ui)) {
-        v2.ui = v2.ui.map(i => (i === oldPath ? newPath : i));
-      }
-      return v2;
-    });
-  });
+  return refsSchema.parse(
+    removeEmptyLeaves(
+      mapValues(refs, (v, k) => {
+        return mapValues(v, (v2, k2) => {
+          if (v2.ref && v2.ref === oldPath) {
+            v2.ref = newPath;
+          }
+          if (v2.raw != null && Array.isArray(v2.raw)) {
+            v2.raw = v2.raw.map(i => (i === oldPath ? newPath : i));
+          }
+          if (v2.ui != null && Array.isArray(v2.ui)) {
+            v2.ui = v2.ui.map(i => (i === oldPath ? newPath : i));
+          }
+          return v2;
+        });
+      }),
+    ),
+  );
 }
 
 export function renameStateName(
@@ -279,32 +290,36 @@ export function renameStateName(
   param: z.infer<typeof renameStateNameParamSchema>,
 ): Refs {
   const { oldName, newName } = param;
-  return mapValues(refs, (v, k) => {
-    return mapValues(v, (v2, k2) => {
-      if (v2.ref && v2.ref.startsWith(oldName)) {
-        v2.ref = [newName, v2.ref.split('.')[1]].join('.');
-      }
-      if (v2.raw != null && Array.isArray(v2.raw)) {
-        v2.raw = v2.raw.map(i => {
-          if (i.startsWith(oldName)) {
-            return [newName, i.split('.')[1]].join('.');
-          } else {
-            return i;
+  return refsSchema.parse(
+    removeEmptyLeaves(
+      mapValues(refs, (v, k) => {
+        return mapValues(v, (v2, k2) => {
+          if (v2.ref && v2.ref.startsWith(oldName)) {
+            v2.ref = [newName, v2.ref.split('.')[1]].join('.');
           }
-        });
-      }
-      if (v2.ui != null && Array.isArray(v2.ui)) {
-        v2.ui = v2.ui.map(i => {
-          if (i.startsWith(oldName)) {
-            return [newName, i.split('.')[1]].join('.');
-          } else {
-            return i;
+          if (v2.raw != null && Array.isArray(v2.raw)) {
+            v2.raw = v2.raw.map(i => {
+              if (i.startsWith(oldName)) {
+                return [newName, i.split('.')[1]].join('.');
+              } else {
+                return i;
+              }
+            });
           }
+          if (v2.ui != null && Array.isArray(v2.ui)) {
+            v2.ui = v2.ui.map(i => {
+              if (i.startsWith(oldName)) {
+                return [newName, i.split('.')[1]].join('.');
+              } else {
+                return i;
+              }
+            });
+          }
+          return v2;
         });
-      }
-      return v2;
-    });
-  });
+      }),
+    ),
+  );
 }
 
 export function removeRefOpts(
@@ -312,33 +327,37 @@ export function removeRefOpts(
   param: z.infer<typeof removeRefOptsSchema>,
 ) {
   const { paths } = param;
-  return mapValues(refs, (v1, k1) => {
-    let v = mapValues(v1, (v2, k2) => {
-      if (v2.ref != null && paths.indexOf(v2.ref) > -1) {
-        delete v2.ref;
-      }
-      if (Array.isArray(v2.ui)) {
-        v2.ui = v2.ui
-          .map(i => (paths.indexOf(i) > -1 ? null : i))
-          .filter(i => i != null) as string[];
-      }
-      if (!v2.ui?.length) {
-        delete v2.ui;
-      }
-      if (Array.isArray(v2.raw)) {
-        v2.raw = v2.raw
-          .map(i => (paths.indexOf(i) > -1 ? null : i))
-          .filter(i => i != null) as string[];
-      }
-      if (!v2.raw?.length) {
-        delete v2.raw;
-      }
-      return v2;
-    });
+  return refsSchema.parse(
+    removeEmptyLeaves(
+      mapValues(refs, (v1, k1) => {
+        let v = mapValues(v1, (v2, k2) => {
+          if (v2.ref != null && paths.indexOf(v2.ref) > -1) {
+            delete v2.ref;
+          }
+          if (Array.isArray(v2.ui)) {
+            v2.ui = v2.ui
+              .map(i => (paths.indexOf(i) > -1 ? null : i))
+              .filter(i => i != null) as string[];
+          }
+          if (!v2.ui?.length) {
+            delete v2.ui;
+          }
+          if (Array.isArray(v2.raw)) {
+            v2.raw = v2.raw
+              .map(i => (paths.indexOf(i) > -1 ? null : i))
+              .filter(i => i != null) as string[];
+          }
+          if (!v2.raw?.length) {
+            delete v2.raw;
+          }
+          return v2;
+        });
 
-    v = omitBy(v, isEmpty);
-    return v;
-  });
+        v = omitBy(v, isEmpty);
+        return v;
+      }),
+    ),
+  );
 }
 
 export function removeRefOptsPrefix(
@@ -346,35 +365,39 @@ export function removeRefOptsPrefix(
   param: z.infer<typeof removeRefOptsPrefixScheam>,
 ) {
   const { prefix } = param;
-  return mapValues(refs, (v, k) => {
-    let v2ret = mapValues(v, (v2, k2) => {
-      if (v2.ref != null) {
-        const v2Ref = v2.ref;
-        if (prefix.some(p => v2Ref.startsWith(p))) {
-          delete v2.ref;
-        }
-      }
-      if (Array.isArray(v2.ui)) {
-        v2.ui = v2.ui
-          .map(i => (prefix.some(p => i.startsWith(p)) ? null : i))
-          .filter((i): i is string => i !== null);
-      }
-      if (!v2.ui?.length) {
-        delete v2.ui;
-      }
-      if (Array.isArray(v2.raw)) {
-        v2.raw = v2.raw
-          .map(i => (prefix.some(p => i.startsWith(p)) ? null : i))
-          .filter((i): i is string => i !== null);
-      }
-      if (!v2.raw?.length) {
-        delete v2.raw;
-      }
-      return v2;
-    });
-    v2ret = omitBy(v2ret, isEmpty);
-    return v2ret;
-  });
+  return refsSchema.parse(
+    removeEmptyLeaves(
+      mapValues(refs, (v, k) => {
+        let v2ret = mapValues(v, (v2, k2) => {
+          if (v2.ref != null) {
+            const v2Ref = v2.ref;
+            if (prefix.some(p => v2Ref.startsWith(p))) {
+              delete v2.ref;
+            }
+          }
+          if (Array.isArray(v2.ui)) {
+            v2.ui = v2.ui
+              .map(i => (prefix.some(p => i.startsWith(p)) ? null : i))
+              .filter((i): i is string => i !== null);
+          }
+          if (!v2.ui?.length) {
+            delete v2.ui;
+          }
+          if (Array.isArray(v2.raw)) {
+            v2.raw = v2.raw
+              .map(i => (prefix.some(p => i.startsWith(p)) ? null : i))
+              .filter((i): i is string => i !== null);
+          }
+          if (!v2.raw?.length) {
+            delete v2.raw;
+          }
+          return v2;
+        });
+        v2ret = omitBy(v2ret, isEmpty);
+        return v2ret;
+      }),
+    ),
+  );
 }
 
 export function getBeforeAndAfterNodes(
@@ -398,38 +421,42 @@ export function removeEdge(
 
   const prefix = before;
 
-  return mapValues(refs, (v, k) => {
-    if (after.indexOf(k as CustomKey) === -1) {
-      return v;
-    }
-    let v2ret = mapValues(v, (v2, k2) => {
-      if (v2.ref != null) {
-        const v2Ref = v2.ref;
-        if (prefix.some(p => v2Ref.startsWith(p))) {
-          delete v2.ref;
+  return refsSchema.parse(
+    removeEmptyLeaves(
+      mapValues(refs, (v, k) => {
+        if (after.indexOf(k as CustomKey) === -1) {
+          return v;
         }
-      }
-      if (Array.isArray(v2.ui)) {
-        v2.ui = v2.ui
-          .map(i => (prefix.some(p => i.startsWith(p)) ? null : i))
-          .filter((i): i is string => i !== null);
-      }
-      if (!v2.ui?.length) {
-        delete v2.ui;
-      }
-      if (Array.isArray(v2.raw)) {
-        v2.raw = v2.raw
-          .map(i => (prefix.some(p => i.startsWith(p)) ? null : i))
-          .filter((i): i is string => i !== null);
-      }
-      if (!v2.raw?.length) {
-        delete v2.raw;
-      }
-      return v2;
-    });
-    v2ret = omitBy(v2ret, isEmpty);
-    return v2ret;
-  });
+        let v2ret = mapValues(v, (v2, k2) => {
+          if (v2.ref != null) {
+            const v2Ref = v2.ref;
+            if (prefix.some(p => v2Ref.startsWith(p))) {
+              delete v2.ref;
+            }
+          }
+          if (Array.isArray(v2.ui)) {
+            v2.ui = v2.ui
+              .map(i => (prefix.some(p => i.startsWith(p)) ? null : i))
+              .filter((i): i is string => i !== null);
+          }
+          if (!v2.ui?.length) {
+            delete v2.ui;
+          }
+          if (Array.isArray(v2.raw)) {
+            v2.raw = v2.raw
+              .map(i => (prefix.some(p => i.startsWith(p)) ? null : i))
+              .filter((i): i is string => i !== null);
+          }
+          if (!v2.raw?.length) {
+            delete v2.raw;
+          }
+          return v2;
+        });
+        v2ret = omitBy(v2ret, isEmpty);
+        return v2ret;
+      }),
+    ),
+  );
 }
 
 export function duplicateState(
@@ -470,7 +497,7 @@ export function duplicateState(
       return v;
     });
   }
-  return refs;
+  return refsSchema.parse(removeEmptyLeaves(refs));
 }
 
 export function removeState(
@@ -484,7 +511,7 @@ export function removeState(
   refs = removeRefOptsPrefix(refs, {
     prefix: [params.stateName],
   });
-  return removeEmptyLeaves(refs) as Refs;
+  return refsSchema.parse(removeEmptyLeaves(refs));
 }
 
 export function hanldeRefScene(refs: Refs, evt: HandleRefSceneEvent) {

@@ -57,6 +57,9 @@ export const refsSchema = z.record(
   z.record(
     z.string().describe('json path'),
     z.object({
+      currentMode: z
+        .union([z.literal('ui'), z.literal('raw'), z.literal('ref')])
+        .optional(),
       ui: z.array(z.string()).optional(),
       raw: z.array(z.string()).optional(),
       ref: z.string().optional(),
