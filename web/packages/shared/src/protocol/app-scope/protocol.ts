@@ -190,6 +190,14 @@ export const renderSchema = z
   })
   .strict();
 
+export const taskVariablesSchema = variableSchema
+  .omit({
+    type: true,
+  })
+  .extend({
+    type: z.string(),
+  });
+
 export const taskSchema = z.object({
   name: z.string(),
   display_name: z.string(),
