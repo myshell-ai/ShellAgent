@@ -19,7 +19,7 @@ import {
   SaveIcon,
 } from '@shellagent/ui';
 import { Dropdown } from 'antd';
-import { useRequest, useBoolean } from 'ahooks';
+import { useRequest } from 'ahooks';
 import dayjs from 'dayjs';
 import { isEmpty } from 'lodash-es';
 import { useRouter } from 'next/navigation';
@@ -32,10 +32,7 @@ import { saveApp, releaseApp, fetchAppVersionList } from '@/services/app';
 import { genAutomata } from '@/stores/app/utils/data-transformer';
 import { cn } from '@/utils/cn';
 import { Metadata } from '@/services/home/type';
-import {
-  GetAppVersionListResponse,
-  GetAppVersionListRequest,
-} from '@/services/app/type';
+import { GetAppVersionListResponse } from '@/services/app/type';
 
 import VersionSkeleton from '../skeleton';
 
@@ -171,7 +168,6 @@ export default function Publish({
   const router = useRouter();
   // const [autoSavedTime, setAutoSavedTime] = useState('');
   const [versionName, setVersionName] = useState('');
-  const [showPublishPopover, publishPopoverActions] = useBoolean(false);
   const hiddenOperation = !!version_name;
 
   const {
@@ -300,7 +296,6 @@ export default function Publish({
         metadata,
       });
     }
-    publishPopoverActions.setFalse();
   }, [flowInstance, nodeData, config, app_id, versionName, metadata]);
 
   const handleRestore = () => {

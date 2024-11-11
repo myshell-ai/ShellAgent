@@ -55,6 +55,8 @@ export * from './ui/icons/outline/plus';
 export * from './ui/icons/outline/lego';
 export * from './ui/icons/outline/setting';
 export * from './ui/icons/outline/export';
+export * from './ui/icons/outline/create-blank';
+export * from './ui/icons/outline/create-template';
 
 // solid icons
 export * from './ui/icons/solid/caret-down';
