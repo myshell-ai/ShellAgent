@@ -478,13 +478,13 @@ export function removeState(
   params: z.infer<typeof removeStateParamSchema>,
 ) {
   if (refs[params.stateName] == null) {
-    throw new Error(`cannot remove ${params.stateName}, refs not exist`)
+    throw new Error(`cannot remove ${params.stateName}, refs not exist`);
   }
-  delete refs[params.stateName]
+  delete refs[params.stateName];
   refs = removeRefOptsPrefix(refs, {
-    prefix: [params.stateName]
-  })
-  return removeEmptyLeaves(refs) as Refs
+    prefix: [params.stateName],
+  });
+  return removeEmptyLeaves(refs) as Refs;
 }
 
 export function hanldeRefScene(refs: Refs, evt: HandleRefSceneEvent) {
@@ -512,6 +512,8 @@ export function hanldeRefScene(refs: Refs, evt: HandleRefSceneEvent) {
 
     case 'duplicate_state':
       return duplicateState(refs, evt.params);
+    case 'remove_state':
+      return removeState(refs, evt.params);
     default:
       // @ts-expect-error
       throw new Error(`Not implemented, ${evt.scene}`);

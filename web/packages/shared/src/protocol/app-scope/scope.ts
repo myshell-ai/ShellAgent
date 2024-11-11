@@ -119,7 +119,6 @@ export const removeStateParamSchema = z.object({
   stateName: customKeySchema,
 });
 
-
 export const RefSceneEnum = z.enum([
   'set_nodedata_key_val',
   'change_nodedata_mode',
