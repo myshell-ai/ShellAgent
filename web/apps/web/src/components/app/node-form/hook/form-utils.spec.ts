@@ -1356,5 +1356,54 @@ describe('form-utils', () => {
         },
       ]);
     });
+
+    it('buttons payload rename', () => {
+      const oldValue = [
+        {
+          content: 'click',
+          on_click: {
+            event: 'button_1.on_click',
+            payload: {
+              untitled_payload_3: {
+                type: 'text',
+                value: '',
+                name: 'payload',
+              },
+            },
+          },
+          id: 'button_1.on_click',
+          description: '',
+        },
+      ];
+
+      const newValue = [
+        {
+          content: 'click',
+          on_click: {
+            event: 'button_1.on_click',
+            payload: {
+              untitled_payload_3: {
+                type: 'text',
+                value: '',
+                name: 'payload test',
+              },
+            },
+          },
+          id: 'button_1.on_click',
+          description: '',
+        },
+      ];
+
+      const result = getDiffPath(oldValue, newValue);
+
+      expect(result).toEqual([
+        {
+          path: '0.on_click.payload.untitled_payload_3.name',
+          type: DiffTypeEnum.Modified,
+          oldValue: oldValue[0].on_click.payload.untitled_payload_3.name,
+          newValue: newValue[0].on_click.payload.untitled_payload_3.name,
+        },
+      ]);
+    });
   });
 });

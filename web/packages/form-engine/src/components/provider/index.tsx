@@ -124,7 +124,6 @@ export const FormEngineProvider: React.FC<IFormEngineProviderProps> = props => {
       if (key) {
         newKey = key;
       } else if (xKey && /{{(\w+)}}/.test(xKey)) {
-        // TODO key使用zod校验
         const variables =
           xKey.match(/{{(\w+)}}/g)?.map(v => v.replace(/[{}]/g, '')) || [];
         let parsedKey = xKey;

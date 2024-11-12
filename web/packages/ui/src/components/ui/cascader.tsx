@@ -1,7 +1,6 @@
 'use client';
-import React, { useState } from 'react';
+import React, { useState, useRef, Fragment } from 'react';
 import { Check, ChevronDown, X } from 'lucide-react';
-import { Fragment, useRef } from 'react';
 import { ClassNameValue } from 'tailwind-merge';
 
 import { cn } from '../../lib/utils';
@@ -48,20 +47,24 @@ function CascaderContent({
   onValueChange,
   className,
   emptyText,
+  buttonRef,
 }: {
   options: CascaderOption[];
   value?: string;
   onValueChange: (value: string, parent?: string) => void;
   className?: ClassNameValue;
   emptyText?: string;
+  buttonRef: React.RefObject<HTMLButtonElement>;
 }) {
   return (
     <DropdownMenuPortal
       container={document.getElementById('cascader-container')}>
-      <DropdownMenuContent className={cn(className, 'w-full')}>
+      <DropdownMenuContent
+        className={cn(className, 'w-full')}
+        style={{ width: buttonRef.current?.offsetWidth }}>
         {options.length ? (
           options.map(option => (
-            <Fragment key={option.label}>
+            <Fragment key={option.value}>
               {!option.value ? (
                 <>
                   {option.children && option.children?.length > 0 && (
@@ -71,7 +74,7 @@ function CascaderContent({
                   )}
                   {option.children &&
                     option.children.map(child => (
-                      <Fragment key={child.label}>
+                      <Fragment key={child.value}>
                         {child.children && child.children.length ? (
                           <NestDropdownMenuRender
                             className={className}
@@ -141,47 +144,51 @@ function Cascader(props: P) {
   } = props;
   const [open, setOpen] = useState(false);
   const conRef = useRef<any>(null);
+  const buttonRef = useRef<HTMLButtonElement>(null);
 
   return (
     <DropdownMenu onOpenChange={open => setOpen(open)}>
-      <DropdownMenuTrigger asChild className="w-full" ref={conRef}>
+      <DropdownMenuTrigger asChild className="!w-full" ref={conRef}>
         <Button
           id="cascader-container"
           variant="outline"
           role="combobox"
+          ref={buttonRef}
           className={cn(
-            'group font-normal !h-7 p-3 space-x-1.5 rounded-lg border-default bg-surface-search-field shadow-background-default hover:bg-white active:bg-white justify-between [&>span]:line-clamp-1 [&[data-state=open]>span>span>svg]:rotate-180',
+            '!w-full group font-normal !h-7 p-3 rounded-lg border-default bg-surface-search-field shadow-background-default hover:bg-white active:bg-white',
             className,
           )}
           aria-expanded={open}>
-          <span className="text-subtler flex items-center justify-between">
-            {value ? (
-              <Text
-                size="sm"
-                className="max-w-72 text-ellipsis overflow-hidden whitespace-nowrap">
-                {renderLabel(options, value, showParentLabel)}
-              </Text>
-            ) : (
-              placeholder
-            )}
-            {value ? (
-              <div className="relative">
-                <ChevronDown className="dropdown-chevron h-4 w-4 text-icon-subtle duration-0 group-hover:opacity-0" />
-                <X
-                  className="absolute top-0 left-0 h-4 w-4 text-icon-subtle opacity-0 group-hover:opacity-100 group-hover:bg-gray-200 group-hover:rounded-full p-1"
-                  onClick={e => {
-                    e.stopPropagation();
-                    onValueChange(
-                      clearByDefault ? defaultValue! : '',
-                      undefined,
-                    );
-                  }}
-                />
-              </div>
-            ) : (
-              <ChevronDown className="dropdown-chevron h-4 w-4 text-icon-subtle duration-0" />
-            )}
-          </span>
+          <div className="flex items-center justify-between !w-full">
+            <Text
+              size="sm"
+              className="flex-1 text-default text-ellipsis overflow-hidden whitespace-nowrap">
+              {value ? (
+                renderLabel(options, value, showParentLabel)
+              ) : (
+                <span className="text-subtler">{placeholder}</span>
+              )}
+            </Text>
+            <div className="flex items-center ml-2">
+              {value ? (
+                <div className="relative">
+                  <ChevronDown className="h-4 w-4 text-icon-subtle duration-0 group-hover:opacity-0" />
+                  <X
+                    className="absolute top-0 right-0 h-4 w-4 text-icon-subtle opacity-0 group-hover:opacity-100 group-hover:bg-gray-200 group-hover:rounded-full p-1"
+                    onClick={e => {
+                      e.stopPropagation();
+                      onValueChange(
+                        clearByDefault ? defaultValue! : '',
+                        undefined,
+                      );
+                    }}
+                  />
+                </div>
+              ) : (
+                <ChevronDown className="h-4 w-4 text-icon-subtle duration-0" />
+              )}
+            </div>
+          </div>
         </Button>
       </DropdownMenuTrigger>
       <CascaderContent
@@ -190,6 +197,7 @@ function Cascader(props: P) {
         onValueChange={onValueChange}
         className={className}
         emptyText={emptyText}
+        buttonRef={buttonRef}
       />
     </DropdownMenu>
   );
@@ -212,7 +220,7 @@ function NestDropdownMenuRender(props: NestDropDownP) {
           className={cn(className, 'w-full')}
           sideOffset={10}>
           {option.children!.map(opt => (
-            <Fragment key={opt.label}>
+            <Fragment key={opt.value}>
               {opt.children && opt.children.length ? (
                 <NestDropdownMenuRender
                   className={className}

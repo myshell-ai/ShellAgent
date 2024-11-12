@@ -9,6 +9,7 @@ import {
   Select,
   Checkbox,
   Input,
+  UnfocusInput,
   NumberInput,
   RadioGroup,
   Switch,
@@ -116,6 +117,7 @@ const NodeForm = forwardRef<FormRef, NodeFormProps>(
         onModeChange={onModeChange}
         components={{
           Input,
+          UnfocusInput,
           Select,
           RadioGroup,
           Checkbox,

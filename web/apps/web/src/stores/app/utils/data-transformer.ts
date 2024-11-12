@@ -23,12 +23,12 @@ import {
 
 import { AppStore } from '../app-store';
 
+export const contextTempReg = /__context__([a-z0-9_]+)__/g;
+export const contextReg = /context\.([a-z0-9_]+)/g;
+
 function replaceContext2Form(data: any) {
   const jsonString = JSON.stringify(data);
-  const replacedString = jsonString.replace(
-    /context\.([a-z0-9_]+)/g,
-    '__context__$1__',
-  );
+  const replacedString = jsonString.replace(contextReg, '__context__$1__');
   const replacedData = JSON.parse(replacedString);
 
   return replacedData;
@@ -36,10 +36,7 @@ function replaceContext2Form(data: any) {
 
 function replaceContext2Api(data: any) {
   const jsonString = JSON.stringify(data);
-  const replacedString = jsonString.replace(
-    /__context__([a-z0-9_]+)__/g,
-    'context.$1',
-  );
+  const replacedString = jsonString.replace(contextTempReg, 'context.$1');
   const replacedData = JSON.parse(replacedString);
 
   return replacedData;

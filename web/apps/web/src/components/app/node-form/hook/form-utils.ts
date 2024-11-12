@@ -1,6 +1,7 @@
 import { TValues } from '@shellagent/form-engine';
 import { FormRef } from '@shellagent/ui';
 import { isEqual, omit, merge } from 'lodash-es';
+import { customSnakeCase } from '@shellagent/shared/utils';
 
 export enum DiffTypeEnum {
   Added = 'added',
@@ -35,6 +36,10 @@ export const replaceKey = (
 ) => {
   const parentValue = formRef.current?.getValues(parentPath);
   if (!parentValue) return;
+  if (oldKey === newKey) return;
+  if (!newKey) {
+    throw new Error('key should not be empty');
+  }
 
   const keys = Object.keys(parentValue);
   const newParentValue = keys.reduce((prev: { [key: string]: any }, curr) => {
@@ -169,4 +174,13 @@ export const getDiffPath = (
   }
 
   return diffs;
+};
+
+export const getNewName = (values: TValues | TValues[], prefix: string) => {
+  const length = Array.isArray(values)
+    ? values?.length
+    : Object.keys(values || {})?.length;
+  const name = `Untitled ${prefix}#${length}`;
+
+  return name;
 };

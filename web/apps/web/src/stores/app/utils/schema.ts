@@ -130,7 +130,7 @@ const startSchema: ISchema = {
                   properties: {
                     name: {
                       type: 'string',
-                      default: 'Untitled Context',
+                      default: 'Untitled',
                       title: 'Variable Name',
                       'x-role': 'title',
                       'x-type': 'Control',
@@ -283,7 +283,7 @@ const startSchema: ISchema = {
           },
           name: {
             type: 'string',
-            default: 'Untitled Context',
+            default: 'Untitled',
             'x-type': 'Control',
             'x-component': 'Input',
             'x-hidden': true,
@@ -291,7 +291,7 @@ const startSchema: ISchema = {
             title: 'Variable Name',
           },
         },
-        'x-key': '{{name}}#{{counter}}',
+        'x-key': '{{name}} Context#{{counter}}',
         'x-type': 'Inline',
         'x-collapsible': true,
       },
@@ -317,14 +317,14 @@ const stateConfigSchema: ISchema = {
         properties: {
           name: {
             type: 'string',
-            default: 'Untitled Input',
+            default: 'Untitled',
             // 'x-role': 'title',
             'x-type': 'Control',
-            'x-component': 'Input',
+            'x-component': 'UnfocusInput',
             'x-class': 'border-0 bg-inherit rounded-lg p-0 w-full',
             'x-component-props': {
               size: '2xs',
-              autoFocus: true,
+              autoFocus: false,
               maxLength: 30,
               placeholder: 'Please name the event',
             },
@@ -363,7 +363,7 @@ const stateConfigSchema: ISchema = {
             'x-onchange-prop-name': 'onCheckedChange',
           },
         },
-        'x-key': '{{name}}#{{counter}}',
+        'x-key': '{{name}} Inputs#{{counter}}',
         'x-type': 'Inline',
         'x-deletable': true,
         'x-edit-dialog': {
@@ -371,7 +371,7 @@ const stateConfigSchema: ISchema = {
           properties: {
             name: {
               type: 'string',
-              default: 'Untitled Input',
+              default: 'Untitled',
               title: 'Variable Name',
               'x-role': 'title',
               'x-type': 'Control',
@@ -1025,7 +1025,7 @@ const stateConfigSchema: ISchema = {
                     },
                     name: {
                       type: 'string',
-                      default: 'Untitled Output',
+                      default: 'Untitled',
                       title: 'Variable Name',
                       'x-role': 'title',
                       'x-type': 'Control',
@@ -1042,8 +1042,8 @@ const stateConfigSchema: ISchema = {
                           message: 'Please input the Variable Name',
                         },
                         {
-                          maxLength: 30,
-                          message: 'Cannot exceed 30 characters',
+                          maxLength: 50,
+                          message: 'Cannot exceed 50 characters',
                         },
                       ],
                     },
@@ -1183,14 +1183,14 @@ const stateConfigSchema: ISchema = {
           },
           name: {
             type: 'string',
-            default: 'Untitled Output',
+            default: 'Untitled',
             'x-type': 'Control',
             'x-component': 'Input',
             'x-hidden': true,
             'x-class': 'border-0 bg-inherit rounded-lg p-0',
           },
         },
-        'x-key': '{{name}}#{{counter}}',
+        'x-key': '{{name}} Outputs#{{counter}}',
         'x-type': 'Inline',
         'x-collapsible': true,
       },
@@ -1281,7 +1281,7 @@ const buttonConfigSchema: ISchema = {
       'x-raw': true,
       'x-type': 'Control',
       'x-title-size': 'h4',
-      'x-component': 'Input',
+      'x-component': 'UnfocusInput',
       'x-collapsible': true,
       'x-addable': true,
       'x-component-props': {
@@ -1428,7 +1428,7 @@ const buttonConfigSchema: ISchema = {
                       properties: {
                         name: {
                           type: 'string',
-                          default: 'Untitled Payload',
+                          default: 'Untitled',
                           title: 'Variable Name',
                           'x-role': 'title',
                           'x-type': 'Control',
@@ -1584,7 +1584,7 @@ const buttonConfigSchema: ISchema = {
               },
               name: {
                 type: 'string',
-                default: 'Untitled Payload',
+                default: 'Untitled',
                 'x-type': 'Control',
                 'x-component': 'Input',
                 'x-hidden': true,
@@ -1592,7 +1592,7 @@ const buttonConfigSchema: ISchema = {
                 title: 'Variable Name',
               },
             },
-            'x-key': '{{name}}#{{counter}}',
+            'x-key': '{{name}} Payload#{{counter}}',
             'x-type': 'Inline',
             'x-collapsible': true,
           },

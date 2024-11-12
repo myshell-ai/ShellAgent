@@ -1,15 +1,21 @@
 import { TValues } from '@shellagent/form-engine';
 import { reservedKeySchema } from '@shellagent/shared/protocol/pro-config';
 import { RefSceneEnum } from '@shellagent/shared/protocol/app-scope';
-import { customSnakeCase } from '@shellagent/shared/utils';
+import { customSnakeCase, removeBrackets } from '@shellagent/shared/utils';
 import { useInjection } from 'inversify-react';
 import { AppBuilderModel } from '@/components/app/app-builder.model';
 
 import { FormRef } from '@shellagent/ui';
 import { useEffect, useRef, useCallback } from 'react';
-import { get, cloneDeep, isEqual, debounce } from 'lodash-es';
-import { replaceKey, getDiffPath, DiffTypeEnum } from './form-utils';
+import { get, cloneDeep, isEqual, debounce, isNil } from 'lodash-es';
+import {
+  replaceKey,
+  getDiffPath,
+  DiffTypeEnum,
+  getNewName,
+} from './form-utils';
 import { useSchemaContext } from '@/stores/app/schema-provider';
+import { contextTempReg } from '@/stores/app/utils/data-transformer';
 import { refReg } from '@/utils/common-helper';
 
 export function useFieldWatch(formRef: React.RefObject<FormRef>) {
@@ -88,15 +94,21 @@ export function useFieldWatch(formRef: React.RefObject<FormRef>) {
           case DiffTypeEnum.Modified:
             if (
               path?.split('.').pop() === 'name' &&
-              oldValue &&
-              diffNewValue &&
+              !isNil(oldValue) &&
+              !isNil(diffNewValue) &&
               oldValue !== diffNewValue
             ) {
+              const newName = getNewName(newInputs, 'Inputs');
               replaceKey(formRef, {
                 parentPath: reservedKeySchema.Enum.inputs,
                 oldKey: name.split('.')[1],
-                newKey: customSnakeCase(diffNewValue),
-                value: get(newInputs, name.split('.')[1]),
+                newKey: customSnakeCase(diffNewValue || newName),
+                value: diffNewValue
+                  ? get(newInputs, name.split('.')[1])
+                  : {
+                      ...(get(newInputs, name.split('.')?.[1]) || {}),
+                      name: newName,
+                    },
               });
             }
             break;
@@ -125,7 +137,6 @@ export function useFieldWatch(formRef: React.RefObject<FormRef>) {
       const newOutputs = get(newValue, reservedKeySchema.Enum.outputs);
       const basePath = `${stateId}.${reservedKeySchema.Enum.outputs}`;
 
-      console.log('outputs>>>', oldOuputs, newOutputs, name);
       getDiffPath(oldOuputs, newOutputs).forEach(diff => {
         const { type, path, oldValue, newValue: diffNewValue } = diff;
 
@@ -143,17 +154,19 @@ export function useFieldWatch(formRef: React.RefObject<FormRef>) {
               diffNewValue &&
               oldValue !== diffNewValue
             ) {
-              if (refReg.test(diffNewValue)) {
-                // todo 处理context rename
-                debugger;
-              } else {
-                replaceKey(formRef, {
-                  parentPath: reservedKeySchema.Enum.outputs,
-                  oldKey: name.split('.')[1],
-                  newKey: customSnakeCase(diffNewValue),
-                  value: get(newOutputs, name.split('.')[1]),
-                });
-              }
+              replaceKey(formRef, {
+                parentPath: reservedKeySchema.Enum.outputs,
+                oldKey: name.split('.')[1],
+                newKey: customSnakeCase(diffNewValue),
+                value: refReg.test(diffNewValue) // outputs context
+                  ? {
+                      ...(get(newOutputs, name.split('.')?.[1]) || {}),
+                      name: removeBrackets(
+                        diffNewValue?.replace(contextTempReg, 'Context/$1'),
+                      ),
+                    }
+                  : get(newOutputs, name.split('.')[1]),
+              });
             }
             break;
           case DiffTypeEnum.Renamed:
@@ -196,10 +209,17 @@ export function useFieldWatch(formRef: React.RefObject<FormRef>) {
 
           case DiffTypeEnum.Modified:
             if (path?.split('.').pop() === 'display_name') {
+              const blockDisplayName = `blocks.${
+                name?.split('.')?.[1]
+              }.display_name`;
               const blockName = `blocks.${name?.split('.')?.[1]}.name`;
+              const newName = getNewName(newBlocks, 'Blocks');
+              if (!diffNewValue) {
+                formRef.current?.setValue(blockDisplayName, newName);
+              }
               formRef.current?.setValue(
                 blockName,
-                customSnakeCase(diffNewValue),
+                customSnakeCase(diffNewValue || newName),
               );
               appBuilder.hanldeRefScene({
                 scene: RefSceneEnum.Enum.rename_ref_opt,
@@ -257,7 +277,13 @@ export function useFieldWatch(formRef: React.RefObject<FormRef>) {
 
           case DiffTypeEnum.Modified:
             if (path?.split('.').pop() === 'content') {
-              const event = `${customSnakeCase(`${diffNewValue}`)}.on_click`;
+              const newName = getNewName(newButtons, 'Buttons');
+              let event = `${customSnakeCase(
+                `${diffNewValue || newName}`,
+              )}.on_click`;
+              if (!diffNewValue) {
+                formRef.current?.setValue(`${name}.content`, newName);
+              }
               formRef.current?.setValue(`${name}.id`, event);
               formRef.current?.setValue(`${name}.on_click.event`, event);
 

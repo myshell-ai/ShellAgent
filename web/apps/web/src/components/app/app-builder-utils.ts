@@ -103,7 +103,6 @@ export function convetNodeDataToScopes(nodeDatas: any, edges: any[]) {
     };
   });
 
-  // TODO blocks 的type有问题
   return scopesSchema.parse({
     scopes: ret,
   });
