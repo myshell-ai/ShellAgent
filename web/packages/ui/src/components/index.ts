@@ -72,6 +72,9 @@ export * from './ui/icons/solid/arrow-down';
 export * from './ui/icons/solid/import';
 export * from './ui/icons/solid/save';
 export * from './ui/icons/solid/trash';
+export * from './ui/icons/solid/bot';
+export * from './ui/icons/solid/clear';
+export * from './ui/icons/solid/loading';
 
 export * from './ui/theme.tsx';
 export * from './ui/a-components';

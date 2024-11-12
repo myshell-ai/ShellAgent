@@ -35,6 +35,10 @@ module.exports = {
   rewrites: async () => {
     return [
       {
+        source: '/api/helper/:path*',
+        destination: `http://34.239.158.245:8099/api/helper/:path*`,
+      },
+      {
         source: '/api/:path*',
         destination: `${process.env.NEXT_PUBLIC_API_URL}/api/:path*`,
       },

@@ -18,6 +18,7 @@ import { SettingsModel } from '@/components/settings/settings.model';
 import { EmitterModel } from '@/utils/emitter.model';
 import { ModalModel } from '@/utils/modal.model';
 import { RequestModel } from '@/utils/request.model';
+import { AssistantModel } from '@/components/assistant-help/model';
 
 export const container = new Container();
 
@@ -73,3 +74,6 @@ container.bind(DownloadModel).toSelf().inSingletonScope();
 // image canvas
 container.bind('ImageCanvasModel').to(ImageCanvasModel).inSingletonScope();
 container.bind(OpenImageCanvasModel).toSelf().inSingletonScope();
+
+// assistant
+container.bind(AssistantModel).toSelf().inSingletonScope();

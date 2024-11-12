@@ -2,8 +2,7 @@
 @tailwind components;
 @tailwind utilities;
 
-
-@import "~github-markdown-css/github-markdown-light.css";
+@import '~github-markdown-css/github-markdown-light.css';
 
 .markdown-body {
   li {
@@ -11,6 +10,87 @@
   }
 }
 
+.assistant-md-viewer {
+  padding: 0;
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    font-weight: bold;
+  }
+
+  ul,
+  ol {
+    margin-block-start: 1em;
+    margin-block-end: 1em;
+    margin-inline-start: 0;
+    padding-inline-start: 2em;
+  }
+
+  ul {
+    list-style-type: disc;
+  }
+
+  ol {
+    list-style-type: decimal;
+  }
+
+  a:-webkit-any-link {
+    color: -webkit-link;
+    cursor: pointer;
+    text-decoration: underline;
+  }
+
+  blockquote {
+    display: block;
+    margin-block-start: 8px;
+    margin-block-end: 8px;
+    font-style: normal;
+    border-inline-start-width: 2px;
+    padding-inline-start: 8px;
+    font-size: 14px;
+    line-height: 20px;
+    color: var(--text-subtle);
+
+    > p {
+      margin-top: 8px !important;
+      margin-bottom: 8px !important;
+      &::before {
+        content: '';
+      }
+
+      &::after {
+        content: '';
+      }
+    }
+  }
+
+  img {
+    /* 设置默认图片的样式 */
+    min-height: 30px;
+    margin-top: 12px;
+    margin-bottom: 12px;
+    border-radius: 12px;
+    cursor: pointer;
+  }
+
+  .marked-code-header {
+    display: flex;
+    justify-content: space-between;
+    padding: 6px 12px;
+  }
+
+  code {
+    border-radius: 0 0 4px 4px;
+  }
+
+  pre {
+    background-color: white !important;
+  }
+}
 
 :root {
   --foreground-rgb: 0, 0, 0;
