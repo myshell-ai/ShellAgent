@@ -13,6 +13,22 @@
 .assistant-md-viewer {
   padding: 0;
 
+  blockquote,
+  dl,
+  dd,
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6,
+  hr,
+  figure,
+  p,
+  pre {
+    margin: 0.5em;
+  }
+
   h1,
   h2,
   h3,
@@ -84,10 +100,11 @@
   }
 
   code {
-    border-radius: 0 0 4px 4px;
+    border-radius: 4px;
   }
 
-  pre {
+  pre,
+  code {
     background-color: white !important;
   }
 }

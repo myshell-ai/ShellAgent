@@ -1,7 +1,5 @@
 'use client';
 
-import { Tooltip } from '@shellagent/ui';
-import { useTranslations } from 'next-intl';
 import {
   ChangeEvent,
   forwardRef,

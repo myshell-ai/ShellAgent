@@ -10,15 +10,15 @@ import {
 import React, { memo, useEffect, useMemo, useRef } from 'react';
 import { useInjection } from 'inversify-react';
 import { observer } from 'mobx-react-lite';
-import ReactMarkdown from 'react-markdown';
+import ReactMarkdown, { Components } from 'react-markdown';
 import { atelierHeathLight } from 'react-syntax-highlighter/dist/esm/styles/hljs';
 import SyntaxHighlighter from 'react-syntax-highlighter';
-import { JsxRuntimeComponents } from 'react-markdown/lib';
 import { Virtuoso, VirtuosoHandle } from 'react-virtuoso';
 
 import { AssistantModel } from '@/components/assistant-help/model';
-import { TextInput } from './text-input';
 import { cn } from '@/utils/cn';
+
+import { TextInput } from './text-input';
 
 const capitalizationLanguageNameMap: Record<string, string> = {
   sql: 'SQL',
@@ -138,9 +138,11 @@ const Message = ({
               <Loading className="w-6 h-4.5" />
             ) : (
               <ReactMarkdown
-                components={{
-                  code: CodeBlock as JsxRuntimeComponents['code'],
-                }}>
+                components={
+                  {
+                    code: CodeBlock,
+                  } as Components
+                }>
                 {reply}
               </ReactMarkdown>
             )}
@@ -195,7 +197,7 @@ export const AssistantBot = observer(() => {
       });
     });
   };
-  console.log('model.messages.length: ', model.messages.length);
+
   useEffect(() => {
     scrollToIndex();
   }, [model.messages.length]);

@@ -2,7 +2,10 @@ import { inject, injectable } from 'inversify';
 import { makeObservable, observable, action } from 'mobx';
 import { z } from 'zod';
 
-import { MessageItem } from '@/components/assistant-help/definitions';
+import {
+  MessageItem,
+  DefaultMessages,
+} from '@/components/assistant-help/definitions';
 import { ModalModel } from '@/utils/modal.model';
 import { clearMemory, query } from '@/services/assistant';
 
@@ -10,7 +13,7 @@ import { clearMemory, query } from '@/services/assistant';
 export class AssistantModel {
   @observable question: string = '';
   @observable sending: boolean = false;
-  @observable messages: z.infer<typeof MessageItem>[] = [];
+  @observable messages: z.infer<typeof MessageItem>[] = DefaultMessages;
 
   constructor(@inject(ModalModel) public drawer: ModalModel) {
     makeObservable(this);
@@ -25,14 +28,12 @@ export class AssistantModel {
   async query() {
     try {
       const question = this.question;
-      console.log('this.question: ', this.question);
       this.sending = true;
       this.messages = this.messages.concat({ question }, { loading: true });
       this.question = '';
       const res = await query({
         question,
       });
-      console.log('res: ', res);
       this.messages = this.messages.filter(item => !item.loading).concat(res);
       this.sending = false;
     } catch (e: any) {
@@ -44,7 +45,7 @@ export class AssistantModel {
   async clearMemory() {
     try {
       await clearMemory();
-      this.messages = [];
+      this.messages = DefaultMessages;
     } catch (e: any) {
       // this.emitter.emitter.emit('message.error', e.message);
     }
