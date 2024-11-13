@@ -15,7 +15,7 @@ import { atelierHeathLight } from 'react-syntax-highlighter/dist/esm/styles/hljs
 import SyntaxHighlighter from 'react-syntax-highlighter';
 import { Virtuoso, VirtuosoHandle } from 'react-virtuoso';
 
-import { AssistantModel } from '@/components/assistant-help/model';
+import { AssistantModel } from '@/components/assistant/model';
 import { cn } from '@/utils/cn';
 
 import { TextInput } from './text-input';

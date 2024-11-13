@@ -13,7 +13,7 @@ import { GlobalStoreProvider } from '@/stores/global/global-provider';
 
 import SideBar from './side-bar';
 
-const Assistant = dynamic(() => import('../assistant-help'), {
+const Assistant = dynamic(() => import('../assistant'), {
   ssr: false,
 });
 

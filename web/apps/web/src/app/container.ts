@@ -18,7 +18,7 @@ import { SettingsModel } from '@/components/settings/settings.model';
 import { EmitterModel } from '@/utils/emitter.model';
 import { ModalModel } from '@/utils/modal.model';
 import { RequestModel } from '@/utils/request.model';
-import { AssistantModel } from '@/components/assistant-help/model';
+import { AssistantModel } from '@/components/assistant/model';
 
 export const container = new Container();
 

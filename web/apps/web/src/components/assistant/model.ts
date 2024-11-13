@@ -5,7 +5,7 @@ import { z } from 'zod';
 import {
   MessageItem,
   DefaultMessages,
-} from '@/components/assistant-help/definitions';
+} from '@/components/assistant/definitions';
 import { ModalModel } from '@/utils/modal.model';
 import { clearMemory, query } from '@/services/assistant';
 

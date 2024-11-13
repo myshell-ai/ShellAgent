@@ -4,8 +4,8 @@ import { observer } from 'mobx-react-lite';
 import React, { useState } from 'react';
 import { Rnd } from 'react-rnd';
 
-import { AssistantModel } from '@/components/assistant-help/model';
-import { AssistantBot } from '@/components/assistant-help/bot';
+import { AssistantModel } from '@/components/assistant/model';
+import { AssistantBot } from '@/components/assistant/bot';
 
 const Assistant = observer(() => {
   const model = useInjection(AssistantModel);
@@ -44,6 +44,8 @@ const Assistant = observer(() => {
           right: '24px',
           bottom: '72px',
         }}
+        minWidth="380"
+        minHeight="380"
         size={{ width: drawerSize.width, height: drawerSize.height }}
         position={{ x: position.x, y: position.y }}
         dragHandleClassName="rnd-drag-header"
