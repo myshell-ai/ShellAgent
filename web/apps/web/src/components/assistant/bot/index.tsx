@@ -7,6 +7,11 @@ import {
   TooltipContent,
   Loading,
 } from '@shellagent/ui';
+import {
+  ClipboardDocumentCheckIcon,
+  ClipboardDocumentIcon,
+} from '@heroicons/react/24/outline';
+import { useInterval } from 'ahooks';
 import React, { memo, useEffect, useMemo, useRef, useState } from 'react';
 import { useInjection } from 'inversify-react';
 import { observer } from 'mobx-react-lite';
@@ -19,10 +24,6 @@ import { AssistantModel } from '@/components/assistant/model';
 import { cn } from '@/utils/cn';
 
 import { TextInput } from './text-input';
-import {
-  ClipboardDocumentCheckIcon,
-  ClipboardDocumentIcon,
-} from '@heroicons/react/24/outline';
 
 const capitalizationLanguageNameMap: Record<string, string> = {
   sql: 'SQL',
@@ -55,6 +56,7 @@ const getCorrectCapitalizationLanguageName = (language: string) => {
 
   return language.charAt(0).toUpperCase() + language.substring(1);
 };
+
 export const CodeBlock = memo(
   ({ inline, className, children, ...props }: any) => {
     const [copied, setCopied] = useState(false);
@@ -65,6 +67,13 @@ export const CodeBlock = memo(
     );
 
     const content = String(children);
+
+    useInterval(
+      () => {
+        setCopied(false);
+      },
+      copied ? 5000 : undefined,
+    );
 
     const handleClick = () => {
       navigator.clipboard
@@ -209,7 +218,6 @@ export const AssistantBot = observer(() => {
     align?: 'start' | 'center' | 'end';
   }) => {
     requestAnimationFrame(() => {
-      console.log('scrollToIndex: ', scrollToIndex);
       virtualRef.current?.scrollToIndex({
         index: location?.index || 'LAST',
         align: location?.align || 'end',
