@@ -18,8 +18,9 @@ export const usePasteState = ({
 }: {
   enabeKeyboard: boolean;
 }) => {
-  const { setNodeData } = useAppStore(state => ({
+  const { setNodeData, nodeData } = useAppStore(state => ({
     setNodeData: state.setNodeData,
+    nodeData: state.nodeData,
   }));
   const appBuilder = useInjection(AppBuilderModel);
 
@@ -36,7 +37,12 @@ export const usePasteState = ({
   }));
 
   const pasteState = useCallback(() => {
-    const displayName = `${data?.display_name} Copy`;
+    const index = Object.values(nodeData).map(
+      value => value.type === 'state',
+    )?.length;
+    const displayName = `${data?.display_name} Copy${
+      index > 0 ? `#${index}` : ''
+    }`;
     const newId = customSnakeCase(displayName) as Lowercase<string>;
 
     setNodeData({ id: newId, data });

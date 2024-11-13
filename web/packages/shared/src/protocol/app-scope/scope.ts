@@ -126,7 +126,7 @@ export const RefSceneEnum = z.enum([
   'set_nodedata_key_val',
   'change_nodedata_mode',
   'rename_ref_opt',
-  'rename_state_name',
+  'rename_state_name', // todo
   'remove_ref_opts',
   'remove_ref_opts_prefix',
   'remove_edge',
