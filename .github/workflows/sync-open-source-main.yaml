@@ -9,6 +9,7 @@ on:
       - "web/apps/web/**"
       - "web/packages/**"
       - ".github/**"
+      - "web/.yalc/image-canvas/**"
 
 jobs:
   build:

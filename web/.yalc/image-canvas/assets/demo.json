@@ -272,7 +272,7 @@
       "pathSide": "left",
       "pathAlign": "center",
       "minWidth": 20,
-      "splitByGrapheme": true,
+      "splitByGrapheme": false,
       "id": "ad9d6314-5b03-4886-a101-eb0df5f64153",
       "selectable": true,
       "hasControls": true
@@ -328,7 +328,7 @@
       "pathSide": "left",
       "pathAlign": "center",
       "minWidth": 20,
-      "splitByGrapheme": true,
+      "splitByGrapheme": false,
       "id": "1a6b8d18-1037-486f-be5f-693bd50f8d60",
       "selectable": true,
       "hasControls": true
