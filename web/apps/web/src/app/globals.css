@@ -13,20 +13,20 @@
 .assistant-md-viewer {
   padding: 0;
 
-  blockquote,
-  dl,
-  dd,
-  h1,
-  h2,
-  h3,
-  h4,
-  h5,
-  h6,
-  hr,
-  figure,
-  p,
-  pre {
-    margin: 0.5em;
+  blockquote:not(:last-child),
+  dl:not(:last-child),
+  dd:not(:last-child),
+  h1:not(:last-child),
+  h2:not(:last-child),
+  h3:not(:last-child),
+  h4:not(:last-child),
+  h5:not(:last-child),
+  h6:not(:last-child),
+  hr:not(:last-child),
+  figure:not(:last-child),
+  p:not(:last-child),
+  pre:not(:last-child) {
+    margin-bottom: 0.5em;
   }
 
   h1,
@@ -40,8 +40,8 @@
 
   ul,
   ol {
-    margin-block-start: 1em;
-    margin-block-end: 1em;
+    margin-block-start: 0.5em;
+    margin-block-end: 0.5em;
     margin-inline-start: 0;
     padding-inline-start: 2em;
   }

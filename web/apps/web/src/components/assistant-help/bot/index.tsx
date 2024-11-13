@@ -118,7 +118,7 @@ const Message = ({
   if (question) {
     return (
       <div className="w-[calc(100%-38px)] ml-[38px] flex gap-1.5 justify-end pb-3">
-        <div className="max-w-full overflow-hidden rounded-2xl !rounded-tr-sm min-h-11 py-3 px-4 bg-surface-primary-subtle-hovered">
+        <div className="max-w-full overflow-hidden rounded-2xl !rounded-tr-sm min-h-11 p-3 bg-surface-primary-subtle-hovered">
           <Text>{question}</Text>
         </div>
       </div>
@@ -133,7 +133,7 @@ const Message = ({
             src="/assistant.png"
             className="border border-default"
           />
-          <div className="assistant-md-viewer max-w-full overflow-hidden rounded-2xl !rounded-tl-sm min-h-11 py-3 px-4 bg-surface-hovered">
+          <div className="assistant-md-viewer max-w-full overflow-hidden rounded-2xl !rounded-tl-sm min-h-11 p-3 bg-surface-hovered">
             {loading ? (
               <Loading className="w-6 h-4.5" />
             ) : (
