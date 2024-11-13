@@ -61,6 +61,7 @@
     "react-mentions": "^4.4.10",
     "react-player": "^2.16.0",
     "react-resizable": "^3.0.5",
+    "react-rnd": "^10.4.13",
     "react-syntax-highlighter": "^15.6.1",
     "react-system": "^0.20.3",
     "react-textarea-autosize": "^8.5.3",

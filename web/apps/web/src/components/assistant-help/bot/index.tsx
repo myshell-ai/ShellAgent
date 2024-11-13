@@ -96,9 +96,9 @@ export const CodeBlock = memo(
       <div className="marked-code-block">
         <div className="marked-code-header bg-surface-container-pressed alt-14 text-subtle">
           <span>{languageShowName}</span>
-          <button className="copy-button text-brand" onClick={handleClick}>
+          <Text className="text-brand cursor-pointer" onClick={handleClick}>
             Copy
-          </button>
+          </Text>
         </div>
         {renderCodeContent}
       </div>

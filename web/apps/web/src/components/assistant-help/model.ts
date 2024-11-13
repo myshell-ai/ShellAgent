@@ -27,13 +27,13 @@ export class AssistantModel {
   @action.bound
   async query() {
     try {
-      const question = this.question;
+      const msg = {
+        question: this.question,
+      };
       this.sending = true;
-      this.messages = this.messages.concat({ question }, { loading: true });
+      this.messages = this.messages.concat(msg, { loading: true });
       this.question = '';
-      const res = await query({
-        question,
-      });
+      const res = await query(msg);
       this.messages = this.messages.filter(item => !item.loading).concat(res);
       this.sending = false;
     } catch (e: any) {
