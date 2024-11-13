@@ -21,7 +21,7 @@ class XWidget(BaseWidget):
         twitter_handle: str = Field(default="", description="The Twitter handle (without @) to scrape or analyze")
 
     class OutputsSchema(BaseWidget.OutputsSchema):
-        data: str
+        data: str | list
         
     def execute(self, environ, config):
         # API endpoint URL
@@ -52,7 +52,7 @@ class XWidget(BaseWidget):
         
         # Extract the 'result' field and return it as a string
         if json_response.get('success') and 'result' in json_response:
-            return {"data": json.dumps(json.loads(json_response['result'])['data'])}
+            return {"data": json.loads(json_response['result'])['data']}
         else:
             # If 'result' is not found, return the entire response as a string
             return {"data": json.dumps(json_response)}
