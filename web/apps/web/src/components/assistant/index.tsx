@@ -38,7 +38,6 @@ const Assistant = observer(() => {
         />
       </div>
       <Rnd
-        // className="fixed"
         style={{
           position: 'fixed',
           right: '24px',

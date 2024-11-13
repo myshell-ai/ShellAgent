@@ -7,7 +7,7 @@ import {
   TooltipContent,
   Loading,
 } from '@shellagent/ui';
-import React, { memo, useEffect, useMemo, useRef } from 'react';
+import React, { memo, useEffect, useMemo, useRef, useState } from 'react';
 import { useInjection } from 'inversify-react';
 import { observer } from 'mobx-react-lite';
 import ReactMarkdown, { Components } from 'react-markdown';
@@ -19,6 +19,10 @@ import { AssistantModel } from '@/components/assistant/model';
 import { cn } from '@/utils/cn';
 
 import { TextInput } from './text-input';
+import {
+  ClipboardDocumentCheckIcon,
+  ClipboardDocumentIcon,
+} from '@heroicons/react/24/outline';
 
 const capitalizationLanguageNameMap: Record<string, string> = {
   sql: 'SQL',
@@ -53,6 +57,7 @@ const getCorrectCapitalizationLanguageName = (language: string) => {
 };
 export const CodeBlock = memo(
   ({ inline, className, children, ...props }: any) => {
+    const [copied, setCopied] = useState(false);
     const match = /language-(\w+)/.exec(className || '');
     const language = match?.[1];
     const languageShowName = getCorrectCapitalizationLanguageName(
@@ -62,7 +67,14 @@ export const CodeBlock = memo(
     const content = String(children);
 
     const handleClick = () => {
-      navigator.clipboard.writeText(children);
+      navigator.clipboard
+        .writeText(children)
+        .then(() => {
+          setCopied(true);
+        })
+        .catch(error => {
+          console.log('copy error: ', error);
+        });
     };
 
     const renderCodeContent = useMemo(() => {
@@ -94,11 +106,19 @@ export const CodeBlock = memo(
 
     return (
       <div className="marked-code-block">
-        <div className="marked-code-header bg-surface-container-pressed alt-14 text-subtle">
-          <span>{languageShowName}</span>
-          <Text className="text-brand cursor-pointer" onClick={handleClick}>
-            Copy
-          </Text>
+        <div className="marked-code-header bg-surface-container-pressed alt-14 text-subtle felx items-center">
+          <Text>{languageShowName}</Text>
+          {copied ? (
+            <ClipboardDocumentCheckIcon
+              onClick={handleClick}
+              className="w-4.5 h-4.5 cursor-pointer text-green-30"
+            />
+          ) : (
+            <ClipboardDocumentIcon
+              onClick={handleClick}
+              className="w-4.5 h-4.5 cursor-pointer"
+            />
+          )}
         </div>
         {renderCodeContent}
       </div>
