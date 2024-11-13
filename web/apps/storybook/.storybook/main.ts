@@ -31,7 +31,7 @@ const config: StorybookConfig = {
     if (configType === 'PRODUCTION') {
       // Modify config for production
     }
-    config.module.rules.push({
+    config!.module!.rules!.push({
       test: /\.less$/i,
       include: getAbsolutePath('react-colors-beauty'),
       use: [
@@ -43,6 +43,15 @@ const config: StorybookConfig = {
         },
       ],
     });
+
+    config!.resolve!.alias = {
+      ...config!.resolve!.alias,
+      '@/styles/md-viewer.scss': false,
+      '@/common/assets/audio-playing.json': false,
+      '@/components/rewards-center/reward-redemption/components/redemption-success-modal/assets/images/reward-success-bg.png':
+        false,
+      '@/common/assets/images/workshop/BotDetailBg.png': false,
+    };
     return config;
   },
   swc: () => ({

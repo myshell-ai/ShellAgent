@@ -1,0 +1,148 @@
+{
+    "id": "1856600591251402752",
+    "userId": "3524834",
+    "referenceText": "",
+    "text": "Test",
+    "audioUrl": "",
+    "duration": 0,
+    "audioSpeed": 1,
+    "status": "DONE",
+    "type": "REPLY",
+    "createdDateUnix": "1731483049582",
+    "updatedDateUnix": "1731483049582",
+    "entityId": "1719284610",
+    "replyId": "1856600591192682496",
+    "feedbackState": "Normal",
+    "feedbackIssues": [],
+    "asyncJobInfo": {
+        "jobId": "",
+        "componentInput": "",
+        "status": "EMBED_OBJ_STATUS_UNSPECIFIED"
+    },
+    "runningWidgetInfo": [],
+    "runningError": null,
+    "handled": false,
+    "imageGenMessageResponse": null,
+    "inputSetting": {
+        "canInputText": false,
+        "canInputAudio": false,
+        "canUploadFile": false,
+        "supportedEmbedTypes": [],
+        "embedNumberLimit": 0,
+        "embedNumberMinimum": 0,
+        "embedMaxFileBytesEach": "0"
+    },
+    "uploadSetting": {
+        "supportedFileInfos": []
+    },
+    "componentContainer": {
+        "type": "BOT_MESSAGE_COMPONENTS_TYPE_CONTAINER",
+        "components": [
+            {
+                "type": "BOT_MESSAGE_COMPONENTS_TYPE_ROW",
+                "components": [
+                    {
+                        "type": "BOT_MESSAGE_COMPONENTS_TYPE_BUTTON",
+                        "components": [],
+                        "button": {
+                            "content": {
+                                "text": "Markdown Image",
+                                "iconUrl": "",
+                                "description": "",
+                                "energyConsume": 0,
+                                "energyConsumeAccurate": false
+                            },
+                            "style": {
+                                "fontColorHex": "#202223",
+                                "backgroundColorHex": "#F6F6F7",
+                                "borderColorHex": "#E4E9F0",
+                                "darkModeFontColorHex": "#B8BCCF",
+                                "darkModeBackgroundColorHex": "#323339",
+                                "darkModeBorderColorHex": "#42434A",
+                                "iconLineColorHex": "#00000033",
+                                "darkModeIconLineColorHex": "#FFFFFF33"
+                            },
+                            "buttonId": "component_widget_template:home_state:0:0",
+                            "actions": [
+                                {
+                                    "action": "MESSAGE_COMPONENTS_BUTTON_ACTION_TYPE_INTERACTION",
+                                    "interactionInput": {
+                                        "displayType": "BOT_MESSAGE_COMPONENTS_BUTTON_ACTION_INTERACTION_INPUT_DISPLAY_TYPE_SLASH_COMMAND",
+                                        "slashCommandInput": {
+                                            "name": "/MarkdownImage",
+                                            "paramMap": {}
+                                        }
+                                    }
+                                }
+                            ],
+                            "disabled": false,
+                            "doubleCheck": {
+                                "isNeedDoubleCheck": false,
+                                "title": "",
+                                "description": ""
+                            }
+                        }
+                    },
+                    {
+                        "type": "BOT_MESSAGE_COMPONENTS_TYPE_BUTTON",
+                        "components": [],
+                        "button": {
+                            "content": {
+                                "text": "Embed Image",
+                                "iconUrl": "",
+                                "description": "",
+                                "energyConsume": 0,
+                                "energyConsumeAccurate": false
+                            },
+                            "style": {
+                                "fontColorHex": "#202223",
+                                "backgroundColorHex": "#F6F6F7",
+                                "borderColorHex": "#E4E9F0",
+                                "darkModeFontColorHex": "#B8BCCF",
+                                "darkModeBackgroundColorHex": "#323339",
+                                "darkModeBorderColorHex": "#42434A",
+                                "iconLineColorHex": "#00000033",
+                                "darkModeIconLineColorHex": "#FFFFFF33"
+                            },
+                            "buttonId": "component_widget_template:home_state:0:1",
+                            "actions": [
+                                {
+                                    "action": "MESSAGE_COMPONENTS_BUTTON_ACTION_TYPE_INTERACTION",
+                                    "interactionInput": {
+                                        "displayType": "BOT_MESSAGE_COMPONENTS_BUTTON_ACTION_INTERACTION_INPUT_DISPLAY_TYPE_SLASH_COMMAND",
+                                        "slashCommandInput": {
+                                            "name": "/EmbedImage",
+                                            "paramMap": {}
+                                        }
+                                    }
+                                }
+                            ],
+                            "disabled": false,
+                            "doubleCheck": {
+                                "isNeedDoubleCheck": false,
+                                "title": "",
+                                "description": ""
+                            }
+                        }
+                    }
+                ]
+            }
+        ]
+    },
+    "embedObjs": [],
+    "slashCommandInput": null,
+    "referenceSource": [],
+    "recommendatioQuestions": {
+        "question": []
+    },
+    "regeneratedMessages": [],
+    "extraInfo": {
+        "consumeEnergy": 0,
+        "canEdit": false,
+        "canRegenerate": false,
+        "runningWidgetInfo": [],
+        "bgm": null,
+        "senderInfo": null
+    },
+    "isLlmBot": false
+}

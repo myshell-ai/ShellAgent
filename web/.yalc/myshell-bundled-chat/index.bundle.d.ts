@@ -1,5 +1,5 @@
-import * as React from 'react';
-import React__default, { ReactElement, ReactNode, MutableRefObject } from 'react';
+import * as react from 'react';
+import react__default, { ReactElement, ReactNode, MutableRefObject } from 'react';
 import { DropzoneRootProps, DropzoneInputProps } from 'react-dropzone';
 import * as react_jsx_runtime from 'react/jsx-runtime';
 import { VirtuosoMessageListMethods } from '@virtuoso.dev/message-list';
@@ -48,10 +48,93 @@ declare enum WidgetChatCallerTypeEnum {
     WIDGET_CHAT_CALLER_TYPE_COMPONENT = "WIDGET_CHAT_CALLER_TYPE_COMPONENT"
 }
 
+declare enum UserSourceEnum {
+    APKPURE_BANNER = "apkpure_banner",
+    MYSHELL = "myshell",
+    VISITOR = "visitor"
+}
+declare enum FollowStatus {
+    FOLLOW_STATUS_UNSPECIFIED = "FOLLOW_STATUS_UNSPECIFIED",
+    FOLLOWED = "FOLLOWED",
+    NOT_FOLLOWED = "NOT_FOLLOWED",
+    NOT_AVAILABLE = "NOT_AVAILABLE"
+}
+declare enum LoginType {
+    LOGIN_TYPE_UNSPECIFIED = "LOGIN_TYPE_UNSPECIFIED",
+    LOGIN_TYPE_EMAIL = "LOGIN_TYPE_EMAIL",
+    LOGIN_TYPE_GOOGLE = "LOGIN_TYPE_GOOGLE",
+    LOGIN_TYPE_APPLE = "LOGIN_TYPE_APPLE",
+    LOGIN_TYPE_FACEBOOK = "LOGIN_TYPE_FACEBOOK",
+    LOGIN_TYPE_PUBLIC_ADDRESS = "LOGIN_TYPE_PUBLIC_ADDRESS"
+}
+
 interface EnergyInfo {
     energy: number;
     dailyEnergy?: number;
     userId?: string;
+}
+interface User {
+    avatar?: string;
+    email?: string;
+    id: string;
+    isGenesisPasscard: boolean;
+    isNftAvatar: boolean;
+    isPasscard: boolean;
+    level: number;
+    name: string;
+    nameTag: string;
+    publicAddress: string;
+    source?: UserSourceEnum;
+    hasParticleAccount?: boolean;
+    createdDate?: string;
+    createdTime?: string;
+    premiumInfo: PremiumInfo;
+    privateBotLimit: number;
+    publicBotLimit: number;
+    canPublishNewBot?: boolean;
+    hasFollowed: boolean;
+    followedCount: string;
+    fansCount: string;
+    followStatus: FollowStatus;
+    description: string;
+    backgroundUrl: string;
+    loginCredential: string;
+    loginType: LoginType;
+    connectInfo: {
+        discord: {
+            id: string;
+            userId: string;
+            connectUserId: string;
+            userName: string;
+            createdDateUnix: number;
+        };
+        twitter: {
+            id: string;
+            userId: string;
+            connectUserId: string;
+            userName: string;
+            createdDateUnix: number;
+        };
+        telegram: {
+            id: string;
+            userId: string;
+            tgId: string;
+            firstName: string;
+            lastName: string;
+            username: string;
+            photoUrl: string;
+            connectUserId: string;
+            currentBotId: string;
+            createdDateUnix: number;
+        };
+    };
+    publicKey: string;
+}
+interface PremiumInfo {
+    level: number;
+    totalExp: number;
+    nextLevelNeedExp: number;
+    currentLevelExp: number;
 }
 
 declare enum MessageStatusEnum {
@@ -272,8 +355,9 @@ type StaticContextProps = {
     editAvailable?: boolean;
     regenAvailable?: boolean;
     showMockReply?: boolean;
+    globalContextMenuDisabled?: boolean;
 } & EntityActions;
-declare const StaticContext: React.Context<StaticContextProps>;
+declare const StaticContext: react.Context<StaticContextProps>;
 
 type LocalServerFileType = keyof typeof ServerFileTypes | 'TEXT';
 
@@ -857,7 +941,7 @@ type MessageContextProps = {
     scrolled?: boolean;
     setScrolled?: (val: boolean) => void;
 };
-declare const MessageContext: React.Context<MessageContextProps>;
+declare const MessageContext: react.Context<MessageContextProps>;
 
 interface IRunningErrorProps {
     chat: MessageDetail;
@@ -866,10 +950,10 @@ declare const RunningError: ({ chat }: IRunningErrorProps) => react_jsx_runtime.
 
 type P$1 = {
     bgUrl?: string;
-    editorAnchorRef: React__default.RefObject<HTMLDivElement>;
-    editorContainerRef: React__default.RefObject<HTMLDivElement>;
-    textareaRef: React__default.RefObject<HTMLTextAreaElement>;
-    virtuosoRef: React__default.RefObject<VirtuosoMessageListMethods<Message>>;
+    editorAnchorRef: react__default.RefObject<HTMLDivElement>;
+    editorContainerRef: react__default.RefObject<HTMLDivElement>;
+    textareaRef: react__default.RefObject<HTMLTextAreaElement>;
+    virtuosoRef: react__default.RefObject<VirtuosoMessageListMethods<Message>>;
     topActionsSlot?: ReactNode;
     scrollLayoutToTop?: () => void;
     showMobileDetail?: () => void;
@@ -952,4 +1036,76 @@ declare function useMessageParams(params: P): {
     terminating: boolean;
 };
 
-export { ChatModule, type DisplayMessage, type DraftMessage, type EntityInfo, type IRunningErrorProps, type LocalErrorMessage, MenuFunctionEnum, type Message, type MessageComponentsContainer, MessageContext, type MessageContextProps, MessageToDisplayParser, RunningError, StaticContext, type StaticContextProps, useMessageParams };
+declare function useChatLayout(): {
+    scrollContainerRef: react.RefObject<HTMLDivElement>;
+    editorContainerRef: react.RefObject<HTMLDivElement>;
+    editorAnchorRef: react.RefObject<HTMLDivElement>;
+    textareaRef: react.RefObject<HTMLTextAreaElement>;
+    chatContainerRef: react.RefObject<HTMLDivElement>;
+    detailContainerRef: react.RefObject<HTMLDivElement>;
+    detailScrollRef: react.RefObject<HTMLDivElement>;
+    scrollLayoutToTop: () => void;
+    manuallyScrollDetailToTop: () => void;
+    isEditorSticky: boolean;
+    contentActive: boolean;
+    setContentActive: (nextValue?: any) => void;
+    detailScrollY: number;
+    showMobileDetail: () => void;
+};
+
+declare function useVirtuosoMessageListApi(showMockReply?: boolean): {
+    scrolled: boolean;
+    setScrolled: (nextValue?: any) => void;
+    virtuosoRef: react.RefObject<VirtuosoMessageListMethods<Message, any>>;
+    onSendMessage: (message: Message, isButtonInteraction?: boolean) => void;
+    onAppendMessages: (messages: Message | Message[], needScrollToBottom?: boolean) => void;
+    onUpdateMessage: (messageId: string, newMessage: Message) => void;
+    onPartialUpdateMessage: (messageId: string, partialDetail: PartialMessageDetail) => void;
+    onPartialUpdateRegenMessage: (messageId: string, regenMessageId: string, partialDetail: PartialMessageDetail) => void;
+    onTextStream: (messageId: string, content: string) => void;
+    onAudioStream: (messageId: string, audioChunk: ArrayBuffer) => void;
+    onTranslationStream: (messageId: string, translation: string) => void;
+    onPrependMessages: (messages: Message[]) => void;
+    onDeleteMessage: (messageId?: string) => void;
+    onRemoveDraftReplyIfExist: (messageId: string) => void;
+    onVirtuosoRegen: (originMessage: string) => void;
+    onMixMessages: (msgs: Message | Message[], needScrollToBottom?: boolean) => void;
+};
+
+declare function useAtBottom(): {
+    atBottom: boolean;
+    setAtBottom: (nextValue?: any) => void;
+};
+
+declare function useEditorMode(): {
+    inputMode: InputMode;
+    setInputMode: react.Dispatch<react.SetStateAction<InputMode>>;
+    editorMode: EditorMode;
+    setEditorMode: react.Dispatch<react.SetStateAction<EditorMode>>;
+};
+
+interface GlobalStoreProviderProps {
+    isMobile: boolean;
+    nonce?: string;
+    children: ReactNode;
+}
+declare const GlobalStoreProvider: ({ children, nonce, isMobile }: GlobalStoreProviderProps) => react_jsx_runtime.JSX.Element;
+
+interface UserStoreProviderProps {
+    user?: User;
+    token?: string;
+    language?: string;
+    isLogin: boolean;
+    children: ReactNode;
+}
+declare const UserStoreProvider: ({ children, user, isLogin, language }: UserStoreProviderProps) => react_jsx_runtime.JSX.Element;
+
+interface ChatStoreProviderProps {
+    children: ReactNode;
+    type?: ChatModuleType;
+    id?: string;
+    messages?: Message[];
+}
+declare const ChatStoreProvider: ({ children, type, id, messages }: ChatStoreProviderProps) => react_jsx_runtime.JSX.Element;
+
+export { ChatModule, type ChatModuleType, ChatStoreProvider, type DisplayMessage, type DraftMessage, type EntityInfo, FollowStatus, GlobalStoreProvider, type IRunningErrorProps, type LocalErrorMessage, LoginType, MenuFunctionEnum, type Message, type MessageComponentsContainer, MessageContext, type MessageContextProps, MessageToDisplayParser, RunningError, StaticContext, type StaticContextProps, type User, UserSourceEnum, UserStoreProvider, useAtBottom, useChatLayout, useEditorMode, useMessageParams, useVirtuosoMessageListApi };

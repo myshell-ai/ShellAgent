@@ -76,7 +76,7 @@ var immer$1 = require('immer');
 var PopoverPrimitive = require('@radix-ui/react-popover');
 var QRCode = require('qrcode');
 var reactHotToast = require('react-hot-toast');
-require('next/script');
+var Script = require('next/script');
 
 function _interopDefault (e) { return e && e.__esModule ? e : { default: e }; }
 
@@ -139,6 +139,7 @@ var axios__default = /*#__PURE__*/_interopDefault(axios);
 var TooltipPrimitive__namespace = /*#__PURE__*/_interopNamespace(TooltipPrimitive);
 var PopoverPrimitive__namespace = /*#__PURE__*/_interopNamespace(PopoverPrimitive);
 var QRCode__default = /*#__PURE__*/_interopDefault(QRCode);
+var Script__default = /*#__PURE__*/_interopDefault(Script);
 
 var ConversationScenario;
 (function (ConversationScenario) {
@@ -557,20 +558,20 @@ var UserMembershipTypeEnum;
     UserMembershipTypeEnum["TYPE_GENESIS_WITH_GENESIS_CARD"] = "TYPE_GENESIS_WITH_GENESIS_CARD";
     UserMembershipTypeEnum["TYPE_GENESIS_WITH_PASS_CARD"] = "TYPE_GENESIS_WITH_PASS_CARD";
 })(UserMembershipTypeEnum || (UserMembershipTypeEnum = {}));
-var UserSourceEnum;
+exports.UserSourceEnum = void 0;
 (function (UserSourceEnum) {
     UserSourceEnum["APKPURE_BANNER"] = "apkpure_banner";
     UserSourceEnum["MYSHELL"] = "myshell";
     UserSourceEnum["VISITOR"] = "visitor";
-})(UserSourceEnum || (UserSourceEnum = {}));
-var FollowStatus;
+})(exports.UserSourceEnum || (exports.UserSourceEnum = {}));
+exports.FollowStatus = void 0;
 (function (FollowStatus) {
     FollowStatus["FOLLOW_STATUS_UNSPECIFIED"] = "FOLLOW_STATUS_UNSPECIFIED";
     FollowStatus["FOLLOWED"] = "FOLLOWED";
     FollowStatus["NOT_FOLLOWED"] = "NOT_FOLLOWED";
     FollowStatus["NOT_AVAILABLE"] = "NOT_AVAILABLE";
-})(FollowStatus || (FollowStatus = {}));
-var LoginType;
+})(exports.FollowStatus || (exports.FollowStatus = {}));
+exports.LoginType = void 0;
 (function (LoginType) {
     LoginType["LOGIN_TYPE_UNSPECIFIED"] = "LOGIN_TYPE_UNSPECIFIED";
     LoginType["LOGIN_TYPE_EMAIL"] = "LOGIN_TYPE_EMAIL";
@@ -578,7 +579,7 @@ var LoginType;
     LoginType["LOGIN_TYPE_APPLE"] = "LOGIN_TYPE_APPLE";
     LoginType["LOGIN_TYPE_FACEBOOK"] = "LOGIN_TYPE_FACEBOOK";
     LoginType["LOGIN_TYPE_PUBLIC_ADDRESS"] = "LOGIN_TYPE_PUBLIC_ADDRESS";
-})(LoginType || (LoginType = {}));
+})(exports.LoginType || (exports.LoginType = {}));
 var BindType;
 (function (BindType) {
     BindType["BIND_TYPE_UNSPECIFIED"] = "BIND_TYPE_UNSPECIFIED";
@@ -1383,7 +1384,7 @@ const getNeteaseRequestToken = async () => {
     }
 };
 
-var __rest$x = (undefined && undefined.__rest) || function (s, e) {
+var __rest$y = (undefined && undefined.__rest) || function (s, e) {
     var t = {};
     for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p) && e.indexOf(p) < 0)
         t[p] = s[p];
@@ -1484,7 +1485,7 @@ const getCommonHeaders = async (opt) => {
 const handleFetch = async (url, request) => {
     var _a, _b, _c, _d, _e;
     const urlBody = `${baseURL$1}${url}`;
-    const { body, adapter, isGoLang, hideErrorToast, withMyShellSecurityToken, allowAnonymous, timeout, serverContext, params, signal, headers } = request, rest = __rest$x(request, ["body", "adapter", "isGoLang", "hideErrorToast", "withMyShellSecurityToken", "allowAnonymous", "timeout", "serverContext", "params", "signal", "headers"]);
+    const { body, adapter, isGoLang, hideErrorToast, withMyShellSecurityToken, allowAnonymous, timeout, serverContext, params, signal, headers } = request, rest = __rest$y(request, ["body", "adapter", "isGoLang", "hideErrorToast", "withMyShellSecurityToken", "allowAnonymous", "timeout", "serverContext", "params", "signal", "headers"]);
     const requestUrl = (request === null || request === void 0 ? void 0 : request.params) ? `${urlBody}${params}` : `${urlBody}`;
     const requestBody = body ? (body instanceof FormData ? { body } : { body: JSON.stringify(body) }) : {};
     const commonHeaders = await getCommonHeaders({
@@ -1705,7 +1706,7 @@ const handleError = (err, config) => {
     return rxjs.throwError(() => err);
 };
 
-var __rest$w = (undefined && undefined.__rest) || function (s, e) {
+var __rest$x = (undefined && undefined.__rest) || function (s, e) {
     var t = {};
     for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p) && e.indexOf(p) < 0)
         t[p] = s[p];
@@ -1930,7 +1931,7 @@ function getBotsByUser(userId) {
             return ((_a = res === null || res === void 0 ? void 0 : res.bots) !== null && _a !== void 0 ? _a : []).map((d) => {
                 var _a, _b, _c, _d, _e, _f, _g, _h;
                 const { lastMessage = {}, latestInteractionDateUnix, canEditBot, inChatList, photos, pinned, summary = {}, setting = {}, unreadMessageCount, visitorCanChat, widgets } = d;
-                const _j = summary || {}, { backgroundImageThemeHexColors } = _j, sRest = __rest$w(_j, ["backgroundImageThemeHexColors"]);
+                const _j = summary || {}, { backgroundImageThemeHexColors } = _j, sRest = __rest$x(_j, ["backgroundImageThemeHexColors"]);
                 const data = Object.assign(Object.assign({ canEditBot,
                     pinned,
                     inChatList,
@@ -3577,6 +3578,85 @@ const immerImpl = (initializer) => (set, get, store) => {
 };
 const immer = immerImpl;
 
+const DEFAULT_STATE$9 = {
+    isMobile: false,
+    isToInviteArea: false,
+    isOpenLoginModal: false,
+    cantCloseLogin: false,
+    guiding: false,
+    isOpenInviteCodeModal: false,
+    showChatBotRecommend: false,
+    inviteCodeStep: 1,
+    loadingCount: 0,
+    createAutoPromptTaskResult: null,
+    noEnergyWithUsablePropModalVisible: false,
+    onboarding: false,
+    sumUnread: 0
+};
+const computeState$6 = (state) => ({
+    isGlobalLoading: state.loadingCount > 0
+});
+const createGlobalStore = (initState) => {
+    const createGlobalSlice = set => {
+        return Object.assign(Object.assign(Object.assign({}, DEFAULT_STATE$9), initState), { setIsMobile(isMobile) {
+                set({ isMobile }, false, 'setIsMobile');
+            },
+            goToInviteArea(isToInviteArea) {
+                set({ isToInviteArea }, false, 'goToInviteArea');
+            },
+            globalLoading() {
+                set(state => {
+                    state.loadingCount++;
+                }, false, 'globalLoading');
+            },
+            globalLoaded() {
+                set(state => {
+                    const count = state.loadingCount - 1;
+                    state.loadingCount = count < 0 ? 0 : count;
+                }, false, 'globalLoaded');
+            },
+            toggleLoginModal(isOpenLoginModal) {
+                set(state => {
+                    state.isOpenLoginModal = isOpenLoginModal;
+                    if (!isOpenLoginModal) {
+                        state.cantCloseLogin = false;
+                    }
+                }, false, 'toggleLoginModal');
+            },
+            setGuiding(guiding) {
+                set({ guiding }, false, 'setGuiding');
+            },
+            setShowChatBotRecommend(showChatBotRecommend) {
+                set({ showChatBotRecommend }, false, 'setShowChatBotRecommend');
+            },
+            toggleInvitecodeModal(isOpenInviteCodeModal) {
+                set({ isOpenInviteCodeModal }, false, 'toggleInvitecodeModal');
+            },
+            setInviteCodeStep(step) {
+                set({ inviteCodeStep: step }, false, 'setInviteCodeStep');
+            },
+            setAutoPromptTaskResult(createAutoPromptTaskResult) {
+                set({ createAutoPromptTaskResult }, false, 'setAutoPromptTaskResult');
+            },
+            setNoEnergyWithUsablePropModalVisible(visible) {
+                set(state => {
+                    state.noEnergyWithUsablePropModalVisible = visible;
+                }, false, 'setNoEnergyWithUsablePropModalVisible');
+            },
+            showOnboarding(val) {
+                set(state => {
+                    state.onboarding = val;
+                }, false, 'showOnboarding');
+            },
+            setSumUnread(val) {
+                set(state => {
+                    state.sumUnread = val;
+                }, false, 'setSumUnread');
+            } });
+    };
+    return zustand.createStore()(computed__default.default(immer(devtools(createGlobalSlice, { store: 'user' })), computeState$6));
+};
+
 var TaskTypeEnum;
 (function (TaskTypeEnum) {
     TaskTypeEnum["SEASON_TASK_TYPE_UNSPECIFIED"] = "SEASON_TASK_TYPE_UNSPECIFIED";
@@ -3675,7 +3755,7 @@ var PointTypeEnum;
     PointTypeEnum["USER_POINT_TYPE_INVESTOR"] = "USER_POINT_TYPE_INVESTOR";
 })(PointTypeEnum || (PointTypeEnum = {}));
 
-const DEFAULT_STATE$6 = {
+const DEFAULT_STATE$8 = {
     seasons: null,
     seasonIndex: 0,
     taskList: [],
@@ -3694,7 +3774,7 @@ const DEFAULT_STATE$6 = {
     myPropsQuerying: true
 };
 const createTaskSlice = set => {
-    return Object.assign(Object.assign({}, DEFAULT_STATE$6), { setUnclaimedPoints(points) {
+    return Object.assign(Object.assign({}, DEFAULT_STATE$8), { setUnclaimedPoints(points) {
             set({ unclaimedPoints: points }, false, 'setUnclaimedPoints');
         },
         setExchangePoints(points) {
@@ -3748,7 +3828,7 @@ const createTaskSlice = set => {
             set({ myPropsQuerying }, false, 'setMyPropsQuerying');
         } });
 };
-const computeState$4 = (state) => {
+const computeState$5 = (state) => {
     var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l, _m, _o, _p, _q, _r, _s;
     return ({
         seasonId: state.seasons ? (_a = state.seasons[state.seasonIndex]) === null || _a === void 0 ? void 0 : _a.id : null,
@@ -3771,9 +3851,9 @@ const computeState$4 = (state) => {
         seasonPoints: Array.isArray(state.points) ? state.points[state.seasonIndex] : undefined
     });
 };
-const useTaskStore = zustand.create()(computed__default.default(immer(devtools(createTaskSlice, { store: 'task' })), computeState$4));
+const useTaskStore = zustand.create()(computed__default.default(immer(devtools(createTaskSlice, { store: 'task' })), computeState$5));
 
-({
+const DEFAULT_STATE$7 = {
     user: null,
     inviteCode: '',
     invitationCount: 0,
@@ -3845,7 +3925,114 @@ const useTaskStore = zustand.create()(computed__default.default(immer(devtools(c
     loginMethod: undefined,
     language: 'en',
     loginPopVisible: false
-});
+};
+const computeState$4 = (state) => {
+    var _a, _b, _c, _d;
+    return ({
+        isVisitor: !state.isLogin || ((_a = state.user) === null || _a === void 0 ? void 0 : _a.source) === exports.UserSourceEnum.VISITOR ? VisitorEnum.YES : VisitorEnum.NO,
+        userId: (_b = state.user) === null || _b === void 0 ? void 0 : _b.id,
+        premiumInfo: state.user
+            ? state.user.premiumInfo
+            : {
+                level: 0,
+                totalExp: 0,
+                nextLevelNeedExp: 0,
+                currentLevelExp: 5
+            },
+        isEnergyOverflow: state.energy > state.dailyEnergy,
+        rewardsCenterVisited: state.userSettingsInfo.some(s => s.name === UserSettingEnum.FLAG_ICON_REWARD && s.value === '1'),
+        forumVisited: state.userSettingsInfo.some(s => s.name === UserSettingEnum.FLAG_ICON_FORUM && s.value === '1'),
+        tagNoticeVisited: state.userSettingsInfo.some(s => s.name === UserSettingEnum.FLAG_TAG_NOTICE && s.value === '1'),
+        flagUserFirstPublishGallery: state.userSettingsInfo.some(s => s.name === UserSettingEnum.FLAG_USET_FIRST_PUBLISH_GALLERY && s.value === '1'),
+        flagUserFirstVisitGallery: state.userSettingsInfo.some(s => s.name === UserSettingEnum.FLAG_USET_FIRST_VISIT_GALLERY && s.value === '1'),
+        modelConfigClicked: state.userSettingsInfo.some(s => s.name === UserSettingEnum.FLAG_LLM_MODEL_CONFIG),
+        nsfwConfirmed: state.userSettingsInfo.some(s => s.name === UserSettingEnum.FLAG_NSFW_CONFIRMED && s.value === '1'),
+        blockChainGuruTaskOnceCompleted: state.userSettingsInfo.some(s => s.name === UserSettingEnum.FLAG_COMPLETED_OPBNB_CHAIN_TASK && s.value === '1'),
+        silentPeriodConfirmed: state.userSettingsInfo.find(s => s.name === UserSettingEnum.FLAG_SILENT_PERIOD_CONFIRMED)
+            ? state.userSettingsInfo.some(s => { var _a; return s.name === UserSettingEnum.FLAG_SILENT_PERIOD_CONFIRMED && s.value !== ((_a = useTaskStore.getState().seasons) === null || _a === void 0 ? void 0 : _a[1].id); })
+            : null,
+        deductionConfirmed: state.userSettingsInfo.find(({ name }) => name === 'flagDeductionConfirmed')
+            ? state.userSettingsInfo.some(s => {
+                var _a;
+                return s.name === UserSettingEnum.DEDUCTION_CONFIRMED && s.value !== ((_a = useTaskStore.getState().seasons) === null || _a === void 0 ? void 0 : _a[1].id);
+            })
+            : null,
+        subscribingEarnViewed: state.userSettingsInfo.some(s => s.name === UserSettingEnum.FLAG_stake_earn_VIEWED && s.value === '1'),
+        nsfwSwitch: state.nsfwSwitch,
+        timezone: (_c = state.userSettingsInfo.find(s => s.name === UserSettingEnum.TIME_ZONE)) === null || _c === void 0 ? void 0 : _c.value,
+        notification: ((_d = state.userSettingsInfo.find(s => s.name === UserSettingEnum.NOTIFICATION)) === null || _d === void 0 ? void 0 : _d.value) === '1'
+    });
+};
+const createUserStore = (initState) => {
+    const createUserSlice = set => {
+        return Object.assign(Object.assign(Object.assign({}, DEFAULT_STATE$7), initState), { setUser(user) {
+                set({ user }, false, 'setUser');
+            },
+            setUserInviteCode(inviteCode) {
+                set({ inviteCode }, false, 'setUserInviteCode');
+            },
+            setInvitationCount(invitationCount) {
+                set({ invitationCount }, false, 'setInvitationCount');
+            },
+            setValidInvitationCount(validInvitationCount) {
+                set({ validInvitationCount }, false, 'setValidInvitationCount');
+            },
+            setTgValidInvitationCount(tgValidInvitationCount) {
+                set({ tgValidInvitationCount }, false, 'setTgValidInvitationCount');
+            },
+            setInviteLink(inviteLink) {
+                set({ inviteLink }, false, 'setInviteLink');
+            },
+            setEnergyInfo(data) {
+                set(state => {
+                    state.energy = data.energy;
+                    state.dailyEnergy = data.dailyEnergy || state.dailyEnergy;
+                    state.retriveEnergySuccess = true;
+                }, false, 'setEnergyInfo');
+            },
+            setTgInfo(tgInfo) {
+                set({ tgInfo }, false, 'setTgInfo');
+            },
+            setConnectedAccounts(connectedAccounts) {
+                set({ connectedAccounts }, false, 'setConnectedAccounts');
+            },
+            setUserSettingsInfo(userSettingsInfo) {
+                set({ userSettingsInfo }, false, 'setUserSettingsInfo');
+            },
+            clearUser() {
+                set(DEFAULT_STATE$7, false, 'clearUser');
+            },
+            setShowNsfw(showNsfw) {
+                set({ showNsfw }, false, 'setShowNsfw');
+            },
+            setShellCoins(coins) {
+                set(state => {
+                    state.shellCoins = coins;
+                }, false, 'setShellCoins');
+            },
+            setFrozenShellCoins(coins) {
+                set(state => {
+                    state.frozenShellCoins = coins;
+                }, false, 'setFrozenShellCoins');
+            },
+            setLoginMethod(method) {
+                set({ loginMethod: method }, false, 'setLoginMethod');
+            },
+            setIsLogin(isLogin) {
+                set({ isLogin }, false, 'setIsLogin');
+            },
+            setLoginTimestamp(timestamp) {
+                set({ loginTimestamp: timestamp }, false, 'setLoginTimestamp');
+            },
+            setLanguage(language) {
+                set({ language }, false, 'setLanguage');
+            },
+            setLoginPopVisible(visible) {
+                set({ loginPopVisible: visible }, false, 'setLoginPopVisible');
+            } });
+    };
+    return zustand.createStore()(computed__default.default(immer(devtools(createUserSlice, { store: 'user' })), computeState$4));
+};
 
 (undefined && undefined.__rest) || function (s, e) {
     var t = {};
@@ -3900,7 +4087,7 @@ function mediaFileMetadata(params) {
 }
 
 immer$1.enableMapSet();
-const DEFAULT_STATE$5 = {
+const DEFAULT_STATE$6 = {
     inputType: 'text',
     lastInputType: 'text',
     multiBotMap: {},
@@ -3916,7 +4103,7 @@ const DEFAULT_STATE$5 = {
     hasUnRead: false
 };
 const createChatSlice = (set, get) => {
-    return Object.assign(Object.assign({}, DEFAULT_STATE$5), { multiBotMap: {}, setInputType(type) {
+    return Object.assign(Object.assign({}, DEFAULT_STATE$6), { multiBotMap: {}, setInputType(type) {
             set(state => {
                 const t1 = ['audio', 'text'];
                 const t2 = ['share', 'delete', 'publish'];
@@ -4016,7 +4203,7 @@ const useChatStore = zustand.create()(immer(devtools((...a) => (Object.assign({}
     audioSpeed: AudioSpeedValue2KeyMap[1]
 });
 immer$1.enableMapSet();
-const DEFAULT_STATE$4 = {
+const DEFAULT_STATE$5 = {
     updatingBotList: false,
     botList: [],
     botLastMessageMap: new Map(),
@@ -4049,7 +4236,7 @@ const initIsFromLandingPage = () => {
     return false;
 };
 const createBotSlice = set => {
-    return Object.assign(Object.assign({}, DEFAULT_STATE$4), { isFromLandingPage: initIsFromLandingPage(), setUpdatingBotList(val) {
+    return Object.assign(Object.assign({}, DEFAULT_STATE$5), { isFromLandingPage: initIsFromLandingPage(), setUpdatingBotList(val) {
             set({ updatingBotList: val }, false, 'setUpdatingBotList');
         },
         setBotList(bots) {
@@ -4101,7 +4288,7 @@ const createBotSlice = set => {
             }, false, 'setBotLastMessage');
         },
         reset() {
-            set(DEFAULT_STATE$4, false, 'reset');
+            set(DEFAULT_STATE$5, false, 'reset');
         },
         setKolInfo(info) {
             set({ kolInfo: info }, false, 'setKolInfo');
@@ -4508,8 +4695,8 @@ const limitQueue = (concurrency) => {
 };
 
 immer$1.enableMapSet();
-const fileQueue = limitQueue(1);
-const DEFAULT_STATE$3 = {
+const fileQueue$1 = limitQueue(1);
+const DEFAULT_STATE$4 = {
     languageList: [],
     ttsList: [],
     noCodeCheckPassed: false,
@@ -4561,7 +4748,7 @@ const DEFAULT_STATE$3 = {
     }
 };
 const createWorkshopSlice = (set, get) => {
-    return Object.assign(Object.assign({}, DEFAULT_STATE$3), { setNoCodeCheckPassed(noCodeCheckPassed) {
+    return Object.assign(Object.assign({}, DEFAULT_STATE$4), { setNoCodeCheckPassed(noCodeCheckPassed) {
             set({ noCodeCheckPassed }, false, 'setNoCodeCheckPassed');
         },
         setRecommend(recommend) {
@@ -4667,7 +4854,7 @@ const createWorkshopSlice = (set, get) => {
                 }
             });
             for (const file of files) {
-                fileQueue(async () => {
+                fileQueue$1(async () => {
                     const { deletedList } = get().fileUpload;
                     if (deletedList.includes(file.id)) {
                         set(state => {
@@ -4711,7 +4898,7 @@ const createWorkshopSlice = (set, get) => {
                         return;
                     }
                     set(state => {
-                        if (fileQueue.pendingCount === 0) {
+                        if (fileQueue$1.pendingCount === 0) {
                             state.fileUpload.uploading = null;
                         }
                         const { deletedList } = state.fileUpload;
@@ -4803,7 +4990,7 @@ const computeState$2 = (state) => ({
 });
 zustand.create()(computed__default.default(immer(devtools(createWorkshopSlice, { store: 'workshop' })), computeState$2));
 
-const DEFAULT_STATE$2 = {
+const DEFAULT_STATE$3 = {
     searchList: [],
     tagFilters: { tagList: [], sortList: [] },
     postFullView: undefined,
@@ -4816,7 +5003,7 @@ const DEFAULT_STATE$2 = {
 const computeState$1 = (state) => ({
     history: []
 });
-zustand.create()(computed__default.default((set, get) => (Object.assign(Object.assign({}, DEFAULT_STATE$2), { setSearchList: (searchList) => {
+zustand.create()(computed__default.default((set, get) => (Object.assign(Object.assign({}, DEFAULT_STATE$3), { setSearchList: (searchList) => {
         set({ searchList });
     }, setTagFilters: (tagFilters) => {
         set({ tagFilters });
@@ -4831,6 +5018,18 @@ zustand.create()(computed__default.default((set, get) => (Object.assign(Object.a
     } })), computeState$1));
 
 const GlobalStoreContext = React.createContext(undefined);
+const GlobalStoreProvider = ({ children, nonce, isMobile }) => {
+    const storeRef = React.useRef();
+    const isMobileDevice = reactUse.useMedia('(max-width: 768px)', isMobile);
+    if (!storeRef.current) {
+        storeRef.current = createGlobalStore({ nonce, isMobile: isMobileDevice });
+    }
+    React.useEffect(() => {
+        var _a;
+        (_a = storeRef.current) === null || _a === void 0 ? void 0 : _a.getState().setIsMobile(isMobileDevice);
+    }, [isMobileDevice]);
+    return jsxRuntime.jsx(GlobalStoreContext.Provider, { value: storeRef.current, children: children });
+};
 const useGlobalStore = (selector) => {
     const globalStoreContext = React.useContext(GlobalStoreContext);
     if (!globalStoreContext) {
@@ -4839,7 +5038,7 @@ const useGlobalStore = (selector) => {
     return zustand.useStore(globalStoreContext, selector);
 };
 
-var __rest$v = (undefined && undefined.__rest) || function (s, e) {
+var __rest$w = (undefined && undefined.__rest) || function (s, e) {
     var t = {};
     for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p) && e.indexOf(p) < 0)
         t[p] = s[p];
@@ -4853,7 +5052,7 @@ var __rest$v = (undefined && undefined.__rest) || function (s, e) {
 const PopoverRoot = PopoverPrimitive__namespace.Root;
 const PopoverTrigger = PopoverPrimitive__namespace.Trigger;
 const PopoverContent = React__namespace.forwardRef((_a, ref) => {
-    var { className, align = 'center', variant = 'default', side = 'top', sideOffset = 4, alignOffset = 0, showArrow = true, children, container } = _a, props = __rest$v(_a, ["className", "align", "variant", "side", "sideOffset", "alignOffset", "showArrow", "children", "container"]);
+    var { className, align = 'center', variant = 'default', side = 'top', sideOffset = 4, alignOffset = 0, showArrow = true, children, container } = _a, props = __rest$w(_a, ["className", "align", "variant", "side", "sideOffset", "alignOffset", "showArrow", "children", "container"]);
     return (jsxRuntime.jsx(PopoverPrimitive__namespace.Portal, { container: container, children: jsxRuntime.jsxs(PopoverPrimitive__namespace.Content, Object.assign({ ref: ref, align: align, alignOffset: alignOffset, sideOffset: sideOffset, side: side, forceMount: true, className: cn('relative z-[49] w-fit max-w-72 text-xs mx-4 p-3 text-left rounded-lg border border-opaque shadow-modal-default outline-none data-[state=open]:animate-in [&[data-state=open]>span]:animate-none data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2', variant === 'default'
                 ? 'bg-surface-search-field text-subtle'
                 : variant === 'info'
@@ -4866,7 +5065,7 @@ const PopoverContent = React__namespace.forwardRef((_a, ref) => {
 });
 PopoverContent.displayName = PopoverPrimitive__namespace.Content.displayName;
 const Popover = (_a) => {
-    var { disabled = false, open, content, anchor, children, className, triggerClassName, hasOpenState = false, isMTooltip = false, modal = false, openChangeCallback } = _a, props = __rest$v(_a, ["disabled", "open", "content", "anchor", "children", "className", "triggerClassName", "hasOpenState", "isMTooltip", "modal", "openChangeCallback"]);
+    var { disabled = false, open, content, anchor, children, className, triggerClassName, hasOpenState = false, isMTooltip = false, modal = false, openChangeCallback } = _a, props = __rest$w(_a, ["disabled", "open", "content", "anchor", "children", "className", "triggerClassName", "hasOpenState", "isMTooltip", "modal", "openChangeCallback"]);
     return (jsxRuntime.jsxs(PopoverRoot, Object.assign({ open: disabled ? false : open, modal: modal, onOpenChange: openChangeCallback }, props, { children: [anchor, content && (jsxRuntime.jsxs(jsxRuntime.Fragment, { children: [jsxRuntime.jsx("div", { className: cn('inline-flex items-center justify-center', hasOpenState && 'data-[state=open]:bg-surface-hovered', triggerClassName), onClick: e => {
                             if (isMTooltip) {
                                 e.preventDefault();
@@ -4875,7 +5074,7 @@ const Popover = (_a) => {
                         }, children: jsxRuntime.jsx(PopoverTrigger, { asChild: true, children: jsxRuntime.jsx("div", { className: cn('inline-flex items-center justify-center', hasOpenState && 'data-[state=open]:bg-surface-hovered', triggerClassName), children: children }) }) }), jsxRuntime.jsx(PopoverContent, Object.assign({}, props, { className: cn('w-fit max-w-[324px]', className), onCloseAutoFocus: e => e.preventDefault(), children: content }))] })), !content && children] })));
 };
 
-var __rest$u = (undefined && undefined.__rest) || function (s, e) {
+var __rest$v = (undefined && undefined.__rest) || function (s, e) {
     var t = {};
     for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p) && e.indexOf(p) < 0)
         t[p] = s[p];
@@ -5050,13 +5249,13 @@ const dangerouText = (text) => {
     });
 };
 const Heading = React__namespace.forwardRef((props, ref) => {
-    const { className, size, color, lineClamp, children, dangerous } = props, passProps = __rest$u(props, ["className", "size", "color", "lineClamp", "children", "dangerous"]);
+    const { className, size, color, lineClamp, children, dangerous } = props, passProps = __rest$v(props, ["className", "size", "color", "lineClamp", "children", "dangerous"]);
     const Comp = HComponentMap[size || 'h1'];
     const text = dangerous && dangerouText(`${children}`);
     return (jsxRuntime.jsx(Comp, Object.assign({ ref: ref, className: cn(headingVariants({ size, color, lineClamp }), className) }, passProps, (dangerous && { dangerouslySetInnerHTML: { __html: `${text}` } }), { children: !dangerous ? children : null })));
 });
 const Display$1 = React__namespace.forwardRef((props, ref) => {
-    const { className, size, color, lineClamp, underline, strikethrough, strong, italic, children, dangerous } = props, passProps = __rest$u(props, ["className", "size", "color", "lineClamp", "underline", "strikethrough", "strong", "italic", "children", "dangerous"]);
+    const { className, size, color, lineClamp, underline, strikethrough, strong, italic, children, dangerous } = props, passProps = __rest$v(props, ["className", "size", "color", "lineClamp", "underline", "strikethrough", "strong", "italic", "children", "dangerous"]);
     const Comp = renderBlock({
         underline,
         strikethrough,
@@ -5067,11 +5266,11 @@ const Display$1 = React__namespace.forwardRef((props, ref) => {
     return (jsxRuntime.jsx(Comp, Object.assign({ ref: ref, className: cn(displayVariants({ size, color, lineClamp }), className) }, lodashEs.omit(passProps, 'lineClamp'), (dangerous && { dangerouslySetInnerHTML: { __html: `${text}` } }), { children: !dangerous ? children : null })));
 });
 React__namespace.forwardRef((props, ref) => {
-    const { className, size, color, children, lineClamp } = props, passProps = __rest$u(props, ["className", "size", "color", "children", "lineClamp"]);
+    const { className, size, color, children, lineClamp } = props, passProps = __rest$v(props, ["className", "size", "color", "children", "lineClamp"]);
     return (jsxRuntime.jsx("p", Object.assign({ ref: ref, className: cn(subHeadingVariants({ size, color, lineClamp }), className) }, passProps, { children: children })));
 });
 const Text = React__namespace.forwardRef((props, ref) => {
-    const { className, size, weight, color, lineClamp, underline, strikethrough, strong, italic, children, dangerous } = props, passProps = __rest$u(props, ["className", "size", "weight", "color", "lineClamp", "underline", "strikethrough", "strong", "italic", "children", "dangerous"]);
+    const { className, size, weight, color, lineClamp, underline, strikethrough, strong, italic, children, dangerous } = props, passProps = __rest$v(props, ["className", "size", "weight", "color", "lineClamp", "underline", "strikethrough", "strong", "italic", "children", "dangerous"]);
     const Comp = renderBlock({
         underline,
         strikethrough,
@@ -5082,7 +5281,7 @@ const Text = React__namespace.forwardRef((props, ref) => {
     return (jsxRuntime.jsx(Comp, Object.assign({ ref: ref, className: cn(textVariants({ size, weight, color, lineClamp }), className) }, lodashEs.omit(passProps, 'lineClamp'), (dangerous && { dangerouslySetInnerHTML: { __html: `${text}` } }), { children: !dangerous ? children : null })));
 });
 React__namespace.forwardRef((props, ref) => {
-    const { className, size, weight, color, lineClamp, underline, strikethrough, strong, italic, children, dangerous } = props, passProps = __rest$u(props, ["className", "size", "weight", "color", "lineClamp", "underline", "strikethrough", "strong", "italic", "children", "dangerous"]);
+    const { className, size, weight, color, lineClamp, underline, strikethrough, strong, italic, children, dangerous } = props, passProps = __rest$v(props, ["className", "size", "weight", "color", "lineClamp", "underline", "strikethrough", "strong", "italic", "children", "dangerous"]);
     const Comp = renderBlock({
         underline,
         strikethrough,
@@ -5093,7 +5292,7 @@ React__namespace.forwardRef((props, ref) => {
     return (jsxRuntime.jsx(Comp, Object.assign({ ref: ref, className: cn(textVariants({ size, weight, color, lineClamp }), className) }, passProps, (dangerous && { dangerouslySetInnerHTML: { __html: `${text}` } }), { children: !dangerous ? children : null })));
 });
 const Description$1 = React__namespace.forwardRef((props, ref) => {
-    const { className, size, weight, color, lineClamp, underline, strikethrough, strong, italic, children, dangerous } = props, passProps = __rest$u(props, ["className", "size", "weight", "color", "lineClamp", "underline", "strikethrough", "strong", "italic", "children", "dangerous"]);
+    const { className, size, weight, color, lineClamp, underline, strikethrough, strong, italic, children, dangerous } = props, passProps = __rest$v(props, ["className", "size", "weight", "color", "lineClamp", "underline", "strikethrough", "strong", "italic", "children", "dangerous"]);
     const Comp = renderBlock({
         underline,
         strikethrough,
@@ -5104,7 +5303,7 @@ const Description$1 = React__namespace.forwardRef((props, ref) => {
     return (jsxRuntime.jsx(Comp, Object.assign({ ref: ref, className: cn(descriptionVariants({ size, weight, color, lineClamp }), className) }, lodashEs.omit(passProps, 'lineClamp'), (dangerous && { dangerouslySetInnerHTML: { __html: `${text}` } }), { children: !dangerous ? children : null })));
 });
 
-var __rest$t = (undefined && undefined.__rest) || function (s, e) {
+var __rest$u = (undefined && undefined.__rest) || function (s, e) {
     var t = {};
     for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p) && e.indexOf(p) < 0)
         t[p] = s[p];
@@ -5119,7 +5318,7 @@ const TooltipProvider = TooltipPrimitive__namespace.Provider;
 const TooltipTrigger = TooltipPrimitive__namespace.Trigger;
 const TooltipArrow = TooltipPrimitive__namespace.Arrow;
 const Tooltip = React__namespace.forwardRef((_a, ref) => {
-    var { open, defaultOpen, disabled = false, children, title, description, size = 'sm', titleDangerous = false, descriptionDangerous = false, contentClassName, triggerClassName } = _a, props = __rest$t(_a, ["open", "defaultOpen", "disabled", "children", "title", "description", "size", "titleDangerous", "descriptionDangerous", "contentClassName", "triggerClassName"]);
+    var { open, defaultOpen, disabled = false, children, title, description, size = 'sm', titleDangerous = false, descriptionDangerous = false, contentClassName, triggerClassName } = _a, props = __rest$u(_a, ["open", "defaultOpen", "disabled", "children", "title", "description", "size", "titleDangerous", "descriptionDangerous", "contentClassName", "triggerClassName"]);
     const isDesktop = !useGlobalStore(state => state.isMobile);
     const defaultTitleColor = props.variant === 'message' ? 'static' : props.variant === 'default' ? 'warning-bolder' : 'default';
     const defaultDescColor = props.variant === 'message' ? 'static' : props.variant === 'info' ? 'warning-bolder' : 'default';
@@ -5127,7 +5326,7 @@ const Tooltip = React__namespace.forwardRef((_a, ref) => {
 });
 Tooltip.displayName = TooltipPrimitive__namespace.Root.displayName;
 const TooltipContent = React__namespace.forwardRef((_a, ref) => {
-    var { className, variant = 'default', align = 'center', side = 'top', sideOffset = 4, alignOffset = 0, showArrow = true, arrowClassName } = _a, props = __rest$t(_a, ["className", "variant", "align", "side", "sideOffset", "alignOffset", "showArrow", "arrowClassName"]);
+    var { className, variant = 'default', align = 'center', side = 'top', sideOffset = 4, alignOffset = 0, showArrow = true, arrowClassName } = _a, props = __rest$u(_a, ["className", "variant", "align", "side", "sideOffset", "alignOffset", "showArrow", "arrowClassName"]);
     return (jsxRuntime.jsxs(TooltipPrimitive__namespace.Content, Object.assign({ ref: ref, align: align, sideOffset: sideOffset, alignOffset: alignOffset, side: side, className: cn('relative z-[49] w-fit max-w-72 text-xs mx-4 px-3 py-2 text-left rounded-lg shadow-modal-bolder ', 'outline-none delay-0 data-[state=open]:animate-in [&[data-state=open]>span]:animate-none data-[state=open]:fade-in-0 ', 'data-[state=delayed-open]:animate-in [&[data-state=delayed-open]>span]:animate-none data-[state=delayed-open]:fade-in-0 ', 'data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 ', 'data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2', variant === 'default'
             ? 'bg-alpha-100 text-default'
             : variant === 'info'
@@ -5140,7 +5339,7 @@ const TooltipContent = React__namespace.forwardRef((_a, ref) => {
 });
 TooltipContent.displayName = TooltipPrimitive__namespace.Content.displayName;
 
-var __rest$s = (undefined && undefined.__rest) || function (s, e) {
+var __rest$t = (undefined && undefined.__rest) || function (s, e) {
     var t = {};
     for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p) && e.indexOf(p) < 0)
         t[p] = s[p];
@@ -5258,7 +5457,7 @@ const iconButtonVariants = classVarianceAuthority.cva('shrink-0 inline-flex item
     }
 });
 const IconButton = React__namespace.forwardRef((_a, ref) => {
-    var { className, variant, size, color, asChild = false, loading = false, children, icon: IconEle, disabled, hoverText } = _a, passProps = __rest$s(_a, ["className", "variant", "size", "color", "asChild", "loading", "children", "icon", "disabled", "hoverText"]);
+    var { className, variant, size, color, asChild = false, loading = false, children, icon: IconEle, disabled, hoverText } = _a, passProps = __rest$t(_a, ["className", "variant", "size", "color", "asChild", "loading", "children", "icon", "disabled", "hoverText"]);
     const Comp = asChild ? reactSlot.Slot : 'button';
     const iconCls = cn({
         'w-3 h-3': size === 'xs',
@@ -5625,7 +5824,7 @@ function removeLinks(items) {
   return items.filter((item) => item.tagName !== "A");
 }
 
-var __rest$r = (undefined && undefined.__rest) || function (s, e) {
+var __rest$s = (undefined && undefined.__rest) || function (s, e) {
     var t = {};
     for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p) && e.indexOf(p) < 0)
         t[p] = s[p];
@@ -5678,13 +5877,13 @@ const iconVariants$1 = classVarianceAuthority.cva('inline-flex shrink-0', {
     }
 });
 const Icon = React__namespace.forwardRef((props, ref) => {
-    const { children, component, size, color, rotate, className } = props, passProps = __rest$r(props, ["children", "component", "size", "color", "rotate", "className"]);
+    const { children, component, size, color, rotate, className } = props, passProps = __rest$s(props, ["children", "component", "size", "color", "rotate", "className"]);
     const Com = component || 'span';
     return (jsxRuntime.jsx(Com, Object.assign({ ref: ref }, passProps, { className: cn(iconVariants$1({ size, color, rotate }), className), children: children })));
 });
 Icon.displayName = 'Icon';
 
-var __rest$q = (undefined && undefined.__rest) || function (s, e) {
+var __rest$r = (undefined && undefined.__rest) || function (s, e) {
     var t = {};
     for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p) && e.indexOf(p) < 0)
         t[p] = s[p];
@@ -5720,12 +5919,12 @@ const imageVariants = classVarianceAuthority.cva('', {
     }
 });
 function Image$3(_a) {
-    var { className, imgClassName, placeholder = true, width = '100%', height = '100%', src, rounded = 'none', fallback = '', object = 'cover', isBackgroud = false } = _a, otherProps = __rest$q(_a, ["className", "imgClassName", "placeholder", "width", "height", "src", "rounded", "fallback", "object", "isBackgroud"]);
+    var { className, imgClassName, placeholder = true, width = '100%', height = '100%', src, rounded = 'none', fallback = '', object = 'cover', isBackgroud = false } = _a, otherProps = __rest$r(_a, ["className", "imgClassName", "placeholder", "width", "height", "src", "rounded", "fallback", "object", "isBackgroud"]);
     return (jsxRuntime.jsx(RCImage__default.default, Object.assign({ placeholder: placeholder, width: width, height: height, src: src, fallback: fallback ||
             'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAMIAAADDCAYAAADQvc6UAAABRWlDQ1BJQ0MgUHJvZmlsZQAAKJFjYGASSSwoyGFhYGDIzSspCnJ3UoiIjFJgf8LAwSDCIMogwMCcmFxc4BgQ4ANUwgCjUcG3awyMIPqyLsis7PPOq3QdDFcvjV3jOD1boQVTPQrgSkktTgbSf4A4LbmgqISBgTEFyFYuLykAsTuAbJEioKOA7DkgdjqEvQHEToKwj4DVhAQ5A9k3gGyB5IxEoBmML4BsnSQk8XQkNtReEOBxcfXxUQg1Mjc0dyHgXNJBSWpFCYh2zi+oLMpMzyhRcASGUqqCZ16yno6CkYGRAQMDKMwhqj/fAIcloxgHQqxAjIHBEugw5sUIsSQpBobtQPdLciLEVJYzMPBHMDBsayhILEqEO4DxG0txmrERhM29nYGBddr//5/DGRjYNRkY/l7////39v///y4Dmn+LgeHANwDrkl1AuO+pmgAAADhlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAAqACAAQAAAABAAAAwqADAAQAAAABAAAAwwAAAAD9b/HnAAAHlklEQVR4Ae3dP3PTWBSGcbGzM6GCKqlIBRV0dHRJFarQ0eUT8LH4BnRU0NHR0UEFVdIlFRV7TzRksomPY8uykTk/zewQfKw/9znv4yvJynLv4uLiV2dBoDiBf4qP3/ARuCRABEFAoBEgghggQAQZQKAnYEaQBAQaASKIAQJEkAEEegJmBElAoBEgghggQAQZQKAnYEaQBAQaASKIAQJEkAEEegJmBElAoBEgghggQAQZQKAnYEaQBAQaASKIAQJEkAEEegJmBElAoBEgghggQAQZQKAnYEaQBAQaASKIAQJEkAEEegJmBElAoBEgghggQAQZQKAnYEaQBAQaASKIAQJEkAEEegJmBElAoBEgghggQAQZQKAnYEaQBAQaASKIAQJEkAEEegJmBElAoBEgghggQAQZQKAnYEaQBAQaASKIAQJEkAEEegJmBElAoBEgghggQAQZQKAnYEaQBAQaASKIAQJEkAEEegJmBElAoBEgghggQAQZQKAnYEaQBAQaASKIAQJEkAEEegJmBElAoBEgghggQAQZQKAnYEaQBAQaASKIAQJEkAEEegJmBElAoBEgghggQAQZQKAnYEaQBAQaASKIAQJEkAEEegJmBElAoBEgghggQAQZQKAnYEaQBAQaASKIAQJEkAEEegJmBElAoBEgghgg0Aj8i0JO4OzsrPv69Wv+hi2qPHr0qNvf39+iI97soRIh4f3z58/u7du3SXX7Xt7Z2enevHmzfQe+oSN2apSAPj09TSrb+XKI/f379+08+A0cNRE2ANkupk+ACNPvkSPcAAEibACyXUyfABGm3yNHuAECRNgAZLuYPgEirKlHu7u7XdyytGwHAd8jjNyng4OD7vnz51dbPT8/7z58+NB9+/bt6jU/TI+AGWHEnrx48eJ/EsSmHzx40L18+fLyzxF3ZVMjEyDCiEDjMYZZS5wiPXnyZFbJaxMhQIQRGzHvWR7XCyOCXsOmiDAi1HmPMMQjDpbpEiDCiL358eNHurW/5SnWdIBbXiDCiA38/Pnzrce2YyZ4//59F3ePLNMl4PbpiL2J0L979+7yDtHDhw8vtzzvdGnEXdvUigSIsCLAWavHp/+qM0BcXMd/q25n1vF57TYBp0a3mUzilePj4+7k5KSLb6gt6ydAhPUzXnoPR0dHl79WGTNCfBnn1uvSCJdegQhLI1vvCk+fPu2ePXt2tZOYEV6/fn31dz+shwAR1sP1cqvLntbEN9MxA9xcYjsxS1jWR4AIa2Ibzx0tc44fYX/16lV6NDFLXH+YL32jwiACRBiEbf5KcXoTIsQSpzXx4N28Ja4BQoK7rgXiydbHjx/P25TaQAJEGAguWy0+2Q8PD6/Ki4R8EVl+bzBOnZY95fq9rj9zAkTI2SxdidBHqG9+skdw43borCXO/ZcJdraPWdv22uIEiLA4q7nvvCug8WTqzQveOH26fodo7g6uFe/a17W3+nFBAkRYENRdb1vkkz1CH9cPsVy/jrhr27PqMYvENYNlHAIesRiBYwRy0V+8iXP8+/fvX11Mr7L7ECueb/r48eMqm7FuI2BGWDEG8cm+7G3NEOfmdcTQw4h9/55lhm7DekRYKQPZF2ArbXTAyu4kDYB2YxUzwg0gi/41ztHnfQG26HbGel/crVrm7tNY+/1btkOEAZ2M05r4FB7r9GbAIdxaZYrHdOsgJ/wCEQY0J74TmOKnbxxT9n3FgGGWWsVdowHtjt9Nnvf7yQM2aZU/TIAIAxrw6dOnAWtZZcoEnBpNuTuObWMEiLAx1HY0ZQJEmHJ3HNvGCBBhY6jtaMoEiJB0Z29vL6ls58vxPcO8/zfrdo5qvKO+d3Fx8Wu8zf1dW4p/cPzLly/dtv9Ts/EbcvGAHhHyfBIhZ6NSiIBTo0LNNtScABFyNiqFCBChULMNNSdAhJyNSiECRCjUbEPNCRAhZ6NSiAARCjXbUHMCRMjZqBQiQIRCzTbUnAARcjYqhQgQoVCzDTUnQIScjUohAkQo1GxDzQkQIWejUogAEQo121BzAkTI2agUIkCEQs021JwAEXI2KoUIEKFQsw01J0CEnI1KIQJEKNRsQ80JECFno1KIABEKNdtQcwJEyNmoFCJAhELNNtScABFyNiqFCBChULMNNSdAhJyNSiECRCjUbEPNCRAhZ6NSiAARCjXbUHMCRMjZqBQiQIRCzTbUnAARcjYqhQgQoVCzDTUnQIScjUohAkQo1GxDzQkQIWejUogAEQo121BzAkTI2agUIkCEQs021JwAEXI2KoUIEKFQsw01J0CEnI1KIQJEKNRsQ80JECFno1KIABEKNdtQcwJEyNmoFCJAhELNNtScABFyNiqFCBChULMNNSdAhJyNSiECRCjUbEPNCRAhZ6NSiAARCjXbUHMCRMjZqBQiQIRCzTbUnAARcjYqhQgQoVCzDTUnQIScjUohAkQo1GxDzQkQIWejUogAEQo121BzAkTI2agUIkCEQs021JwAEXI2KoUIEKFQsw01J0CEnI1KIQJEKNRsQ80JECFno1KIABEKNdtQcwJEyNmoFCJAhELNNtScABFyNiqFCBChULMNNSdAhJyNSiEC/wGgKKC4YMA4TAAAAABJRU5ErkJggg==', preview: false, rootClassName: cn(imageVariants({ rounded, object }), isBackgroud && 'absolute top-0 left-0 z-0 w-full h-full object-cover', className), className: imgClassName }, otherProps)));
 }
 
-var __rest$p = (undefined && undefined.__rest) || function (s, e) {
+var __rest$q = (undefined && undefined.__rest) || function (s, e) {
     var t = {};
     for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p) && e.indexOf(p) < 0)
         t[p] = s[p];
@@ -5737,12 +5936,12 @@ var __rest$p = (undefined && undefined.__rest) || function (s, e) {
     return t;
 };
 const Separator = React__namespace.forwardRef((_a, ref) => {
-    var { className, orientation = 'horizontal', decorative = true } = _a, props = __rest$p(_a, ["className", "orientation", "decorative"]);
+    var { className, orientation = 'horizontal', decorative = true } = _a, props = __rest$q(_a, ["className", "orientation", "decorative"]);
     return (jsxRuntime.jsx(SeparatorPrimitive__namespace.Root, Object.assign({ ref: ref, decorative: decorative, orientation: orientation, className: cn('shrink-0 border-default', orientation === 'horizontal' ? 'border-b w-full ' : 'h-full  border-r', className) }, props)));
 });
 Separator.displayName = SeparatorPrimitive__namespace.Root.displayName;
 
-var __rest$o = (undefined && undefined.__rest) || function (s, e) {
+var __rest$p = (undefined && undefined.__rest) || function (s, e) {
     var t = {};
     for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p) && e.indexOf(p) < 0)
         t[p] = s[p];
@@ -6035,7 +6234,7 @@ const iconVariants = classVarianceAuthority.cva('relative shrink-0 text-inherit 
     }
 });
 const Button$1 = React__namespace.forwardRef((_a, ref) => {
-    var { className = '', iconClassName, variant, color = 'brand', icon, iconDirection = 'left', size, asChild = false, loading = false, noStyle = false, iconOutBox = false, isBlock = false, disabled, children, autoFocus, asset, assetNumber = 0 } = _a, props = __rest$o(_a, ["className", "iconClassName", "variant", "color", "icon", "iconDirection", "size", "asChild", "loading", "noStyle", "iconOutBox", "isBlock", "disabled", "children", "autoFocus", "asset", "assetNumber"]);
+    var { className = '', iconClassName, variant, color = 'brand', icon, iconDirection = 'left', size, asChild = false, loading = false, noStyle = false, iconOutBox = false, isBlock = false, disabled, children, autoFocus, asset, assetNumber = 0 } = _a, props = __rest$p(_a, ["className", "iconClassName", "variant", "color", "icon", "iconDirection", "size", "asChild", "loading", "noStyle", "iconOutBox", "isBlock", "disabled", "children", "autoFocus", "asset", "assetNumber"]);
     const Comp = asChild ? reactSlot.Slot : 'button';
     const disable = disabled || loading;
     return (jsxRuntime.jsxs(Comp, Object.assign({ className: noStyle
@@ -6071,7 +6270,7 @@ const renderIcon = (icon, direction, { loading, noStyle, iconClassName, variant 
                 : 'ml-1.5', iconClassName, loading ? 'opacity-0' : 'opacity-100') }));
 Button$1.displayName = 'Button';
 
-var __rest$n = (undefined && undefined.__rest) || function (s, e) {
+var __rest$o = (undefined && undefined.__rest) || function (s, e) {
     var t = {};
     for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p) && e.indexOf(p) < 0)
         t[p] = s[p];
@@ -6083,27 +6282,27 @@ var __rest$n = (undefined && undefined.__rest) || function (s, e) {
     return t;
 };
 const ModalOverlay = React__namespace.forwardRef((_a, ref) => {
-    var { className, onClick } = _a, props = __rest$n(_a, ["className", "onClick"]);
+    var { className, onClick } = _a, props = __rest$o(_a, ["className", "onClick"]);
     return (jsxRuntime.jsx(DialogPrimitive__namespace.Overlay, Object.assign({ ref: ref, className: cn('fixed inset-0 z-50 bg-alpha-mask-desktop data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0', className), onClick: e => {
             onClick && onClick(e);
         } }, props)));
 });
 ModalOverlay.displayName = DialogPrimitive__namespace.Overlay.displayName;
 const DrawerOverlay = React__namespace.forwardRef((_a, ref) => {
-    var { className } = _a, props = __rest$n(_a, ["className"]);
+    var { className } = _a, props = __rest$o(_a, ["className"]);
     return (jsxRuntime.jsx(vaul.Drawer.Overlay, Object.assign({ ref: ref, className: cn('fixed inset-0 z-50 bg-alpha-mask-desktop', className) }, props)));
 });
 DrawerOverlay.displayName = vaul.Drawer.Overlay.displayName;
 const ModalContent = React__namespace.forwardRef((_a, ref) => {
-    var { className, children } = _a, props = __rest$n(_a, ["className", "children"]);
+    var { className, children } = _a, props = __rest$o(_a, ["className", "children"]);
     return (jsxRuntime.jsx(DialogPrimitive__namespace.Content, Object.assign({ className: cn('absolute left-1/2 top-1/2 z-50 -translate-x-1/2 -translate-y-1/2 !touch-auto !select-text', 'duration-200 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[state=closed]:slide-out-to-left-1/2 data-[state=closed]:slide-out-to-top-[48%] data-[state=open]:slide-in-from-left-1/2 data-[state=open]:slide-in-from-top-[48%] focus:outline-none', className) }, props, { children: children })));
 });
 const ModalRoot = (_a) => {
-    var { children } = _a, props = __rest$n(_a, ["children"]);
+    var { children } = _a, props = __rest$o(_a, ["children"]);
     return (jsxRuntime.jsx(DialogPrimitive__namespace.Dialog, Object.assign({}, props, { children: jsxRuntime.jsx(DialogPrimitive__namespace.Portal, { children: children }) })));
 };
 const ModalTitle = React__namespace.forwardRef((_a, ref) => {
-    var { className } = _a, props = __rest$n(_a, ["className"]);
+    var { className } = _a, props = __rest$o(_a, ["className"]);
     const isMobile = useGlobalStore(state => state.isMobile);
     if (isMobile) {
         return (jsxRuntime.jsx(vaul.Drawer.Title, Object.assign({ ref: ref }, props, { className: cn('text-xl text-default font-medium line-clamp-1', className) })));
@@ -6131,7 +6330,7 @@ const modalVariants = classVarianceAuthority.cva('', {
     }
 });
 const Modal = (_a) => {
-    var { title, description, size = 'lg', zIndex = 99, hideClose = false, overlayClose = true, modalOnly = true, contentClassName, overlayClassName, iconClassName, closeClassName, fullScreen = false, focusScopeOptions, isLogin = false, isNotification = false, isHorizontal = false, state, showCancel = true, confirmLoading = false, cancelText, confirmText, children, onClose, onConfirm } = _a, props = __rest$n(_a, ["title", "description", "size", "zIndex", "hideClose", "overlayClose", "modalOnly", "contentClassName", "overlayClassName", "iconClassName", "closeClassName", "fullScreen", "focusScopeOptions", "isLogin", "isNotification", "isHorizontal", "state", "showCancel", "confirmLoading", "cancelText", "confirmText", "children", "onClose", "onConfirm"]);
+    var { title, description, size = 'lg', zIndex = 99, hideClose = false, overlayClose = true, modalOnly = true, contentClassName, overlayClassName, iconClassName, closeClassName, fullScreen = false, focusScopeOptions, isLogin = false, isNotification = false, isHorizontal = false, state, showCancel = true, confirmLoading = false, cancelText, confirmText, children, onClose, onConfirm } = _a, props = __rest$o(_a, ["title", "description", "size", "zIndex", "hideClose", "overlayClose", "modalOnly", "contentClassName", "overlayClassName", "iconClassName", "closeClassName", "fullScreen", "focusScopeOptions", "isLogin", "isNotification", "isHorizontal", "state", "showCancel", "confirmLoading", "cancelText", "confirmText", "children", "onClose", "onConfirm"]);
     const isMobile = useGlobalStore(state => state.isMobile);
     if (isMobile && !modalOnly && !isNotification) {
         const drawerContent = (jsxRuntime.jsxs(vaul.Drawer.Content, { className: cn('fixed inset-x-0 bottom-0 z-50 h-auto overflow-hidden no-scrollbar bg-surface-default shadow-modal-default focus:outline-none', fullScreen ? 'rounded-t-none max-h-full' : 'rounded-t-2xl max-h-[85vh]', contentClassName), children: [title ? (jsxRuntime.jsx(ModalHeader, { children: jsxRuntime.jsx(ModalTitle, { children: title }) })) : null, jsxRuntime.jsx("div", { className: cn(isLogin ? 'overflow-y-scroll' : 'overflow-y-auto', fullScreen
@@ -6181,22 +6380,37 @@ const Modal = (_a) => {
                 }, className: overlayClassName }), focusScopeOptions ? jsxRuntime.jsx(FocusScope, Object.assign({}, focusScopeOptions, { children: dialogContent })) : dialogContent] })));
 };
 function ModalHeader(_a) {
-    var { className, children } = _a, props = __rest$n(_a, ["className", "children"]);
+    var { className, children } = _a, props = __rest$o(_a, ["className", "children"]);
     return (jsxRuntime.jsx("div", Object.assign({ className: cn('border-b border-default flex flex-col py-4 md:py-5 px-4 justify-center', className) }, props, { children: children })));
 }
 ModalHeader.displayName = 'ModalHeader';
 function ModalFooter(_a) {
-    var { className, children } = _a, props = __rest$n(_a, ["className", "children"]);
+    var { className, children } = _a, props = __rest$o(_a, ["className", "children"]);
     return (jsxRuntime.jsx("div", Object.assign({ className: cn('border-t border-default flex justify-end p-4', className) }, props, { children: children })));
 }
 ModalFooter.displayName = 'ModalFooter';
 function ModalBody(_a) {
-    var { className, children } = _a, props = __rest$n(_a, ["className", "children"]);
+    var { className, children } = _a, props = __rest$o(_a, ["className", "children"]);
     return (jsxRuntime.jsx("div", Object.assign({ className: cn('py-3', className) }, props, { children: children })));
 }
 ModalBody.displayName = 'ModalBody';
 
 const UserStoreContext = React.createContext(undefined);
+let store$1;
+const UserStoreProvider = ({ children, user, isLogin, language }) => {
+    const storeRef = React.useRef();
+    if (!storeRef.current) {
+        storeRef.current = createUserStore({
+            user: user || null,
+            isLogin,
+            language
+        });
+        store$1 = storeRef.current;
+    }
+    return (jsxRuntime.jsxs(UserStoreContext.Provider, { value: storeRef.current, children: [children, jsxRuntime.jsx(Script__default.default, { strategy: "afterInteractive", children: `
+          window.$global.userId = '${user === null || user === void 0 ? void 0 : user.id}';
+        ` })] }));
+};
 const useUserStore = (selector) => {
     const userStoreContext = React.useContext(UserStoreContext);
     if (!userStoreContext) {
@@ -6205,7 +6419,7 @@ const useUserStore = (selector) => {
     return zustand.useStore(userStoreContext, selector);
 };
 useUserStore.getState = () => {
-    return void 0 ;
+    return store$1 === null || store$1 === void 0 ? void 0 : store$1.getState();
 };
 
 function useGetEnergyInfo() {
@@ -6267,7 +6481,7 @@ function UseSeasonPassSuccessModal({ isOpen, onClose, rewardInfo, isLoading = fa
                                     }) })] }), jsxRuntime.jsx("div", { className: "aspect-square w-full relative mt-5 rounded-xl overflow-hidden", children: jsxRuntime.jsx("div", { className: "aspect-square h-[358px] md:h-[350px] rounded-xl overflow-hidden relative flex-shrink-0", children: isVideo(getFileExtension((_a = rewardInfo === null || rewardInfo === void 0 ? void 0 : rewardInfo.mediaUrl) !== null && _a !== void 0 ? _a : '')) ? (jsxRuntime.jsx(InlineVideoPlayer, { src: getAssetsUrl(rewardInfo === null || rewardInfo === void 0 ? void 0 : rewardInfo.mediaUrl) })) : (jsxRuntime.jsx(Image$3, { src: getAssetsUrl(rewardInfo === null || rewardInfo === void 0 ? void 0 : rewardInfo.mediaUrl), alt: "img" })) }) }), jsxRuntime.jsx(Text, { size: "lg", weight: "medium", color: "static", className: "mt-2 text-center w-full", children: rewardInfo === null || rewardInfo === void 0 ? void 0 : rewardInfo.name }), jsxRuntime.jsx("div", { className: "w-full mt-5", children: jsxRuntime.jsx(Button$1, { size: "lg", onClick: handleClose, loading: isLoading || querying, isBlock: true, children: t('got_it') }) })] }) })] }));
 }
 
-var __rest$m = (undefined && undefined.__rest) || function (s, e) {
+var __rest$n = (undefined && undefined.__rest) || function (s, e) {
     var t = {};
     for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p) && e.indexOf(p) < 0)
         t[p] = s[p];
@@ -6293,17 +6507,17 @@ const alertVariants = classVarianceAuthority.cva('relative rounded-xl border fle
     }
 });
 const Alert = React__namespace.forwardRef((_a, ref) => {
-    var { className, variant } = _a, props = __rest$m(_a, ["className", "variant"]);
+    var { className, variant } = _a, props = __rest$n(_a, ["className", "variant"]);
     return (jsxRuntime.jsx("div", Object.assign({ ref: ref, role: "alert", className: cn(alertVariants({ variant }), className) }, props)));
 });
 Alert.displayName = 'Alert';
 const AlertTitle = React__namespace.forwardRef((_a, ref) => {
-    var { className } = _a, props = __rest$m(_a, ["className"]);
+    var { className } = _a, props = __rest$n(_a, ["className"]);
     return (jsxRuntime.jsx("h5", Object.assign({ ref: ref, className: cn('mb-1 font-medium leading-none tracking-tight', className) }, props)));
 });
 AlertTitle.displayName = 'AlertTitle';
 const AlertDescription = React__namespace.forwardRef((_a, ref) => {
-    var { className } = _a, props = __rest$m(_a, ["className"]);
+    var { className } = _a, props = __rest$n(_a, ["className"]);
     return (jsxRuntime.jsx("div", Object.assign({ ref: ref, className: cn('text-base [&_p]:leading-relaxed', className) }, props)));
 });
 AlertDescription.displayName = 'AlertDescription';
@@ -6338,7 +6552,7 @@ function ClaimPasscard({ onClose, type }) {
     return (jsxRuntime.jsxs(jsxRuntime.Fragment, { children: [jsxRuntime.jsxs(Alert, { variant: "warning", className: "w-full flex-col md:flex-col lg:flex-row", children: [jsxRuntime.jsx(AlertDescription, { children: jsxRuntime.jsxs("div", { className: "flex gap-[6px]", children: [jsxRuntime.jsx(ForwardRef$U, { className: "hidden md:block shrink-0 size-6 text-icon-warning" }), jsxRuntime.jsx(Text, { children: type === 'action' ? t('action_claim_season_passcard_tip') : t('claim_season_passcard_tip') })] }) }), jsxRuntime.jsx(Button$1, { size: "md", color: "warning", onClick: handleClaimSeasonPasscard, className: "md:flex-none w-full md:w-fit self-end lg:self-auto", loading: acting, children: t('claim_season_passcard_btn_text') })] }), seasonPassUseSuccessModalVisible && (jsxRuntime.jsx(UseSeasonPassSuccessModal, { isOpen: seasonPassUseSuccessModalVisible, onClose: handleClose, rewardInfo: usedItem, isLoading: beforeCloseLoading }))] }));
 }
 
-var __rest$l = (undefined && undefined.__rest) || function (s, e) {
+var __rest$m = (undefined && undefined.__rest) || function (s, e) {
     var t = {};
     for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p) && e.indexOf(p) < 0)
         t[p] = s[p];
@@ -6350,7 +6564,7 @@ var __rest$l = (undefined && undefined.__rest) || function (s, e) {
     return t;
 };
 function Link$1(_a) {
-    var { className, href, scroll = false, replace = false, prefetch = true, children, onClick } = _a, props = __rest$l(_a, ["className", "href", "scroll", "replace", "prefetch", "children", "onClick"]);
+    var { className, href, scroll = false, replace = false, prefetch = true, children, onClick } = _a, props = __rest$m(_a, ["className", "href", "scroll", "replace", "prefetch", "children", "onClick"]);
     const externalLink = /^(https?:\/\/)/.test(typeof href === 'string' ? href : `${href.pathname}`);
     return (jsxRuntime.jsx(LinkComponent__default.default, Object.assign({ href: href, scroll: scroll, replace: replace, prefetch: prefetch, onClick: onClick, className: cn(className), rel: externalLink ? 'nofollow,noreferrer' : 'dofollow', target: externalLink ? '_blank' : undefined }, props, { children: children })));
 }
@@ -6573,7 +6787,7 @@ function EnergyPackUseTip({ onClose, type }) {
                                     }) })] }) }), jsxRuntime.jsx(Button$1, { size: "md", color: "warning", onClick: usePropHandler, loading: usingProp, className: "w-full md:w-fit shrink-0 self-end lg:self-auto", children: commonT('use') })] })) : (jsxRuntime.jsxs(Alert, { variant: "warning", className: "w-full flex-col md:flex-col lg:flex-row", children: [jsxRuntime.jsx(AlertDescription, { children: jsxRuntime.jsxs("div", { className: "flex gap-[6px]", children: [jsxRuntime.jsx(ForwardRef$U, { className: "hidden md:block shrink-0 size-6 text-icon-warning" }), jsxRuntime.jsx(Text, { children: commonT(type === 'action' ? 'action_energy_pack_in_reward_center' : 'explore_energy_pack_in_reward_center') })] }) }), jsxRuntime.jsx(Link$1, { href: "/rewards-center/reward-redemption", className: "w-full md:w-fit self-end lg:self-auto md:flex-none", children: jsxRuntime.jsx(Button$1, { size: "md", color: "warning", className: "w-full", children: rT('title') }) })] })), energyPackUsedModalVisible && (jsxRuntime.jsx(SuccessTipModal, { isOpen: energyPackUsedModalVisible, onClose: handleClose, rewardInfo: tempEnergyItem.current, count: 1, isLoading: beforeCloseLoading }))] }));
 }
 
-var __rest$k = (undefined && undefined.__rest) || function (s, e) {
+var __rest$l = (undefined && undefined.__rest) || function (s, e) {
     var t = {};
     for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p) && e.indexOf(p) < 0)
         t[p] = s[p];
@@ -6587,17 +6801,17 @@ var __rest$k = (undefined && undefined.__rest) || function (s, e) {
 const Dialog = DialogPrimitive__namespace.Root;
 const DialogPortal = DialogPrimitive__namespace.Portal;
 const DialogTrigger = React__namespace.forwardRef((_a, ref) => {
-    var { className } = _a, props = __rest$k(_a, ["className"]);
+    var { className } = _a, props = __rest$l(_a, ["className"]);
     return (jsxRuntime.jsx(DialogPrimitive__namespace.Trigger, Object.assign({ ref: ref, className: cn('ring-offset-surface-default focus-visible:outline-none focus-visible:shadow-none focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-1', className) }, props)));
 });
 DialogTrigger.displayName = DialogPrimitive__namespace.Trigger.displayName;
 const DialogOverlay = React__namespace.forwardRef((_a, ref) => {
-    var { className } = _a, props = __rest$k(_a, ["className"]);
+    var { className } = _a, props = __rest$l(_a, ["className"]);
     return (jsxRuntime.jsx(DialogPrimitive__namespace.Overlay, Object.assign({ ref: ref, className: cn('fixed inset-0 z-50 bg-opacity-90 md:bg-opacity-75 bg-alpha-mask-desktop data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0', className) }, props)));
 });
 DialogOverlay.displayName = DialogPrimitive__namespace.Overlay.displayName;
 const DialogContent = React__namespace.forwardRef((_a, ref) => {
-    var { className, children, hideClose = false, maskClosable = true, overlayClose = true, onClose, overlayClassName, iconClassName } = _a, props = __rest$k(_a, ["className", "children", "hideClose", "maskClosable", "overlayClose", "onClose", "overlayClassName", "iconClassName"]);
+    var { className, children, hideClose = false, maskClosable = true, overlayClose = true, onClose, overlayClassName, iconClassName } = _a, props = __rest$l(_a, ["className", "children", "hideClose", "maskClosable", "overlayClose", "onClose", "overlayClassName", "iconClassName"]);
     return (jsxRuntime.jsxs(DialogPortal, { children: [jsxRuntime.jsx(DialogOverlay, { onClick: () => {
                     maskClosable && overlayClose && onClose && onClose();
                 }, className: overlayClassName }), jsxRuntime.jsxs(DialogPrimitive__namespace.Content, Object.assign({ ref: ref, className: cn('fixed left-[50%] top-[50%] z-50 grid w-[90%] rounded-4xl max-w-lg translate-x-[-50%] translate-y-[-50%] bg-surface-default shadow-modal-default duration-200 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[state=closed]:slide-out-to-left-1/2 data-[state=closed]:slide-out-to-top-[48%] data-[state=open]:slide-in-from-left-1/2 data-[state=open]:slide-in-from-top-[48%] ring-offset-surface-default focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-1 focus-visible:outline-0', className) }, props, { children: [children, !hideClose && (jsxRuntime.jsxs(DialogPrimitive__namespace.Close, { className: cn('w-9 h-9 absolute right-5 top-3 flex justify-center items-center focus-visible:outline-0 rounded-full hover:bg-surface-hovered', iconClassName), onClick: () => {
@@ -6606,22 +6820,22 @@ const DialogContent = React__namespace.forwardRef((_a, ref) => {
 });
 DialogContent.displayName = DialogPrimitive__namespace.Content.displayName;
 function DialogHeader(_a) {
-    var { className } = _a, props = __rest$k(_a, ["className"]);
+    var { className } = _a, props = __rest$l(_a, ["className"]);
     return jsxRuntime.jsx("div", Object.assign({ className: cn('flex flex-col p-4', className) }, props));
 }
 DialogHeader.displayName = 'DialogHeader';
 function DialogFooter(_a) {
-    var { className } = _a, props = __rest$k(_a, ["className"]);
+    var { className } = _a, props = __rest$l(_a, ["className"]);
     return jsxRuntime.jsx("div", Object.assign({ className: cn('flex justify-end p-4', className) }, props));
 }
 DialogFooter.displayName = 'DialogFooter';
 const DialogTitle = React__namespace.forwardRef((_a, ref) => {
-    var { className } = _a, props = __rest$k(_a, ["className"]);
+    var { className } = _a, props = __rest$l(_a, ["className"]);
     return (jsxRuntime.jsx(DialogPrimitive__namespace.Title, Object.assign({ ref: ref, className: cn('text-xl font-normal', className) }, props)));
 });
 DialogTitle.displayName = DialogPrimitive__namespace.Title.displayName;
 const DialogDescription = React__namespace.forwardRef((_a, ref) => {
-    var { className } = _a, props = __rest$k(_a, ["className"]);
+    var { className } = _a, props = __rest$l(_a, ["className"]);
     return (jsxRuntime.jsx(DialogPrimitive__namespace.Description, Object.assign({ ref: ref, className: cn('text-sm text-subtle p-4', className) }, props)));
 });
 DialogDescription.displayName = DialogPrimitive__namespace.Description.displayName;
@@ -6830,7 +7044,7 @@ function useSensors() {
     };
 }
 
-(undefined && undefined.__rest) || function (s, e) {
+var __rest$k = (undefined && undefined.__rest) || function (s, e) {
     var t = {};
     for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p) && e.indexOf(p) < 0)
         t[p] = s[p];
@@ -6841,8 +7055,49 @@ function useSensors() {
         }
     return t;
 };
-limitQueue(1);
-({
+const fileQueue = limitQueue(1);
+const messagesUnique = (currentData, newData) => {
+    const messageMap = {};
+    (currentData !== null && currentData !== void 0 ? currentData : []).forEach((message, index) => {
+        messageMap[message.id] = Object.assign(Object.assign({}, message), { originalIndex: index });
+    });
+    newData.forEach((message, index) => {
+        messageMap[message.id] = Object.assign(Object.assign({}, message), { originalIndex: message.id in messageMap ? messageMap[message.id].originalIndex : currentData.length + index });
+    });
+    const uniqueMessages = Object.values(messageMap);
+    const sortedMessages = uniqueMessages.sort((a, b) => {
+        var _a, _b;
+        const timestampA = a.createdDateUnix;
+        const timestampB = b.createdDateUnix;
+        if (timestampA !== timestampB) {
+            return Number(timestampA) - Number(timestampB);
+        }
+        return ((_a = a.originalIndex) !== null && _a !== void 0 ? _a : 0) - ((_b = b.originalIndex) !== null && _b !== void 0 ? _b : 0);
+    });
+    return sortedMessages.map((_a) => {
+        var message = __rest$k(_a, ["originalIndex"]);
+        return message;
+    });
+};
+const DEFAULT_STATE$2 = {
+    messageListMap: {},
+    lastMsgIdMap: {},
+    lastUserInteractionMsgIdMap: {},
+    draftReplyMessageMap: {},
+    localDraftMessageMap: {},
+    localErrorMessageMap: {},
+    localFiles: {},
+    exceptionsForTextDisplay: {},
+    fileUpload: {
+        uploading: null,
+        deletedList: [],
+        alert: {
+            visible: false,
+            data: []
+        }
+    }
+};
+const persistConfig$1 = {
     name: 'chat-storage',
     version: 2,
     storage: createJSONStorage(() => localStorage),
@@ -6852,9 +7107,393 @@ limitQueue(1);
         localErrorMessageMap: state.localErrorMessageMap
     }),
     merge: (persistedState, currentState) => (Object.assign(Object.assign({}, currentState), { localDraftMessageMap: Object.assign(Object.assign({}, currentState.localDraftMessageMap), persistedState.localDraftMessageMap), exceptionsForTextDisplay: Object.assign(Object.assign({}, currentState.exceptionsForTextDisplay), persistedState.exceptionsForTextDisplay), localErrorMessageMap: Object.assign(Object.assign({}, currentState.localErrorMessageMap), persistedState.localErrorMessageMap) }))
-});
+};
+const createChatStore = (messageList) => {
+    const createChatSlice = (set, get) => {
+        return Object.assign(Object.assign({}, DEFAULT_STATE$2), { messageListMap: Object.assign({}, messageList), sendDraftMessage: (type, id, message) => {
+                set(state => {
+                    var _a, _b, _c, _d;
+                    const mapKey = `${type}-${id}`;
+                    state.lastUserInteractionMsgIdMap[mapKey] = message.id;
+                    state.messageListMap[mapKey] = [...((_a = state.messageListMap[mapKey]) !== null && _a !== void 0 ? _a : []), message];
+                    state.lastMsgIdMap[mapKey] = (_c = (_b = state.messageListMap[mapKey].at(-1)) === null || _b === void 0 ? void 0 : _b.id) !== null && _c !== void 0 ? _c : '';
+                    if ((_d = message.embedObjs) === null || _d === void 0 ? void 0 : _d.length) {
+                        state.localFiles[mapKey] = [];
+                    }
+                });
+            }, replaceDraftMessage: (type, id, message) => {
+                set(state => {
+                    var _a, _b, _c, _d, _e;
+                    const mapKey = `${type}-${id}`;
+                    const lastUserInteractionMsgId = state.lastUserInteractionMsgIdMap[mapKey];
+                    if (!lastUserInteractionMsgId) {
+                        state.messageListMap[mapKey] = [...((_a = state.messageListMap[mapKey]) !== null && _a !== void 0 ? _a : []), message];
+                        state.lastMsgIdMap[mapKey] = (_c = (_b = state.messageListMap[mapKey].at(-1)) === null || _b === void 0 ? void 0 : _b.id) !== null && _c !== void 0 ? _c : '';
+                    }
+                    else {
+                        const msgIdxInList = ((_d = state.messageListMap[mapKey]) !== null && _d !== void 0 ? _d : []).findIndex(msg => msg.id === lastUserInteractionMsgId);
+                        if (msgIdxInList >= 0) {
+                            (_e = state.messageListMap[mapKey]) === null || _e === void 0 ? void 0 : _e.splice(msgIdxInList, 1, message);
+                            state.lastMsgIdMap[mapKey] = message.id;
+                            state.lastUserInteractionMsgIdMap[mapKey] = message.id;
+                        }
+                        else {
+                            console.error('logic error');
+                        }
+                    }
+                });
+            }, updateReply: (type, id, message) => {
+                set(state => {
+                    var _a, _b, _c, _d, _e;
+                    const mapKey = `${type}-${id}`;
+                    const draftReplyMessageId = state.draftReplyMessageMap[mapKey];
+                    if (!draftReplyMessageId) {
+                        const msgIdx = ((_a = state.messageListMap[mapKey]) !== null && _a !== void 0 ? _a : []).findIndex(msg => msg.id === message.id);
+                        if (msgIdx >= 0) {
+                            state.messageListMap[mapKey][msgIdx] = message;
+                        }
+                    }
+                    else {
+                        const msgIdxInList = ((_b = state.messageListMap[mapKey]) !== null && _b !== void 0 ? _b : []).findIndex(msg => msg.id === draftReplyMessageId);
+                        if (msgIdxInList >= 0) {
+                            (_c = state.messageListMap[mapKey]) === null || _c === void 0 ? void 0 : _c.splice(msgIdxInList, 1, message);
+                            state.draftReplyMessageMap[mapKey] = '';
+                        }
+                        else {
+                            console.error('logic error');
+                        }
+                    }
+                    state.lastMsgIdMap[mapKey] = (_e = (_d = state.messageListMap[mapKey].at(-1)) === null || _d === void 0 ? void 0 : _d.id) !== null && _e !== void 0 ? _e : '';
+                });
+            }, prependMessages: (type, id, messages) => {
+                set(state => {
+                    var _a, _b, _c;
+                    const mapKey = `${type}-${id}`;
+                    state.messageListMap[mapKey] = [...messages, ...((_a = state.messageListMap[mapKey]) !== null && _a !== void 0 ? _a : [])];
+                    state.lastMsgIdMap[mapKey] = (_c = (_b = state.messageListMap[mapKey].at(-1)) === null || _b === void 0 ? void 0 : _b.id) !== null && _c !== void 0 ? _c : '';
+                });
+            }, appendMessages: (type, id, messages) => {
+                set(state => {
+                    var _a, _b, _c;
+                    const mapKey = `${type}-${id}`;
+                    const msgList = Array.isArray(messages) ? messages : [messages];
+                    const draftReplyMessage = msgList.find(message => message.type === 'PENDING_FOR_RESPONSE');
+                    if (draftReplyMessage) {
+                        state.draftReplyMessageMap[mapKey] = draftReplyMessage.id;
+                    }
+                    state.messageListMap[mapKey] = [...((_a = state.messageListMap[mapKey]) !== null && _a !== void 0 ? _a : []), ...msgList];
+                    state.lastMsgIdMap[mapKey] = (_c = (_b = state.messageListMap[mapKey].at(-1)) === null || _b === void 0 ? void 0 : _b.id) !== null && _c !== void 0 ? _c : '';
+                });
+            }, mixMessages: (type, id, messages) => {
+                set(state => {
+                    var _a, _b, _c;
+                    const mapKey = `${type}-${id}`;
+                    const msgList = Array.isArray(messages) ? messages : [messages];
+                    state.messageListMap[mapKey] = messagesUnique([...((_a = state.messageListMap[mapKey]) !== null && _a !== void 0 ? _a : [])], msgList);
+                    state.lastMsgIdMap[mapKey] = (_c = (_b = state.messageListMap[mapKey].at(-1)) === null || _b === void 0 ? void 0 : _b.id) !== null && _c !== void 0 ? _c : '';
+                });
+            }, addTextStream(type, id, messageId, content, isLlmBot) {
+                set(state => {
+                    const mapKey = `${type}-${id}`;
+                    const messageIndex = state.messageListMap[mapKey].findIndex(msg => msg.id === messageId);
+                    if (messageIndex >= 0) {
+                        const messageDetail = state.messageListMap[mapKey][messageIndex];
+                        state.messageListMap[mapKey][messageIndex] = Object.assign(Object.assign({}, messageDetail), { text: (messageDetail.text || '') + content, isLlmBot });
+                    }
+                });
+            },
+            addAudioStream(type, id, messageId, audioChunk) {
+                set(state => {
+                    const mapKey = `${type}-${id}`;
+                    const messageIndex = state.messageListMap[mapKey].findIndex(msg => msg.id === messageId);
+                    if (messageIndex >= 0) {
+                        const messageDetail = state.messageListMap[mapKey][messageIndex];
+                        state.messageListMap[mapKey][messageIndex] = Object.assign(Object.assign({}, messageDetail), { audioBuffer: messageDetail.audioBuffer ? [...messageDetail.audioBuffer, audioChunk] : [audioChunk] });
+                    }
+                });
+            },
+            addTranslationStream(type, id, messageId, translation) {
+                set(state => {
+                    const mapKey = `${type}-${id}`;
+                    const messageIndex = state.messageListMap[mapKey].findIndex(msg => msg.id === messageId);
+                    if (messageIndex >= 0) {
+                        const messageDetail = state.messageListMap[mapKey][messageIndex];
+                        state.messageListMap[mapKey][messageIndex] = Object.assign(Object.assign({}, messageDetail), { translation: (messageDetail.translation || '') + translation });
+                    }
+                });
+            }, updateMessage: (type, id, message) => {
+                set(state => {
+                    var _a;
+                    const mapKey = `${type}-${id}`;
+                    const messageIndex = state.messageListMap[mapKey].findIndex(msg => msg.id === message.id);
+                    if (messageIndex >= 0) {
+                        const originMessage = state.messageListMap[mapKey][messageIndex];
+                        if ((originMessage.status === 'CANCELING' && message.status !== 'CANCELED') ||
+                            originMessage.status === 'CANCELED') {
+                            return;
+                        }
+                        state.messageListMap[mapKey][messageIndex] = Object.assign(Object.assign(Object.assign({}, originMessage), message), { imageGenMessageResponse: (_a = message === null || message === void 0 ? void 0 : message.imageGenMessageResponse) !== null && _a !== void 0 ? _a : originMessage === null || originMessage === void 0 ? void 0 : originMessage.imageGenMessageResponse });
+                    }
+                });
+            }, replaceMessage: (type, id, oldMessageId, newMessage) => {
+                set(state => {
+                    var _a, _b;
+                    const mapKey = `${type}-${id}`;
+                    const messageIndex = state.messageListMap[mapKey].findIndex(msg => msg.id === oldMessageId);
+                    if (messageIndex >= 0) {
+                        state.messageListMap[mapKey][messageIndex] = newMessage;
+                    }
+                    state.lastMsgIdMap[mapKey] = (_b = (_a = state.messageListMap[mapKey].at(-1)) === null || _a === void 0 ? void 0 : _a.id) !== null && _b !== void 0 ? _b : '';
+                });
+            }, partialUpdateMessage(type, id, messageId, partialDetail) {
+                set(state => {
+                    const mapKey = `${type}-${id}`;
+                    const messageIndex = state.messageListMap[mapKey].findIndex(msg => msg.id === messageId);
+                    if (messageIndex >= 0) {
+                        const message = state.messageListMap[mapKey][messageIndex];
+                        if (message) {
+                            if ((message.status === 'CANCELING' && partialDetail.status !== 'CANCELED') ||
+                                message.status === 'CANCELED')
+                                return;
+                            state.messageListMap[mapKey][messageIndex] = Object.assign(Object.assign({}, message), partialDetail);
+                        }
+                    }
+                });
+            },
+            partialUpdateRegenMessage(type, id, messageId, regenMessageId, partialDetail) {
+                set(state => {
+                    var _a, _b;
+                    const mapKey = `${type}-${id}`;
+                    const messageIndex = state.messageListMap[mapKey].findIndex(msg => msg.id === messageId);
+                    if (messageIndex >= 0) {
+                        const message = state.messageListMap[mapKey][messageIndex];
+                        if (message) {
+                            if ((message.status === 'CANCELING' && partialDetail.status !== 'CANCELED') ||
+                                message.status === 'CANCELED')
+                                return;
+                            const regenMessageIndex = ((_a = message.regeneratedMessages) !== null && _a !== void 0 ? _a : []).findIndex(msg => regenMessageId === msg.id);
+                            if (regenMessageIndex >= 0) {
+                                const regenMessage = ((_b = message.regeneratedMessages) !== null && _b !== void 0 ? _b : [])[regenMessageIndex];
+                                state.messageListMap[mapKey][messageIndex].regeneratedMessages[regenMessageIndex] = Object.assign(Object.assign({}, regenMessage), partialDetail);
+                            }
+                        }
+                    }
+                });
+            },
+            setLocalDraftMessage(type, id, draftText) {
+                set(state => {
+                    const mapKey = `${type}-${id}`;
+                    if (draftText) {
+                        state.localDraftMessageMap[mapKey] = draftText;
+                    }
+                    else {
+                        delete state.localDraftMessageMap[mapKey];
+                    }
+                    state.localDraftMessageMap = Object.assign({}, state.localDraftMessageMap);
+                });
+            },
+            deleteSpecifiedMessage(type, id, msgId) {
+                set(state => {
+                    var _a, _b, _c;
+                    const mapKey = `${type}-${id}`;
+                    if (!msgId) {
+                        state.messageListMap[mapKey] = [];
+                    }
+                    else {
+                        state.messageListMap[mapKey] = [...((_a = state.messageListMap[mapKey]) !== null && _a !== void 0 ? _a : [])].filter(msg => msg.id !== msgId);
+                    }
+                    state.lastMsgIdMap[mapKey] = (_c = (_b = state.messageListMap[mapKey].at(-1)) === null || _b === void 0 ? void 0 : _b.id) !== null && _c !== void 0 ? _c : '';
+                });
+            },
+            addTextDisplayException(type, id, msgId) {
+                set(state => {
+                    var _a;
+                    const mapKey = `${type}-${id}`;
+                    const exceptions = (_a = state.exceptionsForTextDisplay[mapKey]) !== null && _a !== void 0 ? _a : [];
+                    const newExceptions = [...exceptions, msgId];
+                    state.exceptionsForTextDisplay = Object.assign(Object.assign({}, state.exceptionsForTextDisplay), { [mapKey]: newExceptions });
+                });
+            },
+            handleInteractionError(type, id, error) {
+                set(state => {
+                    var _a, _b, _c, _d, _e, _f;
+                    const mapKey = `${type}-${id}`;
+                    const lastUserInteractionMsgId = state.lastUserInteractionMsgIdMap[mapKey];
+                    const draftReplyMessageId = state.draftReplyMessageMap[mapKey];
+                    const lastUserInteractionMessageIndex = ((_a = state.messageListMap[mapKey]) !== null && _a !== void 0 ? _a : []).findIndex(msg => msg.id === lastUserInteractionMsgId);
+                    const draftReplyMessage = ((_b = state.messageListMap[mapKey]) !== null && _b !== void 0 ? _b : []).find(msg => msg.id === draftReplyMessageId);
+                    if (lastUserInteractionMessageIndex >= 0) {
+                        const lastUserInteractionMessage = state.messageListMap[mapKey][lastUserInteractionMessageIndex];
+                        const newMessage = Object.assign(Object.assign({}, lastUserInteractionMessage), { status: error });
+                        state.messageListMap[mapKey][lastUserInteractionMessageIndex] = newMessage;
+                        state.localErrorMessageMap[mapKey] = [...((_c = state.localErrorMessageMap[mapKey]) !== null && _c !== void 0 ? _c : []), newMessage];
+                        if (draftReplyMessageId && draftReplyMessage && draftReplyMessage.type === 'PENDING_FOR_RESPONSE') {
+                            state.messageListMap[mapKey] = [...((_d = state.messageListMap[mapKey]) !== null && _d !== void 0 ? _d : [])].filter(msg => msg.id !== draftReplyMessageId);
+                            state.lastMsgIdMap[mapKey] = (_f = (_e = state.messageListMap[mapKey].at(-1)) === null || _e === void 0 ? void 0 : _e.id) !== null && _f !== void 0 ? _f : '';
+                            state.draftReplyMessageMap[mapKey] = '';
+                        }
+                    }
+                });
+            },
+            removeLocalErrorMessage(type, id, msgId) {
+                set(state => {
+                    var _a;
+                    const mapKey = `${type}-${id}`;
+                    const newLocalErrorMessageMap = [...state.localErrorMessageMap[mapKey]];
+                    const msgIndex = (newLocalErrorMessageMap !== null && newLocalErrorMessageMap !== void 0 ? newLocalErrorMessageMap : []).findIndex(m => m.id === msgId);
+                    if (msgIndex >= 0) {
+                        newLocalErrorMessageMap.splice(msgIndex, 1);
+                    }
+                    const indexInIdList = ((_a = state.messageListMap[mapKey]) !== null && _a !== void 0 ? _a : []).findIndex(m => m.id === msgId);
+                    if (indexInIdList >= 0) {
+                        state.messageListMap[mapKey].splice(indexInIdList, 1);
+                    }
+                    state.localErrorMessageMap[mapKey] = newLocalErrorMessageMap;
+                });
+            },
+            clearDraftMessage(type, id) {
+                set(state => {
+                    var _a, _b;
+                    const mapKey = `${type}-${id}`;
+                    const lastUserInteractionMsgId = state.lastUserInteractionMsgIdMap[mapKey];
+                    const draftReplyMessageId = state.draftReplyMessageMap[mapKey];
+                    if (lastUserInteractionMsgId) {
+                        const index = ((_a = state.messageListMap[mapKey]) !== null && _a !== void 0 ? _a : []).findIndex(m => m.id === lastUserInteractionMsgId);
+                        if (index >= 0) {
+                            state.messageListMap[mapKey].splice(index, 1);
+                        }
+                    }
+                    if (draftReplyMessageId) {
+                        const index = ((_b = state.messageListMap[mapKey]) !== null && _b !== void 0 ? _b : []).findIndex(m => m.id === draftReplyMessageId);
+                        if (index >= 0) {
+                            state.messageListMap[mapKey].splice(index, 1);
+                        }
+                    }
+                    state.lastUserInteractionMsgIdMap[mapKey] = '';
+                    state.draftReplyMessageMap[mapKey] = '';
+                });
+            },
+            async uploadFiles(type, id, files, retry) {
+                const mapKey = `${type}-${id}`;
+                set(state => {
+                    const localDraftFiles = state.localFiles[mapKey] || [];
+                    if (retry) {
+                        const newFiles = localDraftFiles.map(file => {
+                            if (file.id === files[0].id) {
+                                return files[0];
+                            }
+                            return file;
+                        });
+                        state.localFiles[mapKey] = [...newFiles];
+                    }
+                    else {
+                        state.localFiles[mapKey] = [...localDraftFiles, ...files];
+                    }
+                });
+                files.forEach(file => {
+                    fileQueue(async () => {
+                        const { deletedList } = get().fileUpload;
+                        if (deletedList.includes(file.id)) {
+                            set(state => {
+                                state.fileUpload.deletedList = state.fileUpload.deletedList.filter(id => id !== file.id);
+                            });
+                            return;
+                        }
+                        set(state => {
+                            state.fileUpload.uploading = file;
+                        });
+                        const res = await uploadFileToS3WithProgress({
+                            scenario: Scenario.SCENARIO_IM_CHAT,
+                            contentType: file.uiData.contentType,
+                            onProgress: value => {
+                                set(state => {
+                                    state.fileUpload.uploading = Object.assign(Object.assign({}, file), { progress: value });
+                                });
+                            },
+                            file: file.file,
+                            cancelToken: (cancel) => {
+                                set(state => {
+                                    const localDraftFiles = state.localFiles[mapKey] || [];
+                                    const newFiles = localDraftFiles.map(draftFile => {
+                                        if (draftFile.id === file.id) {
+                                            return Object.assign(Object.assign({}, draftFile), { cancelToken: {
+                                                    cancel
+                                                } });
+                                        }
+                                        return draftFile;
+                                    });
+                                    state.localFiles[mapKey] = [...newFiles];
+                                });
+                            }
+                        });
+                        const deletedListAfter = get().fileUpload.deletedList;
+                        if (deletedListAfter.includes(file.id)) {
+                            set(state => {
+                                state.fileUpload.deletedList = state.fileUpload.deletedList.filter(id => id !== file.id);
+                                state.fileUpload.uploading = null;
+                            });
+                            return;
+                        }
+                        set(state => {
+                            if (fileQueue.pendingCount === 0) {
+                                state.fileUpload.uploading = null;
+                            }
+                            const { deletedList } = state.fileUpload;
+                            if (deletedList.includes(file.id)) {
+                                state.fileUpload.uploading = null;
+                            }
+                            const localDraftFiles = state.localFiles[mapKey] || [];
+                            const newFiles = localDraftFiles.map(f => {
+                                if (f.id === file.id) {
+                                    return Object.assign(Object.assign({}, f), { status: (res === null || res === void 0 ? void 0 : res.objectAccessUrl) ? 'SUCCESS' : 'ERROR', url: res === null || res === void 0 ? void 0 : res.objectAccessUrl });
+                                }
+                                return f;
+                            });
+                            state.localFiles[mapKey] = [...newFiles];
+                        });
+                    });
+                });
+            },
+            deleteUploadFile(type, id, fileId) {
+                const mapKey = `${type}-${id}`;
+                set(state => {
+                    const localFiles = state.localFiles[mapKey] || [];
+                    if (fileId) {
+                        state.localFiles[mapKey] = [...(localFiles !== null && localFiles !== void 0 ? localFiles : []).filter(file => file.id !== fileId)];
+                        const deleteFile = localFiles.find(file => file.id === fileId);
+                        if (deleteFile === null || deleteFile === void 0 ? void 0 : deleteFile.cancelToken.cancel) {
+                            deleteFile.cancelToken.cancel();
+                        }
+                        state.fileUpload.deletedList = [...state.fileUpload.deletedList, id];
+                    }
+                    else {
+                        state.localFiles[mapKey] = [];
+                    }
+                });
+            },
+            setFileAlert(data) {
+                set(state => {
+                    state.fileUpload.alert = data;
+                });
+            } });
+    };
+    return zustand.createStore()(immer(devtools(persist(createChatSlice, persistConfig$1), { store: 'new-chat' })));
+};
 
 const ChatStoreContext = React.createContext(undefined);
+let store;
+const ChatStoreProvider = ({ children, type, id, messages }) => {
+    const storeRef = React.useRef();
+    if (!storeRef.current) {
+        storeRef.current = createChatStore(type && id && (messages === null || messages === void 0 ? void 0 : messages.length)
+            ? {
+                [`${type}-${id}`]: messages
+            }
+            : undefined);
+        store = storeRef.current;
+    }
+    return jsxRuntime.jsx(ChatStoreContext.Provider, { value: storeRef.current, children: children });
+};
 const useNewChatStore = (selector) => {
     const chatStoreContext = React.useContext(ChatStoreContext);
     if (!chatStoreContext) {
@@ -6863,7 +7502,7 @@ const useNewChatStore = (selector) => {
     return zustand.useStore(chatStoreContext, selector);
 };
 useNewChatStore.getState = () => {
-    return void 0 ;
+    return store === null || store === void 0 ? void 0 : store.getState();
 };
 
 function Termination({ onTerminate, loading }) {
@@ -7349,9 +7988,10 @@ function ClearMemory({ type, id, disabled = false, onSuccess }) {
     const { appendMessages } = React.useContext(MessageContext);
     const chatLocale = nextIntl.useTranslations('chat');
     const { loading, handleClearMemory } = useClearMemory(type, id, appendMessages, name);
+    const { clearMemory = handleClearMemory } = React.useContext(MessageContext);
     const onClick = async () => {
         try {
-            handleClearMemory(onSuccess);
+            clearMemory(onSuccess);
         }
         catch (e) {
             console.error(e);
@@ -14108,7 +14748,7 @@ const DisplayProvider = props => {
     var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l, _m;
     const { message, latest, children } = props;
     const energy = useUserStore(state => state.energy);
-    const { chatSetting, type, entityInfo, entitySetting, messageShareAvailable = true, feedbackAvailable = true } = React.useContext(StaticContext);
+    const { chatSetting, type, entityInfo, entitySetting, messageShareAvailable = true, feedbackAvailable = true, globalContextMenuDisabled, } = React.useContext(StaticContext);
     const { id } = entityInfo;
     const { exceptionsForTextDisplay, messageList } = React.useContext(MessageContext);
     const totalMessages = ((_b = (_a = message === null || message === void 0 ? void 0 : message.regeneratedMessages) === null || _a === void 0 ? void 0 : _a.length) !== null && _b !== void 0 ? _b : 0) + 1;
@@ -14134,15 +14774,16 @@ const DisplayProvider = props => {
             return originMsg;
         }
     }, [message === null || message === void 0 ? void 0 : message.replyId, messageList]);
-    const contextMenuDisabled = !(((message === null || message === void 0 ? void 0 : message.status) === 'DONE' &&
-        (((_e = message === null || message === void 0 ? void 0 : message.asyncJobInfo) === null || _e === void 0 ? void 0 : _e.jobId)
-            ? ((_f = message === null || message === void 0 ? void 0 : message.asyncJobInfo) === null || _f === void 0 ? void 0 : _f.status) === EmbedObjStatus$1.DONE
-            : ((_g = message === null || message === void 0 ? void 0 : message.imageGenMessageResponse) === null || _g === void 0 ? void 0 : _g.jobId)
-                ? ((_h = message === null || message === void 0 ? void 0 : message.imageGenMessageResponse) === null || _h === void 0 ? void 0 : _h.genStatus) === ImageGenStatus.DONE
-                : true)) ||
-        ((message === null || message === void 0 ? void 0 : message.status) === 'CANCELED' && (message === null || message === void 0 ? void 0 : message.type) !== 'PENDING_FOR_RESPONSE') ||
-        ((message === null || message === void 0 ? void 0 : message.status) === 'PROCESSING' &&
-            (message.type === 'TEXT' || message.type === 'VOICE' || message.type === 'BUTTON_INTERACTION')));
+    const contextMenuDisabled = globalContextMenuDisabled ||
+        !(((message === null || message === void 0 ? void 0 : message.status) === 'DONE' &&
+            (((_e = message === null || message === void 0 ? void 0 : message.asyncJobInfo) === null || _e === void 0 ? void 0 : _e.jobId)
+                ? ((_f = message === null || message === void 0 ? void 0 : message.asyncJobInfo) === null || _f === void 0 ? void 0 : _f.status) === EmbedObjStatus$1.DONE
+                : ((_g = message === null || message === void 0 ? void 0 : message.imageGenMessageResponse) === null || _g === void 0 ? void 0 : _g.jobId)
+                    ? ((_h = message === null || message === void 0 ? void 0 : message.imageGenMessageResponse) === null || _h === void 0 ? void 0 : _h.genStatus) === ImageGenStatus.DONE
+                    : true)) ||
+            ((message === null || message === void 0 ? void 0 : message.status) === 'CANCELED' && (message === null || message === void 0 ? void 0 : message.type) !== 'PENDING_FOR_RESPONSE') ||
+            ((message === null || message === void 0 ? void 0 : message.status) === 'PROCESSING' &&
+                (message.type === 'TEXT' || message.type === 'VOICE' || message.type === 'BUTTON_INTERACTION')));
     const contextMenuItems = React.useMemo(() => {
         var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l, _m;
         const feedbackItem = (message === null || message === void 0 ? void 0 : message.source) === 'OTHER' && feedbackAvailable ? [MenuActionType.Feedback] : [];
@@ -15688,7 +16329,7 @@ const useMemoScrollPosition = (scrollRef, scollPathName) => {
 
 function UserFollowBtn({ detailData, followCallback, size = 'lg', className }) {
     const [loading, setLoading] = React.useState(false);
-    const [following, setFollowing] = React.useState((detailData === null || detailData === void 0 ? void 0 : detailData.followStatus) === FollowStatus.FOLLOWED);
+    const [following, setFollowing] = React.useState((detailData === null || detailData === void 0 ? void 0 : detailData.followStatus) === exports.FollowStatus.FOLLOWED);
     const setUser = useUserStore(state => state.setUser);
     const t = nextIntl.useTranslations('profile');
     const requestT = nextIntl.useTranslations('request');
@@ -16235,7 +16876,7 @@ function GalleryList({ className, userId, containerRef }) {
     };
     const followCallback = (userId) => {
         const galleryListUpdate = galleryUserList === null || galleryUserList === void 0 ? void 0 : galleryUserList.map(item => {
-            const status = item.authInfo.followStatus === FollowStatus.FOLLOWED ? FollowStatus.NOT_FOLLOWED : FollowStatus.FOLLOWED;
+            const status = item.authInfo.followStatus === exports.FollowStatus.FOLLOWED ? exports.FollowStatus.NOT_FOLLOWED : exports.FollowStatus.FOLLOWED;
             item.authInfo.userId === userId && (item.authInfo.followStatus = status);
             return item;
         });
@@ -16826,10 +17467,10 @@ function UserDetail({ showInsideScroller = false, detailData, showTopActions = f
         };
     }, [detailData === null || detailData === void 0 ? void 0 : detailData.id]);
     const containerRef = React.useRef(null);
-    return (jsxRuntime.jsxs(jsxRuntime.Fragment, { children: [jsxRuntime.jsxs("div", { className: `UserDetail ${showInsideScroller ? 'overflow-hidden h-full md:overflow-auto' : 'h-full overflow-hidden'} flex w-full flex-col flex-nowrap bg-surface-container-default text-default relative md:rounded-4xl`, children: [showTopActions && (jsxRuntime.jsx(jsxRuntime.Fragment, { children: isMobile ? (jsxRuntime.jsxs(jsxRuntime.Fragment, { children: [jsxRuntime.jsx("div", { className: clsx__default.default('absolute top-[10px] md:top-5 flex z-10 space-x-3 left-5'), children: jsxRuntime.jsx("div", { className: "bg-white rounded-full border border-[#E4E9F0] w-9 h-9 cursor-pointer shadow-button-basic flex justify-center items-center", onClick: onClose, children: jsxRuntime.jsx(ForwardRef$8, { className: "w-[22px] h-[22px] text-[#202223]" }) }) }), jsxRuntime.jsx("div", { className: clsx__default.default('absolute top-[10px] md:top-5 flex z-10 space-x-3 right-5'), children: jsxRuntime.jsx(UserShareBtn, { userName: detailData === null || detailData === void 0 ? void 0 : detailData.name, nameTag: detailData === null || detailData === void 0 ? void 0 : detailData.nameTag, userId: detailData === null || detailData === void 0 ? void 0 : detailData.id }) })] })) : (jsxRuntime.jsxs("div", { className: clsx__default.default('absolute top-[10px] md:top-5 flex z-10 space-x-3', isMobile ? 'left-4' : 'right-5'), children: [jsxRuntime.jsx(UserShareBtn, { userName: detailData === null || detailData === void 0 ? void 0 : detailData.name, nameTag: detailData === null || detailData === void 0 ? void 0 : detailData.nameTag, userId: detailData === null || detailData === void 0 ? void 0 : detailData.id }), jsxRuntime.jsx("div", { className: "bg-white rounded-full border border-[#E4E9F0] w-9 h-9 cursor-pointer shadow-button-basic flex justify-center items-center", onClick: onClose, children: jsxRuntime.jsx(ForwardRef$j, { className: "w-[22px] h-[22px] text-[#202223]" }) })] })) })), jsxRuntime.jsx("div", { ref: containerRef, className: clsx__default.default('flex flex-col flex-grow items-center relative overflow-auto'), children: jsxRuntime.jsxs("div", { className: "flex flex-col w-full h-full pb-[8px] md:h-full md:pb-[12px]", children: [jsxRuntime.jsxs("div", { className: "w-full", children: [jsxRuntime.jsx(UserBg, { bgPhoto: getAssetsUrl(detailData === null || detailData === void 0 ? void 0 : detailData.backgroundUrl), showUpload: false }), jsxRuntime.jsxs("div", { className: "relative flex space-x-3 md:space-x-5", children: [jsxRuntime.jsx(BotLogo, { logoUrl: getAssetsUrl(detailData === null || detailData === void 0 ? void 0 : detailData.avatar) }), !isMobile && (jsxRuntime.jsxs("div", { className: "grow flex items-end justify-between pr-6 pb-1", children: [jsxRuntime.jsxs("div", { className: "flex flex-col", children: [jsxRuntime.jsxs("div", { className: "flex items-center space-x-1.5 pr-1.5 pb-1", children: [jsxRuntime.jsx("span", { className: clsx__default.default('text-2xl md:text-[28px] md:leading-[36px] font-semibold text-default line-clamp-1 break-all'), children: detailData === null || detailData === void 0 ? void 0 : detailData.name }), jsxRuntime.jsx(UserLevel, { user: detailData })] }), jsxRuntime.jsx(FollowInfo, { user: detailData })] }), ((detailData === null || detailData === void 0 ? void 0 : detailData.followStatus) === FollowStatus.FOLLOWED ||
-                                                            (detailData === null || detailData === void 0 ? void 0 : detailData.followStatus) === FollowStatus.NOT_FOLLOWED) && (jsxRuntime.jsx(UserFollowBtn, { detailData: detailData, followCallback: followCallback }))] })), isMobile &&
-                                                    ((detailData === null || detailData === void 0 ? void 0 : detailData.followStatus) === FollowStatus.FOLLOWED ||
-                                                        (detailData === null || detailData === void 0 ? void 0 : detailData.followStatus) === FollowStatus.NOT_FOLLOWED) && (jsxRuntime.jsx("div", { className: "absolute right-0 top-0 px-4 py-3", children: jsxRuntime.jsx(UserFollowBtn, { detailData: detailData, size: "md", followCallback: followCallback, className: "min-w-[76px]" }) }))] })] }), isMobile && (jsxRuntime.jsxs("div", { className: "flex flex-col px-4 mt-2", children: [jsxRuntime.jsxs("div", { className: "flex items-center space-x-1.5 pr-1.5 pb-1", children: [jsxRuntime.jsx("span", { className: clsx__default.default('text-2xl md:text-[28px] md:leading-[36px] font-semibold text-default line-clamp-1 break-all'), children: detailData === null || detailData === void 0 ? void 0 : detailData.name }), jsxRuntime.jsx(UserLevel, { user: detailData })] }), jsxRuntime.jsx(FollowInfo, { user: detailData })] })), (detailData === null || detailData === void 0 ? void 0 : detailData.description) && (jsxRuntime.jsx("div", { className: "px-2 ml-6", children: jsxRuntime.jsx(Description, { desc: detailData === null || detailData === void 0 ? void 0 : detailData.description }) })), jsxRuntime.jsxs("div", { className: clsx__default.default('flex-1 pt-[6px] md:pb-5 flex flex-col space-y-4 mt-2 md:mt-5 ', activeContent === 'gallery' ? '' : 'md:px-6'), children: [jsxRuntime.jsx("div", { className: clsx__default.default('sticky bg-surface-container-default top-0 z-[2] md:relative md:bg-inherit md:z-auto mx-4 md:mx-2', activeContent === 'gallery' ? 'md:px-6' : ''), children: jsxRuntime.jsx("div", { className: "flex justify-between items-center border-b border-default", children: jsxRuntime.jsx("div", { className: "flex space-x-2 items-center", children: jsxRuntime.jsxs("div", { className: "flex space-x-6 items-center", children: [jsxRuntime.jsx("div", { className: clsx__default.default('cursor-pointer relative z-[1] font-[500] text-sm md:text-base text-center', activeContent === 'bots'
+    return (jsxRuntime.jsxs(jsxRuntime.Fragment, { children: [jsxRuntime.jsxs("div", { className: `UserDetail ${showInsideScroller ? 'overflow-hidden h-full md:overflow-auto' : 'h-full overflow-hidden'} flex w-full flex-col flex-nowrap bg-surface-container-default text-default relative md:rounded-4xl`, children: [showTopActions && (jsxRuntime.jsx(jsxRuntime.Fragment, { children: isMobile ? (jsxRuntime.jsxs(jsxRuntime.Fragment, { children: [jsxRuntime.jsx("div", { className: clsx__default.default('absolute top-[10px] md:top-5 flex z-10 space-x-3 left-5'), children: jsxRuntime.jsx("div", { className: "bg-white rounded-full border border-[#E4E9F0] w-9 h-9 cursor-pointer shadow-button-basic flex justify-center items-center", onClick: onClose, children: jsxRuntime.jsx(ForwardRef$8, { className: "w-[22px] h-[22px] text-[#202223]" }) }) }), jsxRuntime.jsx("div", { className: clsx__default.default('absolute top-[10px] md:top-5 flex z-10 space-x-3 right-5'), children: jsxRuntime.jsx(UserShareBtn, { userName: detailData === null || detailData === void 0 ? void 0 : detailData.name, nameTag: detailData === null || detailData === void 0 ? void 0 : detailData.nameTag, userId: detailData === null || detailData === void 0 ? void 0 : detailData.id }) })] })) : (jsxRuntime.jsxs("div", { className: clsx__default.default('absolute top-[10px] md:top-5 flex z-10 space-x-3', isMobile ? 'left-4' : 'right-5'), children: [jsxRuntime.jsx(UserShareBtn, { userName: detailData === null || detailData === void 0 ? void 0 : detailData.name, nameTag: detailData === null || detailData === void 0 ? void 0 : detailData.nameTag, userId: detailData === null || detailData === void 0 ? void 0 : detailData.id }), jsxRuntime.jsx("div", { className: "bg-white rounded-full border border-[#E4E9F0] w-9 h-9 cursor-pointer shadow-button-basic flex justify-center items-center", onClick: onClose, children: jsxRuntime.jsx(ForwardRef$j, { className: "w-[22px] h-[22px] text-[#202223]" }) })] })) })), jsxRuntime.jsx("div", { ref: containerRef, className: clsx__default.default('flex flex-col flex-grow items-center relative overflow-auto'), children: jsxRuntime.jsxs("div", { className: "flex flex-col w-full h-full pb-[8px] md:h-full md:pb-[12px]", children: [jsxRuntime.jsxs("div", { className: "w-full", children: [jsxRuntime.jsx(UserBg, { bgPhoto: getAssetsUrl(detailData === null || detailData === void 0 ? void 0 : detailData.backgroundUrl), showUpload: false }), jsxRuntime.jsxs("div", { className: "relative flex space-x-3 md:space-x-5", children: [jsxRuntime.jsx(BotLogo, { logoUrl: getAssetsUrl(detailData === null || detailData === void 0 ? void 0 : detailData.avatar) }), !isMobile && (jsxRuntime.jsxs("div", { className: "grow flex items-end justify-between pr-6 pb-1", children: [jsxRuntime.jsxs("div", { className: "flex flex-col", children: [jsxRuntime.jsxs("div", { className: "flex items-center space-x-1.5 pr-1.5 pb-1", children: [jsxRuntime.jsx("span", { className: clsx__default.default('text-2xl md:text-[28px] md:leading-[36px] font-semibold text-default line-clamp-1 break-all'), children: detailData === null || detailData === void 0 ? void 0 : detailData.name }), jsxRuntime.jsx(UserLevel, { user: detailData })] }), jsxRuntime.jsx(FollowInfo, { user: detailData })] }), ((detailData === null || detailData === void 0 ? void 0 : detailData.followStatus) === exports.FollowStatus.FOLLOWED ||
+                                                            (detailData === null || detailData === void 0 ? void 0 : detailData.followStatus) === exports.FollowStatus.NOT_FOLLOWED) && (jsxRuntime.jsx(UserFollowBtn, { detailData: detailData, followCallback: followCallback }))] })), isMobile &&
+                                                    ((detailData === null || detailData === void 0 ? void 0 : detailData.followStatus) === exports.FollowStatus.FOLLOWED ||
+                                                        (detailData === null || detailData === void 0 ? void 0 : detailData.followStatus) === exports.FollowStatus.NOT_FOLLOWED) && (jsxRuntime.jsx("div", { className: "absolute right-0 top-0 px-4 py-3", children: jsxRuntime.jsx(UserFollowBtn, { detailData: detailData, size: "md", followCallback: followCallback, className: "min-w-[76px]" }) }))] })] }), isMobile && (jsxRuntime.jsxs("div", { className: "flex flex-col px-4 mt-2", children: [jsxRuntime.jsxs("div", { className: "flex items-center space-x-1.5 pr-1.5 pb-1", children: [jsxRuntime.jsx("span", { className: clsx__default.default('text-2xl md:text-[28px] md:leading-[36px] font-semibold text-default line-clamp-1 break-all'), children: detailData === null || detailData === void 0 ? void 0 : detailData.name }), jsxRuntime.jsx(UserLevel, { user: detailData })] }), jsxRuntime.jsx(FollowInfo, { user: detailData })] })), (detailData === null || detailData === void 0 ? void 0 : detailData.description) && (jsxRuntime.jsx("div", { className: "px-2 ml-6", children: jsxRuntime.jsx(Description, { desc: detailData === null || detailData === void 0 ? void 0 : detailData.description }) })), jsxRuntime.jsxs("div", { className: clsx__default.default('flex-1 pt-[6px] md:pb-5 flex flex-col space-y-4 mt-2 md:mt-5 ', activeContent === 'gallery' ? '' : 'md:px-6'), children: [jsxRuntime.jsx("div", { className: clsx__default.default('sticky bg-surface-container-default top-0 z-[2] md:relative md:bg-inherit md:z-auto mx-4 md:mx-2', activeContent === 'gallery' ? 'md:px-6' : ''), children: jsxRuntime.jsx("div", { className: "flex justify-between items-center border-b border-default", children: jsxRuntime.jsx("div", { className: "flex space-x-2 items-center", children: jsxRuntime.jsxs("div", { className: "flex space-x-6 items-center", children: [jsxRuntime.jsx("div", { className: clsx__default.default('cursor-pointer relative z-[1] font-[500] text-sm md:text-base text-center', activeContent === 'bots'
                                                                     ? 'pb-[5px] border-b-[2px] border-brand text-brand'
                                                                     : 'pb-[7px] text-subtle'), onClick: () => setActiveContent('bots'), children: botT('robot') }), jsxRuntime.jsx("div", { className: clsx__default.default('cursor-pointer relative z-[1] font-[500] text-sm md:text-base text-center', activeContent === 'widgets'
                                                                     ? 'pb-[5px] border-b-[2px] border-brand text-brand'
@@ -21910,6 +22551,310 @@ function useMessageParams(params) {
     };
 }
 
+function useChatLayout() {
+    const scrollContainerRef = React.useRef(null);
+    const editorContainerRef = React.useRef(null);
+    const editorAnchorRef = React.useRef(null);
+    const textareaRef = React.useRef(null);
+    const chatContainerRef = React.useRef(null);
+    const detailContainerRef = React.useRef(null);
+    const detailScrollRef = React.useRef(null);
+    const { y: detailScrollY } = reactUse.useScroll(detailScrollRef);
+    const [isEditorSticky, setIsEditorSticky] = reactUse.useToggle(false);
+    const [contentActive, setContentActive] = reactUse.useToggle(true);
+    const scrollLayoutToTop = React.useCallback(() => {
+        if (!scrollContainerRef.current)
+            return;
+        scrollContainerRef.current.scrollTop = 0;
+    }, []);
+    const manuallyScrollDetailToTop = React.useCallback(() => {
+        if (!editorContainerRef.current || !scrollContainerRef.current)
+            return;
+        const editorRect = editorContainerRef.current.getBoundingClientRect();
+        const scrollContainerRect = scrollContainerRef.current.getBoundingClientRect();
+        const relativeTop = editorRect.top - scrollContainerRect.top;
+        scrollContainerRef.current.scrollTop = Math.ceil(scrollContainerRef.current.scrollTop + relativeTop);
+    }, [editorContainerRef, scrollContainerRef]);
+    const showMobileDetail = React.useCallback(() => {
+        setContentActive(false);
+    }, [setContentActive]);
+    React.useEffect(() => {
+        let animationFrameId;
+        const scrollContainerEle = scrollContainerRef.current;
+        const handleScroll = () => {
+            cancelAnimationFrame(animationFrameId);
+            animationFrameId = requestAnimationFrame(() => {
+                var _a;
+                if (scrollContainerEle && editorContainerRef.current && editorAnchorRef.current) {
+                    const scrollContainerRect = scrollContainerEle.getBoundingClientRect();
+                    const anchorRect = editorAnchorRef.current.getBoundingClientRect();
+                    const topDistance = anchorRect.top - scrollContainerRect.top;
+                    const shouldSticky = topDistance <= 0;
+                    if (shouldSticky !== isEditorSticky) {
+                        setIsEditorSticky(shouldSticky);
+                        if (shouldSticky) {
+                            const editorHeight = editorContainerRef.current.offsetHeight;
+                            editorAnchorRef.current.style.height = `${editorHeight}px`;
+                            editorContainerRef.current.style.position = 'fixed';
+                            editorContainerRef.current.style.borderTop = '1px solid var(--border)';
+                            editorContainerRef.current.style.borderBottom = '1px solid var(--border)';
+                            editorContainerRef.current.style.boxShadow = '0px 20px 20px -10px var(--shadow-modal-bolder)';
+                            (_a = textareaRef.current) === null || _a === void 0 ? void 0 : _a.blur();
+                        }
+                        else {
+                            editorAnchorRef.current.style.height = 'auto';
+                            editorContainerRef.current.style.position = 'static';
+                            editorContainerRef.current.style.borderTop = 'none';
+                            editorContainerRef.current.style.borderBottom = 'none';
+                            editorContainerRef.current.style.boxShadow = 'none';
+                        }
+                    }
+                }
+            });
+        };
+        if (scrollContainerEle) {
+            scrollContainerEle.addEventListener('scroll', handleScroll);
+        }
+        return () => {
+            if (scrollContainerEle) {
+                scrollContainerEle.removeEventListener('scroll', handleScroll);
+            }
+            cancelAnimationFrame(animationFrameId);
+        };
+    }, [isEditorSticky]);
+    return {
+        scrollContainerRef,
+        editorContainerRef,
+        editorAnchorRef,
+        textareaRef,
+        chatContainerRef,
+        detailContainerRef,
+        detailScrollRef,
+        scrollLayoutToTop,
+        manuallyScrollDetailToTop,
+        isEditorSticky,
+        contentActive,
+        setContentActive,
+        detailScrollY,
+        showMobileDetail
+    };
+}
+
+function useVirtuosoMessageListApi(showMockReply = true) {
+    const [scrolled, setScrolled] = reactUse.useBoolean(true);
+    const isMobile = useGlobalStore(state => state.isMobile);
+    const virtuosoRef = React.useRef(null);
+    const onSendMessage = (message, isButtonInteraction = false) => {
+        var _a;
+        (_a = virtuosoRef.current) === null || _a === void 0 ? void 0 : _a.data.append([message], ({ scrollInProgress, atBottom }) => {
+            if (!isMobile) {
+                return {
+                    index: showMockReply ? -1 : 'LAST',
+                    align: 'start',
+                    offset: -60,
+                    behavior: atBottom || scrollInProgress ? 'smooth' : 'auto'
+                };
+            }
+            if (isButtonInteraction) {
+                return {
+                    index: showMockReply ? -1 : 'LAST',
+                    align: 'start',
+                    behavior: atBottom || scrollInProgress ? 'smooth' : 'auto'
+                };
+            }
+            setScrolled(false);
+            return false;
+        });
+    };
+    const onPrependMessages = (messages) => {
+        var _a;
+        (_a = virtuosoRef.current) === null || _a === void 0 ? void 0 : _a.data.prepend(messages);
+    };
+    const onAppendMessages = (messages, needScrollToBottom) => {
+        var _a, _b;
+        (_a = virtuosoRef.current) === null || _a === void 0 ? void 0 : _a.data.append(Array.isArray(messages) ? messages : [messages]);
+        if (needScrollToBottom) {
+            (_b = virtuosoRef.current) === null || _b === void 0 ? void 0 : _b.data.append([], ({ scrollInProgress, atBottom }) => {
+                return {
+                    index: 'LAST',
+                    align: 'start',
+                    offset: isMobile ? 0 : -60,
+                    behavior: atBottom || scrollInProgress ? 'smooth' : 'auto'
+                };
+            });
+        }
+    };
+    const onUpdateMessage = (messageId, newMessage) => {
+        var _a;
+        (_a = virtuosoRef.current) === null || _a === void 0 ? void 0 : _a.data.map(item => (item.id === messageId ? newMessage : item));
+    };
+    const onTextStream = (messageId, content) => {
+        var _a;
+        (_a = virtuosoRef.current) === null || _a === void 0 ? void 0 : _a.data.map(item => item.id === messageId
+            ? Object.assign(Object.assign({}, item), { text: (item.text || '') + content }) : item);
+    };
+    const onAudioStream = (messageId, audioChunk) => {
+        var _a;
+        (_a = virtuosoRef.current) === null || _a === void 0 ? void 0 : _a.data.map(item => item.id === messageId
+            ? Object.assign(Object.assign({}, item), { audioBuffer: [...(item.audioBuffer || []), audioChunk] }) : item);
+    };
+    const onTranslationStream = (messageId, translation) => {
+        var _a;
+        (_a = virtuosoRef.current) === null || _a === void 0 ? void 0 : _a.data.map(item => item.id === messageId
+            ? Object.assign(Object.assign({}, item), { translation: (item.translation || '') + translation }) : item);
+    };
+    const onPartialUpdateMessage = (messageId, partialDetail) => {
+        var _a;
+        (_a = virtuosoRef.current) === null || _a === void 0 ? void 0 : _a.data.map(item => item.id === messageId
+            ? Object.assign(Object.assign({}, item), partialDetail) : item);
+    };
+    const onPartialUpdateRegenMessage = (messageId, regenMessageId, partialDetail) => {
+        var _a;
+        (_a = virtuosoRef.current) === null || _a === void 0 ? void 0 : _a.data.map(item => item.id === messageId
+            ? Object.assign(Object.assign({}, item), { regeneratedMessages: (item.regeneratedMessages || []).map(regenMsg => regenMsg.id === regenMessageId ? Object.assign(Object.assign({}, regenMsg), partialDetail) : regenMsg) }) : item);
+    };
+    const onDeleteMessage = (messageId) => {
+        var _a, _b;
+        if (messageId) {
+            (_a = virtuosoRef.current) === null || _a === void 0 ? void 0 : _a.data.findAndDelete(item => item.id === messageId);
+        }
+        else {
+            (_b = virtuosoRef.current) === null || _b === void 0 ? void 0 : _b.data.replace([]);
+        }
+    };
+    const onRemoveDraftReplyIfExist = (messageId) => {
+        var _a, _b;
+        const messageData = (_a = virtuosoRef.current) === null || _a === void 0 ? void 0 : _a.data.find(item => item.id === messageId);
+        if (messageData && messageData.type === 'PENDING_FOR_RESPONSE') {
+            (_b = virtuosoRef.current) === null || _b === void 0 ? void 0 : _b.data.findAndDelete(item => item.id === messageId);
+        }
+    };
+    const onMixMessages = (msgs, needScrollToBottom = false) => {
+        var _a, _b, _c, _d, _e;
+        const messages = Array.isArray(msgs) ? msgs : [msgs];
+        const currentData = (_b = (_a = virtuosoRef.current) === null || _a === void 0 ? void 0 : _a.data.get()) !== null && _b !== void 0 ? _b : [];
+        if (currentData.length === 0) {
+            (_c = virtuosoRef.current) === null || _c === void 0 ? void 0 : _c.data.append(messages, ({ scrollInProgress, atBottom }) => {
+                if (needScrollToBottom) {
+                    return {
+                        index: 'LAST',
+                        align: 'end',
+                        offset: 0,
+                        behavior: 'auto'
+                    };
+                }
+                return false;
+            });
+            return;
+        }
+        const currentDataMaxTimestamp = Math.max(...currentData.map(m => Number(m.createdDateUnix)));
+        const currentDataMinTimestamp = Math.min(...currentData.map(m => Number(m.createdDateUnix)));
+        const messagesMinTimestamp = Math.min(...messages.map(m => Number(m.createdDateUnix)));
+        const messagesMaxTimestamp = Math.max(...messages.map(m => Number(m.createdDateUnix)));
+        if (messagesMinTimestamp > currentDataMaxTimestamp) {
+            (_d = virtuosoRef.current) === null || _d === void 0 ? void 0 : _d.data.append(messages, ({ scrollInProgress, atBottom }) => {
+                if (needScrollToBottom) {
+                    return {
+                        index: 'LAST',
+                        align: 'end',
+                        offset: 0,
+                        behavior: 'auto'
+                    };
+                }
+                return false;
+            });
+            return;
+        }
+        if (currentDataMinTimestamp > messagesMaxTimestamp) {
+            (_e = virtuosoRef.current) === null || _e === void 0 ? void 0 : _e.data.prepend(messages);
+            return;
+        }
+        const rest = messages.filter(newMessage => {
+            const existingMessage = currentData.find(m => m.id === newMessage.id);
+            return !existingMessage || !lodashEs.isEqual(existingMessage, newMessage);
+        });
+        if (rest.length === 0)
+            return;
+        rest.forEach(newMessage => {
+            var _a, _b, _c, _d, _e;
+            const latestData = (_b = (_a = virtuosoRef.current) === null || _a === void 0 ? void 0 : _a.data.get()) !== null && _b !== void 0 ? _b : [];
+            const existingItem = latestData.find(m => m.id === newMessage.id);
+            if (existingItem) {
+                (_c = virtuosoRef.current) === null || _c === void 0 ? void 0 : _c.data.map(item => (item.id === newMessage.id ? newMessage : item));
+            }
+            else {
+                const insertIndex = latestData.findIndex(m => Number(m.createdDateUnix) > Number(newMessage.createdDateUnix));
+                if (insertIndex === -1) {
+                    (_d = virtuosoRef.current) === null || _d === void 0 ? void 0 : _d.data.append([newMessage]);
+                }
+                else {
+                    (_e = virtuosoRef.current) === null || _e === void 0 ? void 0 : _e.data.insert([newMessage], insertIndex);
+                }
+            }
+        });
+        if (needScrollToBottom) {
+            setTimeout(() => {
+                var _a;
+                (_a = virtuosoRef.current) === null || _a === void 0 ? void 0 : _a.scrollIntoView({
+                    index: 'LAST',
+                    align: 'end',
+                    offset: 0,
+                    behavior: 'auto'
+                });
+            });
+        }
+    };
+    const onVirtuosoRegen = (originMessage) => {
+        var _a, _b;
+        const msgIndex = (_a = virtuosoRef.current) === null || _a === void 0 ? void 0 : _a.data.findIndex(item => item.id === originMessage);
+        (_b = virtuosoRef.current) === null || _b === void 0 ? void 0 : _b.data.append([], ({ scrollInProgress, atBottom }) => {
+            return {
+                index: msgIndex !== null && msgIndex !== void 0 ? msgIndex : 'LAST',
+                align: 'start',
+                offset: isMobile ? 0 : -60,
+                behavior: atBottom || scrollInProgress ? 'smooth' : 'auto'
+            };
+        });
+    };
+    return {
+        scrolled,
+        setScrolled,
+        virtuosoRef,
+        onSendMessage,
+        onAppendMessages,
+        onUpdateMessage,
+        onPartialUpdateMessage,
+        onPartialUpdateRegenMessage,
+        onTextStream,
+        onAudioStream,
+        onTranslationStream,
+        onPrependMessages,
+        onDeleteMessage,
+        onRemoveDraftReplyIfExist,
+        onVirtuosoRegen,
+        onMixMessages
+    };
+}
+
+function useAtBottom() {
+    const [atBottom, setAtBottom] = reactUse.useBoolean(true);
+    return {
+        atBottom,
+        setAtBottom
+    };
+}
+
+function useEditorMode() {
+    const [inputMode, setInputMode] = React.useState('TEXT');
+    const [editorMode, setEditorMode] = React.useState('NORMAL');
+    return {
+        inputMode,
+        setInputMode,
+        editorMode,
+        setEditorMode
+    };
+}
+
 const MobilePreview$2 = dynamic__default.default(() => Promise.resolve().then(function () { return index$1; }), {
     ssr: false
 });
@@ -24198,8 +25143,15 @@ var index = /*#__PURE__*/Object.freeze({
 });
 
 exports.ChatModule = ChatModule;
+exports.ChatStoreProvider = ChatStoreProvider;
+exports.GlobalStoreProvider = GlobalStoreProvider;
 exports.MessageContext = MessageContext;
 exports.MessageToDisplayParser = MessageToDisplayParser;
 exports.RunningError = RunningError$1;
 exports.StaticContext = StaticContext;
+exports.UserStoreProvider = UserStoreProvider;
+exports.useAtBottom = useAtBottom;
+exports.useChatLayout = useChatLayout;
+exports.useEditorMode = useEditorMode;
 exports.useMessageParams = useMessageParams;
+exports.useVirtuosoMessageListApi = useVirtuosoMessageListApi;

@@ -35,6 +35,7 @@
     "formik": "^2.4.6",
     "github-markdown-css": "^5.7.0",
     "image-canvas": "workspace:*",
+    "myshell-bundled-chat": "workspace:*",
     "immer": "^10.1.1",
     "inversify": "^6.0.2",
     "inversify-react": "^1.1.1",

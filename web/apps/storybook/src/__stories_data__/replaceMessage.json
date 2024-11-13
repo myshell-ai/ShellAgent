@@ -1,0 +1,52 @@
+{
+    "id": "1856597724364926976",
+    "uid": "44988730220242e4b58cf9f56a9b1365",
+    "userId": "3524834",
+    "type": "TEXT",
+    "botId": "1719284610",
+    "replyUid": "",
+    "status": "DONE",
+    "text": "/Start",
+    "handled": false,
+    "translation": "",
+    "voiceUrl": "",
+    "voiceFileDurationSeconds": 0,
+    "feedbackState": "Normal",
+    "feedbackIssues": [],
+    "createdDateUnix": "1731482365910",
+    "updatedDateUnix": "1731482365910",
+    "audioSpeed": 1,
+    "imageGenMessageResponse": null,
+    "embedObjs": [],
+    "imSlashCommandInput": {
+        "name": "/Start",
+        "paramMap": {}
+    },
+    "asyncJobInfo": {
+        "jobId": "",
+        "componentInput": "",
+        "status": "EMBED_OBJ_STATUS_UNSPECIFIED"
+    },
+    "widgetId": "0",
+    "replyId": "0",
+    "referenceSource": [],
+    "recommendationQuestion": {
+        "question": []
+    },
+    "componentContainer": null,
+    "inputSetting": null,
+    "regeneratedMessages": [],
+    "extraInfo": {
+        "consumeEnergy": 0,
+        "canEdit": false,
+        "canRegenerate": false,
+        "runningWidgetInfo": [],
+        "bgm": null,
+        "senderInfo": null
+    },
+    "isBot": false,
+    "runningError": null,
+    "referenceText": "",
+    "uploadSetting": null,
+    "isLlmBot": false
+}

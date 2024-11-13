@@ -3311,6 +3311,10 @@ video {
   height: 97px;
 }
 
+.h-\[calc\(100\%\)\] {
+  height: calc(100%);
+}
+
 .h-\[calc\(100\%\+2px\)\] {
   height: calc(100% + 2px);
 }

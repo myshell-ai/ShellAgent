@@ -1,0 +1,134 @@
+{
+    "id": "1856602906364604416",
+    "userId": "3524834",
+    "referenceText": "",
+    "text": "hi",
+    "audioUrl": "",
+    "duration": 0,
+    "audioSpeed": 1,
+    "status": "DONE",
+    "type": "GREETING",
+    "createdDateUnix": "1731483602000",
+    "updatedDateUnix": "1731483602000",
+    "entityId": "1729238978",
+    "replyId": "0",
+    "feedbackState": "Normal",
+    "feedbackIssues": [],
+    "asyncJobInfo": {
+        "jobId": "",
+        "componentInput": "",
+        "status": "EMBED_OBJ_STATUS_UNSPECIFIED"
+    },
+    "runningWidgetInfo": [],
+    "runningError": {
+        "errorType": "RUNNING_ERROR_TYPE_ENGINE_ERROR",
+        "errorDetail": "Oh no!"
+    },
+    "handled": false,
+    "imageGenMessageResponse": null,
+    "inputSetting": {
+        "canInputText": false,
+        "canInputAudio": false,
+        "canUploadFile": false,
+        "supportedEmbedTypes": [],
+        "embedNumberLimit": 0,
+        "embedNumberMinimum": 0,
+        "embedMaxFileBytesEach": "0"
+    },
+    "uploadSetting": {
+        "supportedFileInfos": []
+    },
+    "componentContainer": {
+        "type": "BOT_MESSAGE_COMPONENTS_TYPE_CONTAINER",
+        "components": [
+            {
+                "type": "BOT_MESSAGE_COMPONENTS_TYPE_ROW",
+                "components": [
+                    {
+                        "type": "BOT_MESSAGE_COMPONENTS_TYPE_BUTTON",
+                        "components": [],
+                        "button": {
+                            "content": {
+                                "text": "Explore",
+                                "iconUrl": "",
+                                "description": "",
+                                "energyConsume": 0,
+                                "energyConsumeAccurate": false
+                            },
+                            "style": {
+                                "fontColorHex": "#202223",
+                                "backgroundColorHex": "#F6F6F7",
+                                "borderColorHex": "#E4E9F0",
+                                "darkModeFontColorHex": "#B8BCCF",
+                                "darkModeBackgroundColorHex": "#323339",
+                                "darkModeBorderColorHex": "#42434A",
+                                "iconLineColorHex": "#00000033",
+                                "darkModeIconLineColorHex": "#FFFFFF33"
+                            },
+                            "buttonId": "MESSAGE_0_BUTTON_0",
+                            "actions": [
+                                {
+                                    "action": "MESSAGE_COMPONENTS_BUTTON_ACTION_TYPE_POP_UP_FORM",
+                                    "componentInput": {
+                                        "name": "Information",
+                                        "description": "Enter to run",
+                                        "githubUrl": "",
+                                        "componentsInput": [
+                                            {
+                                                "type": "BOT_IM_COMPONENT_INPUT_TYPE_TEXT_INPUT",
+                                                "name": "Untitled",
+                                                "description": "",
+                                                "stringDefault": "",
+                                                "numberDefault": 0,
+                                                "hasNumberLimitation": false,
+                                                "integerDefault": 0,
+                                                "hasIntegerLimitation": false,
+                                                "booleanDefault": false,
+                                                "textSelectorDefault": "",
+                                                "textSelectorAllOf": [],
+                                                "numberSelectorDefault": 0,
+                                                "numberSelectorAllOf": [],
+                                                "fieldName": "key_1729235996147",
+                                                "isRequired": true,
+                                                "supportedFileTypes": [],
+                                                "fileDefaultParam": "",
+                                                "fileDefaultParamType": "MESSAGE_METADATA_TYPE_UNSPECIFIED",
+                                                "fileUploadSizeMaximum": 0,
+                                                "stringCharLengthLimitation": 0
+                                            }
+                                        ],
+                                        "componentsFunction": [],
+                                        "energyConsumePerUse": 0,
+                                        "saveButtonContent": "Run"
+                                    }
+                                }
+                            ],
+                            "disabled": false,
+                            "doubleCheck": {
+                                "isNeedDoubleCheck": false,
+                                "title": "",
+                                "description": ""
+                            }
+                        }
+                    }
+                ]
+            }
+        ]
+    },
+    "embedObjs": [],
+    "slashCommandInput": null,
+    "referenceSource": [],
+    "recommendatioQuestions": {
+        "question": []
+    },
+    "regeneratedMessages": [],
+    "extraInfo": {
+        "consumeEnergy": 0,
+        "canEdit": false,
+        "canRegenerate": false,
+        "runningWidgetInfo": [],
+        "bgm": null,
+        "senderInfo": null
+    },
+    "isLlmBot": false
+}
