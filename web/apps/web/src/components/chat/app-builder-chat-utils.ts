@@ -1,4 +1,4 @@
-import { EntityInfo, Message } from '@shellagent/chat-engine';
+import { EntityInfo, Message } from 'myshell-bundled-chat';
 import { v4 as uuidv4 } from 'uuid';
 
 export const testEntity = {

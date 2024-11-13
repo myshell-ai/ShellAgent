@@ -1,8 +1,4 @@
-import {
-  DraftMessage,
-  LocalErrorMessage,
-  Message,
-} from '@shellagent/chat-engine';
+import { DraftMessage, LocalErrorMessage, Message } from 'myshell-bundled-chat';
 
 /**
  * 内部方法 对接 hooks 方法

@@ -2,7 +2,7 @@ import {
   EventSourceMessage,
   fetchEventSource,
 } from '@microsoft/fetch-event-source';
-import { EntityInfo, Message } from '@shellagent/chat-engine';
+import { EntityInfo, Message } from 'myshell-bundled-chat';
 import { Automata } from '@shellagent/pro-config';
 import { ChatNewModel } from '@shellagent/ui';
 import axios from 'axios';

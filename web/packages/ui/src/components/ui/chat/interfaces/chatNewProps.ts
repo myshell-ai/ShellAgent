@@ -1,4 +1,4 @@
-import { DisplayMessage, Message } from '@shellagent/chat-engine';
+import { DisplayMessage } from 'myshell-bundled-chat';
 import { ChatNewModel } from '../chat-new.model';
 import { ReactNode } from 'react';
 
