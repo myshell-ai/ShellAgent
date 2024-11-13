@@ -303,7 +303,7 @@ const Control: React.FC<IControlProps> = props => {
           }
           const FormItemWithDesc =
             (!checked && xSwithable) || xHiddenControl ? null : (
-              <div className="grow">
+              <div className="flex-1">
                 <FormControl>{renderFormItem()}</FormControl>
                 {fieldState.error ? <FormMessage /> : null}
                 {missOption ? (
@@ -318,13 +318,13 @@ const Control: React.FC<IControlProps> = props => {
           return (
             <FormItem layout={layout}>
               {xRaw || titleControl ? (
-                <div className={cn('flex items-center w-full justify-between')}>
+                <div className={cn('flex items-center w-full gap-x-2')}>
                   <div
                     className={cn(
-                      'flex items-center',
+                      'flex items-center shrink-0',
                       (titleControl && xType === 'Control') ||
                         (xRaw && xType === 'Block')
-                        ? 'w-36 mr-2'
+                        ? 'w-28 mr-2'
                         : '',
                     )}>
                     {!xHiddenTitle && titleControl && xType === 'Control'
@@ -346,10 +346,12 @@ const Control: React.FC<IControlProps> = props => {
                       </TooltipProvider>
                     ) : null}
                   </div>
-                  {layout === 'Horizontal' || (xRaw && !titleControl)
-                    ? FormItemWithDesc
-                    : null}
-                  <div className="flex gap-x-1.5 ml-2 items-center">
+                  <div className="flex-1 min-w-0">
+                    {layout === 'Horizontal' || (xRaw && !titleControl)
+                      ? FormItemWithDesc
+                      : null}
+                  </div>
+                  <div className="flex items-center gap-x-1.5 shrink-0">
                     {xRaw && components?.ModeSelect
                       ? React.createElement(components.ModeSelect, {
                           onChange: handleModeChange,

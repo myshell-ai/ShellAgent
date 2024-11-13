@@ -142,21 +142,23 @@ const EditTitle = React.forwardRef<HTMLInputElement, IEditTitleProps>(
     }
 
     return (
-      <div className="max-w-32 flex items-center">
-        <Tooltip>
-          <TooltipTrigger type="button">
-            <Heading size="h5" className="max-w-28 truncate">
+      <div className="flex items-center min-w-0 max-w-full">
+        <div className="min-w-0 flex-1 flex items-center">
+          <Tooltip>
+            <TooltipTrigger type="button" className="w-full">
+              <Heading size="h5" className="truncate text-left w-full pr-1">
+                {getTitle()}
+              </Heading>
+            </TooltipTrigger>
+            <TooltipContent showArrow={false} side="right">
               {getTitle()}
-            </Heading>
-          </TooltipTrigger>
-          <TooltipContent showArrow={false} side="right">
-            {getTitle()}
-          </TooltipContent>
-        </Tooltip>
+            </TooltipContent>
+          </Tooltip>
+        </div>
         <PencilSquare
           size="sm"
           color="subtle"
-          className="ml-1"
+          className="shrink-0 ml-1 cursor-pointer"
           onClick={handleEditMode}
         />
         <Dialog open={isOpenDialog && showDialog}>
