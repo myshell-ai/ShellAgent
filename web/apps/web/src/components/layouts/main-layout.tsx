@@ -5,13 +5,17 @@ import { ConfigProvider } from 'antd';
 import { Provider } from 'inversify-react';
 import React, { PropsWithChildren, Suspense } from 'react';
 import { ToastContainer } from 'react-toastify';
+import dynamic from 'next/dynamic';
 
 import { container } from '@/app/container';
 import { SWRWrapper } from '@/components/common/swr';
 import { GlobalStoreProvider } from '@/stores/global/global-provider';
 
 import SideBar from './side-bar';
-import { Assistant } from '../assistant-help';
+
+const Assistant = dynamic(() => import('../assistant-help'), {
+  ssr: false,
+});
 
 export default function MainLayout({ children }: PropsWithChildren) {
   return (
