@@ -89,27 +89,35 @@ export class AppBuilderModel {
   updateNodeData(evt: HandleRefSceneEvent, nodeData: any) {
     if (evt.scene === RefSceneEnum.Enum.remove_ref_opts) {
       evt.params.paths.forEach(path => {
-        // 解析路径，获取 stateId 和变量名
         const [stateId, varName] = path.split('.');
-
-        // 只处理指定 state 节点下的数据
         const stateNode = nodeData[stateId];
         if (!stateNode) return;
 
-        // 遍历该 state 节点下的所有属性
         processNestedObject(stateNode, (value, key, parent) => {
           if (typeof value === 'string') {
-            // 检查值是否包含被删除的变量（使用正则匹配 {{ varName }}）
             const refRegex = new RegExp(`{{\\s*${varName}\\s*}}`, 'g');
             if (refRegex.test(value)) {
               parent[key] = '';
             }
           }
         });
-
-        console.log('nodeData>>>>', nodeData);
       });
     } else if (evt.scene === RefSceneEnum.Enum.rename_ref_opt) {
+      const { oldPath, newPath } = evt.params;
+      const [stateId, oldVarName] = oldPath.split('.');
+      const [_, newVarName] = newPath.split('.');
+
+      const stateNode = nodeData[stateId];
+      if (!stateNode) return;
+
+      processNestedObject(stateNode, (value, key, parent) => {
+        if (typeof value === 'string') {
+          const oldRefRegex = new RegExp(`{{\\s*${oldVarName}\\s*}}`, 'g');
+          if (oldRefRegex.test(value)) {
+            parent[key] = value.replace(oldRefRegex, `{{ ${newVarName} }}`);
+          }
+        }
+      });
     }
   }
 }
