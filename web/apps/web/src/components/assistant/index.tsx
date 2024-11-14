@@ -68,7 +68,7 @@ const Assistant = observer(() => {
           getContainer={false}
           maskClosable
           mask={false}
-          title="Assistant"
+          title="Assistant(Beta)"
           open={model.drawer.isOpen}>
           <AssistantBot />
         </Drawer>
