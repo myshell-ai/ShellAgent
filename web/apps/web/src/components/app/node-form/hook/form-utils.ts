@@ -140,8 +140,7 @@ export const getDiffPath = (
           typeof newField === 'object' &&
           'name' in oldField &&
           'name' in newField &&
-          isEqual(omit(oldField, ['name']), omit(newField, ['name'])) &&
-          newField.name === newKey
+          isEqual(omit(oldField, ['name']), omit(newField, ['name']))
         );
       });
 

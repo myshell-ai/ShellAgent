@@ -237,38 +237,27 @@ describe('form-utils', () => {
 
     it('context rename', () => {
       const oldValue = {
-        '3': {
-          type: 'text',
-          value: '2',
-          name: '3',
-        },
-        '1111': {
+        test_context: {
           type: 'text',
           value: '',
-          name: 'aaaaa',
+          name: 'test context1',
         },
       };
       const newValue = {
-        '3': {
-          type: 'text',
-          value: '2',
-          name: '3',
-        },
-        aaaaa: {
+        test_context1: {
           type: 'text',
           value: '',
-          name: 'aaaaa',
+          name: 'test context1',
         },
       };
-
       const result = getDiffPath(oldValue, newValue);
 
       expect(result).toEqual([
         {
-          path: '1111',
+          path: 'test_context1',
           type: DiffTypeEnum.Renamed,
-          oldValue: oldValue['1111'],
-          newValue: newValue.aaaaa,
+          oldValue: oldValue.test_context,
+          newValue: newValue.test_context1,
         },
       ]);
     });
