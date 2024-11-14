@@ -7,7 +7,7 @@ import {
   useReactFlowStore,
 } from '@shellagent/flow-engine';
 import { useInjection } from 'inversify-react';
-import { AppBuilderModel } from '@/components/app/app-builder.model';
+import { AppBuilderModel } from '@/stores/app/models/app-builder.model';
 import { RefSceneEnum } from '@shellagent/shared/protocol/app-scope';
 
 export const DefaultEdge = ({

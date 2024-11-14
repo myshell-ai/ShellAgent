@@ -1,7 +1,6 @@
 import { useFormContext } from '@shellagent/ui';
 import { omit, set, merge } from 'lodash-es';
-import React, { createContext, useContext, useCallback } from 'react';
-import { useImmer } from 'use-immer';
+import React, { createContext, useContext, useCallback, useState } from 'react';
 
 import {
   SchemaReactComponents,
@@ -59,13 +58,14 @@ export const FormEngineProvider: React.FC<IFormEngineProviderProps> = props => {
     props;
   const { getValues, setValue } = useFormContext();
 
-  const [modeMap, setModeMap] = useImmer(props.modeMap || {});
+  const [modeMap, setModeMap] = useState(props.modeMap || {});
 
   const onModeChange = useCallback(
     (name: string, mode: TFieldMode) => {
-      setModeMap(draft => {
-        draft[name] = mode;
-      });
+      setModeMap(prevModeMap => ({
+        ...prevModeMap,
+        [name]: mode,
+      }));
       props.onModeChange?.(name, mode);
     },
     [props.onModeChange],

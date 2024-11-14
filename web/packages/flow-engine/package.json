@@ -30,7 +30,6 @@
     "react-resizable-panels": "^2.1.0",
     "reactflow": "^11.11.4",
     "use-context-selector": "^2.0.0",
-    "use-immer": "^0.10.0",
     "uuid": "^10.0.0"
   },
   "devDependencies": {

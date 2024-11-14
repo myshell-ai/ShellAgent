@@ -8,7 +8,7 @@ import { toast } from 'react-toastify';
 import ImportModal from '@/components/app/header/extra-action/import-modal';
 import { createItem } from '@/services/home';
 import { Type } from '@/services/home/type';
-import { ShellAgent } from '@/stores/app/app-store';
+import { ShellAgent } from '@/types/app/types';
 import { saveApp } from '@/services/app';
 
 interface CreateDialogProps {

@@ -11,7 +11,7 @@ import {
   isEventTargetInputArea,
 } from '@/utils/common-helper';
 import { useInjection } from 'inversify-react';
-import { AppBuilderModel } from '../../../app-builder.model';
+import { AppBuilderModel } from '../../../../../stores/app/models/app-builder.model';
 
 export const usePasteState = ({
   enabeKeyboard = false,

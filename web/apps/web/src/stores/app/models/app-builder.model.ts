@@ -1,5 +1,5 @@
 import { CustomKey, CustomEventName } from '@shellagent/pro-config';
-import type { FieldValues } from '@shellagent/ui';
+import type { FieldValues, FormRef } from '@shellagent/ui';
 import { RefSceneEnum } from '@shellagent/shared/protocol/app-scope';
 import {
   RefType,
@@ -13,8 +13,7 @@ import { injectable } from 'inversify';
 import { action, makeObservable, observable, runInAction } from 'mobx';
 import type { IFlow, ReactFlowInstance } from '@shellagent/flow-engine';
 import { Automata } from '@shellagent/pro-config';
-import { defaultFlow } from './constants';
-import type { Metadata } from '@/services/home/type';
+import { defaultFlow } from '../../../components/app/constants';
 import { genNodeData } from '@/stores/app/utils/data-transformer';
 import {
   CascaderOption,
@@ -26,38 +25,27 @@ import { fetchAutomata, fetchFlow } from '@/services/app';
 import { fetchList as fetchFlowList } from '@/services/home';
 import type { GetListRequest, GetListResponse } from '@/services/home/type';
 import type { GetAppFlowRequest } from '@/services/app/type';
-
-// 在类外部定义工具函数
-function processNestedObject(
-  obj: any,
-  processor: (value: any, key: string, parent: any) => void,
-) {
-  if (!obj || typeof obj !== 'object') return;
-
-  Object.entries(obj).forEach(([key, value]) => {
-    processor(value, key, obj);
-    if (typeof value === 'object') {
-      processNestedObject(value, processor);
-    }
-  });
-}
-
-type Config = {
-  fieldsModeMap: Record<string, Record<string, TFieldMode>>;
-  refs: Refs;
-};
+import { cloneDeep } from 'lodash-es';
+import {
+  handleRemoveRefOpts,
+  handleRemoveRefOptsPrefix,
+  handleRenameRefOpt,
+  handleRemoveState,
+} from './node-data-utils';
+import type { NodeDataType, Config, Metadata } from '@/types/app/types';
 @injectable()
 export class AppBuilderModel {
-  nodeData: Record<string, FieldValues> = {};
+  nodeData: NodeDataType = {};
   metadata: Metadata = {
     name: '',
     description: '',
   };
   flowInstance: ReactFlowInstance | null = null;
 
-  nodeDataMode: Map<string, string> = new Map();
+  // TODO 收集所有form实例
+  formInstance: Map<string, FormRef> = new Map();
 
-  scopes: Scopes | null = null;
+  nodeDataMode: Map<string, string> = new Map();
 
   refs: Refs = {};
 
@@ -66,32 +54,18 @@ export class AppBuilderModel {
     refs: {},
   };
 
-  userInputs: TValues = {};
   flowList: GetListResponse['data'] = [];
-
-  @observable loading = {
-    // getReactFlow: false,
-    // getAutomata: false,
-    // chatRunning: false,
-    // fetchFlowList: false,
-  };
 
   @observable getReactFlowLoading = false;
   @observable getAutomataLoading = false;
   @observable chatRunningLoading = false;
   @observable fetchFlowListLoading = false;
 
-  transitions: Record<
-    string,
-    Record<
-      'ALWAYS' | 'CHAT' | string,
-      {
-        target?: string;
-        condition?: string;
-      }[]
-    >
-  > = {};
-  resetData: Record<string, string | undefined> = {};
+  get scopes(): Scopes | null {
+    if (!this.flowInstance || !this.nodeData) return null;
+    const edges = this.flowInstance.getEdges();
+    return convetNodeDataToScopes(this.nodeData, edges);
+  }
 
   constructor() {
     makeObservable(this);
@@ -118,25 +92,13 @@ export class AppBuilderModel {
     return cascaderOpts;
   }
 
-  updateScopes(nodeData: any, edges: any = []) {
-    this.scopes = convetNodeDataToScopes(nodeData, edges);
-  }
-
-  initRefs(refs: Refs) {
-    this.refs = refs;
-  }
-
-  initNodeData(nodeData: any) {
-    this.nodeData = nodeData;
-  }
-
   hanldeRefScene(evt: HandleRefSceneEvent) {
     const newRefs = hanldeRefScene(this.refs, evt);
     this.updateNodeData(evt, this.nodeData, this.refs, newRefs);
     this.refs = newRefs;
 
     console.log('this.refs>>', this.refs, evt);
-    console.log('this.nodeData', this.nodeData);
+    console.log('this.nodeData>>', this.nodeData);
   }
 
   @action.bound
@@ -179,7 +141,7 @@ export class AppBuilderModel {
     }
 
     runInAction(() => {
-      this.initRefs(config?.refs || {});
+      this.refs = config?.refs || {};
       this.metadata = metadata;
       this.nodeData = genNodeData(automata);
     });
@@ -272,84 +234,33 @@ export class AppBuilderModel {
     };
   }
 
+  // TODO 解决nodeData变化不触发ui变更问题
   updateNodeData(
     evt: HandleRefSceneEvent,
-    nodeData: Record<string, FieldValues>,
+    nodeData: NodeDataType,
     refs: Refs,
     newRefs: Refs,
   ) {
-    // 计算refs和newRefs的差值
+    const updatedNodeData = cloneDeep(nodeData);
 
     if (evt.scene === RefSceneEnum.Enum.remove_ref_opts) {
-      evt.params.paths.forEach(path => {
-        const [stateId, varName] = path.split('.');
-        const stateNode = nodeData[stateId];
-        if (!stateNode) return;
-
-        processNestedObject(stateNode, (value, key, parent) => {
-          if (typeof value === 'string') {
-            const refRegex = new RegExp(`{{\\s*${varName}\\s*}}`, 'g');
-            if (refRegex.test(value)) {
-              parent[key] = '';
-            }
-          }
-        });
-      });
+      handleRemoveRefOpts(updatedNodeData, evt.params.paths);
     } else if (evt.scene === RefSceneEnum.Enum.remove_ref_opts_prefix) {
-      evt.params.prefix.forEach(prefix => {
-        const [stateId, varName] = prefix.split('.');
-        const stateNode = nodeData[stateId];
-        if (!stateNode) return;
-
-        processNestedObject(stateNode, (value, key, parent) => {
-          if (typeof value === 'string') {
-            const refRegex = new RegExp(`{{\\s*${varName}[\\w.]*\\s*}}`, 'g');
-            if (refRegex.test(value)) {
-              parent[key] = '';
-            }
-          }
-        });
-      });
+      handleRemoveRefOptsPrefix(updatedNodeData, evt.params.prefix);
     } else if (evt.scene === RefSceneEnum.Enum.rename_ref_opt) {
-      const { oldPath, newPath } = evt.params;
-      const [stateId, oldVarName] = oldPath.split('.');
-      const [_, newVarName] = newPath.split('.');
-
-      const stateNode = nodeData[stateId];
-      if (!stateNode) return;
-
-      processNestedObject(stateNode, (value, key, parent) => {
-        if (typeof value === 'string') {
-          const oldRefRegex = new RegExp(`{{\\s*${oldVarName}\\s*}}`, 'g');
-          if (oldRefRegex.test(value)) {
-            parent[key] = value.replace(oldRefRegex, `{{ ${newVarName} }}`);
-          }
-        }
-      });
+      handleRenameRefOpt(
+        updatedNodeData,
+        evt.params.oldPath,
+        evt.params.newPath,
+      );
     } else if (evt.scene === RefSceneEnum.Enum.remove_state) {
-      const { stateName } = evt.params;
-
-      // 遍历所有节点
-      Object.entries(nodeData).forEach(([nodeId, node]: [string, any]) => {
-        // 跳过被删除的节点和非state类型节点
-        if (nodeId === stateName || node.type !== 'state') return;
-
-        // 处理节点中的所有字符串值
-        processNestedObject(node, (value, key, parent) => {
-          if (typeof value === 'string') {
-            // 匹配形如 {{ state_1.xxx }} 的引用
-            const refRegex = new RegExp(
-              `{{\\s*${stateName}\\.[\\w.]*\\s*}}`,
-              'g',
-            );
-            if (refRegex.test(value)) {
-              parent[key] = '';
-            }
-          }
-        });
-      });
+      handleRemoveState(updatedNodeData, evt.params.stateName);
     } else if (evt.scene === RefSceneEnum.Enum.remove_edge) {
+      // 待实现
     }
-    console.log('nodeData>>', nodeData);
+
+    runInAction(() => {
+      this.nodeData = updatedNodeData;
+    });
   }
 }

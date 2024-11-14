@@ -21,7 +21,7 @@ import {
   transformValuesToChoices,
 } from '@/utils/data-transformer';
 
-import { AppStore } from '../app-store';
+import { NodeDataType } from '@/types/app/types';
 
 export const contextTempReg = /__context__([a-z0-9_]+)__/g;
 export const contextReg = /context\.([a-z0-9_]+)/g;
@@ -43,8 +43,8 @@ function replaceContext2Api(data: any) {
 }
 
 // 根据automata生成nodeData
-export const genNodeData = (automata: Automata): AppStore['nodeData'] => {
-  const nodeData: AppStore['nodeData'] = {
+export const genNodeData = (automata: Automata): NodeDataType => {
+  const nodeData: NodeDataType = {
     [NodeIdEnum.start]: {
       id: NodeIdEnum.start,
       type: NodeTypeEnum.start,
@@ -77,10 +77,10 @@ export const genNodeData = (automata: Automata): AppStore['nodeData'] => {
 };
 
 // 根据生成automata
-export const genAutomata: (
-  flow: IFlow,
-  nodeData: AppStore['nodeData'],
-) => Automata = (flow, nodeData) => {
+export const genAutomata: (flow: IFlow, nodeData: NodeDataType) => Automata = (
+  flow,
+  nodeData,
+) => {
   const initial =
     (flow.edges.find(edge => edge.source === NodeIdEnum.start)
       ?.target as Lowercase<string>) || '';
@@ -177,7 +177,7 @@ type IGetInputNodesProps = (data: {
   edges: Edge<EdgeData>[];
   nodes: Node<NodeData>[];
   id: string;
-  nodeData: AppStore['nodeData'];
+  nodeData: NodeDataType;
 }) => TVariable[];
 
 function getPrevPrevNodes(

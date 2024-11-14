@@ -23,7 +23,6 @@ import {
   Node,
 } from 'reactflow';
 import { useContextSelector, createContext } from 'use-context-selector';
-import { useImmer } from 'use-immer';
 
 import {
   INode,
@@ -135,7 +134,7 @@ export const FlowStoreProvider = ({ children }: FlowStoreProviderProps) => {
   const [selectedEdges, setSelectedEdges] = useState<Edge[]>([]);
 
   const viewport = useViewport();
-  const [nodeIndex, setNodeIndex] = useImmer<Record<string, number>>({});
+  const [nodeIndex, setNodeIndex] = useState<Record<string, number>>({});
   const reactFlowWrapper = useRef<HTMLDivElement>(null);
   useOnSelectionChange({
     onChange: params => {
@@ -180,10 +179,10 @@ export const FlowStoreProvider = ({ children }: FlowStoreProviderProps) => {
         '';
       const lastIndex = parseNodeName(lastNodeName as NodeName).index || 0;
 
-      // TODO joe
       const index = (nodeIndex[name] || lastIndex) + 1;
-      setNodeIndex(draft => {
-        draft[name] = index;
+      setNodeIndex({
+        ...nodeIndex,
+        [name]: index,
       });
 
       const nodeName = isCopy ? displayName : getNodeName(displayName, index);

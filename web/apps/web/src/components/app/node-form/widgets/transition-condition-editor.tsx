@@ -16,7 +16,7 @@ import NodeForm from '@/components/app/node-form';
 import { ExpressionInput } from '@/components/app/node-form/widgets/expression-input';
 import { useAppState } from '@/stores/app/use-app-state';
 import { getSchemaByInputs } from '@/stores/app/utils/get-workflow-schema';
-import { AppBuilderModel } from '@/components/app/app-builder.model';
+import { AppBuilderModel } from '@/stores/app/models/app-builder.model';
 
 interface ITransitionConditionEditorProps {
   value: ICondition[];

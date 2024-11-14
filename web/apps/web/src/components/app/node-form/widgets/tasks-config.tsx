@@ -9,8 +9,7 @@ import { Dropdown } from 'antd';
 import { useState, useRef, useCallback } from 'react';
 import { useDrag, useDrop } from 'react-dnd';
 import { useInjection } from 'inversify-react';
-import { AppBuilderModel } from '@/components/app/app-builder.model';
-import { RefSceneEnum } from '@shellagent/shared/protocol/app-scope';
+import { AppBuilderModel } from '@/stores/app/models/app-builder.model';
 
 import { materialList } from '@/components/app/constants';
 import { TaskList } from '@/components/app/task-list';
@@ -28,11 +27,24 @@ const TaskItem = ({
   onDelete: () => void;
   onClick: (e: React.MouseEvent<HTMLDivElement>) => void;
   index: number;
-  moveTask: (dragIndex: number, hoverIndex: number) => void;
+  moveTask: (
+    dragIndex: number,
+    hoverIndex: number,
+    isDragging: boolean,
+  ) => void;
   draggable?: boolean; // 新增参数类型
 }) => {
   const dragRef = useRef<HTMLDivElement>(null);
   const previewRef = useRef<HTMLDivElement>(null);
+
+  const [{ isDragging }, drag, preview] = useDrag({
+    type: 'TASK',
+    item: { index },
+    collect: monitor => ({
+      isDragging: monitor.isDragging(),
+    }),
+    canDrag: draggable,
+  });
 
   const [, drop] = useDrop<DragItem, void>({
     accept: 'TASK',
@@ -59,18 +71,9 @@ const TaskItem = ({
         return;
       }
 
-      moveTask(dragIndex, hoverIndex);
+      moveTask(dragIndex, hoverIndex, isDragging);
       item.index = hoverIndex;
     },
-  });
-
-  const [{ isDragging }, drag, preview] = useDrag({
-    type: 'TASK',
-    item: { index },
-    collect: monitor => ({
-      isDragging: monitor.isDragging(),
-    }),
-    canDrag: draggable,
   });
 
   if (draggable) {
@@ -182,12 +185,14 @@ const TasksConfig = ({
   );
 
   const moveTask = useCallback(
-    (dragIndex: number, hoverIndex: number) => {
-      const draggedTask = values[dragIndex];
-      const updatedTasks = [...values];
-      updatedTasks.splice(dragIndex, 1);
-      updatedTasks.splice(hoverIndex, 0, draggedTask);
-      onChange(updatedTasks);
+    (dragIndex: number, hoverIndex: number, isDragging: boolean) => {
+      if (!isDragging) {
+        const draggedTask = values[dragIndex];
+        const updatedTasks = [...values];
+        updatedTasks.splice(dragIndex, 1);
+        updatedTasks.splice(hoverIndex, 0, draggedTask);
+        onChange(updatedTasks);
+      }
     },
     [values, onChange],
   );

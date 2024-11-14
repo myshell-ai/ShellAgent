@@ -12,7 +12,7 @@ import { observer } from 'mobx-react-lite';
 import NodeCard from '@/components/app/node-card';
 import NodeForm from '@/components/app/node-form';
 import { useInjection } from 'inversify-react';
-import { AppBuilderModel } from '@/components/app/app-builder.model';
+import { AppBuilderModel } from '@/stores/app/models/app-builder.model';
 
 const StartNode: React.FC<NodeProps<StartNodeType>> = ({
   id,

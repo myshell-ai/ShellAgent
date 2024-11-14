@@ -6,7 +6,7 @@ import { useInjection } from 'inversify-react';
 import { observer } from 'mobx-react-lite';
 // import ShortcutsName from '@/components/common/shortcuts-name';
 import { useAppState } from '@/stores/app/use-app-state';
-import { AppBuilderModel } from '@/components/app/app-builder.model';
+import { AppBuilderModel } from '@/stores/app/models/app-builder.model';
 
 const CopyMenu: React.FC<{ id: string; name: string }> = ({ id, name }) => {
   const appBuilder = useInjection<AppBuilderModel>('AppBuilderModel');

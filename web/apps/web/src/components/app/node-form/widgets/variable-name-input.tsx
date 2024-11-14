@@ -27,7 +27,7 @@ import {
 import { useSchemaContext } from '@/stores/app/schema-provider';
 
 import { useInjection } from 'inversify-react';
-import { AppBuilderModel } from '@/components/app/app-builder.model.ts';
+import { AppBuilderModel } from '@/stores/app/models/app-builder.model';
 
 interface VariableSelectProps {
   name: string;

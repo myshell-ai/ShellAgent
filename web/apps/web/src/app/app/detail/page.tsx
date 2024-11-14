@@ -14,7 +14,7 @@ import { edgeTypes, materialList, nodeTypes } from '@/components/app/constants';
 import FlowHeader from '@/components/app/flow-header';
 import { Header } from '@/components/app/header';
 import { AppBuilderChatModel } from '@/components/chat/app-builder-chat.model';
-import { AppBuilderModel } from '@/components/app/app-builder.model';
+import { AppBuilderModel } from '@/stores/app/models/app-builder.model';
 
 import { ListFooterExtra } from '@/components/common/list-footer-extra';
 import { ImageCanvasDialog } from '@/components/image-canvas/open-image-canvas';

@@ -4,7 +4,7 @@ import { removeBrackets } from '@shellagent/shared/utils';
 import { useCallback, useMemo } from 'react';
 import { useSelectOptions } from './use-select-options';
 import { useInjection } from 'inversify-react';
-import { AppBuilderModel } from '@/components/app/app-builder.model';
+import { AppBuilderModel } from '@/stores/app/models/app-builder.model';
 import { useSchemaContext } from '@/stores/app/schema-provider';
 import { useFormEngineContext } from '@shellagent/form-engine';
 interface IVariableValue {

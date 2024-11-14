@@ -14,7 +14,7 @@ import { toast } from 'react-toastify';
 
 import FileUploader from '@/components/common/uploader';
 import { APIFetch } from '@/services/base';
-import { ShellAgent } from '@/stores/app/app-store';
+import { ShellAgent } from '@/types/app/types';
 import { GetShellAgentResponse } from '@/services/app/type';
 
 const ImportModal: React.FC<{

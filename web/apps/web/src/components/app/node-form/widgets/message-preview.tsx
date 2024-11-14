@@ -20,7 +20,7 @@ import {
 } from '@/components/app/constants';
 import { EdgeTypeEnum, EdgeDataTypeEnum } from '@/components/app/edges';
 import { useSchemaContext } from '@/stores/app/schema-provider';
-import { AppBuilderModel } from '@/components/app/app-builder.model';
+import { AppBuilderModel } from '@/stores/app/models/app-builder.model';
 import { useAppState } from '@/stores/app/use-app-state';
 import { generateUUID } from '@/utils/common-helper';
 

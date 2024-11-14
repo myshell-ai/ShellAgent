@@ -14,7 +14,7 @@ import React, { useCallback } from 'react';
 import { toast } from 'react-toastify';
 
 import { AppBuilderChatModel } from '@/components/chat/app-builder-chat.model';
-import { AppBuilderModel } from '@/components/app/app-builder.model';
+import { AppBuilderModel } from '@/stores/app/models/app-builder.model';
 
 import { editItem } from '@/services/home';
 import { useAppState } from '@/stores/app/use-app-state';
@@ -139,7 +139,7 @@ export const Header: React.FC = () => {
           app_id={id}
           version_name={version_name}
           loading={
-            appBuilder.loading.getAutomata || appBuilder.getReactFlowLoading
+            appBuilder.getAutomataLoading || appBuilder.getReactFlowLoading
           }
         />
         <ExtraActions />

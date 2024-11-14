@@ -16,7 +16,7 @@ import { Resizable } from 'react-resizable';
 
 import { AppBuilderChat } from '@/components/chat/app-builder-chat';
 import { AppBuilderChatModel } from '@/components/chat/app-builder-chat.model';
-import { AppBuilderModel } from '@/components/app/app-builder.model';
+import { AppBuilderModel } from '@/stores/app/models/app-builder.model';
 import { useAppState } from '@/stores/app/use-app-state';
 import { getSchemaByInputs } from '@/stores/workflow/utils/get-run-schema';
 import { useWorkflowStore } from '@/stores/workflow/workflow-provider';

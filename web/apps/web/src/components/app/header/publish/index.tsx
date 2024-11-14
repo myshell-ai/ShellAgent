@@ -32,7 +32,7 @@ import { saveApp, releaseApp, fetchAppVersionList } from '@/services/app';
 import { genAutomata } from '@/stores/app/utils/data-transformer';
 import { cn } from '@/utils/cn';
 import { GetAppVersionListResponse } from '@/services/app/type';
-import { AppBuilderModel } from '@/components/app/app-builder.model';
+import { AppBuilderModel } from '@/stores/app/models/app-builder.model';
 import { useInjection } from 'inversify-react';
 
 import VersionSkeleton from '../skeleton';
@@ -153,11 +153,7 @@ const DropdownRender = ({
   );
 };
 
-export default function Publish({
-  app_id,
-  version_name,
-  loading,
-}: PublishProps) {
+function Publish({ app_id, version_name, loading }: PublishProps) {
   const appBuilder = useInjection<AppBuilderModel>('AppBuilderModel');
   const router = useRouter();
   const [versionName, setVersionName] = useState('');
@@ -388,3 +384,5 @@ export default function Publish({
     </div>
   );
 }
+
+export default observer(Publish);

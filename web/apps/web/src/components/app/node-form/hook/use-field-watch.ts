@@ -3,7 +3,7 @@ import { reservedKeySchema } from '@shellagent/shared/protocol/pro-config';
 import { RefSceneEnum } from '@shellagent/shared/protocol/app-scope';
 import { customSnakeCase, removeBrackets } from '@shellagent/shared/utils';
 import { useInjection } from 'inversify-react';
-import { AppBuilderModel } from '@/components/app/app-builder.model';
+import { AppBuilderModel } from '@/stores/app/models/app-builder.model';
 
 import { FormRef } from '@shellagent/ui';
 import { useEffect, useRef, useCallback } from 'react';
@@ -38,7 +38,9 @@ export function useFieldWatch(formRef: React.RefObject<FormRef>) {
             appBuilder.hanldeRefScene({
               scene: RefSceneEnum.Enum.remove_ref_opts,
               params: {
-                paths: [`__${reservedKeySchema.Enum.context}__${path}__`],
+                paths: [
+                  `${stateId}.__${reservedKeySchema.Enum.context}__${path}__`,
+                ],
               },
             });
             break;
@@ -61,8 +63,8 @@ export function useFieldWatch(formRef: React.RefObject<FormRef>) {
             appBuilder.hanldeRefScene({
               scene: RefSceneEnum.Enum.rename_ref_opt,
               params: {
-                oldPath: `__${reservedKeySchema.Enum.context}__${path}__`,
-                newPath: `__${
+                oldPath: `${stateId}.__${reservedKeySchema.Enum.context}__${path}__`,
+                newPath: `${stateId}.__${
                   reservedKeySchema.Enum.context
                 }__${customSnakeCase(diffNewValue?.name || '')}__`,
               },
@@ -193,7 +195,14 @@ export function useFieldWatch(formRef: React.RefObject<FormRef>) {
       const newBlocks = get(newValue, reservedKeySchema.Enum.blocks);
 
       getDiffPath(oldBlocks, newBlocks).forEach(diff => {
-        const { type, path, oldValue, newValue: diffNewValue } = diff;
+        const {
+          type,
+          path,
+          oldValue,
+          newValue: diffNewValue,
+          fromIndex,
+          toIndex,
+        } = diff;
 
         const index = Number(path?.split('.')?.[0]);
         const blockName = oldBlocks[index]?.name;
@@ -231,14 +240,21 @@ export function useFieldWatch(formRef: React.RefObject<FormRef>) {
 
             break;
           case DiffTypeEnum.Reordered:
-            // todo 待验证
+            const prefix = oldBlocks
+              .slice(
+                Math.min(fromIndex!, toIndex!),
+                Math.max(fromIndex!, toIndex!),
+              )
+              .map((block: any) => `${stateId}.${block.name}`);
+
+            // TODO
+
             appBuilder.hanldeRefScene({
               scene: RefSceneEnum.Enum.remove_ref_opts_prefix,
               params: {
-                prefix: [`${stateId}.${blockName}`],
+                prefix,
               },
             });
-
             break;
           default:
             break;

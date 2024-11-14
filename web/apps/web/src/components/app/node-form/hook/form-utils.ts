@@ -92,11 +92,16 @@ export const getDiffPath = (
       !isEqual(prevObj, newObj);
 
     if (isReordered) {
-      // 找出第一个位置发生变化的元素
-      const fromIndex = prevObj.findIndex(
-        (item, index) => !isEqual(item, newObj[index]),
-      );
-      // 找出该元素在新数组中的位置
+      // 从后往前遍历，找到第一个不同的元素位置
+      let fromIndex = prevObj.length - 1;
+      while (fromIndex >= 0) {
+        if (!isEqual(prevObj[fromIndex], newObj[fromIndex])) {
+          break;
+        }
+        fromIndex--;
+      }
+
+      // 找到该元素在新数组中的位置
       const toIndex = newObj.findIndex(item =>
         isEqual(item, prevObj[fromIndex]),
       );

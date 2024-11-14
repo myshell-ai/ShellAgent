@@ -50,10 +50,6 @@ const UnfocusInput = React.forwardRef<HTMLInputElement, UnfocusInputProps>(
     const [innerValue, setInnerValue] = React.useState<string>(value ?? '');
     const { readOnly } = props;
 
-    React.useEffect(() => {
-      setInnerValue(value ?? '');
-    }, [value]);
-
     const inputVariants = cva('', {
       variants: {
         rounded: {
@@ -120,7 +116,7 @@ const UnfocusInput = React.forwardRef<HTMLInputElement, UnfocusInputProps>(
         {...props}
         type={type}
         ref={ref}
-        value={innerValue}
+        defaultValue={value}
         className={cn(
           'flex space-x-2 p-3 text-base text-default ring-offset-surface-default hover:border-hovered aria-[invalid=true]:border-critical aria-[invalid=true]:hover:border-surface-critical-hovered aria-[invalid=true]:hover:bg-surface-accent-red-subtlest file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-disabled disabled:cursor-not-allowed disabled:opacity-30',
           inputVariants({ rounded, size, border, outline, background, shadow }),

@@ -5,7 +5,7 @@ import { reservedKeySchema } from '@shellagent/shared/protocol/pro-config';
 import { useInjection } from 'inversify-react';
 import { useMemo } from 'react';
 
-import { AppBuilderModel } from '@/components/app/app-builder.model';
+import { AppBuilderModel } from '@/stores/app/models/app-builder.model';
 import { useSchemaContext } from '@/stores/app/schema-provider';
 import { useAppState } from '@/stores/app/use-app-state';
 
@@ -45,6 +45,8 @@ export const useSelectOptions = (name?: string) => {
     taskIndex,
     currentEdegData?.event_key as CustomEventName | undefined,
   );
+
+  console.log('refOptions>>', refOptions);
 
   return refOptions;
 };

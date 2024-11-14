@@ -24,7 +24,7 @@ import { RefSceneEnum } from '@shellagent/shared/protocol/app-scope';
 
 import { EdgeDataTypeEnum, EdgeTypeEnum } from '@/components/app/edges';
 import { useInjection } from 'inversify-react';
-import { AppBuilderModel } from '@/components/app/app-builder.model';
+import { AppBuilderModel } from '@/stores/app/models/app-builder.model';
 import NodeCard from '@/components/app/node-card';
 import NodeForm from '@/components/app/node-form';
 import { useAppState } from '@/stores/app/use-app-state';

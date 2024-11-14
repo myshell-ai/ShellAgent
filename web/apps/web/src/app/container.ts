@@ -8,7 +8,7 @@ import { Container, interfaces } from 'inversify';
 import { toJS } from 'mobx';
 import { toast } from 'react-toastify';
 
-import { AppBuilderModel } from '@/components/app/app-builder.model';
+import { AppBuilderModel } from '@/stores/app/models/app-builder.model';
 import { AppBuilderChatModel } from '@/components/chat/app-builder-chat.model';
 import { DownloadModel } from '@/components/download/download.model';
 import { OpenImageCanvasModel } from '@/components/image-canvas/open-image-canvas.model';
@@ -90,9 +90,10 @@ container
   .inSingletonScope()
   .onActivation((_ctx: interfaces.Context, model: AppBuilderModel) => {
     if (typeof window !== 'undefined') {
-      (window as any)._get_app_builder_model_refs = function () {
+      (window as any)._refs = function () {
         return model.refs;
       };
+      (window as any)._nodeData = model.nodeData;
     }
     return model;
   });

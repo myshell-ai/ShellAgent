@@ -16,7 +16,7 @@ import { getSchemaByWidget } from '@/stores/app/utils/get-widget-schema';
 import { useWorkflowStore } from '@/stores/workflow/workflow-provider';
 import { useInjection } from 'inversify-react';
 import { observer } from 'mobx-react-lite';
-import { AppBuilderModel } from '@/components/app/app-builder.model';
+import { AppBuilderModel } from '@/stores/app/models/app-builder.model';
 
 export interface WidgetConfigProps {
   values: TValues | undefined;

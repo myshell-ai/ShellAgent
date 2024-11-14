@@ -20,7 +20,7 @@ import { WorkflowConfig } from '@/components/app/config-form/workflow-config';
 import { EditableTitle } from '@/components/app/editable-title';
 import NodeForm from '@/components/app/node-form';
 import { AppBuilderChatModel } from '@/components/chat/app-builder-chat.model';
-import { AppBuilderModel } from '@/components/app/app-builder.model';
+import { AppBuilderModel } from '@/stores/app/models/app-builder.model';
 import { SchemaProvider } from '@/stores/app/schema-provider';
 import { useAppState } from '@/stores/app/use-app-state';
 import { stateConfigSchema } from '@/stores/app/utils/schema';

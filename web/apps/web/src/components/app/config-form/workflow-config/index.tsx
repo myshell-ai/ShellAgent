@@ -14,7 +14,7 @@ import { observer } from 'mobx-react-lite';
 import NodeForm from '@/components/app/node-form';
 import { getWorkflowSchema } from '@/stores/app/utils/get-workflow-schema';
 import { useWorkflowStore } from '@/stores/workflow/workflow-provider';
-import { AppBuilderModel } from '@/components/app/app-builder.model';
+import { AppBuilderModel } from '@/stores/app/models/app-builder.model';
 
 interface WorkflowConfigProps {
   values: TValues | undefined;

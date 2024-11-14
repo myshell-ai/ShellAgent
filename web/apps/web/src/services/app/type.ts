@@ -2,8 +2,7 @@ import { IFlow } from '@shellagent/flow-engine';
 import { Automata } from '@shellagent/pro-config';
 
 import { ServerMessage } from './message-type';
-import { Metadata } from '../home/type';
-import { AppState } from '@/stores/app/app-store';
+import { Config, Metadata } from '@/types/app/types';
 
 export interface AppMetadata {
   name: string;
@@ -176,9 +175,9 @@ export type GetShellAgentResponse = {
   data: {
     reactflow: {
       reactflow: IFlow;
-      config: AppState['config'];
+      config: Config;
     };
-    metadata: AppState['metadata'];
+    metadata: Metadata;
     automata: Automata;
   };
   success: boolean;

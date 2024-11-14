@@ -8,7 +8,7 @@ import { useAppState } from '@/stores/app/use-app-state';
 import { buttonConfigSchema } from '@/stores/app/utils/schema';
 import { useInjection } from 'inversify-react';
 import { observer } from 'mobx-react-lite';
-import { AppBuilderModel } from '@/components/app/app-builder.model';
+import { AppBuilderModel } from '@/stores/app/models/app-builder.model';
 
 interface ButtonConfigProps {
   values: TValues;

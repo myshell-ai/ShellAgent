@@ -14,8 +14,8 @@ import { useInjection } from 'inversify-react';
 import { observer } from 'mobx-react-lite';
 
 import { cn } from '@/utils/cn';
-import { ShellAgent } from '@/stores/app/app-store';
-import { AppBuilderModel } from '@/components/app/app-builder.model';
+import { ShellAgent } from '@/types/app/types';
+import { AppBuilderModel } from '@/stores/app/models/app-builder.model';
 
 import ImportModal from './import-modal';
 
