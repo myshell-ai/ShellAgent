@@ -17,7 +17,7 @@ type SchemaState = {
   schemaMode: string;
   fieldMode: Record<string, TFieldMode>;
   multiSchema: boolean;
-  output?: Record<string, any>;
+  outputs?: Record<string, any>;
   outputSchema: JsonSchema7;
 };
 
@@ -31,6 +31,7 @@ type SchemaStore = SchemaState & SchemaAction;
 export const initState: SchemaStore = {
   id: '',
   schema: {},
+  outputs: {},
   schemaMode: 'basic',
   setSchemaMode: () => {},
   fieldMode: {},
