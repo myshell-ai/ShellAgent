@@ -1,3 +1,4 @@
+/* eslint-disable */
 import { TValues } from '@shellagent/form-engine';
 import { RefSceneEnum } from '@shellagent/shared/protocol/app-scope';
 import { reservedKeySchema } from '@shellagent/shared/protocol/pro-config';

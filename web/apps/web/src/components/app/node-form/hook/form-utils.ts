@@ -1,4 +1,4 @@
-// ts-nocheck
+/* eslint-disable */
 import { TValues } from '@shellagent/form-engine';
 import { FormRef } from '@shellagent/ui';
 import { isEqual, omit, merge } from 'lodash-es';
