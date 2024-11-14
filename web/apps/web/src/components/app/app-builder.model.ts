@@ -17,6 +17,21 @@ import {
   convetNodeDataToScopes,
 } from './app-builder-utils';
 
+// 在类外部定义工具函数
+function processNestedObject(
+  obj: any,
+  processor: (value: any, key: string, parent: any) => void,
+) {
+  if (!obj || typeof obj !== 'object') return;
+
+  Object.entries(obj).forEach(([key, value]) => {
+    processor(value, key, obj);
+    if (typeof value === 'object') {
+      processNestedObject(value, processor);
+    }
+  });
+}
+
 @injectable()
 export class AppBuilderModel {
   constructor() {
@@ -60,70 +75,41 @@ export class AppBuilderModel {
     this.refs = refs;
   }
 
-  hanldeRefScene(evt: HandleRefSceneEvent) {
-    // todo nodeData迁移至mobx
-    if (evt.scene === RefSceneEnum.Enum.remove_ref_opts) {
-      evt.params.paths.forEach(path => {
-        Object.keys(this.refs).forEach(stateKey => {
-          const stateRefs = this.refs[stateKey as Lowercase<string>];
-          Object.keys(stateRefs || {}).forEach(refPath => {
-            // if (stateRefs[refPath]?.currentMode === 'ref') {
-            // TODO 暂只支持ref
-            this.nodeData = set(
-              this.nodeData,
-              `${stateKey}.${refPath}`,
-              undefined,
-            );
-            // }
-          });
-        });
-        this.nodeData = set(this.nodeData, path, undefined);
-      });
-    } else if (evt.scene === RefSceneEnum.Enum.rename_ref_opt) {
-      const { oldPath, newPath } = evt.params;
-      Object.keys(this.refs).forEach(stateKey => {
-        const stateRefs = this.refs[stateKey as Lowercase<string>];
-        Object.keys(stateRefs || {}).forEach(refPath => {
-          if (stateRefs?.[refPath]?.ref === oldPath) {
-            // TODO 暂只支持ref
-            this.nodeData = set(
-              this.nodeData,
-              `${stateKey}.${refPath}`,
-              `{{ ${newPath} }}`,
-            );
-          }
-        });
-      });
-    } else if (evt.scene === RefSceneEnum.enum.change_nodedata_mode) {
-      const { key, mode } = evt.params;
-      this.nodeDataMode.set(key, mode);
-    } else if (evt.scene === RefSceneEnum.enum.remove_ref_opts_prefix) {
-      const { prefix } = evt.params;
-      Object.keys(this.refs).forEach(stateKey => {
-        const stateRefs = this.refs[stateKey as Lowercase<string>];
-        Object.keys(stateRefs || {}).forEach(refPath => {
-          // 检查是否以任意前缀开头
-          const hasMatchingPrefix = prefix.some(p =>
-            stateRefs?.[refPath]?.ref?.startsWith(p),
-          );
-          if (hasMatchingPrefix) {
-            // 移除带有指定前缀的引用
-            this.nodeData = set(
-              this.nodeData,
-              `${stateKey}.${refPath}`,
-              undefined,
-            );
-          }
-        });
-      });
-    } else if (evt.scene === RefSceneEnum.enum.remove_state) {
-      const { stateName } = evt.params;
-      this.nodeData = set(this.nodeData, stateName, undefined);
-    }
+  initNodeData(nodeData: any) {
+    this.nodeData = nodeData;
+  }
 
+  hanldeRefScene(evt: HandleRefSceneEvent) {
+    this.updateNodeData(evt, this.nodeData);
     this.refs = hanldeRefScene(this.refs, evt);
 
     console.log('this.refs>>', this.refs, evt);
-    console.log('this.nodeData', this.nodeData);
+  }
+
+  updateNodeData(evt: HandleRefSceneEvent, nodeData: any) {
+    if (evt.scene === RefSceneEnum.Enum.remove_ref_opts) {
+      evt.params.paths.forEach(path => {
+        // 解析路径，获取 stateId 和变量名
+        const [stateId, varName] = path.split('.');
+
+        // 只处理指定 state 节点下的数据
+        const stateNode = nodeData[stateId];
+        if (!stateNode) return;
+
+        // 遍历该 state 节点下的所有属性
+        processNestedObject(stateNode, (value, key, parent) => {
+          if (typeof value === 'string') {
+            // 检查值是否包含被删除的变量（使用正则匹配 {{ varName }}）
+            const refRegex = new RegExp(`{{\\s*${varName}\\s*}}`, 'g');
+            if (refRegex.test(value)) {
+              parent[key] = '';
+            }
+          }
+        });
+
+        console.log('nodeData>>>>', nodeData);
+      });
+    } else if (evt.scene === RefSceneEnum.Enum.rename_ref_opt) {
+    }
   }
 }

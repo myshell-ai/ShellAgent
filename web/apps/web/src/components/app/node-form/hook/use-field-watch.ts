@@ -37,7 +37,9 @@ export function useFieldWatch(formRef: React.RefObject<FormRef>) {
           case DiffTypeEnum.Deleted:
             appBuilder.hanldeRefScene({
               scene: RefSceneEnum.Enum.remove_ref_opts,
-              params: { paths: [`${name}.${path}`] },
+              params: {
+                paths: [`__${reservedKeySchema.Enum.context}__${path}__`],
+              },
             });
             break;
           case DiffTypeEnum.Modified:
@@ -59,10 +61,10 @@ export function useFieldWatch(formRef: React.RefObject<FormRef>) {
             appBuilder.hanldeRefScene({
               scene: RefSceneEnum.Enum.rename_ref_opt,
               params: {
-                oldPath: `${reservedKeySchema.Enum.context}.${path}`,
-                newPath: `${reservedKeySchema.Enum.context}.${customSnakeCase(
-                  diffNewValue?.name || '',
-                )}`,
+                oldPath: `__${reservedKeySchema.Enum.context}__${path}__`,
+                newPath: `__${
+                  reservedKeySchema.Enum.context
+                }__${customSnakeCase(diffNewValue?.name || '')}__`,
               },
             });
             break;
@@ -82,13 +84,12 @@ export function useFieldWatch(formRef: React.RefObject<FormRef>) {
 
       getDiffPath(oldInputs, newInputs).forEach(diff => {
         const { type, path, oldValue, newValue: diffNewValue } = diff;
-        const basePath = `${stateId}.${reservedKeySchema.Enum.inputs}`;
 
         switch (type) {
           case DiffTypeEnum.Deleted:
             appBuilder.hanldeRefScene({
               scene: RefSceneEnum.Enum.remove_ref_opts,
-              params: { paths: [`${basePath}.${path}`] },
+              params: { paths: [`${stateId}.${path}`] },
             });
             break;
           case DiffTypeEnum.Modified:
@@ -117,8 +118,8 @@ export function useFieldWatch(formRef: React.RefObject<FormRef>) {
             appBuilder.hanldeRefScene({
               scene: RefSceneEnum.Enum.rename_ref_opt,
               params: {
-                oldPath: `${basePath}.${path}`,
-                newPath: `${basePath}.${customSnakeCase(
+                oldPath: `${stateId}.${path}`,
+                newPath: `${stateId}.${customSnakeCase(
                   diffNewValue?.name || '',
                 )}`,
               },
@@ -135,7 +136,6 @@ export function useFieldWatch(formRef: React.RefObject<FormRef>) {
     debounce((newValue: TValues, prevValue: TValues, name: string) => {
       const oldOuputs = get(prevValue, reservedKeySchema.Enum.outputs);
       const newOutputs = get(newValue, reservedKeySchema.Enum.outputs);
-      const basePath = `${stateId}.${reservedKeySchema.Enum.outputs}`;
 
       getDiffPath(oldOuputs, newOutputs).forEach(diff => {
         const { type, path, oldValue, newValue: diffNewValue } = diff;
@@ -144,7 +144,7 @@ export function useFieldWatch(formRef: React.RefObject<FormRef>) {
           case DiffTypeEnum.Deleted:
             appBuilder.hanldeRefScene({
               scene: RefSceneEnum.Enum.remove_ref_opts,
-              params: { paths: [`${basePath}.${path}`] },
+              params: { paths: [`${stateId}.${path}`] },
             });
             break;
           case DiffTypeEnum.Modified:
@@ -173,8 +173,8 @@ export function useFieldWatch(formRef: React.RefObject<FormRef>) {
             appBuilder.hanldeRefScene({
               scene: RefSceneEnum.Enum.rename_ref_opt,
               params: {
-                oldPath: `${basePath}.${path}`,
-                newPath: `${basePath}.${customSnakeCase(
+                oldPath: `${stateId}.${path}`,
+                newPath: `${stateId}.${customSnakeCase(
                   diffNewValue?.name || '',
                 )}`,
               },
@@ -194,7 +194,6 @@ export function useFieldWatch(formRef: React.RefObject<FormRef>) {
 
       getDiffPath(oldBlocks, newBlocks).forEach(diff => {
         const { type, path, oldValue, newValue: diffNewValue } = diff;
-        const blocksPath = `${stateId}.${reservedKeySchema.Enum.blocks}`;
 
         const index = Number(path?.split('.')?.[0]);
         const blockName = oldBlocks[index]?.name;
@@ -203,7 +202,7 @@ export function useFieldWatch(formRef: React.RefObject<FormRef>) {
           case DiffTypeEnum.Deleted:
             appBuilder.hanldeRefScene({
               scene: RefSceneEnum.Enum.remove_ref_opts,
-              params: { paths: [`${blocksPath}.${blockName}`] },
+              params: { paths: [`${stateId}.${blockName}`] },
             });
             break;
 
@@ -224,8 +223,8 @@ export function useFieldWatch(formRef: React.RefObject<FormRef>) {
               appBuilder.hanldeRefScene({
                 scene: RefSceneEnum.Enum.rename_ref_opt,
                 params: {
-                  oldPath: `${blocksPath}.${oldValue}`,
-                  newPath: `${blocksPath}.${customSnakeCase(diffNewValue)}`,
+                  oldPath: `${stateId}.${oldValue}`,
+                  newPath: `${stateId}.${customSnakeCase(diffNewValue)}`,
                 },
               });
             }
@@ -236,7 +235,7 @@ export function useFieldWatch(formRef: React.RefObject<FormRef>) {
             appBuilder.hanldeRefScene({
               scene: RefSceneEnum.Enum.remove_ref_opts_prefix,
               params: {
-                prefix: [`${blocksPath}.${blockName}`],
+                prefix: [`${stateId}.${blockName}`],
               },
             });
 
@@ -265,13 +264,12 @@ export function useFieldWatch(formRef: React.RefObject<FormRef>) {
 
       getDiffPath(oldButtons, newButtons).forEach(diff => {
         const { type, path, oldValue, newValue: diffNewValue } = diff;
-        const renderPath = `${stateId}.${reservedKeySchema.Enum.render}`;
 
         switch (type) {
           case DiffTypeEnum.Deleted:
             appBuilder.hanldeRefScene({
               scene: RefSceneEnum.Enum.remove_ref_opts,
-              params: { paths: [`${renderPath}.${path}`] },
+              params: { paths: [`${stateId}.${path}`] },
             });
             break;
 
@@ -291,8 +289,8 @@ export function useFieldWatch(formRef: React.RefObject<FormRef>) {
               appBuilder.hanldeRefScene({
                 scene: RefSceneEnum.Enum.rename_ref_opt,
                 params: {
-                  oldPath: `${renderPath}.${oldValue}`,
-                  newPath: `${renderPath}.${customSnakeCase(diffNewValue)}`,
+                  oldPath: `${stateId}.${oldValue}`,
+                  newPath: `${stateId}.${customSnakeCase(diffNewValue)}`,
                 },
               });
             }
