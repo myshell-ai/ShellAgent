@@ -7,67 +7,53 @@ import {
 } from '@shellagent/flow-engine';
 import { TValues, TFieldMode } from '@shellagent/form-engine';
 import React, { useCallback, useMemo } from 'react';
+import { observer } from 'mobx-react-lite';
 
 import NodeCard from '@/components/app/node-card';
 import NodeForm from '@/components/app/node-form';
-import { useAppStore } from '@/stores/app/app-provider';
+import { useInjection } from 'inversify-react';
+import { AppBuilderModel } from '@/components/app/app-builder.model';
 
-const StartNode: React.FC<NodeProps<StartNodeType>> = ({
-  id,
-  selected,
-  data,
-}) => {
-  const {
-    setNodeData,
-    nodeData,
-    fieldsModeMap,
-    setFieldsModeMap,
-    setResetData,
-    loading,
-  } = useAppStore(state => ({
-    setNodeData: state.setNodeData,
-    nodeData: state.nodeData,
-    fieldsModeMap: state.config?.fieldsModeMap || {},
-    setFieldsModeMap: state.setFieldsModeMap,
-    setResetData: state.setResetData,
-    loading: state.loading.getAutomata,
-  }));
+const StartNode: React.FC<NodeProps<StartNodeType>> = observer(
+  ({ id, selected, data }) => {
+    const appBuilder = useInjection(AppBuilderModel);
 
-  const edges = useReactFlowStore(state => state.edges);
+    const edges = useReactFlowStore(state => state.edges);
 
-  const onChange = useCallback(
-    (values: TValues) => {
-      setNodeData({ id: NodeIdEnum.start, data: values });
-    },
-    [setNodeData, nodeData, setResetData, data.id],
-  );
+    const onChange = useCallback(
+      (values: TValues) => {
+        appBuilder.setNodeData({ id: NodeIdEnum.start, data: values });
+      },
+      [appBuilder.setNodeData],
+    );
 
-  const onModeChange = useCallback(
-    (name: string, mode: TFieldMode) => {
-      setFieldsModeMap({ id, name, mode });
-    },
-    [id, setFieldsModeMap],
-  );
+    const onModeChange = useCallback(
+      (name: string, mode: TFieldMode) => {
+        appBuilder.setFieldsModeMap({ id, name, mode });
+      },
+      [id, appBuilder.setFieldsModeMap],
+    );
 
-  // 只能连接一个state节点
-  const isConnectable = useMemo(() => {
-    return edges.some(edge => edge.source === id) === false;
-  }, [edges]);
+    // 只能连接一个state节点
+    const isConnectable = useMemo(() => {
+      return edges.some(edge => edge.source === id) === false;
+    }, [edges]);
 
-  return (
-    <>
-      <NodeCard selected={selected} {...data}>
-        <NodeForm
-          loading={loading}
-          values={nodeData[data.id]}
-          onChange={onChange}
-          onModeChange={onModeChange}
-          modeMap={fieldsModeMap?.[data.id] || {}}
-        />
-      </NodeCard>
-      <SourceHandle isConnectable={isConnectable} id={id} />
-    </>
-  );
-};
+    return (
+      <>
+        <NodeCard selected={selected} {...data}>
+          <NodeForm
+            loading={appBuilder.loading.getAutomata}
+            values={appBuilder.nodeData[data.id] || {}}
+            onChange={onChange}
+            onModeChange={onModeChange}
+            modeMap={appBuilder.config.fieldsModeMap?.[data.id] || {}}
+          />
+        </NodeCard>
+        <SourceHandle isConnectable={isConnectable} id={id} />
+      </>
+    );
+  },
+);
 
 export default StartNode;

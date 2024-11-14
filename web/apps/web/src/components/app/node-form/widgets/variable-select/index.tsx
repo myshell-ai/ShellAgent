@@ -1,7 +1,7 @@
 import { ISelectProps, Cascader, CascaderOption } from '@shellagent/ui';
 import { RefSceneEnum } from '@shellagent/shared/protocol/app-scope';
 import { removeBrackets } from '@shellagent/shared/utils';
-import { useCallback } from 'react';
+import { useCallback, useMemo } from 'react';
 import { useSelectOptions } from './use-select-options';
 import { useInjection } from 'inversify-react';
 import { AppBuilderModel } from '@/components/app/app-builder.model';
@@ -34,11 +34,23 @@ const VariableSelect = (props: VariableSelectProps) => {
 
       const replacedString = val.replace(contextReg, 'context.$1');
 
-      const newValue = contextReg.test(val)
-        ? removeBrackets(replacedString)
-        : `${stateId}.${parentKey ? `${parentKey}.` : ''}${removeBrackets(
-            val,
-          )}`;
+      // trick的写法
+      const newValue =
+        parentKey === 'state'
+          ? removeBrackets(val)
+          : contextReg.test(val)
+          ? removeBrackets(replacedString)
+          : `${stateId}.${parentKey ? `${parentKey}.` : ''}${removeBrackets(
+              val,
+            )}`;
+
+      // TODO 引用state output有问题
+      //   {
+      //     "outputs.untitled_outputs_1.value": {
+      //         "currentMode": "ref",
+      //         "ref": "state_2.state_1.state1_output"
+      //     }
+      // }
 
       appBuilder.hanldeRefScene({
         scene: RefSceneEnum.Enum.set_nodedata_key_val,

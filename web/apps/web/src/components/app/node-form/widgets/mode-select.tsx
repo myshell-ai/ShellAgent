@@ -13,6 +13,7 @@ import { RefSceneEnum } from '@shellagent/shared/protocol/app-scope';
 import { useInjection } from 'inversify-react';
 import { AppBuilderModel } from '@/components/app/app-builder.model';
 import { useSchemaContext } from '@/stores/app/schema-provider';
+import { useFormEngineContext } from '@shellagent/form-engine';
 import {
   DropdownMenu,
   DropdownMenuTrigger,
@@ -64,6 +65,8 @@ export function ModeSelect({
   const appBuilder = useInjection(AppBuilderModel);
   const stateId = useSchemaContext(state => state.id);
 
+  const { parent } = useFormEngineContext();
+
   const options = useMemo(() => {
     if (!defaultOptions) {
       return ModeOptions;
@@ -87,11 +90,11 @@ export function ModeSelect({
         params: {
           stateName: stateId as Lowercase<string>,
           mode: value,
-          key: name,
+          key: `${stateId}.${parent}.${name}`,
         },
       });
     },
-    [appBuilder.hanldeRefScene, name, stateId],
+    [appBuilder.hanldeRefScene, name, stateId, parent],
   );
 
   return (

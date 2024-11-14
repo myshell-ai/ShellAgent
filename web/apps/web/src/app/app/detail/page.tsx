@@ -7,7 +7,6 @@ import { useInjection } from 'inversify-react';
 import dynamic from 'next/dynamic';
 import { useSearchParams } from 'next/navigation';
 import { useEffect, useRef } from 'react';
-import { useShallow } from 'zustand/react/shallow';
 import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
 
@@ -19,7 +18,6 @@ import { AppBuilderModel } from '@/components/app/app-builder.model';
 
 import { ListFooterExtra } from '@/components/common/list-footer-extra';
 import { ImageCanvasDialog } from '@/components/image-canvas/open-image-canvas';
-import { useAppStore } from '@/stores/app/app-provider';
 import { useAppState } from '@/stores/app/use-app-state';
 import { useWorkflowStore } from '@/stores/workflow/workflow-provider';
 
@@ -52,18 +50,6 @@ export default function AppBuilderDetail() {
 
   const appId = params.get('id') as string;
   const version_name = params.get('version_name') as string;
-
-  const { setFlowInstance, getReactFlow, loading, getAutomata, getFlowList } =
-    useAppStore(
-      useShallow(state => ({
-        setFlowInstance: state.setFlowInstance,
-        getReactFlow: state.getReactFlow,
-        loading: state.loading,
-        getAutomata: state.getAutomata,
-        getFlowList: state.getFlowList,
-      })),
-    );
-
   const getWidgetList = useWorkflowStore(state => state.getWidgetList);
 
   const { resetState } = useAppState();
@@ -71,10 +57,8 @@ export default function AppBuilderDetail() {
   // 初始化reactflow
   useEffect(() => {
     if (flowInstance) {
-      setFlowInstance(flowInstance);
-      getReactFlow({ app_id: appId, version_name }, flowInstance, config => {
-        appBuilder.initRefs(config?.refs || {});
-      });
+      appBuilder.setFlowInstance(flowInstance);
+      appBuilder.getReactFlow({ app_id: appId, version_name }, flowInstance);
     }
   }, [flowInstance, appId, version_name]);
 
@@ -83,9 +67,9 @@ export default function AppBuilderDetail() {
   }, [appId]);
 
   useEffect(() => {
-    getAutomata({ app_id: appId, version_name });
+    appBuilder.getAutomata({ app_id: appId, version_name });
     getWidgetList({});
-    getFlowList({ type: 'workflow' });
+    appBuilder.getFlowList({ type: 'workflow' });
   }, [appId, version_name]);
 
   // 退出页面初始化状态
@@ -106,7 +90,9 @@ export default function AppBuilderDetail() {
           style={{ height: 'calc(100vh - 60px)', position: 'relative' }}>
           <FlowEngine
             listLoading={false}
-            loading={loading.getAutomata || loading.getReactFlow}
+            loading={
+              appBuilder.loading.getAutomata || appBuilder.loading.fetchFlowList
+            }
             ref={flowRef}
             nodeTypes={nodeTypes}
             edgeTypes={edgeTypes}

@@ -10,25 +10,22 @@ import {
 import { Automata } from '@shellagent/pro-config';
 import { useState } from 'react';
 import { toast } from 'react-toastify';
-import { useShallow } from 'zustand/react/shallow';
+import { useInjection } from 'inversify-react';
+import { observer } from 'mobx-react-lite';
 
 import { cn } from '@/utils/cn';
-import { useAppStore } from '@/stores/app/app-provider';
 import { ShellAgent } from '@/stores/app/app-store';
+import { AppBuilderModel } from '@/components/app/app-builder.model';
 
 import ImportModal from './import-modal';
 
-export const ExtraActions = () => {
+export const ExtraActions = observer(() => {
   const [importDialogOpen, setImportDialogOpen] = useState(false);
-  const { initAppBuilder } = useAppStore(
-    useShallow(state => ({
-      initAppBuilder: state.initAppBuilder,
-    })),
-  );
+  const appBuilder = useInjection(AppBuilderModel);
 
   const onConfirm = (data: ShellAgent) => {
     return new Promise((resolve, reject) => {
-      initAppBuilder({
+      appBuilder.initAppBuilder({
         reactflow: {
           nodes: [],
           edges: [],
@@ -47,7 +44,7 @@ export const ExtraActions = () => {
       });
       setTimeout(() => {
         try {
-          initAppBuilder(data);
+          appBuilder.initAppBuilder(data);
           toast.success(`import success!`, {
             position: 'top-center',
             autoClose: 1000,
@@ -94,4 +91,4 @@ export const ExtraActions = () => {
       />
     </>
   );
-};
+});
