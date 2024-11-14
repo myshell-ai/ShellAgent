@@ -3,6 +3,7 @@
 import {
   ArrowTopRightOnSquareIcon,
   DocumentDuplicateIcon,
+  DocumentPlusIcon,
   EllipsisVerticalIcon,
   PencilSquareIcon,
   TrashIcon,
@@ -33,6 +34,7 @@ import { Metadata, Type } from '@/services/home/type';
 import { cn } from '@/utils/cn';
 
 import { DeleteDialog } from '../delete-dialog';
+import { SaveTemplateDialog } from '../save-template-dialog';
 import { EditDialog } from '../edit-dialog';
 
 const relativeTime = require('dayjs/plugin/relativeTime');
@@ -51,6 +53,7 @@ interface FlowCardProps {
 
 export const FlowCard = ({ id, metadata, onSuccess, type }: FlowCardProps) => {
   const [openDeleteDialog, setOpenDeleteDialog] = useState<boolean>(false);
+  const [openSaveTempDialog, setOpenSaveTempDialog] = useState<boolean>(false);
   const [openEditDialog, setOpenEditDialog] = useState<boolean>(false);
   const [openDropdown, setOpenDropdown] = useState<boolean>(false);
 
@@ -152,7 +155,7 @@ export const FlowCard = ({ id, metadata, onSuccess, type }: FlowCardProps) => {
             <DropdownMenuContent
               side="top"
               align="end"
-              className="w-40 group/menu">
+              className="w-64 group/menu">
               <DropdownMenuItem onClick={onEdit}>
                 <PencilSquareIcon className="w-5 h-5 mr-1.5 text-icon" />
                 Edit
@@ -173,6 +176,12 @@ export const FlowCard = ({ id, metadata, onSuccess, type }: FlowCardProps) => {
                 <TrashIcon className="w-5 h-5 mr-1.5" />
                 Delete
               </DropdownMenuItem>
+              {type === 'app' ? (
+                <DropdownMenuItem onClick={() => setOpenSaveTempDialog(true)}>
+                  <DocumentPlusIcon className="w-5 h-5 mr-1.5 text-icon" />
+                  {`Save As Template(Beta)`}
+                </DropdownMenuItem>
+              ) : null}
             </DropdownMenuContent>
           </DropdownMenu>
         </CardFooter>
@@ -184,6 +193,11 @@ export const FlowCard = ({ id, metadata, onSuccess, type }: FlowCardProps) => {
         open={openDeleteDialog}
         onClose={() => setOpenDeleteDialog(false)}
         onSuccess={onSuccess}
+      />
+      <SaveTemplateDialog
+        id={id}
+        open={openSaveTempDialog}
+        onClose={() => setOpenSaveTempDialog(false)}
       />
       <EditDialog
         type={type}

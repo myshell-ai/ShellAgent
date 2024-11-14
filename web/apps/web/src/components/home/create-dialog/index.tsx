@@ -69,8 +69,6 @@ export const CreateDialog: React.FC<CreateDialogProps> = ({
     },
   });
 
-  console.log('templateList: ', templateList);
-
   const onOpenChange = (value: boolean) => {
     openAction.set(value);
     if (!value) {

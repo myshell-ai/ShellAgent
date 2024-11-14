@@ -82,3 +82,11 @@ export interface TemplateListResponse {
     metadata: Metadata;
   }>;
 }
+
+export interface SaveAsTemplateResponse {
+  success: boolean;
+  message: string;
+  data: {
+    id: string;
+  };
+}

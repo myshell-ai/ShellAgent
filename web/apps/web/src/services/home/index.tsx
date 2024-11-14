@@ -13,6 +13,7 @@ import {
   DeleteResponse,
   TemplateListRequest,
   TemplateListResponse,
+  SaveAsTemplateResponse,
 } from './type';
 import { APIFetch } from '../base';
 
@@ -55,6 +56,13 @@ export const deleteItem = (params: DeleteRequest) => {
 export const getTemplateList = (params: TemplateListRequest) => {
   return APIFetch.post<TemplateListResponse>('/api/template_list', {
     body: params,
+  });
+};
+
+// 保存模版
+export const saveAsTemplate = (app_id: string) => {
+  return APIFetch.post<SaveAsTemplateResponse>('/api/save_as_template', {
+    body: { app_id },
   });
 };
 
