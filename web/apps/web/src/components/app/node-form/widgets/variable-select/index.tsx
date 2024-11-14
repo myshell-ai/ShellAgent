@@ -32,10 +32,10 @@ const VariableSelect = (props: VariableSelectProps) => {
     (val: string, parentKey?: string) => {
       onChange?.({ target: { value: val } });
 
-      const replacedString = val.replace(contextReg, 'context.$1');
+      // const replacedString = val.replace(contextReg, 'context.$1');
 
       const newValue = contextReg.test(val)
-        ? removeBrackets(replacedString)
+        ? removeBrackets(val)
         : `${stateId}.${parentKey ? `${parentKey}.` : ''}${removeBrackets(
             val,
           )}`;

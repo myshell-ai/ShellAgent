@@ -3,7 +3,7 @@ import { Text } from '@shellagent/ui';
 import { useDebounce, useRequest } from 'ahooks';
 import dayjs from 'dayjs';
 import { useInjection } from 'inversify-react';
-import { isEmpty, pick } from 'lodash-es';
+import { isEmpty, pick, merge } from 'lodash-es';
 import React, { useCallback, useMemo, useState, useEffect, memo } from 'react';
 import { useShallow } from 'zustand/react/shallow';
 
