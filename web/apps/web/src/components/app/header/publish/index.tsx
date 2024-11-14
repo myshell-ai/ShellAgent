@@ -153,7 +153,7 @@ const DropdownRender = ({
   );
 };
 
-export default observer(function Publish({
+export default function Publish({
   app_id,
   version_name,
   loading,
@@ -387,4 +387,4 @@ export default observer(function Publish({
       )}
     </div>
   );
-});
+}

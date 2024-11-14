@@ -103,132 +103,133 @@ const ConditionItem = ({
   );
 };
 
-const TransitionConditionEditor = observer(
-  ({ value, onChange }: ITransitionConditionEditorProps) => {
-    const [index, setIndex] = useState(0);
-    const [schema, setSchema] = useState({});
-    const handleDelete = (condition: ICondition) => {
-      onChange(value.filter(c => c !== condition));
-    };
+const TransitionConditionEditor = ({
+  value,
+  onChange,
+}: ITransitionConditionEditorProps) => {
+  const [index, setIndex] = useState(0);
+  const [schema, setSchema] = useState({});
+  const handleDelete = (condition: ICondition) => {
+    onChange(value.filter(c => c !== condition));
+  };
 
-    const { source, open, setOpen } = useAppState(state => ({
-      source: state.currentTransitionSource,
-      open: state.targetInputsSheetOpen,
-      setOpen: state.setTargetInputsSheetOpen,
-    }));
-    const appBuilder = useInjection<AppBuilderModel>('AppBuilderModel');
+  const { source, open, setOpen } = useAppState(state => ({
+    source: state.currentTransitionSource,
+    open: state.targetInputsSheetOpen,
+    setOpen: state.setTargetInputsSheetOpen,
+  }));
+  const appBuilder = useInjection<AppBuilderModel>('AppBuilderModel');
 
-    const handleOpen = (open: boolean, index: number) => {
-      setOpen(open);
-      setIndex(index);
-      const currentCondition = value[index];
-      const schema = getSchemaByInputs(
-        appBuilder.nodeData[currentCondition.target]?.inputs,
-      );
-      setSchema(schema);
-    };
+  const handleOpen = (open: boolean, index: number) => {
+    setOpen(open);
+    setIndex(index);
+    const currentCondition = value[index];
+    const schema = getSchemaByInputs(
+      appBuilder.nodeData[currentCondition.target]?.inputs,
+    );
+    setSchema(schema);
+  };
 
-    const handleAdd = () => {
-      onChange([
-        ...value,
-        {
-          source,
-          condition: '',
-          target_inputs: {},
-          target: '',
-        },
-      ]);
-    };
-
-    const handleChange = (index: number, condition: ICondition) => {
-      onChange(
-        produce(value, draft => {
-          draft[index] = condition;
-        }),
-      );
-    };
-
-    const { nodes } = useReactFlowStore(state => ({
-      nodes: state.nodes,
-    }));
-
-    const getOptions = (index: number) => {
-      const includedTargets = value
-        .slice(0, index)
-        .map(condition => condition.target);
-      return nodes
-        .filter(
-          node =>
-            node.data.type !== NodeTypeEnum.start &&
-            !includedTargets.includes(node.id),
-        )
-        .map(node => ({
-          label: node.data.display_name || 'Untitled State',
-          value: node.id,
-        }));
-    };
-
-    const modeId = `${source}.condition.${index}`;
-
-    const onModeChange = useCallback(
-      (name: string, mode: TFieldMode) => {
-        appBuilder.setFieldsModeMap({ id: modeId, name, mode });
+  const handleAdd = () => {
+    onChange([
+      ...value,
+      {
+        source,
+        condition: '',
+        target_inputs: {},
+        target: '',
       },
-      [modeId, appBuilder.setFieldsModeMap],
-    );
+    ]);
+  };
 
-    return (
-      <div className="flex gap-3 flex-col justify-center">
-        {value?.map?.((condition, index) => (
-          <ConditionItem
-            key={condition.target}
-            value={condition}
-            onChange={v => handleChange(index, v)}
-            onDelete={handleDelete}
-            onOpen={() => handleOpen(true, index)}
-            options={getOptions(index)}
-          />
-        ))}
-        <Button
-          icon={PlusIcon}
-          onClick={handleAdd}
-          variant="outline"
-          size="sm"
-          type="button"
-          className="w-18 border-default rounded-full">
-          Add
-        </Button>
-        <Drawer
-          title="Target Inputs"
-          open={open}
-          height="95%"
-          placement="bottom"
-          className="rounded-lg"
-          closable
-          destroyOnClose
-          getContainer={false}
-          onClose={() => setOpen(false)}
-          keyboard={false}
-          autoFocus={false}>
-          <NodeForm
-            parent={`condition.${index}`}
-            schema={schema}
-            values={value?.[index]?.target_inputs}
-            onModeChange={onModeChange}
-            modeMap={appBuilder.config.fieldsModeMap?.[modeId] || {}}
-            onChange={values =>
-              onChange(
-                produce(value, draft => {
-                  draft[index].target_inputs = values;
-                }),
-              )
-            }
-          />
-        </Drawer>
-      </div>
+  const handleChange = (index: number, condition: ICondition) => {
+    onChange(
+      produce(value, draft => {
+        draft[index] = condition;
+      }),
     );
-  },
-);
+  };
+
+  const { nodes } = useReactFlowStore(state => ({
+    nodes: state.nodes,
+  }));
+
+  const getOptions = (index: number) => {
+    const includedTargets = value
+      .slice(0, index)
+      .map(condition => condition.target);
+    return nodes
+      .filter(
+        node =>
+          node.data.type !== NodeTypeEnum.start &&
+          !includedTargets.includes(node.id),
+      )
+      .map(node => ({
+        label: node.data.display_name || 'Untitled State',
+        value: node.id,
+      }));
+  };
+
+  const modeId = `${source}.condition.${index}`;
+
+  const onModeChange = useCallback(
+    (name: string, mode: TFieldMode) => {
+      appBuilder.setFieldsModeMap({ id: modeId, name, mode });
+    },
+    [modeId, appBuilder.setFieldsModeMap],
+  );
+
+  return (
+    <div className="flex gap-3 flex-col justify-center">
+      {value?.map?.((condition, index) => (
+        <ConditionItem
+          key={condition.target}
+          value={condition}
+          onChange={v => handleChange(index, v)}
+          onDelete={handleDelete}
+          onOpen={() => handleOpen(true, index)}
+          options={getOptions(index)}
+        />
+      ))}
+      <Button
+        icon={PlusIcon}
+        onClick={handleAdd}
+        variant="outline"
+        size="sm"
+        type="button"
+        className="w-18 border-default rounded-full">
+        Add
+      </Button>
+      <Drawer
+        title="Target Inputs"
+        open={open}
+        height="95%"
+        placement="bottom"
+        className="rounded-lg"
+        closable
+        destroyOnClose
+        getContainer={false}
+        onClose={() => setOpen(false)}
+        keyboard={false}
+        autoFocus={false}>
+        <NodeForm
+          parent={`condition.${index}`}
+          schema={schema}
+          values={value?.[index]?.target_inputs}
+          onModeChange={onModeChange}
+          modeMap={appBuilder.config.fieldsModeMap?.[modeId] || {}}
+          onChange={values =>
+            onChange(
+              produce(value, draft => {
+                draft[index].target_inputs = values;
+              }),
+            )
+          }
+        />
+      </Drawer>
+    </div>
+  );
+};
 
 TransitionConditionEditor.displayName = 'TransitionConditionEditor';
 

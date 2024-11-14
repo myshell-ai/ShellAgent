@@ -16,35 +16,33 @@ interface ButtonConfigProps {
   onChange: (values: TValues) => void;
 }
 
-export const ButtonConfig = observer(
-  ({ values, onChange, id }: ButtonConfigProps) => {
-    const appBuilder = useInjection<AppBuilderModel>('AppBuilderModel');
+export const ButtonConfig = ({ values, onChange, id }: ButtonConfigProps) => {
+  const appBuilder = useInjection<AppBuilderModel>('AppBuilderModel');
 
-    const currentButtonId = useAppState(state => state.currentButtonId);
+  const currentButtonId = useAppState(state => state.currentButtonId);
 
-    const onModeChange = useCallback(
-      (name: string, mode: TFieldMode) => {
-        appBuilder.setFieldsModeMap({
-          id: `${id}.${currentButtonId}`,
-          name,
-          mode,
-        });
-      },
-      [currentButtonId, id, appBuilder.setFieldsModeMap],
-    );
+  const onModeChange = useCallback(
+    (name: string, mode: TFieldMode) => {
+      appBuilder.setFieldsModeMap({
+        id: `${id}.${currentButtonId}`,
+        name,
+        mode,
+      });
+    },
+    [currentButtonId, id, appBuilder.setFieldsModeMap],
+  );
 
-    return (
-      <NodeForm
-        parent={`render.buttons.${currentButtonId}`}
-        key={currentButtonId}
-        schema={buttonConfigSchema}
-        values={values as TValues}
-        onChange={onChange}
-        onModeChange={onModeChange}
-        modeMap={
-          appBuilder.config.fieldsModeMap?.[`${id}.${currentButtonId}`] || {}
-        }
-      />
-    );
-  },
-);
+  return (
+    <NodeForm
+      parent={`render.buttons.${currentButtonId}`}
+      key={currentButtonId}
+      schema={buttonConfigSchema}
+      values={values as TValues}
+      onChange={onChange}
+      onModeChange={onModeChange}
+      modeMap={
+        appBuilder.config.fieldsModeMap?.[`${id}.${currentButtonId}`] || {}
+      }
+    />
+  );
+};

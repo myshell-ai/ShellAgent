@@ -103,86 +103,84 @@ const InputPreview = () => {
   );
 };
 
-const ButtonPreview = observer(
-  ({
-    index,
-    id,
-    children,
-  }: PropsWithChildren<{
-    id: string;
-    index: number;
-  }>) => {
-    const appBuilder = useInjection<AppBuilderModel>('AppBuilderModel');
-    const { setInsideSheetOpen } = useAppState(state => state);
-    const stateId = useSchemaContext(state => state.id);
+const ButtonPreview = ({
+  index,
+  id,
+  children,
+}: PropsWithChildren<{
+  id: string;
+  index: number;
+}>) => {
+  const appBuilder = useInjection<AppBuilderModel>('AppBuilderModel');
+  const { setInsideSheetOpen } = useAppState(state => state);
+  const stateId = useSchemaContext(state => state.id);
 
-    const handleClick = (e: React.MouseEvent<HTMLButtonElement>) => {
-      e.stopPropagation();
-      setInsideSheetOpen({
-        stateId,
-        open: true,
-        mode: 'button',
-        buttonId: id,
-      });
-    };
-    const onConnect = useReactFlowStore(state => state.onConnect);
+  const handleClick = (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.stopPropagation();
+    setInsideSheetOpen({
+      stateId,
+      open: true,
+      mode: 'button',
+      buttonId: id,
+    });
+  };
+  const onConnect = useReactFlowStore(state => state.onConnect);
 
-    const handleId = `${buttonSourceHandle}-${id}#${index}`;
+  const handleId = `${buttonSourceHandle}-${id}#${index}`;
 
-    const handleConnect = (connection: Connection) => {
-      if (connection.source && connection.target) {
-        const { event: event_key } =
-          ((
-            appBuilder.nodeData[stateId]?.render?.buttons as IButtonType[]
-          )?.find(button => button.id === id)?.on_click as any) || {};
+  const handleConnect = (connection: Connection) => {
+    if (connection.source && connection.target) {
+      const { event: event_key } =
+        ((appBuilder.nodeData[stateId]?.render?.buttons as IButtonType[])?.find(
+          button => button.id === id,
+        )?.on_click as any) || {};
 
-        onConnect({
-          connect: connection,
-          edge: {
-            type: EdgeTypeEnum.custom,
-            data: {
-              id: generateUUID(),
-              custom: true,
-              event_key,
-              type: EdgeDataTypeEnum.STATE,
-              source: connection.source,
-              target: connection.target,
-              conditions: [],
-            },
-            style: {
-              stroke: getColor(handleId),
-            },
+      onConnect({
+        connect: connection,
+        edge: {
+          type: EdgeTypeEnum.custom,
+          data: {
+            id: generateUUID(),
+            custom: true,
+            event_key,
+            type: EdgeDataTypeEnum.STATE,
+            source: connection.source,
+            target: connection.target,
+            conditions: [],
           },
-        });
-      }
-    };
+          style: {
+            stroke: getColor(handleId),
+          },
+        },
+      });
+    }
+  };
 
-    return (
-      <Button
-        onClickCapture={handleClick}
-        variant="outline"
-        color="brand"
-        size="md"
-        className="w-full relative border-default text-subtle">
-        <div className="mr-1">{children}</div>
-        <CustomHandle
-          id={handleId}
-          type="source"
-          position={Position.Right}
-          onConnect={handleConnect}
-          className="!w-3 !h-3 absolute right-[-4] translate-x-[-3] z-[99] !bg-transparent !rounded-none !outline-none !border-none">
-          <CustomPoint
-            style={{
-              backgroundColor: getColor(handleId),
-            }}
-          />
-        </CustomHandle>
-      </Button>
-    );
-  },
-);
+  return (
+    <Button
+      onClickCapture={handleClick}
+      variant="outline"
+      color="brand"
+      size="md"
+      className="w-full relative border-default text-subtle">
+      <div className="mr-1">{children}</div>
+      <CustomHandle
+        id={handleId}
+        type="source"
+        position={Position.Right}
+        onConnect={handleConnect}
+        className="!w-3 !h-3 absolute right-[-4] translate-x-[-3] z-[99] !bg-transparent !rounded-none !outline-none !border-none">
+        <CustomPoint
+          style={{
+            backgroundColor: getColor(handleId),
+          }}
+        />
+      </CustomHandle>
+    </Button>
+  );
+};
 
-const MessagePreview = observer(() => {
+const MessagePreview = () => {
   const appBuilder = useInjection<AppBuilderModel>('AppBuilderModel');
   const stateId = useSchemaContext(state => state.id);
   const buttons = (appBuilder.nodeData[stateId]?.render?.buttons ||
@@ -202,7 +200,7 @@ const MessagePreview = observer(() => {
       <InputPreview />
     </div>
   );
-});
+};
 
 MessagePreview.displayName = 'MessagePreview';
 

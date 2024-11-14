@@ -242,7 +242,7 @@ const StateConfigSheet: React.FC<{}> = () => {
         <NodeForm
           key={formKey}
           loading={
-            appBuilder.loading.getAutomata || appBuilder.loading.getReactFlow
+            appBuilder.getAutomataLoading || appBuilder.getReactFlowLoading
           }
           schema={stateConfigSchema}
           values={appBuilder.nodeData[currentStateId]}
@@ -270,4 +270,4 @@ const StateConfigSheet: React.FC<{}> = () => {
   );
 };
 
-export default observer(StateConfigSheet);
+export default StateConfigSheet;

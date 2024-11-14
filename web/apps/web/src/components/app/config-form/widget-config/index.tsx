@@ -129,7 +129,7 @@ const StandardWidgetConfig: React.FC<CommonWidgetConfigProps> = ({
   );
 };
 
-export const WidgetConfig: React.FC<WidgetConfigProps> = observer(props => {
+export const WidgetConfig: React.FC<WidgetConfigProps> = props => {
   const appBuilder = useInjection<AppBuilderModel>('AppBuilderModel');
 
   const { id, parent } = props;
@@ -159,4 +159,4 @@ export const WidgetConfig: React.FC<WidgetConfigProps> = observer(props => {
       modeMap={modeMap}
     />
   );
-});
+};

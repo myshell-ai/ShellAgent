@@ -6,7 +6,7 @@ import { enableMapSet } from 'immer';
 import { useInjection } from 'inversify-react';
 import dynamic from 'next/dynamic';
 import { useSearchParams } from 'next/navigation';
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
 
@@ -79,6 +79,13 @@ export default function AppBuilderDetail() {
     };
   }, []);
 
+  const [isLoading, setIsLoading] = useState(false);
+  useEffect(() => {
+    setIsLoading(
+      appBuilder.getAutomataLoading || appBuilder.fetchFlowListLoading,
+    );
+  }, [appBuilder.getAutomataLoading]);
+
   return (
     <DndProvider backend={HTML5Backend}>
       <div className="h-full flex flex-col bg-surface">
@@ -90,9 +97,7 @@ export default function AppBuilderDetail() {
           style={{ height: 'calc(100vh - 60px)', position: 'relative' }}>
           <FlowEngine
             listLoading={false}
-            loading={
-              appBuilder.loading.getAutomata || appBuilder.loading.fetchFlowList
-            }
+            loading={isLoading}
             ref={flowRef}
             nodeTypes={nodeTypes}
             edgeTypes={edgeTypes}

@@ -23,7 +23,7 @@ import { useWorkflowStore } from '@/stores/workflow/workflow-provider';
 
 import 'react-resizable/css/styles.css';
 
-const RunSheet: React.FC<{}> = observer(() => {
+const RunSheet: React.FC<{}> = () => {
   const appBuilderChatModel = useInjection(AppBuilderChatModel);
   const appBuilder = useInjection<AppBuilderModel>('AppBuilderModel');
 
@@ -132,6 +132,6 @@ const RunSheet: React.FC<{}> = observer(() => {
       </Drawer>
     </Resizable>
   );
-});
+};
 
 export default RunSheet;

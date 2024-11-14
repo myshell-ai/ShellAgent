@@ -19,7 +19,7 @@ import { AppBuilderModel } from '@/components/app/app-builder.model';
 
 import ImportModal from './import-modal';
 
-export const ExtraActions = observer(() => {
+export const ExtraActions = () => {
   const [importDialogOpen, setImportDialogOpen] = useState(false);
   const appBuilder = useInjection<AppBuilderModel>('AppBuilderModel');
 
@@ -91,4 +91,4 @@ export const ExtraActions = observer(() => {
       />
     </>
   );
-});
+};

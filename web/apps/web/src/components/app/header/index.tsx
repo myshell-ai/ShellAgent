@@ -25,7 +25,7 @@ import { ExportDialog } from '../export-dialog';
 import { ExtraActions } from './extra-action';
 import Publish from './publish';
 
-export const Header: React.FC = observer(() => {
+export const Header: React.FC = () => {
   const appBuilderChatModel = useInjection(AppBuilderChatModel);
   const appBuilder = useInjection<AppBuilderModel>('AppBuilderModel');
   const params = useSearchParams();
@@ -139,11 +139,11 @@ export const Header: React.FC = observer(() => {
           app_id={id}
           version_name={version_name}
           loading={
-            appBuilder.loading.getAutomata || appBuilder.loading.getReactFlow
+            appBuilder.loading.getAutomata || appBuilder.getReactFlowLoading
           }
         />
         <ExtraActions />
       </div>
     </div>
   );
-});
+};

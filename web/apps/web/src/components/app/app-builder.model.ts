@@ -34,12 +34,12 @@ type Config = {
 };
 @injectable()
 export class AppBuilderModel {
-  @observable nodeData: Record<string, FieldValues> = {};
-  @observable metadata: Metadata = {
+  nodeData: Record<string, FieldValues> = {};
+  metadata: Metadata = {
     name: '',
     description: '',
   };
-  @observable flowInstance: ReactFlowInstance | null = null;
+  flowInstance: ReactFlowInstance | null = null;
 
   scopes: Scopes | null = null;
 
@@ -47,20 +47,27 @@ export class AppBuilderModel {
 
   refs: Refs = {};
 
-  @observable config: Config = {
+  config: Config = {
     fieldsModeMap: {},
     refs: {},
   };
 
-  @observable userInputs: TValues = {};
-  @observable flowList: GetListResponse['data'] = [];
+  userInputs: TValues = {};
+  flowList: GetListResponse['data'] = [];
+
   @observable loading = {
-    getReactFlow: false,
-    getAutomata: false,
-    chatRunning: false,
-    fetchFlowList: false,
+    // getReactFlow: false,
+    // getAutomata: false,
+    // chatRunning: false,
+    // fetchFlowList: false,
   };
-  @observable transitions: Record<
+
+  @observable getReactFlowLoading = false;
+  @observable getAutomataLoading = false;
+  @observable chatRunningLoading = false;
+  @observable fetchFlowListLoading = false;
+
+  transitions: Record<
     string,
     Record<
       'ALWAYS' | 'CHAT' | string,
@@ -70,7 +77,7 @@ export class AppBuilderModel {
       }[]
     >
   > = {};
-  @observable resetData: Record<string, string | undefined> = {};
+  resetData: Record<string, string | undefined> = {};
 
   constructor() {
     makeObservable(this);
@@ -218,14 +225,14 @@ export class AppBuilderModel {
   @action.bound
   async getFlowList(params: GetListRequest) {
     try {
-      this.loading.fetchFlowList = true;
+      this.fetchFlowListLoading = true;
       const { data } = await fetchFlowList(params);
       runInAction(() => {
         this.flowList = data;
       });
     } finally {
       runInAction(() => {
-        this.loading.fetchFlowList = false;
+        this.fetchFlowListLoading = false;
       });
     }
   }
@@ -233,14 +240,14 @@ export class AppBuilderModel {
   @action.bound
   async getAutomata(params: any) {
     try {
-      this.loading.getAutomata = true;
+      this.getAutomataLoading = true;
       const { data } = await fetchAutomata(params);
       runInAction(() => {
         this.nodeData = genNodeData(data);
       });
     } finally {
       runInAction(() => {
-        this.loading.getAutomata = false;
+        this.getAutomataLoading = false;
       });
     }
   }
@@ -249,7 +256,7 @@ export class AppBuilderModel {
   async getReactFlow(params: GetAppFlowRequest, instance: ReactFlowInstance) {
     try {
       runInAction(() => {
-        this.loading.getReactFlow = true;
+        this.getReactFlowLoading = true;
       });
 
       const { reactflow, config, metadata } = await fetchFlow(params);
@@ -273,7 +280,7 @@ export class AppBuilderModel {
       });
     } finally {
       runInAction(() => {
-        this.loading.getReactFlow = false;
+        this.getReactFlowLoading = false;
       });
     }
   }
