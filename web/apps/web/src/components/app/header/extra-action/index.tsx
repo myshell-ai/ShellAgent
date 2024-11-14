@@ -21,7 +21,7 @@ import ImportModal from './import-modal';
 
 export const ExtraActions = observer(() => {
   const [importDialogOpen, setImportDialogOpen] = useState(false);
-  const appBuilder = useInjection(AppBuilderModel);
+  const appBuilder = useInjection<AppBuilderModel>('AppBuilderModel');
 
   const onConfirm = (data: ShellAgent) => {
     return new Promise((resolve, reject) => {

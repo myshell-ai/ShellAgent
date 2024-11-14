@@ -25,7 +25,7 @@ import 'react-resizable/css/styles.css';
 
 const RunSheet: React.FC<{}> = observer(() => {
   const appBuilderChatModel = useInjection(AppBuilderChatModel);
-  const appBuilder = useInjection(AppBuilderModel);
+  const appBuilder = useInjection<AppBuilderModel>('AppBuilderModel');
 
   const { userInputs, setUserInputs, loading } = useWorkflowStore(state => ({
     userInputs: state.userInputs,

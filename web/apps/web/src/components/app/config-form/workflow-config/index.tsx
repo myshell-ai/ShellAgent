@@ -25,7 +25,7 @@ interface WorkflowConfigProps {
 
 export const WorkflowConfig: React.FC<WorkflowConfigProps> = observer(
   ({ values, parent, id, onChange }) => {
-    const appBuilder = useInjection(AppBuilderModel);
+    const appBuilder = useInjection<AppBuilderModel>('AppBuilderModel');
     const { getProConfig, loading } = useWorkflowStore(state => ({
       getProConfig: state.getProConfig,
       loading: state.loading,

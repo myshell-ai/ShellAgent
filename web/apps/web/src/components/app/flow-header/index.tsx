@@ -22,7 +22,7 @@ const FlowHeader = observer(
     const [autoSavedTime, setAutoSavedTime] = useState('');
     const [autoSavedSuccess, setAutoSavedSuccess] = useState(true);
 
-    const appBuilder = useInjection(AppBuilderModel);
+    const appBuilder = useInjection<AppBuilderModel>('AppBuilderModel');
 
     const { nodes, edges, viewport } = useReactFlowStore(state => ({
       nodes: state.nodes,

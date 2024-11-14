@@ -116,7 +116,7 @@ const TransitionConditionEditor = observer(
       open: state.targetInputsSheetOpen,
       setOpen: state.setTargetInputsSheetOpen,
     }));
-    const appBuilder = useInjection(AppBuilderModel);
+    const appBuilder = useInjection<AppBuilderModel>('AppBuilderModel');
 
     const handleOpen = (open: boolean, index: number) => {
       setOpen(open);

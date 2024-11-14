@@ -18,7 +18,7 @@ interface ButtonConfigProps {
 
 export const ButtonConfig = observer(
   ({ values, onChange, id }: ButtonConfigProps) => {
-    const appBuilder = useInjection(AppBuilderModel);
+    const appBuilder = useInjection<AppBuilderModel>('AppBuilderModel');
 
     const currentButtonId = useAppState(state => state.currentButtonId);
 

@@ -125,7 +125,7 @@ const TasksConfig = ({
   const [open, setOpen] = useState(false);
   const { getValues } = useFormContext();
   const values = getValues(name) as Task[];
-  const appBuilder = useInjection(AppBuilderModel);
+  const appBuilder = useInjection<AppBuilderModel>('AppBuilderModel');
 
   const { currentStateId, setInsideSheetOpen } = useAppState(state => state);
 

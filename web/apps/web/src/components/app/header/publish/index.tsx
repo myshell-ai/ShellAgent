@@ -158,7 +158,7 @@ export default observer(function Publish({
   version_name,
   loading,
 }: PublishProps) {
-  const appBuilder = useInjection(AppBuilderModel);
+  const appBuilder = useInjection<AppBuilderModel>('AppBuilderModel');
   const router = useRouter();
   const [versionName, setVersionName] = useState('');
   const [showPublishPopover, publishPopoverActions] = useBoolean(false);

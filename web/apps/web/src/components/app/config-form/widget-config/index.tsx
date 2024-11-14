@@ -130,7 +130,7 @@ const StandardWidgetConfig: React.FC<CommonWidgetConfigProps> = ({
 };
 
 export const WidgetConfig: React.FC<WidgetConfigProps> = observer(props => {
-  const appBuilder = useInjection(AppBuilderModel);
+  const appBuilder = useInjection<AppBuilderModel>('AppBuilderModel');
 
   const { id, parent } = props;
 

@@ -112,7 +112,7 @@ const ButtonPreview = observer(
     id: string;
     index: number;
   }>) => {
-    const appBuilder = useInjection(AppBuilderModel);
+    const appBuilder = useInjection<AppBuilderModel>('AppBuilderModel');
     const { setInsideSheetOpen } = useAppState(state => state);
     const stateId = useSchemaContext(state => state.id);
 
@@ -183,7 +183,7 @@ const ButtonPreview = observer(
 );
 
 const MessagePreview = observer(() => {
-  const appBuilder = useInjection(AppBuilderModel);
+  const appBuilder = useInjection<AppBuilderModel>('AppBuilderModel');
   const stateId = useSchemaContext(state => state.id);
   const buttons = (appBuilder.nodeData[stateId]?.render?.buttons ||
     []) as IButtonType[];

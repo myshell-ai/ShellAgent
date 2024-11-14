@@ -29,7 +29,7 @@ import emitter, { EventType, useEventEmitter } from '../emitter';
 
 const StateConfigSheet: React.FC<{}> = () => {
   const appBuilderChatModel = useInjection(AppBuilderChatModel);
-  const appBuilder = useInjection(AppBuilderModel);
+  const appBuilder = useInjection<AppBuilderModel>('AppBuilderModel');
 
   const {
     stateConfigSheetOpen,

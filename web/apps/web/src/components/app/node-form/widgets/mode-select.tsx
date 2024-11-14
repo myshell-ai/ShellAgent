@@ -62,7 +62,7 @@ export function ModeSelect({
   name,
 }: IModeSelectProps) {
   const [value, setValue] = useState<FieldMode>(defaultValue);
-  const appBuilder = useInjection(AppBuilderModel);
+  const appBuilder = useInjection<AppBuilderModel>('AppBuilderModel');
   const stateId = useSchemaContext(state => state.id);
 
   const { parent } = useFormEngineContext();

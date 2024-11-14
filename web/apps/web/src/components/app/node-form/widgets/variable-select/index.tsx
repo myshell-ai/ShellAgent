@@ -24,7 +24,7 @@ const contextReg = /__context__([a-z0-9_]+)__/g;
 const VariableSelect = (props: VariableSelectProps) => {
   const { name, onChange, value, ...rest } = props;
   const options = useSelectOptions(name);
-  const appBuilder = useInjection(AppBuilderModel);
+  const appBuilder = useInjection<AppBuilderModel>('AppBuilderModel');
   const stateId = useSchemaContext(state => state.id);
   const { parent } = useFormEngineContext();
 

@@ -16,7 +16,7 @@ import { AppBuilderModel } from '@/components/app/app-builder.model';
 
 const StartNode: React.FC<NodeProps<StartNodeType>> = observer(
   ({ id, selected, data }) => {
-    const appBuilder = useInjection(AppBuilderModel);
+    const appBuilder = useInjection<AppBuilderModel>('AppBuilderModel');
 
     const edges = useReactFlowStore(state => state.edges);
 

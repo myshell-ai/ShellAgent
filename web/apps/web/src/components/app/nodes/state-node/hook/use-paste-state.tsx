@@ -18,7 +18,7 @@ export const usePasteState = ({
 }: {
   enabeKeyboard: boolean;
 }) => {
-  const appBuilder = useInjection(AppBuilderModel);
+  const appBuilder = useInjection<AppBuilderModel>('AppBuilderModel');
 
   const { reactFlowWrapper, viewport, onAddNode } = useReactFlowStore(
     state => ({

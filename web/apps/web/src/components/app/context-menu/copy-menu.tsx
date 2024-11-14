@@ -10,7 +10,7 @@ import { AppBuilderModel } from '@/components/app/app-builder.model';
 
 const CopyMenu: React.FC<{ id: string; name: string }> = observer(
   ({ id, name }) => {
-    const appBuilder = useInjection(AppBuilderModel);
+    const appBuilder = useInjection<AppBuilderModel>('AppBuilderModel');
     const setCurrentCopyStateData = useAppState(
       state => state.setCurrentCopyStateData,
     );

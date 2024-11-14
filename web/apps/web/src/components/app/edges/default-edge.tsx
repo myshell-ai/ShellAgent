@@ -25,7 +25,7 @@ export const DefaultEdge = ({
 }: EdgeProps<{
   onDelete: (id: string) => void;
 }>) => {
-  const appBuilder = useInjection(AppBuilderModel);
+  const appBuilder = useInjection<AppBuilderModel>('AppBuilderModel');
 
   const [edgePath] = getBezierPath({
     sourceX: sourceX - 8,

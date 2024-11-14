@@ -12,7 +12,7 @@ import { useAppState } from '@/stores/app/use-app-state';
 export const useSelectOptions = (name?: string) => {
   const { parent } = useFormEngineContext();
   const stateId = useSchemaContext(state => state.id);
-  const appBuilder = useInjection(AppBuilderModel);
+  const appBuilder = useInjection<AppBuilderModel>('AppBuilderModel');
   const currentEdegData = useAppState(state => state.currentEdegData);
 
   const { refType, taskIndex } = useMemo(() => {

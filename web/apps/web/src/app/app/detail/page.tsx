@@ -46,7 +46,7 @@ export default function AppBuilderDetail() {
   const flowRef = useRef<FlowRef>(null);
   const flowInstance = flowRef.current?.getFlowInstance();
   const appBuilderChatModel = useInjection(AppBuilderChatModel);
-  const appBuilder = useInjection(AppBuilderModel);
+  const appBuilder = useInjection<AppBuilderModel>('AppBuilderModel');
 
   const appId = params.get('id') as string;
   const version_name = params.get('version_name') as string;

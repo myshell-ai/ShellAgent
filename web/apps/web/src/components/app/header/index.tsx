@@ -27,7 +27,7 @@ import Publish from './publish';
 
 export const Header: React.FC = observer(() => {
   const appBuilderChatModel = useInjection(AppBuilderChatModel);
-  const appBuilder = useInjection(AppBuilderModel);
+  const appBuilder = useInjection<AppBuilderModel>('AppBuilderModel');
   const params = useSearchParams();
   const version_name = params.get('version_name') as string;
 

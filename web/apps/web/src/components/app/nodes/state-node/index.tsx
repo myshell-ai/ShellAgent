@@ -39,7 +39,7 @@ import emitter, { EventType, useEventEmitter } from '../../emitter';
 const StateNode: React.FC<NodeProps<StateNodeType>> = observer(
   ({ selected, data }) => {
     const stateFormRef = useRef<FormRef>(null);
-    const appBuilder = useInjection(AppBuilderModel);
+    const appBuilder = useInjection<AppBuilderModel>('AppBuilderModel');
     const { onDelNode, selectedNodes, onConnect } = useReactFlowStore(
       state => ({
         onDelNode: state.onDelNode,
