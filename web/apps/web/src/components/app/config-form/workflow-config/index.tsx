@@ -8,11 +8,13 @@ import {
 } from '@shellagent/form-engine';
 import { merge } from 'lodash-es';
 import { useCallback, useEffect, useMemo } from 'react';
+import { useInjection } from 'inversify-react';
+import { observer } from 'mobx-react-lite';
 
 import NodeForm from '@/components/app/node-form';
-import { useAppStore } from '@/stores/app/app-provider';
 import { getWorkflowSchema } from '@/stores/app/utils/get-workflow-schema';
 import { useWorkflowStore } from '@/stores/workflow/workflow-provider';
+import { AppBuilderModel } from '@/components/app/app-builder.model';
 
 interface WorkflowConfigProps {
   values: TValues | undefined;
@@ -27,34 +29,27 @@ export const WorkflowConfig: React.FC<WorkflowConfigProps> = ({
   id,
   onChange,
 }) => {
-  const {
-    nodeData: workflowNodeData,
-    getProConfig,
-    loading,
-  } = useWorkflowStore(state => ({
-    nodeData: state.nodeData,
+  const appBuilder = useInjection<AppBuilderModel>('AppBuilderModel');
+  const { getProConfig, loading } = useWorkflowStore(state => ({
     getProConfig: state.getProConfig,
     loading: state.loading,
   }));
 
-  const { setFieldsModeMap, fieldsModeMap } = useAppStore(state => ({
-    setFieldsModeMap: state.setFieldsModeMap,
-    fieldsModeMap: state.config?.fieldsModeMap,
-  }));
-
-  const options = useAppStore(state => state.flowList).map(flow => ({
+  const options = appBuilder.flowList.map(flow => ({
     label: flow.metadata?.name,
     value: `${flow.id}/latest`,
   }));
 
   // 获取workflow详情
   const inputs = useMemo(
-    () => workflowNodeData[NodeIdEnum.start]?.inputs as Record<string, TValues>,
-    [workflowNodeData],
+    () =>
+      appBuilder.nodeData[NodeIdEnum.start]?.inputs as Record<string, TValues>,
+    [appBuilder.nodeData],
   );
   const outputs = useMemo(
-    () => workflowNodeData[NodeIdEnum.end]?.outputs as Record<string, TValues>,
-    [workflowNodeData],
+    () =>
+      appBuilder.nodeData[NodeIdEnum.end]?.outputs as Record<string, TValues>,
+    [appBuilder.nodeData],
   );
 
   const schema = useMemo(
@@ -94,9 +89,9 @@ export const WorkflowConfig: React.FC<WorkflowConfigProps> = ({
 
   const onModeChange = useCallback(
     (name: string, mode: TFieldMode) => {
-      setFieldsModeMap({ id: `${id}.${parent}`, name, mode });
+      appBuilder.setFieldsModeMap({ id: `${id}.${parent}`, name, mode });
     },
-    [id, setFieldsModeMap, parent],
+    [id, appBuilder.setFieldsModeMap, parent],
   );
 
   if (!values) {
@@ -112,7 +107,7 @@ export const WorkflowConfig: React.FC<WorkflowConfigProps> = ({
       onChange={handleOnChange}
       loading={loading.getProConfig}
       onModeChange={onModeChange}
-      modeMap={fieldsModeMap?.[`${id}.${parent}`] || {}}
+      modeMap={appBuilder.config.fieldsModeMap?.[`${id}.${parent}`] || {}}
     />
   );
 };

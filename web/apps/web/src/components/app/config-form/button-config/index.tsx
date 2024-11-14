@@ -4,9 +4,11 @@ import { TValues, TFieldMode } from '@shellagent/form-engine';
 import { useCallback } from 'react';
 
 import NodeForm from '@/components/app/node-form';
-import { useAppStore } from '@/stores/app/app-provider';
 import { useAppState } from '@/stores/app/use-app-state';
 import { buttonConfigSchema } from '@/stores/app/utils/schema';
+import { useInjection } from 'inversify-react';
+import { observer } from 'mobx-react-lite';
+import { AppBuilderModel } from '@/components/app/app-builder.model';
 
 interface ButtonConfigProps {
   values: TValues;
@@ -15,17 +17,19 @@ interface ButtonConfigProps {
 }
 
 export const ButtonConfig = ({ values, onChange, id }: ButtonConfigProps) => {
-  const { setFieldsModeMap, fieldsModeMap } = useAppStore(state => ({
-    setFieldsModeMap: state.setFieldsModeMap,
-    fieldsModeMap: state.config?.fieldsModeMap,
-  }));
+  const appBuilder = useInjection<AppBuilderModel>('AppBuilderModel');
+
   const currentButtonId = useAppState(state => state.currentButtonId);
 
   const onModeChange = useCallback(
     (name: string, mode: TFieldMode) => {
-      setFieldsModeMap({ id: `${id}.${currentButtonId}`, name, mode });
+      appBuilder.setFieldsModeMap({
+        id: `${id}.${currentButtonId}`,
+        name,
+        mode,
+      });
     },
-    [currentButtonId, id, setFieldsModeMap],
+    [currentButtonId, id, appBuilder.setFieldsModeMap],
   );
 
   return (
@@ -36,7 +40,9 @@ export const ButtonConfig = ({ values, onChange, id }: ButtonConfigProps) => {
       values={values as TValues}
       onChange={onChange}
       onModeChange={onModeChange}
-      modeMap={fieldsModeMap?.[`${id}.${currentButtonId}`] || {}}
+      modeMap={
+        appBuilder.config.fieldsModeMap?.[`${id}.${currentButtonId}`] || {}
+      }
     />
   );
 };

@@ -2,20 +2,22 @@ import { ContextMenuSub, ContextMenuItem } from '@shellagent/ui';
 import React from 'react';
 
 import { useDuplicateState } from '@/components/app/nodes/state-node/hook/use-duplicate-state';
+import { useInjection } from 'inversify-react';
+import { observer } from 'mobx-react-lite';
 // import ShortcutsName from '@/components/common/shortcuts-name';
-import { useAppStore } from '@/stores/app/app-provider';
 import { useAppState } from '@/stores/app/use-app-state';
+import { AppBuilderModel } from '@/components/app/app-builder.model';
 
 const CopyMenu: React.FC<{ id: string; name: string }> = ({ id, name }) => {
+  const appBuilder = useInjection<AppBuilderModel>('AppBuilderModel');
   const setCurrentCopyStateData = useAppState(
     state => state.setCurrentCopyStateData,
   );
-  const nodeData = useAppStore(state => state.nodeData);
   const { duplicateState } = useDuplicateState();
 
   const handleCopy = () => {
     setCurrentCopyStateData({
-      ...nodeData[id],
+      ...appBuilder.nodeData?.[id],
       name,
     });
   };

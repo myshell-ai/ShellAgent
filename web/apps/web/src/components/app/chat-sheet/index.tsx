@@ -16,6 +16,7 @@ import { Resizable } from 'react-resizable';
 
 import { AppBuilderChat } from '@/components/chat/app-builder-chat';
 import { AppBuilderChatModel } from '@/components/chat/app-builder-chat.model';
+import { AppBuilderModel } from '@/components/app/app-builder.model';
 import { useAppState } from '@/stores/app/use-app-state';
 import { getSchemaByInputs } from '@/stores/workflow/utils/get-run-schema';
 import { useWorkflowStore } from '@/stores/workflow/workflow-provider';
@@ -24,21 +25,23 @@ import 'react-resizable/css/styles.css';
 
 const RunSheet: React.FC<{}> = () => {
   const appBuilderChatModel = useInjection(AppBuilderChatModel);
+  const appBuilder = useInjection<AppBuilderModel>('AppBuilderModel');
 
-  const { userInputs, setUserInputs, nodeData, loading } = useWorkflowStore(
-    state => ({
-      userInputs: state.userInputs,
-      setUserInputs: state.setUserInputs,
-      nodeData: state.nodeData,
-      loading: state.loading,
-    }),
-  );
+  const { userInputs, setUserInputs, loading } = useWorkflowStore(state => ({
+    userInputs: state.userInputs,
+    setUserInputs: state.setUserInputs,
+    loading: state.loading,
+  }));
+
   const { runDrawerWidth, setRunDrawerWidth } = useAppState(state => ({
     runDrawerWidth: state.runDrawerWidth,
     setRunDrawerWidth: state.setRunDrawerWidth,
   }));
 
-  const inputs = nodeData[NodeIdEnum.start]?.inputs as Record<string, TValues>;
+  const inputs = appBuilder.nodeData[NodeIdEnum.start]?.inputs as Record<
+    string,
+    TValues
+  >;
   const runSchema = getSchemaByInputs(inputs);
   const prevInputs = usePrevious(inputs);
 
@@ -131,4 +134,4 @@ const RunSheet: React.FC<{}> = () => {
   );
 };
 
-export default observer(RunSheet);
+export default RunSheet;

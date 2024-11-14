@@ -12,9 +12,11 @@ import { useCallback, useEffect, useMemo } from 'react';
 
 import NodeForm from '@/components/app/node-form';
 import { getPlugin } from '@/components/app/plugins';
-import { useAppStore } from '@/stores/app/app-provider';
 import { getSchemaByWidget } from '@/stores/app/utils/get-widget-schema';
 import { useWorkflowStore } from '@/stores/workflow/workflow-provider';
+import { useInjection } from 'inversify-react';
+import { observer } from 'mobx-react-lite';
+import { AppBuilderModel } from '@/components/app/app-builder.model';
 
 export interface WidgetConfigProps {
   values: TValues | undefined;
@@ -128,20 +130,18 @@ const StandardWidgetConfig: React.FC<CommonWidgetConfigProps> = ({
 };
 
 export const WidgetConfig: React.FC<WidgetConfigProps> = props => {
+  const appBuilder = useInjection<AppBuilderModel>('AppBuilderModel');
+
   const { id, parent } = props;
-  const { setFieldsModeMap, fieldsModeMap } = useAppStore(state => ({
-    setFieldsModeMap: state.setFieldsModeMap,
-    fieldsModeMap: state.config?.fieldsModeMap,
-  }));
 
   const onModeChange = useCallback(
     (name: string, mode: TFieldMode) => {
-      setFieldsModeMap({ id: `${id}.${parent}`, name, mode });
+      appBuilder.setFieldsModeMap({ id: `${id}.${parent}`, name, mode });
     },
-    [id, setFieldsModeMap, parent],
+    [id, appBuilder.setFieldsModeMap, parent],
   );
 
-  const modeMap = fieldsModeMap?.[`${id}.${parent}`] || {};
+  const modeMap = appBuilder.config.fieldsModeMap?.[`${id}.${parent}`] || {};
   if (props.values?.custom) {
     return (
       <CustomWidgetConfig

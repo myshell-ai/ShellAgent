@@ -33,7 +33,7 @@ export const CustomEdge = ({
 }: EdgeProps<CustomEdgeData>) => {
   const buttonRef = useRef<HTMLDivElement>(null);
   const [buttonWidth, setButtonWidth] = useState(0);
-  const appBuilder = useInjection(AppBuilderModel);
+  const appBuilder = useInjection<AppBuilderModel>('AppBuilderModel');
 
   const setTransitionSheetOpen = useAppState(
     state => state.setTransitionSheetOpen,

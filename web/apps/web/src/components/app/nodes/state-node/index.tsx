@@ -13,6 +13,7 @@ import {
   useReactFlowStore,
 } from '@shellagent/flow-engine';
 import { TFieldMode, TValues } from '@shellagent/form-engine';
+import { observer } from 'mobx-react-lite';
 import { Task, TaskSchema } from '@shellagent/shared/protocol/task';
 import { customSnakeCase, getTaskDisplayName } from '@shellagent/shared/utils';
 import { FormRef } from '@shellagent/ui';
@@ -26,7 +27,6 @@ import { useInjection } from 'inversify-react';
 import { AppBuilderModel } from '@/components/app/app-builder.model';
 import NodeCard from '@/components/app/node-card';
 import NodeForm from '@/components/app/node-form';
-import { useAppStore } from '@/stores/app/app-provider';
 import { useAppState } from '@/stores/app/use-app-state';
 import {
   getKeyboardKeyCodeBySystem,
@@ -38,23 +38,7 @@ import emitter, { EventType, useEventEmitter } from '../../emitter';
 
 const StateNode: React.FC<NodeProps<StateNodeType>> = ({ selected, data }) => {
   const stateFormRef = useRef<FormRef>(null);
-  const appBuilder = useInjection(AppBuilderModel);
-  const {
-    setNodeData,
-    nodeData,
-    loading,
-    delNodeData,
-    setFieldsModeMap,
-    fieldsModeMap,
-  } = useAppStore(state => ({
-    setNodeData: state.setNodeData,
-    nodeData: state.nodeData,
-    loading: state.loading.getAutomata,
-    delNodeData: state.delNodeData,
-    setFieldsModeMap: state.setFieldsModeMap,
-    fieldsModeMap: state.config?.fieldsModeMap,
-  }));
-
+  const appBuilder = useInjection<AppBuilderModel>('AppBuilderModel');
   const { onDelNode, selectedNodes, onConnect } = useReactFlowStore(state => ({
     onDelNode: state.onDelNode,
     selectedNodes: state.selectedNodes,
@@ -104,7 +88,7 @@ const StateNode: React.FC<NodeProps<StateNodeType>> = ({ selected, data }) => {
     ['delete', 'backspace'],
     e => {
       if (selected && e.target === nodeRef.current) {
-        delNodeData(data.id);
+        appBuilder.deleteNodeData(data.id);
         onDelNode({ id: data.id });
         appBuilder.hanldeRefScene({
           scene: RefSceneEnum.Enum.remove_state,
@@ -130,7 +114,7 @@ const StateNode: React.FC<NodeProps<StateNodeType>> = ({ selected, data }) => {
       }
       if (selected) {
         setCurrentCopyStateData({
-          ...nodeData[data.id],
+          ...appBuilder.nodeData[data.id],
           ...data,
         });
       }
@@ -158,9 +142,9 @@ const StateNode: React.FC<NodeProps<StateNodeType>> = ({ selected, data }) => {
 
   const onModeChange = useCallback(
     (name: string, mode: TFieldMode) => {
-      setFieldsModeMap({ id: data.id, name, mode });
+      appBuilder.setFieldsModeMap({ id: data.id, name, mode });
     },
-    [data.id, setFieldsModeMap],
+    [data.id, appBuilder.setFieldsModeMap],
   );
 
   const onChange = useCallback(
@@ -173,14 +157,14 @@ const StateNode: React.FC<NodeProps<StateNodeType>> = ({ selected, data }) => {
       };
       const newData = { id: data.id as NodeId, data: newValues };
 
-      setNodeData(newData);
+      appBuilder.setNodeData(newData);
       emitter.emit(EventType.STATE_FORM_CHANGE, {
         id: data.id as NodeId,
         data: `${new Date().valueOf()}`,
         type: 'StateCard',
       });
     },
-    [setNodeData, data.id],
+    [data.id],
   );
 
   useEventEmitter(EventType.STATE_FORM_CHANGE, eventData => {
@@ -228,7 +212,7 @@ const StateNode: React.FC<NodeProps<StateNodeType>> = ({ selected, data }) => {
           try {
             const displayName = getTaskDisplayName(
               item,
-              nodeData[data.id]?.blocks as Task[],
+              appBuilder.nodeData[data.id]?.blocks as Task[],
             );
             const newTask = TaskSchema.parse({
               type: 'task',
@@ -244,12 +228,12 @@ const StateNode: React.FC<NodeProps<StateNodeType>> = ({ selected, data }) => {
               custom: item.custom,
             });
 
-            setNodeData({
+            appBuilder.setNodeData({
               id: data.id,
               data: {
-                ...nodeData[data.id],
+                ...appBuilder.nodeData[data.id],
                 blocks: [
-                  ...((nodeData[data.id]?.blocks as Task[]) || []),
+                  ...((appBuilder.nodeData[data.id]?.blocks as Task[]) || []),
                   newTask,
                 ],
               },
@@ -267,7 +251,7 @@ const StateNode: React.FC<NodeProps<StateNodeType>> = ({ selected, data }) => {
         }
       },
     }),
-    [setNodeData, nodeData, data.id],
+    [appBuilder.setNodeData, appBuilder.nodeData, data.id],
   );
 
   const dropRef = useRef<HTMLDivElement>(null);
@@ -279,11 +263,11 @@ const StateNode: React.FC<NodeProps<StateNodeType>> = ({ selected, data }) => {
         <NodeForm
           key={formKey}
           ref={stateFormRef}
-          loading={loading}
-          values={nodeData[data.id]}
+          loading={appBuilder.getAutomataLoading}
+          values={appBuilder.nodeData[data.id]}
           onChange={onChange}
           onModeChange={onModeChange}
-          modeMap={fieldsModeMap?.[data.id] || {}}
+          modeMap={appBuilder.config.fieldsModeMap?.[data.id] || {}}
         />
       </NodeCard>
       <SourceHandle onConnect={handleConnect} id={`custom_${data.id}`} />

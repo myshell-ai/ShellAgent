@@ -26,16 +26,14 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import React, { useCallback, useState } from 'react';
 import { toast } from 'react-toastify';
+import { observer } from 'mobx-react-lite';
 
-import { AppState } from '@/stores/app/app-store';
 import { saveApp, releaseApp, fetchAppVersionList } from '@/services/app';
 import { genAutomata } from '@/stores/app/utils/data-transformer';
 import { cn } from '@/utils/cn';
-import { Metadata } from '@/services/home/type';
-import {
-  GetAppVersionListResponse,
-  GetAppVersionListRequest,
-} from '@/services/app/type';
+import { GetAppVersionListResponse } from '@/services/app/type';
+import { AppBuilderModel } from '@/components/app/app-builder.model';
+import { useInjection } from 'inversify-react';
 
 import VersionSkeleton from '../skeleton';
 
@@ -43,10 +41,6 @@ interface PublishProps {
   app_id: string;
   version_name: string;
   loading: boolean;
-  config: AppState['config'];
-  nodeData: AppState['nodeData'];
-  flowInstance: AppState['flowInstance'];
-  metadata: Metadata;
 }
 
 const DropdownRender = ({
@@ -163,13 +157,9 @@ export default function Publish({
   app_id,
   version_name,
   loading,
-  config,
-  nodeData,
-  metadata,
-  flowInstance,
 }: PublishProps) {
+  const appBuilder = useInjection<AppBuilderModel>('AppBuilderModel');
   const router = useRouter();
-  // const [autoSavedTime, setAutoSavedTime] = useState('');
   const [versionName, setVersionName] = useState('');
   const [showPublishPopover, publishPopoverActions] = useBoolean(false);
   const hiddenOperation = !!version_name;
@@ -276,41 +266,54 @@ export default function Publish({
     },
   });
 
-  const handleSave = useCallback(() => {
-    const reactflow = flowInstance?.toObject() as IFlow;
-    if (!isEmpty(reactflow)) {
+  const handleSave = useCallback(async () => {
+    const reactflow = appBuilder.flowInstance?.toObject() as IFlow;
+    if (!isEmpty(reactflow) && app_id) {
       saveData({
         app_id,
         reactflow,
-        automata: genAutomata(reactflow, nodeData),
-        config,
+        automata: genAutomata(reactflow, appBuilder.nodeData),
+        config: appBuilder.config,
       });
     }
-  }, [flowInstance, nodeData, app_id, saveData, config]);
+  }, [
+    appBuilder.flowInstance,
+    app_id,
+    saveData,
+    appBuilder.config,
+    appBuilder.nodeData,
+  ]);
 
   const handleRelease = useCallback(async () => {
-    const reactflow = flowInstance?.toObject() as IFlow;
+    const reactflow = appBuilder.flowInstance?.toObject() as IFlow;
     if (!isEmpty(reactflow)) {
       release({
         app_id,
         reactflow,
-        automata: genAutomata(reactflow, nodeData),
-        config,
+        automata: genAutomata(reactflow, appBuilder.nodeData),
+        config: appBuilder.config,
         version_name: versionName,
-        metadata,
+        metadata: appBuilder.metadata,
       });
     }
     publishPopoverActions.setFalse();
-  }, [flowInstance, nodeData, config, app_id, versionName, metadata]);
+  }, [
+    appBuilder.flowInstance,
+    appBuilder.config,
+    app_id,
+    versionName,
+    appBuilder.metadata,
+    appBuilder.nodeData,
+  ]);
 
   const handleRestore = () => {
-    const reactflow = flowInstance?.toObject() as IFlow;
+    const reactflow = appBuilder.flowInstance?.toObject() as IFlow;
     if (!isEmpty(reactflow) && app_id) {
       restoreApp({
         app_id,
         reactflow,
-        automata: genAutomata(reactflow, nodeData),
-        config,
+        automata: genAutomata(reactflow, appBuilder.nodeData),
+        config: appBuilder.config,
       });
     }
   };

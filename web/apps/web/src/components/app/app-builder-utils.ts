@@ -119,15 +119,20 @@ export function convertRefOptsToCascaderOpts(
     const children: CascaderOption[] = Object.entries(val2.variables || {}).map(
       ([variableKey, variable]) => {
         let value;
+        let parent;
         if (key === 'context') {
           value = `{{ __context__${variableKey}__ }}`;
+          parent = 'context';
         } else {
+          // TODO state也需要按context value来改造
           value = `{{ ${key}.${variableKey} }}`;
+          parent = 'state';
         }
         return {
           label: variable?.display_name || variableKey,
           value,
           field_type: variable?.type,
+          parent,
         };
       },
     );

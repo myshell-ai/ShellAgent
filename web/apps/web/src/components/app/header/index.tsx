@@ -12,12 +12,11 @@ import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import React, { useCallback } from 'react';
 import { toast } from 'react-toastify';
-import { useShallow } from 'zustand/react/shallow';
 
 import { AppBuilderChatModel } from '@/components/chat/app-builder-chat.model';
+import { AppBuilderModel } from '@/components/app/app-builder.model';
 
 import { editItem } from '@/services/home';
-import { useAppStore } from '@/stores/app/app-provider';
 import { useAppState } from '@/stores/app/use-app-state';
 import { genAutomata } from '@/stores/app/utils/data-transformer';
 import { validateAutomata } from '@/stores/app/utils/date-validate';
@@ -26,23 +25,13 @@ import { ExportDialog } from '../export-dialog';
 import { ExtraActions } from './extra-action';
 import Publish from './publish';
 
-export const Header: React.FC = observer(() => {
+export const Header: React.FC = () => {
   const appBuilderChatModel = useInjection(AppBuilderChatModel);
+  const appBuilder = useInjection<AppBuilderModel>('AppBuilderModel');
   const params = useSearchParams();
   const version_name = params.get('version_name') as string;
 
   const id = params.get('id') as string;
-  const { metadata, flowInstance, nodeData, config, loading, updateMetadata } =
-    useAppStore(
-      useShallow(state => ({
-        config: state.config,
-        metadata: state.metadata,
-        nodeData: state.nodeData,
-        flowInstance: state.flowInstance,
-        loading: state.loading,
-        updateMetadata: state.updateMetadata,
-      })),
-    );
 
   const { editing, setEditing } = useAppState(state => state);
 
@@ -65,8 +54,8 @@ export const Header: React.FC = observer(() => {
   });
 
   const handleRun = useCallback(async () => {
-    const reactflow = flowInstance?.toObject() as IFlow;
-    const automata = genAutomata(reactflow, nodeData);
+    const reactflow = appBuilder.flowInstance?.toObject() as IFlow;
+    const automata = genAutomata(reactflow, appBuilder.nodeData);
 
     try {
       // 数据校验
@@ -84,7 +73,7 @@ export const Header: React.FC = observer(() => {
         },
       });
     }
-  }, [flowInstance, appBuilderChatModel, nodeData]);
+  }, [appBuilder.flowInstance, appBuilderChatModel, appBuilder.nodeData]);
 
   return (
     <div className="w-full h-full relative flex items-center justify-between p-3 border-b border-default font-medium">
@@ -101,10 +90,10 @@ export const Header: React.FC = observer(() => {
           {editing ? (
             <Input
               size="xs"
-              value={metadata?.name}
+              value={appBuilder.metadata?.name}
               rounded="lg"
               onChange={e => {
-                updateMetadata({
+                appBuilder.updateMetadata({
                   metadata: {
                     name: e.target.value,
                   },
@@ -115,14 +104,14 @@ export const Header: React.FC = observer(() => {
                 runEditWorkflow({
                   id,
                   type: 'app',
-                  ...metadata,
+                  ...appBuilder.metadata,
                 });
               }}
             />
           ) : (
             <>
               <Text size="lg" weight="medium">
-                {metadata?.name}
+                {appBuilder.metadata?.name}
               </Text>
               <IconButton
                 onClick={() => setEditing(true)}
@@ -136,7 +125,7 @@ export const Header: React.FC = observer(() => {
         </Heading>
       </div>
       <div className="inline-flex items-center justify-center flex-[0_0_auto]">
-        <ExportDialog id={id} name={metadata.name} />
+        <ExportDialog id={id} name={appBuilder.metadata?.name} />
         <Button
           loading={appBuilderChatModel.isInitBotLoading}
           onClick={handleRun}
@@ -149,14 +138,12 @@ export const Header: React.FC = observer(() => {
         <Publish
           app_id={id}
           version_name={version_name}
-          config={config}
-          nodeData={nodeData}
-          flowInstance={flowInstance}
-          metadata={metadata}
-          loading={loading.getAutomata || loading.getReactFlow}
+          loading={
+            appBuilder.loading.getAutomata || appBuilder.getReactFlowLoading
+          }
         />
         <ExtraActions />
       </div>
     </div>
   );
-});
+};

@@ -7,46 +7,34 @@ import {
 } from '@shellagent/flow-engine';
 import { TValues, TFieldMode } from '@shellagent/form-engine';
 import React, { useCallback, useMemo } from 'react';
+import { observer } from 'mobx-react-lite';
 
 import NodeCard from '@/components/app/node-card';
 import NodeForm from '@/components/app/node-form';
-import { useAppStore } from '@/stores/app/app-provider';
+import { useInjection } from 'inversify-react';
+import { AppBuilderModel } from '@/components/app/app-builder.model';
 
 const StartNode: React.FC<NodeProps<StartNodeType>> = ({
   id,
   selected,
   data,
 }) => {
-  const {
-    setNodeData,
-    nodeData,
-    fieldsModeMap,
-    setFieldsModeMap,
-    setResetData,
-    loading,
-  } = useAppStore(state => ({
-    setNodeData: state.setNodeData,
-    nodeData: state.nodeData,
-    fieldsModeMap: state.config?.fieldsModeMap || {},
-    setFieldsModeMap: state.setFieldsModeMap,
-    setResetData: state.setResetData,
-    loading: state.loading.getAutomata,
-  }));
+  const appBuilder = useInjection<AppBuilderModel>('AppBuilderModel');
 
   const edges = useReactFlowStore(state => state.edges);
 
   const onChange = useCallback(
     (values: TValues) => {
-      setNodeData({ id: NodeIdEnum.start, data: values });
+      appBuilder.setNodeData({ id: NodeIdEnum.start, data: values });
     },
-    [setNodeData, nodeData, setResetData, data.id],
+    [appBuilder.setNodeData],
   );
 
   const onModeChange = useCallback(
     (name: string, mode: TFieldMode) => {
-      setFieldsModeMap({ id, name, mode });
+      appBuilder.setFieldsModeMap({ id, name, mode });
     },
-    [id, setFieldsModeMap],
+    [id, appBuilder.setFieldsModeMap],
   );
 
   // 只能连接一个state节点
@@ -58,11 +46,11 @@ const StartNode: React.FC<NodeProps<StartNodeType>> = ({
     <>
       <NodeCard selected={selected} {...data}>
         <NodeForm
-          loading={loading}
-          values={nodeData[data.id]}
+          loading={appBuilder.getAutomataLoading}
+          values={appBuilder.nodeData[data.id] || {}}
           onChange={onChange}
           onModeChange={onModeChange}
-          modeMap={fieldsModeMap?.[data.id] || {}}
+          modeMap={appBuilder.config.fieldsModeMap?.[data.id] || {}}
         />
       </NodeCard>
       <SourceHandle isConnectable={isConnectable} id={id} />

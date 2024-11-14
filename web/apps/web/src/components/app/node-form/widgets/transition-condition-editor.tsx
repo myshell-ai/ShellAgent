@@ -9,13 +9,14 @@ import { TFieldMode } from '@shellagent/form-engine';
 import { Button, Input, Select, IconButton, Drawer } from '@shellagent/ui';
 import { produce } from 'immer';
 import { useRef, useState, useCallback } from 'react';
-
+import { useInjection } from 'inversify-react';
+import { observer } from 'mobx-react-lite';
 import { ICondition } from '@/components/app/edges';
 import NodeForm from '@/components/app/node-form';
 import { ExpressionInput } from '@/components/app/node-form/widgets/expression-input';
-import { useAppStore } from '@/stores/app/app-provider';
 import { useAppState } from '@/stores/app/use-app-state';
 import { getSchemaByInputs } from '@/stores/app/utils/get-workflow-schema';
+import { AppBuilderModel } from '@/components/app/app-builder.model';
 
 interface ITransitionConditionEditorProps {
   value: ICondition[];
@@ -117,18 +118,15 @@ const TransitionConditionEditor = ({
     open: state.targetInputsSheetOpen,
     setOpen: state.setTargetInputsSheetOpen,
   }));
-
-  const { nodeData, setFieldsModeMap, fieldsModeMap } = useAppStore(state => ({
-    nodeData: state.nodeData,
-    setFieldsModeMap: state.setFieldsModeMap,
-    fieldsModeMap: state.config?.fieldsModeMap,
-  }));
+  const appBuilder = useInjection<AppBuilderModel>('AppBuilderModel');
 
   const handleOpen = (open: boolean, index: number) => {
     setOpen(open);
     setIndex(index);
     const currentCondition = value[index];
-    const schema = getSchemaByInputs(nodeData[currentCondition.target]?.inputs);
+    const schema = getSchemaByInputs(
+      appBuilder.nodeData[currentCondition.target]?.inputs,
+    );
     setSchema(schema);
   };
 
@@ -176,9 +174,9 @@ const TransitionConditionEditor = ({
 
   const onModeChange = useCallback(
     (name: string, mode: TFieldMode) => {
-      setFieldsModeMap({ id: modeId, name, mode });
+      appBuilder.setFieldsModeMap({ id: modeId, name, mode });
     },
-    [modeId, setFieldsModeMap],
+    [modeId, appBuilder.setFieldsModeMap],
   );
 
   return (
@@ -219,7 +217,7 @@ const TransitionConditionEditor = ({
           schema={schema}
           values={value?.[index]?.target_inputs}
           onModeChange={onModeChange}
-          modeMap={fieldsModeMap?.[modeId] || {}}
+          modeMap={appBuilder.config.fieldsModeMap?.[modeId] || {}}
           onChange={values =>
             onChange(
               produce(value, draft => {

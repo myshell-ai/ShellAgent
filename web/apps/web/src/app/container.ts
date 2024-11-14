@@ -85,8 +85,8 @@ container.bind(OpenImageCanvasModel).toSelf().inSingletonScope();
 
 // refactor app builder
 container
-  .bind(AppBuilderModel)
-  .toSelf()
+  .bind<AppBuilderModel>('AppBuilderModel')
+  .to(AppBuilderModel)
   .inSingletonScope()
   .onActivation((_ctx: interfaces.Context, model: AppBuilderModel) => {
     if (typeof window !== 'undefined') {

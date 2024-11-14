@@ -6,9 +6,5 @@ import { WorkflowStoreProvider } from '@/stores/workflow/workflow-provider';
 export default function WorkflowLayout({
   children,
 }: PropsWithChildren): JSX.Element {
-  return (
-    <WorkflowStoreProvider>
-      <AppStoreProvider>{children}</AppStoreProvider>
-    </WorkflowStoreProvider>
-  );
+  return <WorkflowStoreProvider>{children}</WorkflowStoreProvider>;
 }

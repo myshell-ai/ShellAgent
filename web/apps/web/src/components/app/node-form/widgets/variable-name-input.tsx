@@ -65,7 +65,7 @@ const VariableNameInput = (props: VariableSelectProps) => {
 
   const IconMode = ModeOptions.find(item => item.value === mode)?.icon!;
 
-  const appBuilder = useInjection(AppBuilderModel);
+  const appBuilder = useInjection<AppBuilderModel>('AppBuilderModel');
 
   const contextOptions = appBuilder.getRefOptions(
     stateName as Lowercase<string>,

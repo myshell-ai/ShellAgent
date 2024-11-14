@@ -20,7 +20,7 @@ import { refReg } from '@/utils/common-helper';
 
 export function useFieldWatch(formRef: React.RefObject<FormRef>) {
   const prevValuesRef = useRef<Record<string, TValues | undefined>>({});
-  const appBuilder = useInjection(AppBuilderModel);
+  const appBuilder = useInjection<AppBuilderModel>('AppBuilderModel');
 
   const stateId = useSchemaContext(state => state.id);
 

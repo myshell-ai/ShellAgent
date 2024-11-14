@@ -1,8 +1,8 @@
 import { useReactFlowStore, getCanvasCenter } from '@shellagent/flow-engine';
 import { useKeyPress } from 'ahooks';
 import { useCallback } from 'react';
+import { useObserver } from 'mobx-react-lite';
 
-import { useAppStore } from '@/stores/app/app-provider';
 import { useAppState } from '@/stores/app/use-app-state';
 import { RefSceneEnum } from '@shellagent/shared/protocol/app-scope';
 import { customSnakeCase } from '@shellagent/shared/utils';
@@ -11,18 +11,14 @@ import {
   isEventTargetInputArea,
 } from '@/utils/common-helper';
 import { useInjection } from 'inversify-react';
-import { AppBuilderModel } from '@/components/app/app-builder.model';
+import { AppBuilderModel } from '../../../app-builder.model';
 
 export const usePasteState = ({
   enabeKeyboard = false,
 }: {
   enabeKeyboard: boolean;
 }) => {
-  const { setNodeData, nodeData } = useAppStore(state => ({
-    setNodeData: state.setNodeData,
-    nodeData: state.nodeData,
-  }));
-  const appBuilder = useInjection(AppBuilderModel);
+  const appBuilder = useInjection<AppBuilderModel>('AppBuilderModel');
 
   const { reactFlowWrapper, viewport, onAddNode } = useReactFlowStore(
     state => ({
@@ -37,7 +33,7 @@ export const usePasteState = ({
   }));
 
   const pasteState = useCallback(() => {
-    const index = Object.values(nodeData).map(
+    const index = Object.values(appBuilder.nodeData).map(
       value => value.type === 'state',
     )?.length;
     const displayName = `${data?.display_name} Copy${
@@ -45,7 +41,7 @@ export const usePasteState = ({
     }`;
     const newId = customSnakeCase(displayName) as Lowercase<string>;
 
-    setNodeData({ id: newId, data });
+    appBuilder.setNodeData({ id: newId, data });
 
     appBuilder.hanldeRefScene({
       scene: RefSceneEnum.Enum.duplicate_state,
@@ -66,7 +62,14 @@ export const usePasteState = ({
       },
       isCopy: true,
     });
-  }, [setNodeData, data, reactFlowWrapper, viewport, onAddNode]);
+  }, [
+    appBuilder.setNodeData,
+    data,
+    reactFlowWrapper,
+    viewport,
+    onAddNode,
+    appBuilder.nodeData,
+  ]);
 
   useKeyPress(`${getKeyboardKeyCodeBySystem('ctrl')}.v`, e => {
     if (isEventTargetInputArea(e.target as HTMLElement)) {
