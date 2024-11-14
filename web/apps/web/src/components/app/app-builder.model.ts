@@ -102,6 +102,21 @@ export class AppBuilderModel {
           }
         });
       });
+    } else if (evt.scene === RefSceneEnum.Enum.remove_ref_opts_prefix) {
+      evt.params.prefix.forEach(prefix => {
+        const [stateId, varName] = prefix.split('.');
+        const stateNode = nodeData[stateId];
+        if (!stateNode) return;
+
+        processNestedObject(stateNode, (value, key, parent) => {
+          if (typeof value === 'string') {
+            const refRegex = new RegExp(`{{\\s*${varName}[\\w.]*\\s*}}`, 'g');
+            if (refRegex.test(value)) {
+              parent[key] = '';
+            }
+          }
+        });
+      });
     } else if (evt.scene === RefSceneEnum.Enum.rename_ref_opt) {
       const { oldPath, newPath } = evt.params;
       const [stateId, oldVarName] = oldPath.split('.');
@@ -118,6 +133,29 @@ export class AppBuilderModel {
           }
         }
       });
+    } else if (evt.scene === RefSceneEnum.Enum.remove_state) {
+      const { stateName } = evt.params;
+
+      // 遍历所有节点
+      Object.entries(nodeData).forEach(([nodeId, node]: [string, any]) => {
+        // 跳过被删除的节点和非state类型节点
+        if (nodeId === stateName || node.type !== 'state') return;
+
+        // 处理节点中的所有字符串值
+        processNestedObject(node, (value, key, parent) => {
+          if (typeof value === 'string') {
+            // 匹配形如 {{ state_1.xxx }} 的引用
+            const refRegex = new RegExp(
+              `{{\\s*${stateName}\\.[\\w.]*\\s*}}`,
+              'g',
+            );
+            if (refRegex.test(value)) {
+              parent[key] = '';
+            }
+          }
+        });
+      });
     }
+    console.log('nodeData>>', nodeData);
   }
 }
