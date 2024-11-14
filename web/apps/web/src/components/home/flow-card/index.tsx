@@ -179,7 +179,7 @@ export const FlowCard = ({ id, metadata, onSuccess, type }: FlowCardProps) => {
               {type === 'app' ? (
                 <DropdownMenuItem onClick={() => setOpenSaveTempDialog(true)}>
                   <DocumentPlusIcon className="w-5 h-5 mr-1.5 text-icon" />
-                  {`Save As Template(Beta)`}
+                  Save As Template(Beta)
                 </DropdownMenuItem>
               ) : null}
             </DropdownMenuContent>
