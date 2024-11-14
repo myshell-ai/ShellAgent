@@ -9,6 +9,8 @@ import urllib
 from proconfig.utils.misc import windows_to_linux_path
 from pathlib import Path
 import requests
+import traceback
+
 # NON_FILE_INPUT_TYPES = ["text", "string", "number", "integer", "float"]
 
 
@@ -16,6 +18,7 @@ def queue_prompt(workflow, prompt, server_address, client_id):
     p = {"prompt": prompt, "client_id": client_id, "extra_data": {"extra_pnginfo": {"workflow": workflow}}}
     data = json.dumps(p).encode('utf-8')
     req =  urllib.request.Request("{}/prompt".format(server_address), data=data)
+    error = None
     try:
         with urllib.request.urlopen(req) as response:
             data = json.loads(response.read())
@@ -26,16 +29,93 @@ def queue_prompt(workflow, prompt, server_address, client_id):
             error_content = e.read().decode('utf-8')
             # Parse the JSON error message
             error_data = json.loads(error_content)
-            print(f"Error: {error_data['error']}")
-            if 'node_errors' in error_data:
-                print(f"Node Errors: {error_data['node_errors']}")
-            raise ValueError(json.dumps(error_data, indent=2, ensure_ascii=False))
+            # print(f"Error: {error_data['error']}")
+            # if 'node_errors' in error_data:
+            #     print(f"Node Errors: {error_data['node_errors']}")
+
+            simple_error_msg = ''
+            detailed_error_msg = ''
+
+            if error_data.get('error') is not None:
+                if error_data['error'].get('type', '') == 'invalid_prompt':
+                    error = {
+                        'error_code': 'COMFY-1101',
+                        'error_head': 'ComfyUI Workflow Validation Error: invalid_prompt', 
+                        'msg': error_data['error']['message'], 
+                        'traceback': f"Invalid prompt for {error_data['error']['details']}"
+                    }
+                elif error_data['error'].get('type', '') == 'prompt_no_outputs':
+                    error = {
+                        'error_code': 'COMFY-1102',
+                        'error_head': 'ComfyUI Workflow Validation Error: prompt_no_outputs', 
+                        'msg': error_data['error']['message'], 
+                        'traceback': f"Your workflow has no output nodes, which is invalid."
+                    }
+                elif error_data['error'].get('type', '') == 'prompt_outputs_failed_validation':
+                    assert isinstance(error_data.get('node_errors', []), dict), f"ComfyUI output is {error_data}"
+                    for node_id, error_info in error_data['node_errors'].items():
+                        detailed_error_msg += f"* {error_info['class_type']} {node_id}:\n"
+                        simple_error_msg += f"* {error_info['class_type']} {node_id}:\n"
+                        for reason in error_info['errors']:
+                            detailed_error_msg += f"  - {reason['message']}: {reason['details']}\n"
+                    error = {
+                        'error_code': 'COMFY-1103',
+                        'error_head': 'ComfyUI Workflow Validation Error: prompt_outputs_failed_validation',
+                        'msg': f"{error_data['error']['message']}:\n {simple_error_msg}", 
+                        'traceback': f"The output of your workfow failed to pass validation: \n{detailed_error_msg}"
+                    }
+                else:
+                    error = {
+                        'error_code': 'COMFY-1106',
+                        'error_head': 'ComfyUI Workflow Validation Error: others',
+                        'msg': error_data['error']['message'], 
+                        'traceback': f"{error_data['error']['details']}"
+                    }
+            else:
+                if isinstance(error_data.get('node_errors', []), dict):
+                    for node_id, error_info in error_data['node_errors'].items():
+                        detailed_error_msg += f"* {error_info['class_type']} {node_id}:\n"
+                        simple_error_msg += f"* {error_info['class_type']} {node_id}:\n"
+                        for reason in error_info['errors']:
+                            detailed_error_msg += f"  - {reason['message']}: {reason['details']}\n"
+
+                    if detailed_error_msg != '':
+                        error = {
+                            'error_code': 'COMFY-1104',
+                            'error_head': 'ComfyUI Workflow Validation Error: prompt_inputs_failed_validation', 
+                            'msg': f"Prompt inputs failed validation:\n {simple_error_msg}", 
+                            'traceback': detailed_error_msg
+                        }
+            
+
         else:
+            error_traceback = traceback.format_exc()
+            error = {
+                'error_code': 'COMFY-1106',
+                'error_head': 'Unknown HTTPError occurs when we attempt to connect with ComfyUI', 
+                'msg': f"HTTP Error: {e.code} - {e.reason}", 
+                'traceback': error_traceback
+            }
             print(f"HTTP Error: {e.code} - {e.reason}")
     except urllib.error.URLError as e:
-        print(f"URL Error: {e.reason}")
+        error_traceback = traceback.format_exc()
+        error = {
+            'error_code': 'COMFY-1106',
+            'error_head': 'Unknown URLError occurs when we attempt to connect with ComfyUI', 
+            'msg': f"URL Error: {e.reason}", 
+            'traceback': error_traceback
+        }
     except Exception as e:
-        print(f"General Error: {str(e)}")
+        error_traceback = traceback.format_exc()
+        error = {
+            'error_code': 'COMFY-1106',
+            'error_head': 'Unknown Error occurs when we attempt to connect with ComfyUI', 
+            'msg': f"General Error: {str(e)}", 
+            'traceback': error_traceback
+        }
+    finally:
+        if error is not None:
+            raise Exception(json.dumps(error, indent=2, ensure_ascii=False))
     return json.loads(urllib.request.urlopen(req).read())
 
 def get_history(server_address, prompt_id):
@@ -103,65 +183,97 @@ def comfyui_run(api, workflow, prompt, schemas, user_inputs):
             continue #previews are binary data
 
     history = get_history(http_address, prompt_id)[prompt_id]
-    outputs = {}
-    for node_id in history['outputs']:
-        if node_id not in schemas["outputs"]:
-            continue
-        node_output = history['outputs'][node_id]
-        
-        node_output_schema = schemas["outputs"][node_id]
-        if node_output_schema["type"] == "array":
-            if node_output_schema["items"].get("url_type") == "image":
-                images_output = []
-                for image in node_output['images']:
-                    image_data = get_media(http_address, image['filename'], image['subfolder'], image['type'])
-                    save_path = os.path.join(image["type"], image['subfolder'], image['filename'])
-                    os.makedirs(os.path.dirname(save_path), exist_ok=True)
-                    save_path = windows_to_linux_path(save_path)
-                    with open(save_path, "wb") as f:
-                        f.write(image_data)
-                    images_output.append(save_path)
-                outputs[schemas["outputs"][node_id]["title"]] = images_output
-            elif node_output_schema["items"].get("url_type") == "video":
-                videos_output = []
-                for video_path in node_output['video']:
-                    output_dir, subfolder, filename = split_media_path(video_path)
-                    video_data = get_media(http_address, filename, subfolder, output_dir)
-                    save_path = windows_to_linux_path(video_path)
-                    os.makedirs(os.path.dirname(save_path), exist_ok=True)
-                    with open(save_path, "wb") as f:
-                        f.write(video_data)
-                    videos_output.append(save_path)
-                outputs[schemas["outputs"][node_id]["title"]] = videos_output
-        elif node_output_schema["type"] == "string":
-            if node_output_schema.get("url_type") == "image":
-                image = node_output['images'][0]
-                image_data = get_media(http_address, image['filename'], image['subfolder'], image['type'])
-                save_path = os.path.join(image["type"], image['subfolder'], image['filename'])
-                save_path = windows_to_linux_path(save_path)
-                os.makedirs(os.path.dirname(save_path), exist_ok=True)
-                with open(save_path, "wb") as f:
-                    f.write(image_data)
-                outputs[schemas["outputs"][node_id]["title"]] = save_path  
-            elif node_output_schema.get("url_type") == "video":
-                video_path = node_output['video'][0]
-                output_dir, subfolder, filename = split_media_path(video_path)
-                video_data = get_media(http_address, filename, subfolder, output_dir)
-                save_path = windows_to_linux_path(video_path)
-                os.makedirs(os.path.dirname(save_path), exist_ok=True)
-                with open(save_path, "wb") as f:
-                    f.write(video_data)
-                outputs[schemas["outputs"][node_id]["title"]] = save_path
-            else:
-                outputs[schemas["outputs"][node_id]["title"]] = node_output["output"][0]
-        else:
-            outputs[schemas["outputs"][node_id]["title"]] = node_output["output"][0]
-            
-    # check outputs
-    for node_id, schema in schemas["outputs"].items():
-        if schema["title"] not in outputs:
-            raise ValueError(f"{schema['title']} cannot be founded in the ComfyUI results. Please check the ComfyUI workflow.")
-    return outputs
+    status_json = history["status"]
+
+    if status_json['status_str'] == 'error':
+        msgs = status_json['messages']
+        for msg in msgs:
+            if msg[0] == 'execution_error':
+                error_dict = msg[1]
+                error_traceback = "".join(error_dict['traceback'])
+                error_msg = error_dict['exception_message']
+                error = {
+                    'error_code': 'COMFY-1000',
+                    'error_head': 'ComfyUI Workflow RunTime Error', 
+                    'msg': error_msg, 
+                    'traceback': error_traceback
+                }
+                raise Exception(json.dumps(error, indent=2, ensure_ascii=False))
+    else:
+        try:
+            outputs = {}
+            for node_id in history['outputs']:
+                if node_id not in schemas["outputs"]:
+                    continue
+                node_output = history['outputs'][node_id]
+                
+                node_output_schema = schemas["outputs"][node_id]
+                if node_output_schema["type"] == "array":
+                    if node_output_schema["items"].get("url_type") == "image":
+                        images_output = []
+                        for image in node_output['images']:
+                            image_data = get_media(http_address, image['filename'], image['subfolder'], image['type'])
+                            save_path = os.path.join(image["type"], image['subfolder'], image['filename'])
+                            os.makedirs(os.path.dirname(save_path), exist_ok=True)
+                            save_path = windows_to_linux_path(save_path)
+                            with open(save_path, "wb") as f:
+                                f.write(image_data)
+                            images_output.append(save_path)
+                        outputs[schemas["outputs"][node_id]["title"]] = images_output
+                    elif node_output_schema["items"].get("url_type") == "video":
+                        videos_output = []
+                        for video_path in node_output['video']:
+                            output_dir, subfolder, filename = split_media_path(video_path)
+                            video_data = get_media(http_address, filename, subfolder, output_dir)
+                            save_path = windows_to_linux_path(video_path)
+                            os.makedirs(os.path.dirname(save_path), exist_ok=True)
+                            with open(save_path, "wb") as f:
+                                f.write(video_data)
+                            videos_output.append(save_path)
+                        outputs[schemas["outputs"][node_id]["title"]] = videos_output
+                elif node_output_schema["type"] == "string":
+                    if node_output_schema.get("url_type") == "image":
+                        image = node_output['images'][0]
+                        image_data = get_media(http_address, image['filename'], image['subfolder'], image['type'])
+                        save_path = os.path.join(image["type"], image['subfolder'], image['filename'])
+                        save_path = windows_to_linux_path(save_path)
+                        os.makedirs(os.path.dirname(save_path), exist_ok=True)
+                        with open(save_path, "wb") as f:
+                            f.write(image_data)
+                        outputs[schemas["outputs"][node_id]["title"]] = save_path  
+                    elif node_output_schema.get("url_type") == "video":
+                        video_path = node_output['video'][0]
+                        output_dir, subfolder, filename = split_media_path(video_path)
+                        video_data = get_media(http_address, filename, subfolder, output_dir)
+                        save_path = windows_to_linux_path(video_path)
+                        os.makedirs(os.path.dirname(save_path), exist_ok=True)
+                        with open(save_path, "wb") as f:
+                            f.write(video_data)
+                        outputs[schemas["outputs"][node_id]["title"]] = save_path
+                    else:
+                        outputs[schemas["outputs"][node_id]["title"]] = node_output["output"][0]
+                else:
+                    outputs[schemas["outputs"][node_id]["title"]] = node_output["output"][0]
+        except Exception as e:
+            error = {
+                'error_code': 'COMFY-1105',
+                'error_head': 'ComfyUI Workflow Output Processing Error', 
+                'msg': f'Error occurs when we deal with the outputs of ComfyUI workflow with ShellAgent-Plugin nodes: {str(e)}', 
+                'traceback': traceback.format_exc()
+            }
+            raise Exception(json.dumps(error, indent=2, ensure_ascii=False))
+                
+        # check outputs
+        for node_id, schema in schemas["outputs"].items():
+            if schema["title"] not in outputs:
+                error = {
+                    'error_code': 'COMFY-1105',
+                    'error_head': 'ComfyUI Workflow Output Processing Error', 
+                    'msg': f"ShellAgent outputs Node '{schema['title']}' cannot be founded in the ComfyUI results. Please check the ComfyUI workflow: {str(e)}", 
+                    'traceback': f"The output schemas for your workflow are {[schema['title'] for schema in schemas['outputs']]}. However, there is at least one missing output is missing in the final outputs of ComfyUI {outputs}."
+                }
+                raise Exception(json.dumps(error, indent=2, ensure_ascii=False))
+        return outputs
 
 
 def comfyui_run_myshell(workflow_id, inputs, extra_headers):
