@@ -89,8 +89,8 @@
   },
   "setter": {
     "size": {
-      "width": "W",
-      "height": "H"
+      "width": "Width",
+      "height": "Height"
     },
     "sketch": {
       "title": "Canvas",

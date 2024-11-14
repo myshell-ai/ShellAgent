@@ -152,8 +152,8 @@ var panel = {
 };
 var setter = {
 	size: {
-		width: "W",
-		height: "H"
+		width: "Width",
+		height: "Height"
 	},
 	sketch: {
 		title: "Canvas",
@@ -375,7 +375,7 @@ const TEXTBOX_DEFAULT_CONFIG = {
     textAlign: 'center',
     fontFamily: 'Roboto',
     width: 500,
-    splitByGrapheme: true
+    splitByGrapheme: false
 };
 [
     {
@@ -510,6 +510,15 @@ const FABRITOR_CUSTOM_PROPS = [
     'oldArrowInfo',
     'ref',
     'hasRef',
+    'fontScale',
+];
+const CUSTOM_FONTS = [
+    'Caveat-Regular',
+    'KronaOne-Regular',
+    'NotoSansTC-Regular',
+    'Oswald-Bold',
+    'Oswald-Regular',
+    'Geizer-2'
 ];
 const COMPLETE_GOOGLE_FONTS = [
     'Roboto',
@@ -614,7 +623,7 @@ const COMPLETE_GOOGLE_FONTS = [
     'Alegreya Sans',
     'Source Code Pro',
 ];
-const FONT_PRESET_FAMILY_LIST_GOOGLE_FONT = COMPLETE_GOOGLE_FONTS.map(f => ({
+const FONT_PRESET_FAMILY_LIST_GOOGLE_FONT = CUSTOM_FONTS.concat(COMPLETE_GOOGLE_FONTS).map(f => ({
     label: jsxRuntime.jsx("span", Object.assign({ style: {
             fontFamily: f,
             fontSize: 16
@@ -828,7 +837,7 @@ const createTextbox = async (options) => {
         text = text();
     }
     let tmpPathInfo = { hasPath: false, offset: 100 };
-    const textBox = new fabric$1.fabric.FText(text || translate('panel.text.add'), Object.assign(Object.assign(Object.assign({}, TEXTBOX_DEFAULT_CONFIG), rest), { fontFamily, pathAlign: 'center', id: uuid() }));
+    const textBox = new fabric$1.fabric.FText(text || translate('panel.text.add'), Object.assign(Object.assign(Object.assign({}, TEXTBOX_DEFAULT_CONFIG), rest), { fontFamily, pathAlign: 'center', id: uuid(), objectCaching: false, splitByGrapheme: false }));
     textBox.on('editing:entered', () => {
         if (textBox.path) {
             tmpPathInfo.hasPath = true;
@@ -4602,7 +4611,7 @@ function ColorSetter(props) {
     return (jsxRuntime.jsxs(jsxRuntime.Fragment, { children: [jsxRuntime.jsx(antd.Popover, Object.assign({ content: jsxRuntime.jsx("div", Object.assign({ className: "fabritor-color-setter" }, { children: jsxRuntime.jsx(Colors, { value: value, onChange: handleChange, format: "hex", angleType: "rotate" }) })), trigger: "click" }, { children: jsxRuntime.jsx("div", Object.assign({ className: "fabritor-toolbar-item", style: {
                         borderRadius: 4,
                         backgroundColor: calcTriggerBg()
-                    } }, { children: renderTrigger() })) })), jsxRuntime.jsx("svg", Object.assign({ style: { width: 0, height: 0, position: 'absolute' }, "aria-hidden": "true", focusable: "false" }, { children: jsxRuntime.jsx("linearGradient", Object.assign({ id: "colorsetter-icon-gradient", x2: "1", y2: "1" }, { children: (_a = value === null || value === void 0 ? void 0 : value.gradient) === null || _a === void 0 ? void 0 : _a.colorStops.map(stop => (jsxRuntime.jsx("stop", { offset: `${stop.offset * 100}%`, "stop-color": stop.color }))) })) }))] }));
+                    } }, { children: renderTrigger() })) })), jsxRuntime.jsx("svg", Object.assign({ style: { width: 0, height: 0, position: 'absolute' }, "aria-hidden": "true", focusable: "false" }, { children: jsxRuntime.jsx("linearGradient", Object.assign({ id: "colorsetter-icon-gradient", x2: "1", y2: "1" }, { children: (_a = value === null || value === void 0 ? void 0 : value.gradient) === null || _a === void 0 ? void 0 : _a.colorStops.map(stop => (jsxRuntime.jsx("stop", { offset: `${stop.offset * 100}%`, stopColor: stop.color }, `${stop.color}-${stop.offset}`))) })) }))] }));
 }
 
 function SliderInputNumber(props) {
@@ -5648,7 +5657,7 @@ var objects = [
 		pathSide: "left",
 		pathAlign: "center",
 		minWidth: 20,
-		splitByGrapheme: true,
+		splitByGrapheme: false,
 		id: "ad9d6314-5b03-4886-a101-eb0df5f64153",
 		selectable: true,
 		hasControls: true
@@ -5705,7 +5714,7 @@ var objects = [
 		pathSide: "left",
 		pathAlign: "center",
 		minWidth: 20,
-		splitByGrapheme: true,
+		splitByGrapheme: false,
 		id: "1a6b8d18-1037-486f-be5f-693bd50f8d60",
 		selectable: true,
 		hasControls: true
@@ -6365,6 +6374,7 @@ function TextSetter() {
     const { object, editor } = React.useContext(GlobalStateContext);
     const [form] = antd.Form.useForm();
     const [openFx, setOpenFx] = React.useState(false);
+    const [fontScale, setFontScale] = React.useState(false);
     const { t } = reactI18next.useTranslation();
     const TEXT_ADVANCE_CONFIG = [
         {
@@ -6408,6 +6418,11 @@ function TextSetter() {
         if (!(keys === null || keys === void 0 ? void 0 : keys.length))
             return;
         for (let key of keys) {
+            if (key === 'fontScale') {
+                object.set(key, values[key]);
+                form.setFieldValue('maxFontSize', form.getFieldValue('fontSize'));
+                setFontScale(values[key]);
+            }
             if (key === 'fontStyles') {
                 handleFontStyles(values[key]);
             }
@@ -6439,11 +6454,13 @@ function TextSetter() {
         editor.canvas.requestRenderAll();
     };
     React.useEffect(() => {
+        setFontScale(object.fontScale);
         form.setFieldsValue({
             ref: object.ref,
             text: object.text,
             fontFamily: object.fontFamily,
             fontSize: object.fontSize,
+            fontScale: object.fontScale,
             fill: transformFill2Colors(object.fill),
             textAlign: object.textAlign,
             lineHeight: object.lineHeight,
@@ -6452,7 +6469,7 @@ function TextSetter() {
                 bold: object.fontWeight === 'bold',
                 italic: object.fontStyle === 'italic',
                 underline: object.underline,
-                linethrough: object.linethrough
+                linethrough: object.linethrough,
             }
         });
     }, [object]);
@@ -6466,9 +6483,12 @@ function TextSetter() {
                                 if (open) {
                                     void loadPresetGoogleFonts();
                                 }
+                            } }) })), jsxRuntime.jsx(FormItem$6, Object.assign({ label: 'Font scale', name: "fontScale", valuePropName: "checked" }, { children: jsxRuntime.jsx(antd.Switch, { id: 'fontScale', checked: form.getFieldValue('fontScale'), onChange: (checked) => {
+                                form.setFieldValue('fontScale', checked);
+                                object.set('fontScale', checked);
                             } }) })), jsxRuntime.jsx(FormItem$6, Object.assign({ name: "fontSize", label: t('setter.text.font_size') }, { children: jsxRuntime.jsx(SliderInputNumber, { max: 400, onChangeComplete: () => {
                                 editor.fireCustomModifiedEvent();
-                            } }) })), jsxRuntime.jsx(FormItem$6, Object.assign({ name: "fill", label: t('setter.text.fill') }, { children: jsxRuntime.jsx(ColorSetter, { type: "fontColor", defaultColor: "#000000" }) })), jsxRuntime.jsx(FormItem$6, Object.assign({ name: "textAlign", label: t('setter.text.text_align') }, { children: jsxRuntime.jsx(AlignSetter, {}) })), jsxRuntime.jsx(FormItem$6, Object.assign({ name: "fontStyles", label: t('setter.text.font_styles') }, { children: jsxRuntime.jsx(FontStylePanel, {}) })), jsxRuntime.jsx(FormItem$6, Object.assign({ name: "charSpacing", label: t('setter.text.char_spacing') }, { children: jsxRuntime.jsx(SliderInputNumber, { min: -200, max: 800, onChangeComplete: () => {
+                            }, inputProps: { disabled: fontScale }, sliderProps: { disabled: fontScale } }) })), jsxRuntime.jsx(FormItem$6, Object.assign({ name: "fill", label: t('setter.text.fill') }, { children: jsxRuntime.jsx(ColorSetter, { type: "fontColor", defaultColor: "#000000" }) })), jsxRuntime.jsx(FormItem$6, Object.assign({ name: "textAlign", label: t('setter.text.text_align') }, { children: jsxRuntime.jsx(AlignSetter, {}) })), jsxRuntime.jsx(FormItem$6, Object.assign({ name: "fontStyles", label: t('setter.text.font_styles') }, { children: jsxRuntime.jsx(FontStylePanel, {}) })), jsxRuntime.jsx(FormItem$6, Object.assign({ name: "charSpacing", label: t('setter.text.char_spacing') }, { children: jsxRuntime.jsx(SliderInputNumber, { min: -200, max: 800, onChangeComplete: () => {
                                 editor.fireCustomModifiedEvent();
                             } }) })), jsxRuntime.jsx(FormItem$6, Object.assign({ name: "lineHeight", label: t('setter.text.line_height') }, { children: jsxRuntime.jsx(SliderInputNumber, { min: 0.5, max: 2.5, step: 0.01, onChangeComplete: () => {
                                 editor.fireCustomModifiedEvent();
@@ -7729,6 +7749,9 @@ const createFTextClass = () => {
         padding: 0,
         paintFirst: 'stroke',
         objectCaching: false,
+        needsItsOwnCache: function () {
+            return false;
+        },
         initDimensions: function () {
             if (this.__skipDimension) {
                 return;
@@ -7736,6 +7759,19 @@ const createFTextClass = () => {
             this.isEditing && this.initDelayedCursor();
             this.clearContextTop();
             this._clearCache();
+            if (this.fontScale) {
+                const width = this._measureWord(this.text, 0, 0);
+                if (width !== 0) {
+                    const fontSize = this.fontSize * this.width / (width + 1);
+                    if (width > this.width || fontSize < this.maxFontSize) {
+                        const fontSize = this.fontSize * this.width / (width + 1);
+                        this._set('fontSize', fontSize);
+                    }
+                }
+                else {
+                    this._set('fontSize', this.maxFontSize);
+                }
+            }
             this.dynamicMinWidth = 0;
             this._styleMap = this._generateStyleMap(this._splitText());
             if (this.dynamicMinWidth > this.width) {
@@ -7768,6 +7804,7 @@ const createFTextClass = () => {
         delete objectCopy.path;
         return fabric$1.fabric.Object._fromObject('FText', objectCopy, function (textInstance) {
             textInstance.styles = fabric$1.fabric.util.stylesFromArray(object.styles, object.text);
+            textInstance.set('maxFontSize', object.fontSize);
             if (path) {
                 fabric$1.fabric.Object._fromObject('Path', path, function (pathInstance) {
                     textInstance.set('path', pathInstance);

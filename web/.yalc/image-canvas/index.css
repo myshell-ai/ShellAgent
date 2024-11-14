@@ -220,3 +220,38 @@ html, body {
   border-radius: 8px;
 }
 
+@font-face {
+  font-family: "Caveat-Regular";
+  src: url("./assets/fonts/Caveat-Regular.ttf");
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "KronaOne-Regular";
+  src: url("./assets/fonts/KronaOne-Regular.ttf");
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "NotoSansTC-Regular";
+  src: url("./assets/fonts/NotoSansTC-Regular.ttf");
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Oswald-Bold";
+  src: url("./assets/fonts/Oswald-Bold.ttf");
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Oswald-Regular";
+  src: url("./assets/fonts/Oswald-Regular.ttf");
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Geizer-2";
+  src: url("./assets/fonts/Geizer-2.otf") format("opentype");
+  font-display: swap;
+}
