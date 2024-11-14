@@ -1,12 +1,13 @@
 import { ContextMenuSub, ContextMenuItem } from '@shellagent/ui';
+import { useInjection } from 'inversify-react';
+import { observer } from 'mobx-react-lite';
 import React from 'react';
 
 import { useDuplicateState } from '@/components/app/nodes/state-node/hook/use-duplicate-state';
-import { useInjection } from 'inversify-react';
-import { observer } from 'mobx-react-lite';
+
 // import ShortcutsName from '@/components/common/shortcuts-name';
-import { useAppState } from '@/stores/app/use-app-state';
 import { AppBuilderModel } from '@/stores/app/models/app-builder.model';
+import { useAppState } from '@/stores/app/use-app-state';
 
 const CopyMenu: React.FC<{ id: string; name: string }> = ({ id, name }) => {
   const appBuilder = useInjection<AppBuilderModel>('AppBuilderModel');

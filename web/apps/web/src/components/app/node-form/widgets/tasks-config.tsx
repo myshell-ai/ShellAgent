@@ -6,13 +6,13 @@ import { customSnakeCase, getTaskDisplayName } from '@shellagent/shared/utils';
 import { Button, useFormContext, Drag } from '@shellagent/ui';
 import { useClickAway } from 'ahooks';
 import { Dropdown } from 'antd';
+import { useInjection } from 'inversify-react';
 import { useState, useRef, useCallback } from 'react';
 import { useDrag, useDrop } from 'react-dnd';
-import { useInjection } from 'inversify-react';
-import { AppBuilderModel } from '@/stores/app/models/app-builder.model';
 
 import { materialList } from '@/components/app/constants';
 import { TaskList } from '@/components/app/task-list';
+import { AppBuilderModel } from '@/stores/app/models/app-builder.model';
 import { useAppState } from '@/stores/app/use-app-state';
 
 const TaskItem = ({

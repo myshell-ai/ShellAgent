@@ -2,7 +2,7 @@
 /* eslint-disable no-restricted-syntax */
 
 import { ISchema, resolveRefs, isUpperCase } from '@shellagent/form-engine';
-import { isEmpty, omit, set } from 'lodash-es';
+import { isEmpty, omit } from 'lodash-es';
 import { SchemaTypes } from 'node_modules/@shellagent/form-engine/src/types';
 import { JsonSchema7 } from 'node_modules/@shellagent/form-engine/src/types/jsonSchema7';
 

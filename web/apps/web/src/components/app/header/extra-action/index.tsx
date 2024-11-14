@@ -1,21 +1,21 @@
 'use client';
 
 import { EllipsisVerticalIcon } from '@heroicons/react/24/outline';
+import { Automata } from '@shellagent/pro-config';
 import {
   DropdownMenu,
   DropdownMenuTrigger,
   DropdownMenuContent,
   DropdownMenuItem,
 } from '@shellagent/ui';
-import { Automata } from '@shellagent/pro-config';
-import { useState } from 'react';
-import { toast } from 'react-toastify';
 import { useInjection } from 'inversify-react';
 import { observer } from 'mobx-react-lite';
+import { useState } from 'react';
+import { toast } from 'react-toastify';
 
-import { cn } from '@/utils/cn';
-import { ShellAgent } from '@/types/app/types';
 import { AppBuilderModel } from '@/stores/app/models/app-builder.model';
+import { ShellAgent } from '@/types/app/types';
+import { cn } from '@/utils/cn';
 
 import ImportModal from './import-modal';
 

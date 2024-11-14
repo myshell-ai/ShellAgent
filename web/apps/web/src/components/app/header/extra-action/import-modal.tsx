@@ -13,9 +13,9 @@ import { useState, useEffect } from 'react';
 import { toast } from 'react-toastify';
 
 import FileUploader from '@/components/common/uploader';
+import { GetShellAgentResponse } from '@/services/app/type';
 import { APIFetch } from '@/services/base';
 import { ShellAgent } from '@/types/app/types';
-import { GetShellAgentResponse } from '@/services/app/type';
 
 const ImportModal: React.FC<{
   open: boolean;

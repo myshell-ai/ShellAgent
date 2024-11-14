@@ -8,15 +8,16 @@ import { useReactFlowStore, NodeTypeEnum } from '@shellagent/flow-engine';
 import { TFieldMode } from '@shellagent/form-engine';
 import { Button, Input, Select, IconButton, Drawer } from '@shellagent/ui';
 import { produce } from 'immer';
-import { useRef, useState, useCallback } from 'react';
 import { useInjection } from 'inversify-react';
 import { observer } from 'mobx-react-lite';
+import { useRef, useState, useCallback } from 'react';
+
 import { ICondition } from '@/components/app/edges';
 import NodeForm from '@/components/app/node-form';
 import { ExpressionInput } from '@/components/app/node-form/widgets/expression-input';
+import { AppBuilderModel } from '@/stores/app/models/app-builder.model';
 import { useAppState } from '@/stores/app/use-app-state';
 import { getSchemaByInputs } from '@/stores/app/utils/get-workflow-schema';
-import { AppBuilderModel } from '@/stores/app/models/app-builder.model';
 
 interface ITransitionConditionEditorProps {
   value: ICondition[];

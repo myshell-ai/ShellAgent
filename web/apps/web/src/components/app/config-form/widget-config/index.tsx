@@ -7,16 +7,16 @@ import {
   TFieldMode,
   TValues,
 } from '@shellagent/form-engine';
+import { useInjection } from 'inversify-react';
 import { isEmpty, merge } from 'lodash-es';
+import { observer } from 'mobx-react-lite';
 import { useCallback, useEffect, useMemo } from 'react';
 
 import NodeForm from '@/components/app/node-form';
 import { getPlugin } from '@/components/app/plugins';
+import { AppBuilderModel } from '@/stores/app/models/app-builder.model';
 import { getSchemaByWidget } from '@/stores/app/utils/get-widget-schema';
 import { useWorkflowStore } from '@/stores/workflow/workflow-provider';
-import { useInjection } from 'inversify-react';
-import { observer } from 'mobx-react-lite';
-import { AppBuilderModel } from '@/stores/app/models/app-builder.model';
 
 export interface WidgetConfigProps {
   values: TValues | undefined;

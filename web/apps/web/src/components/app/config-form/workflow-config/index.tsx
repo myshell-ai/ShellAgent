@@ -6,15 +6,15 @@ import {
   TFieldMode,
   TValues,
 } from '@shellagent/form-engine';
-import { merge } from 'lodash-es';
-import { useCallback, useEffect, useMemo } from 'react';
 import { useInjection } from 'inversify-react';
+import { merge } from 'lodash-es';
 import { observer } from 'mobx-react-lite';
+import { useCallback, useEffect, useMemo } from 'react';
 
 import NodeForm from '@/components/app/node-form';
+import { AppBuilderModel } from '@/stores/app/models/app-builder.model';
 import { getWorkflowSchema } from '@/stores/app/utils/get-workflow-schema';
 import { useWorkflowStore } from '@/stores/workflow/workflow-provider';
-import { AppBuilderModel } from '@/stores/app/models/app-builder.model';
 
 interface WorkflowConfigProps {
   values: TValues | undefined;

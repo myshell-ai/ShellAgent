@@ -1,7 +1,8 @@
-import { CustomKey, CustomEventName } from '@shellagent/pro-config';
-import type { FieldValues, FormRef } from '@shellagent/ui';
-import { RefSceneEnum } from '@shellagent/shared/protocol/app-scope';
+import type { IFlow, ReactFlowInstance } from '@shellagent/flow-engine';
+import type { TValues, TFieldMode } from '@shellagent/form-engine';
+import { CustomKey, CustomEventName, Automata } from '@shellagent/pro-config';
 import {
+  RefSceneEnum,
   RefType,
   getRefOptions,
   Scopes,
@@ -9,30 +10,31 @@ import {
   hanldeRefScene,
   Refs,
 } from '@shellagent/shared/protocol/app-scope';
+import type { FieldValues, FormRef } from '@shellagent/ui';
 import { injectable } from 'inversify';
+import { cloneDeep } from 'lodash-es';
 import { action, makeObservable, observable, runInAction } from 'mobx';
-import type { IFlow, ReactFlowInstance } from '@shellagent/flow-engine';
-import { Automata } from '@shellagent/pro-config';
-import { defaultFlow } from '../../../components/app/constants';
+
+import { fetchAutomata, fetchFlow } from '@/services/app';
+import type { GetAppFlowRequest } from '@/services/app/type';
+import { fetchList as fetchFlowList } from '@/services/home';
+import type { GetListRequest, GetListResponse } from '@/services/home/type';
 import { genNodeData } from '@/stores/app/utils/data-transformer';
+import type { NodeDataType, Config, Metadata } from '@/types/app/types';
+
 import {
   CascaderOption,
   convertRefOptsToCascaderOpts,
   convetNodeDataToScopes,
 } from './app-builder-utils';
-import type { TValues, TFieldMode } from '@shellagent/form-engine';
-import { fetchAutomata, fetchFlow } from '@/services/app';
-import { fetchList as fetchFlowList } from '@/services/home';
-import type { GetListRequest, GetListResponse } from '@/services/home/type';
-import type { GetAppFlowRequest } from '@/services/app/type';
-import { cloneDeep } from 'lodash-es';
 import {
   handleRemoveRefOpts,
   handleRemoveRefOptsPrefix,
   handleRenameRefOpt,
   handleRemoveState,
 } from './node-data-utils';
-import type { NodeDataType, Config, Metadata } from '@/types/app/types';
+import { defaultFlow } from '../../../components/app/constants';
+
 @injectable()
 export class AppBuilderModel {
   nodeData: NodeDataType = {};

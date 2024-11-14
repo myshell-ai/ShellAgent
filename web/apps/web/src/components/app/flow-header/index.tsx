@@ -6,12 +6,11 @@ import { useInjection } from 'inversify-react';
 import { isEmpty, pick } from 'lodash-es';
 import React, { useCallback, useMemo, useState, useEffect, memo } from 'react';
 
-import { AppBuilderModel } from '@/stores/app/models/app-builder.model';
 import { usePasteState } from '@/components/app/nodes/state-node/hook/use-paste-state';
 import { saveApp } from '@/services/app';
+import { AppBuilderModel } from '@/stores/app/models/app-builder.model';
 import { genAutomata } from '@/stores/app/utils/data-transformer';
 import { isDeepEmpty } from '@/utils/common-helper';
-import { toJS } from 'mobx';
 
 const relativeTime = require('dayjs/plugin/relativeTime');
 

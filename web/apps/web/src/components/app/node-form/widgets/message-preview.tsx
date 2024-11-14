@@ -10,17 +10,17 @@ import {
 import { Button as IButtonType } from '@shellagent/shared/protocol/render-button';
 import { IconButton, Button, Text } from '@shellagent/ui';
 import clsx from 'clsx';
-import { PropsWithChildren } from 'react';
 import { useInjection } from 'inversify-react';
 import { observer } from 'mobx-react-lite';
+import { PropsWithChildren } from 'react';
 
 import {
   inputSourceHandle,
   buttonSourceHandle,
 } from '@/components/app/constants';
 import { EdgeTypeEnum, EdgeDataTypeEnum } from '@/components/app/edges';
-import { useSchemaContext } from '@/stores/app/schema-provider';
 import { AppBuilderModel } from '@/stores/app/models/app-builder.model';
+import { useSchemaContext } from '@/stores/app/schema-provider';
 import { useAppState } from '@/stores/app/use-app-state';
 import { generateUUID } from '@/utils/common-helper';
 

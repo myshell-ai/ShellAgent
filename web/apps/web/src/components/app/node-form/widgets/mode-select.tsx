@@ -4,16 +4,12 @@ import {
   RectangleStackIcon,
   Square3Stack3DIcon,
 } from '@heroicons/react/24/outline';
+import { useFormEngineContext } from '@shellagent/form-engine';
+import { RefSceneEnum } from '@shellagent/shared/protocol/app-scope';
 import {
   FieldModeEnum,
   FieldMode,
 } from '@shellagent/shared/protocol/extend-config';
-import { RefSceneEnum } from '@shellagent/shared/protocol/app-scope';
-
-import { useInjection } from 'inversify-react';
-import { AppBuilderModel } from '@/stores/app/models/app-builder.model';
-import { useSchemaContext } from '@/stores/app/schema-provider';
-import { useFormEngineContext } from '@shellagent/form-engine';
 import {
   DropdownMenu,
   DropdownMenuTrigger,
@@ -24,7 +20,11 @@ import {
   Text,
   HeroIcon,
 } from '@shellagent/ui';
+import { useInjection } from 'inversify-react';
 import { useState, useMemo, useCallback } from 'react';
+
+import { AppBuilderModel } from '@/stores/app/models/app-builder.model';
+import { useSchemaContext } from '@/stores/app/schema-provider';
 
 const ModeOptions: Array<{
   label: string;

@@ -13,20 +13,20 @@ import {
   useReactFlowStore,
 } from '@shellagent/flow-engine';
 import { TFieldMode, TValues } from '@shellagent/form-engine';
-import { observer } from 'mobx-react-lite';
+import { RefSceneEnum } from '@shellagent/shared/protocol/app-scope';
 import { Task, TaskSchema } from '@shellagent/shared/protocol/task';
 import { customSnakeCase, getTaskDisplayName } from '@shellagent/shared/utils';
 import { FormRef } from '@shellagent/ui';
 import { useKeyPress } from 'ahooks';
+import { useInjection } from 'inversify-react';
 import { isEqual } from 'lodash-es';
+import { observer } from 'mobx-react-lite';
 import React, { useCallback, useRef, useEffect, useState } from 'react';
-import { RefSceneEnum } from '@shellagent/shared/protocol/app-scope';
 
 import { EdgeDataTypeEnum, EdgeTypeEnum } from '@/components/app/edges';
-import { useInjection } from 'inversify-react';
-import { AppBuilderModel } from '@/stores/app/models/app-builder.model';
 import NodeCard from '@/components/app/node-card';
 import NodeForm from '@/components/app/node-form';
+import { AppBuilderModel } from '@/stores/app/models/app-builder.model';
 import { useAppState } from '@/stores/app/use-app-state';
 import {
   getKeyboardKeyCodeBySystem,

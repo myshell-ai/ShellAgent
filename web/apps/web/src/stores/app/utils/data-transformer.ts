@@ -16,12 +16,11 @@ import {
   ICustomEdge,
   CustomEdgeData,
 } from '@/components/app/edges';
+import { NodeDataType } from '@/types/app/types';
 import {
   transformChoicesToValues,
   transformValuesToChoices,
 } from '@/utils/data-transformer';
-
-import { NodeDataType } from '@/types/app/types';
 
 export const contextTempReg = /__context__([a-z0-9_]+)__/g;
 export const contextReg = /context\.([a-z0-9_]+)/g;

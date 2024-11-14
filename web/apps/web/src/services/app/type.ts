@@ -1,8 +1,9 @@
 import { IFlow } from '@shellagent/flow-engine';
 import { Automata } from '@shellagent/pro-config';
 
-import { ServerMessage } from './message-type';
 import { Config, Metadata } from '@/types/app/types';
+
+import { ServerMessage } from './message-type';
 
 export interface AppMetadata {
   name: string;

@@ -1,16 +1,17 @@
 import { useReactFlowStore, getCanvasCenter } from '@shellagent/flow-engine';
-import { useKeyPress } from 'ahooks';
-import { useCallback } from 'react';
-import { useObserver } from 'mobx-react-lite';
-
-import { useAppState } from '@/stores/app/use-app-state';
 import { RefSceneEnum } from '@shellagent/shared/protocol/app-scope';
 import { customSnakeCase } from '@shellagent/shared/utils';
+import { useKeyPress } from 'ahooks';
+import { useInjection } from 'inversify-react';
+import { useObserver } from 'mobx-react-lite';
+import { useCallback } from 'react';
+
+import { useAppState } from '@/stores/app/use-app-state';
 import {
   getKeyboardKeyCodeBySystem,
   isEventTargetInputArea,
 } from '@/utils/common-helper';
-import { useInjection } from 'inversify-react';
+
 import { AppBuilderModel } from '../../../../../stores/app/models/app-builder.model';
 
 export const usePasteState = ({

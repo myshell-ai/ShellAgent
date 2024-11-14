@@ -1,4 +1,5 @@
 import { FormRef } from '@shellagent/ui';
+
 import { DiffTypeEnum, getDiffPath, replaceKey } from './form-utils';
 
 describe('form-utils', () => {
@@ -345,7 +346,7 @@ describe('form-utils', () => {
         {
           path: 'untitled_input_3',
           type: DiffTypeEnum.Deleted,
-          oldValue: oldValue['untitled_input_3'],
+          oldValue: oldValue.untitled_input_3,
         },
       ]);
     });
@@ -366,7 +367,7 @@ describe('form-utils', () => {
         {
           path: 'untitled_input_2',
           type: DiffTypeEnum.Deleted,
-          oldValue: oldValue['untitled_input_2'],
+          oldValue: oldValue.untitled_input_2,
         },
       ]);
     });
@@ -395,8 +396,8 @@ describe('form-utils', () => {
         {
           path: 'untitled_input_5.name',
           type: DiffTypeEnum.Modified,
-          oldValue: oldValue['untitled_input_5'].name,
-          newValue: newValue['untitled_input_5'].name,
+          oldValue: oldValue.untitled_input_5.name,
+          newValue: newValue.untitled_input_5.name,
         },
       ]);
     });
@@ -425,8 +426,8 @@ describe('form-utils', () => {
         {
           path: 'untitled_input_5.name',
           type: DiffTypeEnum.Modified,
-          oldValue: oldValue['untitled_input_5'].name,
-          newValue: newValue['untitled_input_5'].name,
+          oldValue: oldValue.untitled_input_5.name,
+          newValue: newValue.untitled_input_5.name,
         },
       ]);
     });
@@ -452,8 +453,8 @@ describe('form-utils', () => {
         {
           path: 'untitled_input_10.user_input',
           type: DiffTypeEnum.Modified,
-          oldValue: oldValue['untitled_input_10'].user_input,
-          newValue: newValue['untitled_input_10'].user_input,
+          oldValue: oldValue.untitled_input_10.user_input,
+          newValue: newValue.untitled_input_10.user_input,
         },
       ]);
     });
@@ -482,7 +483,7 @@ describe('form-utils', () => {
         {
           path: 'untitled_input_5',
           type: DiffTypeEnum.Renamed,
-          oldValue: oldValue['untitled_input_5'],
+          oldValue: oldValue.untitled_input_5,
           newValue: newValue.test,
         },
       ]);
@@ -872,8 +873,8 @@ describe('form-utils', () => {
         {
           path: '',
           type: DiffTypeEnum.Reordered,
-          oldValue: oldValue,
-          newValue: newValue,
+          oldValue,
+          newValue,
           fromIndex: 0,
           toIndex: 1,
         },
@@ -1101,7 +1102,9 @@ describe('form-utils', () => {
         {
           path: '__context__1__',
           type: DiffTypeEnum.Renamed,
+          /* eslint-disable no-underscore-dangle, func-names */
           oldValue: oldValue.__context__1__,
+          /* eslint-disable no-underscore-dangle, func-names */
           newValue: newValue.__context__2__,
         },
       ]);

@@ -8,7 +8,6 @@ import { Container, interfaces } from 'inversify';
 import { toJS } from 'mobx';
 import { toast } from 'react-toastify';
 
-import { AppBuilderModel } from '@/stores/app/models/app-builder.model';
 import { AppBuilderChatModel } from '@/components/chat/app-builder-chat.model';
 import { DownloadModel } from '@/components/download/download.model';
 import { OpenImageCanvasModel } from '@/components/image-canvas/open-image-canvas.model';
@@ -19,6 +18,7 @@ import { WidgetsCommonModel } from '@/components/manager/manager-content/widgets
 import { WidgetsInstalledModel } from '@/components/manager/manager-content/widgets/widgets-installed.model';
 import { WidgetsMarketplaceModel } from '@/components/manager/manager-content/widgets/widgets-marketplace.model';
 import { SettingsModel } from '@/components/settings/settings.model';
+import { AppBuilderModel } from '@/stores/app/models/app-builder.model';
 import { EmitterModel } from '@/utils/emitter.model';
 import { ModalModel } from '@/utils/modal.model';
 import { RequestModel } from '@/utils/request.model';
@@ -90,10 +90,14 @@ container
   .inSingletonScope()
   .onActivation((_ctx: interfaces.Context, model: AppBuilderModel) => {
     if (typeof window !== 'undefined') {
-      (window as any)._refs = function () {
+      /* eslint-disable no-underscore-dangle, func-names */
+      (window as any)._get_app_builder_refs = function () {
         return model.refs;
       };
-      (window as any)._nodeData = model.nodeData;
+      /* eslint-disable no-underscore-dangle, func-names */
+      (window as any)._get_app_builder_node_data = function () {
+        return model.nodeData;
+      };
     }
     return model;
   });

@@ -6,12 +6,12 @@ import {
   useReactFlowStore,
 } from '@shellagent/flow-engine';
 import { TValues, TFieldMode } from '@shellagent/form-engine';
-import React, { useCallback, useMemo } from 'react';
+import { useInjection } from 'inversify-react';
 import { observer } from 'mobx-react-lite';
+import React, { useCallback, useMemo } from 'react';
 
 import NodeCard from '@/components/app/node-card';
 import NodeForm from '@/components/app/node-form';
-import { useInjection } from 'inversify-react';
 import { AppBuilderModel } from '@/stores/app/models/app-builder.model';
 
 const StartNode: React.FC<NodeProps<StartNodeType>> = ({

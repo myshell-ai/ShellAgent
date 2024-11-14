@@ -18,22 +18,22 @@ import {
   ScrollArea,
   SaveIcon,
 } from '@shellagent/ui';
-import { Dropdown } from 'antd';
 import { useRequest, useBoolean } from 'ahooks';
+import { Dropdown } from 'antd';
 import dayjs from 'dayjs';
+import { useInjection } from 'inversify-react';
 import { isEmpty } from 'lodash-es';
-import { useRouter } from 'next/navigation';
+import { observer } from 'mobx-react-lite';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import React, { useCallback, useState } from 'react';
 import { toast } from 'react-toastify';
-import { observer } from 'mobx-react-lite';
 
 import { saveApp, releaseApp, fetchAppVersionList } from '@/services/app';
-import { genAutomata } from '@/stores/app/utils/data-transformer';
-import { cn } from '@/utils/cn';
 import { GetAppVersionListResponse } from '@/services/app/type';
 import { AppBuilderModel } from '@/stores/app/models/app-builder.model';
-import { useInjection } from 'inversify-react';
+import { genAutomata } from '@/stores/app/utils/data-transformer';
+import { cn } from '@/utils/cn';
 
 import VersionSkeleton from '../skeleton';
 

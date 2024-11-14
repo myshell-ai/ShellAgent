@@ -1,14 +1,15 @@
-import { useKeyPress } from 'ahooks';
-import React from 'react';
 import {
   BaseEdge,
   EdgeProps,
   getBezierPath,
   useReactFlowStore,
 } from '@shellagent/flow-engine';
-import { useInjection } from 'inversify-react';
-import { AppBuilderModel } from '@/stores/app/models/app-builder.model';
 import { RefSceneEnum } from '@shellagent/shared/protocol/app-scope';
+import { useKeyPress } from 'ahooks';
+import { useInjection } from 'inversify-react';
+import React from 'react';
+
+import { AppBuilderModel } from '@/stores/app/models/app-builder.model';
 
 export const DefaultEdge = ({
   id,

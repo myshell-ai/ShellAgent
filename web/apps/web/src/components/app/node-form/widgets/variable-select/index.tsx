@@ -1,12 +1,15 @@
-import { ISelectProps, Cascader, CascaderOption } from '@shellagent/ui';
+import { useFormEngineContext } from '@shellagent/form-engine';
 import { RefSceneEnum } from '@shellagent/shared/protocol/app-scope';
 import { removeBrackets } from '@shellagent/shared/utils';
-import { useCallback, useMemo } from 'react';
-import { useSelectOptions } from './use-select-options';
+import { ISelectProps, Cascader, CascaderOption } from '@shellagent/ui';
 import { useInjection } from 'inversify-react';
+import { useCallback } from 'react';
+
 import { AppBuilderModel } from '@/stores/app/models/app-builder.model';
 import { useSchemaContext } from '@/stores/app/schema-provider';
-import { useFormEngineContext } from '@shellagent/form-engine';
+
+import { useSelectOptions } from './use-select-options';
+
 interface IVariableValue {
   target: { value: string };
 }

@@ -1,14 +1,14 @@
 'use client';
 
 import { TValues, TFieldMode } from '@shellagent/form-engine';
+import { useInjection } from 'inversify-react';
+import { observer } from 'mobx-react-lite';
 import { useCallback } from 'react';
 
 import NodeForm from '@/components/app/node-form';
+import { AppBuilderModel } from '@/stores/app/models/app-builder.model';
 import { useAppState } from '@/stores/app/use-app-state';
 import { buttonConfigSchema } from '@/stores/app/utils/schema';
-import { useInjection } from 'inversify-react';
-import { observer } from 'mobx-react-lite';
-import { AppBuilderModel } from '@/stores/app/models/app-builder.model';
 
 interface ButtonConfigProps {
   values: TValues;

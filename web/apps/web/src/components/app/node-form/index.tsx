@@ -33,6 +33,7 @@ import FileUpload from '@/components/common/uploader';
 import { useSchemaContext } from '@/stores/app/schema-provider';
 
 import FormSkeleton from './form-skeleton';
+import { useFieldWatch } from './hook/use-field-watch';
 import {
   ExpressionInput,
   VariableSelect,
@@ -46,7 +47,6 @@ import {
   VariableNameInput,
 } from './widgets';
 import { OpenImageCanvas } from '../../image-canvas/open-image-canvas';
-import { useFieldWatch } from './hook/use-field-watch';
 
 const TasksConfig = dynamic(
   () => import('./widgets/tasks-config').then(module => module.TasksConfig),

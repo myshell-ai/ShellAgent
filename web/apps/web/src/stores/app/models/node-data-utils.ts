@@ -1,6 +1,6 @@
+import { reservedStateName } from '@shellagent/shared/protocol/node';
 import type { FieldValues } from '@shellagent/ui';
 import { omit } from 'lodash-es';
-import { reservedStateName } from '@shellagent/shared/protocol/node';
 
 export function processNestedObject(
   obj: any,

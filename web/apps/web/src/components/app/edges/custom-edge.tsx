@@ -6,13 +6,14 @@ import {
   BaseEdge,
   Position,
 } from '@shellagent/flow-engine';
+import { RefSceneEnum } from '@shellagent/shared/protocol/app-scope';
 import { useKeyPress } from 'ahooks';
+import { useInjection } from 'inversify-react';
 import React, { useState, useRef, useEffect } from 'react';
 
-import { useAppState } from '@/stores/app/use-app-state';
-import { useInjection } from 'inversify-react';
 import { AppBuilderModel } from '@/stores/app/models/app-builder.model';
-import { RefSceneEnum } from '@shellagent/shared/protocol/app-scope';
+import { useAppState } from '@/stores/app/use-app-state';
+
 import { EventButton } from './event-button';
 import { CustomEdgeData } from './type';
 

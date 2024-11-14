@@ -1,3 +1,4 @@
+import { CustomKey } from '@shellagent/pro-config';
 import {
   hanldeRefScene,
   refOptionsOutputSchema,
@@ -9,7 +10,6 @@ import {
   convertRefOptsToCascaderOpts,
   convetNodeDataToScopes,
 } from './app-builder-utils';
-import { CustomKey } from '@shellagent/pro-config';
 
 describe('app builder utils', () => {
   it('convert node data to state', () => {

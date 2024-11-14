@@ -1,22 +1,23 @@
 import { TValues } from '@shellagent/form-engine';
-import { reservedKeySchema } from '@shellagent/shared/protocol/pro-config';
 import { RefSceneEnum } from '@shellagent/shared/protocol/app-scope';
+import { reservedKeySchema } from '@shellagent/shared/protocol/pro-config';
 import { customSnakeCase, removeBrackets } from '@shellagent/shared/utils';
-import { useInjection } from 'inversify-react';
-import { AppBuilderModel } from '@/stores/app/models/app-builder.model';
-
 import { FormRef } from '@shellagent/ui';
-import { useEffect, useRef, useCallback } from 'react';
+import { useInjection } from 'inversify-react';
 import { get, cloneDeep, isEqual, debounce, isNil } from 'lodash-es';
+import { useEffect, useRef, useCallback } from 'react';
+
+import { AppBuilderModel } from '@/stores/app/models/app-builder.model';
+import { useSchemaContext } from '@/stores/app/schema-provider';
+import { contextTempReg } from '@/stores/app/utils/data-transformer';
+import { refReg } from '@/utils/common-helper';
+
 import {
   replaceKey,
   getDiffPath,
   DiffTypeEnum,
   getNewName,
 } from './form-utils';
-import { useSchemaContext } from '@/stores/app/schema-provider';
-import { contextTempReg } from '@/stores/app/utils/data-transformer';
-import { refReg } from '@/utils/common-helper';
 
 export function useFieldWatch(formRef: React.RefObject<FormRef>) {
   const prevValuesRef = useRef<Record<string, TValues | undefined>>({});
@@ -127,6 +128,8 @@ export function useFieldWatch(formRef: React.RefObject<FormRef>) {
               },
             });
             break;
+          default:
+            break;
         }
       });
     }, 300),
@@ -181,6 +184,8 @@ export function useFieldWatch(formRef: React.RefObject<FormRef>) {
                 )}`,
               },
             });
+            break;
+          default:
             break;
         }
       });
@@ -237,7 +242,6 @@ export function useFieldWatch(formRef: React.RefObject<FormRef>) {
                 },
               });
             }
-
             break;
           case DiffTypeEnum.Reordered:
             const prefix = oldBlocks
@@ -246,8 +250,6 @@ export function useFieldWatch(formRef: React.RefObject<FormRef>) {
                 Math.max(fromIndex!, toIndex!),
               )
               .map((block: any) => `${stateId}.${block.name}`);
-
-            // TODO
 
             appBuilder.hanldeRefScene({
               scene: RefSceneEnum.Enum.remove_ref_opts_prefix,
@@ -276,8 +278,6 @@ export function useFieldWatch(formRef: React.RefObject<FormRef>) {
         reservedKeySchema.Enum.buttons,
       ]);
 
-      console.log('render>>>', oldButtons, newButtons, name);
-
       getDiffPath(oldButtons, newButtons).forEach(diff => {
         const { type, path, oldValue, newValue: diffNewValue } = diff;
 
@@ -292,7 +292,7 @@ export function useFieldWatch(formRef: React.RefObject<FormRef>) {
           case DiffTypeEnum.Modified:
             if (path?.split('.').pop() === 'content') {
               const newName = getNewName(newButtons, 'Buttons');
-              let event = `${customSnakeCase(
+              const event = `${customSnakeCase(
                 `${diffNewValue || newName}`,
               )}.on_click`;
               if (!diffNewValue) {
@@ -324,7 +324,7 @@ export function useFieldWatch(formRef: React.RefObject<FormRef>) {
     newValue: TValues,
     prevValue: TValues,
     name?: string,
-  ) => {
+  ): void => {
     if (!name) return;
     if (name.startsWith(reservedKeySchema.Enum.context)) {
       handleContextChange(newValue, prevValue, name);

@@ -1,8 +1,9 @@
 import { IFlow } from '@shellagent/flow-engine';
 import { TValues, TFieldMode } from '@shellagent/form-engine';
-import { Refs } from '@shellagent/shared/protocol/app-scope';
-import { Metadata } from '@/services/home/type';
 import { Automata } from '@shellagent/pro-config';
+import { Refs } from '@shellagent/shared/protocol/app-scope';
+
+import { Metadata } from '@/services/home/type';
 
 export type Config = {
   fieldsModeMap: Record<string, Record<string, TFieldMode>>;
