@@ -9,7 +9,6 @@ import {
 } from '@shellagent/shared/protocol/app-scope';
 import { RefSceneEnum } from '@shellagent/shared/protocol/app-scope';
 import { injectable } from 'inversify';
-import { set } from 'lodash-es';
 
 import {
   CascaderOption,
@@ -80,13 +79,21 @@ export class AppBuilderModel {
   }
 
   hanldeRefScene(evt: HandleRefSceneEvent) {
-    this.updateNodeData(evt, this.nodeData);
-    this.refs = hanldeRefScene(this.refs, evt);
+    const newRefs = hanldeRefScene(this.refs, evt);
+    this.updateNodeData(evt, this.nodeData, this.refs, newRefs);
+    this.refs = newRefs;
 
     console.log('this.refs>>', this.refs, evt);
   }
 
-  updateNodeData(evt: HandleRefSceneEvent, nodeData: any) {
+  updateNodeData(
+    evt: HandleRefSceneEvent,
+    nodeData: any,
+    refs: Refs,
+    newRefs: Refs,
+  ) {
+    // 计算refs和newRefs的差值
+
     if (evt.scene === RefSceneEnum.Enum.remove_ref_opts) {
       evt.params.paths.forEach(path => {
         const [stateId, varName] = path.split('.');
@@ -155,6 +162,7 @@ export class AppBuilderModel {
           }
         });
       });
+    } else if (evt.scene === RefSceneEnum.Enum.remove_edge) {
     }
     console.log('nodeData>>', nodeData);
   }
