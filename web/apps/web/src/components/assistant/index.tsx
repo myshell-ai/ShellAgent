@@ -42,6 +42,7 @@ const Assistant = observer(() => {
           position: 'fixed',
           right: '24px',
           bottom: '72px',
+          display: model.drawer.isOpen ? 'block' : 'none',
         }}
         minWidth="380"
         minHeight="380"
