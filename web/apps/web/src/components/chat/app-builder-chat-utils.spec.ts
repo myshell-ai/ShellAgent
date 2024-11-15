@@ -1,4 +1,7 @@
-import { serverMessageToMessage } from './app-builder-chat-utils';
+import {
+  popupFormAction,
+  serverMessageToMessage,
+} from './app-builder-chat-utils';
 
 const testEntity = {
   id: 'shellagent-app-builder-chat',
@@ -163,7 +166,7 @@ describe('app-builder-chat-utils', () => {
     expect(ret).toEqual(c);
   });
 
-  it.only('patch error', () => {
+  it('patch error', () => {
     const d = {
       input: null,
       output: {
@@ -210,5 +213,103 @@ describe('app-builder-chat-utils', () => {
         "userId": "test-app-builder",
       }
     `);
+  });
+
+  it('patch popup form action', () => {
+    const d: any = [
+      {
+        action: 'MESSAGE_COMPONENTS_BUTTON_ACTION_TYPE_POP_UP_FORM',
+        actionLink: null,
+        formSchema: {
+          properties: {
+            key_1731664091698: {
+              name: 'arg1',
+              type: 'string',
+              description: null,
+              default: null,
+            },
+          },
+          required: ['key_1731664091698'],
+        },
+        interactionInput: null,
+      },
+    ];
+
+    const ret = popupFormAction(d);
+    expect(ret).toMatchInlineSnapshot(`
+      [
+        {
+          "action": "MESSAGE_COMPONENTS_BUTTON_ACTION_TYPE_POP_UP_FORM",
+          "componentInput": {
+            "componentsInput": [
+              {
+                "booleanDefault": false,
+                "description": "",
+                "fieldName": "key_1731664091698",
+                "fileDefaultParam": "",
+                "fileDefaultParamType": "MESSAGE_METADATA_TYPE_UNSPECIFIED",
+                "fileUploadSizeMaximum": 0,
+                "hasIntegerLimitation": false,
+                "hasNumberLimitation": false,
+                "integerDefault": 0,
+                "isRequired": true,
+                "name": "arg1",
+                "numberDefault": 0,
+                "numberSelectorAllOf": [],
+                "numberSelectorDefault": 0,
+                "stringCharLengthLimitation": 0,
+                "stringDefault": "",
+                "supportedFileTypes": [],
+                "textSelectorAllOf": [],
+                "textSelectorDefault": "",
+                "type": "BOT_IM_COMPONENT_INPUT_TYPE_TEXT_INPUT",
+              },
+            ],
+            "description": "Enter to run",
+            "githubUrl": "",
+            "name": "Information",
+          },
+          "componentsFunction": [],
+          "energyConsumePerUse": 0,
+          "saveButtonContent": "Run",
+        },
+      ]
+    `);
+
+    const c = {
+      action: 'MESSAGE_COMPONENTS_BUTTON_ACTION_TYPE_POP_UP_FORM',
+      componentInput: {
+        name: 'Information',
+        description: 'Enter to run',
+        githubUrl: '',
+        componentsInput: [
+          {
+            type: 'BOT_IM_COMPONENT_INPUT_TYPE_TEXT_INPUT',
+            name: 'Untitled',
+            description: '',
+            stringDefault: '',
+            numberDefault: 0,
+            hasNumberLimitation: false,
+            integerDefault: 0,
+            hasIntegerLimitation: false,
+            booleanDefault: false,
+            textSelectorDefault: '',
+            textSelectorAllOf: [],
+            numberSelectorDefault: 0,
+            numberSelectorAllOf: [],
+            fieldName: 'key_1729235996147',
+            isRequired: true,
+            supportedFileTypes: [],
+            fileDefaultParam: '',
+            fileDefaultParamType: 'MESSAGE_METADATA_TYPE_UNSPECIFIED',
+            fileUploadSizeMaximum: 0,
+            stringCharLengthLimitation: 0,
+          },
+        ],
+        componentsFunction: [],
+        energyConsumePerUse: 0,
+        saveButtonContent: 'Run',
+      },
+    };
   });
 });

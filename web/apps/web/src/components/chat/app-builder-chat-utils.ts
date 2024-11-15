@@ -64,6 +64,62 @@ export function serverMessageToMessage(
   }
 }
 
+function slashCommandAction(text: string) {
+  return [
+    {
+      action: 'MESSAGE_COMPONENTS_BUTTON_ACTION_TYPE_INTERACTION',
+      interactionInput: {
+        displayType:
+          'BOT_MESSAGE_COMPONENTS_BUTTON_ACTION_INTERACTION_INPUT_DISPLAY_TYPE_SLASH_COMMAND',
+        slashCommandInput: {
+          name: `/${text}`,
+          paramMap: {},
+        },
+      },
+    },
+  ];
+}
+
+export function popupFormAction(actions: any[]) {
+  return actions.map(action => {
+    return {
+      action: 'MESSAGE_COMPONENTS_BUTTON_ACTION_TYPE_POP_UP_FORM',
+      componentsFunction: [],
+      energyConsumePerUse: 0,
+      saveButtonContent: 'Run',
+      componentInput: {
+        name: 'Information',
+        description: 'Enter to run',
+        githubUrl: '',
+        componentsInput: Object.keys(action.formSchema.properties).map(k => {
+          return {
+            type: 'BOT_IM_COMPONENT_INPUT_TYPE_TEXT_INPUT',
+            name: action.formSchema.properties[k].name,
+            description: '',
+            stringDefault: '',
+            numberDefault: 0,
+            hasNumberLimitation: false,
+            integerDefault: 0,
+            hasIntegerLimitation: false,
+            booleanDefault: false,
+            textSelectorDefault: '',
+            textSelectorAllOf: [],
+            numberSelectorDefault: 0,
+            numberSelectorAllOf: [],
+            fieldName: k,
+            isRequired: action.formSchema.required.indexOf(k) > -1,
+            supportedFileTypes: [],
+            fileDefaultParam: '',
+            fileDefaultParamType: 'MESSAGE_METADATA_TYPE_UNSPECIFIED',
+            fileUploadSizeMaximum: 0,
+            stringCharLengthLimitation: 0,
+          };
+        }),
+      },
+    };
+  });
+}
+
 /*
 patch
 1. BOT_MESSAGE_COMPONENTS_TYPE_ROW
@@ -103,19 +159,10 @@ function convertDtoC(d: any): any {
                 darkModeIconLineColorHex: '#FFFFFF33',
               },
               buttonId: component.button.buttonId,
-              actions: [
-                {
-                  action: 'MESSAGE_COMPONENTS_BUTTON_ACTION_TYPE_INTERACTION',
-                  interactionInput: {
-                    displayType:
-                      'BOT_MESSAGE_COMPONENTS_BUTTON_ACTION_INTERACTION_INPUT_DISPLAY_TYPE_SLASH_COMMAND',
-                    slashCommandInput: {
-                      name: `/${component.button.content.text}`,
-                      paramMap: {},
-                    },
-                  },
-                },
-              ],
+              actions:
+                component.button.actions?.length === 0
+                  ? slashCommandAction(component.button.content.text)
+                  : popupFormAction(component.button.actions),
               disabled: component.button.disabled,
               doubleCheck: {
                 isNeedDoubleCheck: false,

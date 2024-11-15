@@ -13,10 +13,7 @@ import { JsonSchema7 } from 'node_modules/@shellagent/form-engine/src/types/json
 import { upload } from '@/services/common';
 
 import { serverMessageToMessage, testUserId } from './app-builder-chat-utils';
-import type {
-  MessageComponentsButton,
-  ServerMessage,
-} from '../../services/app/message-type';
+import type { ServerMessage } from '../../services/app/message-type';
 import { EventStatusEnum, RunAppRequest } from '../../services/app/type';
 import { generateUUID } from '../../utils/common-helper';
 import { EmitterModel } from '../../utils/emitter.model';
