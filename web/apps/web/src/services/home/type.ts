@@ -25,6 +25,7 @@ export interface GetListResponse {
 
 export interface CreateRequest extends Metadata {
   type: Type;
+  template_id?: string;
 }
 
 export interface CreateResponse {
@@ -67,4 +68,25 @@ export interface DeleteRequest {
 export interface DeleteResponse {
   success: boolean;
   message: string;
+}
+
+export interface TemplateListRequest {
+  type: Type; // 'app' | 'workflow', workflow 暂时不需要
+}
+
+export interface TemplateListResponse {
+  success: boolean;
+  message: string;
+  data: Array<{
+    id: string;
+    metadata: Metadata;
+  }>;
+}
+
+export interface SaveAsTemplateResponse {
+  success: boolean;
+  message: string;
+  data: {
+    id: string;
+  };
 }
