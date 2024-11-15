@@ -38,43 +38,45 @@ const Assistant = observer(() => {
           autoFocus={false}
         />
       </div>
-      <Rnd
-        style={{
-          position: 'fixed',
-          right: '24px',
-          bottom: '72px',
-          display: model.drawer.isOpen ? 'block' : 'none',
-        }}
-        minWidth="380"
-        minHeight="380"
-        size={{ width: drawerSize.width, height: drawerSize.height }}
-        position={{ x: position.x, y: position.y }}
-        dragHandleClassName="rnd-drag-header"
-        onDragStop={(e, d) => {
-          setPosition({ x: d.x, y: d.y });
-        }}
-        onResizeStop={(e, direction, ref, delta, position) => {
-          setDrawerSize({
-            width: ref.style.width,
-            height: ref.style.height,
-          });
-          setPosition(position);
-        }}>
-        <Drawer
-          width="100%"
-          height="100%"
-          className="rounded-lg"
-          headerClassName="px-4 !py-3 bg-surface-container-default rnd-drag-header cursor-move"
-          contentClassName="!p-0"
-          onClose={model.drawer.close}
-          getContainer={false}
-          maskClosable
-          mask={false}
-          title="Assistant(Beta)"
-          open={model.drawer.isOpen}>
-          <AssistantBot />
-        </Drawer>
-      </Rnd>
+      {model.drawer.isOpen ? (
+        <Rnd
+          style={{
+            position: 'fixed',
+            right: '24px',
+            bottom: '72px',
+            // display: model.drawer.isOpen ? 'block' : 'none',
+          }}
+          minWidth="380"
+          minHeight="380"
+          size={{ width: drawerSize.width, height: drawerSize.height }}
+          position={{ x: position.x, y: position.y }}
+          dragHandleClassName="rnd-drag-header"
+          onDragStop={(e, d) => {
+            setPosition({ x: d.x, y: d.y });
+          }}
+          onResizeStop={(e, direction, ref, delta, position) => {
+            setDrawerSize({
+              width: ref.style.width,
+              height: ref.style.height,
+            });
+            setPosition(position);
+          }}>
+          <Drawer
+            width="100%"
+            height="100%"
+            className="rounded-lg"
+            headerClassName="px-4 !py-3 bg-surface-container-default rnd-drag-header cursor-move"
+            contentClassName="!p-0"
+            onClose={model.drawer.close}
+            getContainer={false}
+            maskClosable
+            mask={false}
+            title="Assistant(Beta)"
+            open={model.drawer.isOpen}>
+            <AssistantBot />
+          </Drawer>
+        </Rnd>
+      ) : null}
     </>
   );
 });
