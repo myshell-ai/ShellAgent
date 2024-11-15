@@ -94,13 +94,13 @@ export function popupFormAction(actions: any[]) {
   return actions.map(action => {
     return {
       action: 'MESSAGE_COMPONENTS_BUTTON_ACTION_TYPE_POP_UP_FORM',
-      componentsFunction: [],
-      energyConsumePerUse: 0,
-      saveButtonContent: 'Run',
       componentInput: {
         name: 'Information',
         description: 'Enter to run',
         githubUrl: '',
+        saveButtonContent: 'Run',
+        energyConsumePerUse: 0,
+        componentsFunction: [],
         componentsInput: Object.keys(action.formSchema.properties).map(k => {
           const prop = action.formSchema.properties[k];
           const type =

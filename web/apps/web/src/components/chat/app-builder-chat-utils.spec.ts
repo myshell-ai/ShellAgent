@@ -37,6 +37,7 @@ describe('app-builder-chat-utils', () => {
     expect(ret).toMatchInlineSnapshot(`
       {
         "createdDateUnix": "2024-11-15 14:59:28",
+        "embedObjs": [],
         "entityId": "shellagent-app-builder-chat",
         "id": "0",
         "status": "DONE",
@@ -241,6 +242,7 @@ describe('app-builder-chat-utils', () => {
         {
           "action": "MESSAGE_COMPONENTS_BUTTON_ACTION_TYPE_POP_UP_FORM",
           "componentInput": {
+            "componentsFunction": [],
             "componentsInput": [
               {
                 "booleanDefault": false,
@@ -266,12 +268,11 @@ describe('app-builder-chat-utils', () => {
               },
             ],
             "description": "Enter to run",
+            "energyConsumePerUse": 0,
             "githubUrl": "",
             "name": "Information",
+            "saveButtonContent": "Run",
           },
-          "componentsFunction": [],
-          "energyConsumePerUse": 0,
-          "saveButtonContent": "Run",
         },
       ]
     `);
@@ -370,6 +371,193 @@ describe('app-builder-chat-utils', () => {
         "type": "REPLY",
         "updatedDateUnix": "2024-11-16 07:07:59",
         "userId": "test-app-builder",
+      }
+    `);
+  });
+
+  it('case save button content', () => {
+    const d = {
+      session_id: '5c4196a0-a3aa-11ef-ba7c-9ebb585eaf7d',
+      id: '3',
+      status: 'DONE',
+      type: 'TEXT',
+      createdDateUnix: '2024-11-16 07:38:45',
+      updatedDateUnix: '2024-11-16 07:38:45',
+      text: 'Hi!',
+      embedObjs: [],
+      replyId: '',
+      componentContainer: {
+        type: 'BOT_MESSAGE_COMPONENTS_TYPE_CONTAINER',
+        components: [
+          {
+            type: 'BOT_MESSAGE_COMPONENTS_TYPE_BUTTON',
+            components: [],
+            button: {
+              content: {
+                text: 'Go',
+                iconUrl: null,
+                iconLabel: null,
+                direction: null,
+                description: null,
+              },
+              style: null,
+              buttonId: 'MESSAGE_3_BUTTON_0',
+              actions: [
+                {
+                  action: 'MESSAGE_COMPONENTS_BUTTON_ACTION_TYPE_POP_UP_FORM',
+                  actionLink: null,
+                  formSchema: {
+                    properties: {
+                      key_1731713716445: {
+                        name: 'some_text',
+                        type: 'string',
+                        description: null,
+                        default: null,
+                      },
+                      key_1731713725339: {
+                        name: 'some_img',
+                        type: 'image',
+                        description: null,
+                        default: null,
+                      },
+                    },
+                    required: ['key_1731713716445', 'key_1731713725339'],
+                  },
+                  interactionInput: null,
+                },
+              ],
+              disabled: false,
+              doubleCheck: null,
+              payload: {},
+            },
+          },
+        ],
+        button: null,
+      },
+      inputSetting: {
+        canInputText: false,
+        canInputAudio: false,
+        canUploadFile: false,
+      },
+    };
+    const ret = serverMessageToMessage(testEntity, d);
+    expect(ret).toMatchInlineSnapshot(`
+      {
+        "componentContainer": {
+          "button": null,
+          "components": [
+            {
+              "components": [
+                {
+                  "button": {
+                    "actions": [
+                      {
+                        "action": "MESSAGE_COMPONENTS_BUTTON_ACTION_TYPE_POP_UP_FORM",
+                        "componentInput": {
+                          "componentsFunction": [],
+                          "componentsInput": [
+                            {
+                              "booleanDefault": false,
+                              "description": "",
+                              "fieldName": "key_1731713716445",
+                              "fileDefaultParam": "",
+                              "fileDefaultParamType": "MESSAGE_METADATA_TYPE_UNSPECIFIED",
+                              "fileUploadSizeMaximum": 0,
+                              "hasIntegerLimitation": false,
+                              "hasNumberLimitation": false,
+                              "integerDefault": 0,
+                              "isRequired": true,
+                              "name": "some_text",
+                              "numberDefault": 0,
+                              "numberSelectorAllOf": [],
+                              "numberSelectorDefault": 0,
+                              "stringCharLengthLimitation": 0,
+                              "stringDefault": "",
+                              "supportedFileTypes": [],
+                              "textSelectorAllOf": [],
+                              "textSelectorDefault": "",
+                              "type": "BOT_IM_COMPONENT_INPUT_TYPE_TEXT_INPUT",
+                            },
+                            {
+                              "booleanDefault": false,
+                              "description": "",
+                              "fieldName": "key_1731713725339",
+                              "fileDefaultParam": "",
+                              "fileDefaultParamType": "MESSAGE_METADATA_TYPE_UNSPECIFIED",
+                              "fileUploadSizeMaximum": 0,
+                              "hasIntegerLimitation": false,
+                              "hasNumberLimitation": false,
+                              "integerDefault": 0,
+                              "isRequired": true,
+                              "name": "some_img",
+                              "numberDefault": 0,
+                              "numberSelectorAllOf": [],
+                              "numberSelectorDefault": 0,
+                              "stringCharLengthLimitation": 0,
+                              "stringDefault": "",
+                              "supportedFileTypes": [],
+                              "textSelectorAllOf": [],
+                              "textSelectorDefault": "",
+                              "type": "BOT_IM_COMPONENT_INPUT_TYPE_IMAGE_UPLOAD",
+                            },
+                          ],
+                          "description": "Enter to run",
+                          "energyConsumePerUse": 0,
+                          "githubUrl": "",
+                          "name": "Information",
+                          "saveButtonContent": "Run",
+                        },
+                      },
+                    ],
+                    "buttonId": "MESSAGE_3_BUTTON_0",
+                    "content": {
+                      "description": null,
+                      "direction": null,
+                      "iconLabel": null,
+                      "iconUrl": null,
+                      "text": "Go",
+                    },
+                    "disabled": false,
+                    "doubleCheck": {
+                      "description": "",
+                      "isNeedDoubleCheck": false,
+                      "title": "",
+                    },
+                    "payload": {},
+                    "style": {
+                      "backgroundColorHex": "#F6F6F7",
+                      "borderColorHex": "#E4E9F0",
+                      "darkModeBackgroundColorHex": "#323339",
+                      "darkModeBorderColorHex": "#42434A",
+                      "darkModeFontColorHex": "#B8BCCF",
+                      "darkModeIconLineColorHex": "#FFFFFF33",
+                      "fontColorHex": "#202223",
+                      "iconLineColorHex": "#00000033",
+                    },
+                  },
+                  "components": [],
+                  "type": "BOT_MESSAGE_COMPONENTS_TYPE_BUTTON",
+                },
+              ],
+              "type": "BOT_MESSAGE_COMPONENTS_TYPE_ROW",
+            },
+          ],
+          "type": "BOT_MESSAGE_COMPONENTS_TYPE_CONTAINER",
+        },
+        "createdDateUnix": "2024-11-16 07:38:45",
+        "embedObjs": [],
+        "id": "3",
+        "inputSetting": {
+          "canInputAudio": false,
+          "canInputText": false,
+          "canUploadFile": false,
+        },
+        "replyId": "",
+        "session_id": "5c4196a0-a3aa-11ef-ba7c-9ebb585eaf7d",
+        "status": "DONE",
+        "text": "Hi!",
+        "type": "TEXT",
+        "updatedDateUnix": "2024-11-16 07:38:45",
       }
     `);
   });
