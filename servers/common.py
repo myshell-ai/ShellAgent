@@ -12,8 +12,9 @@ from datetime import datetime
 from proconfig.widgets.base import WIDGETS
 from proconfig.widgets import load_custom_widgets
 from proconfig.utils.misc import is_valid_url, _make_temp_file
-
-from servers.base import app, APP_SAVE_ROOT, WORKFLOW_SAVE_ROOT, PROJECT_ROOT, get_file_times, UPLOAD_FOLDER
+from proconfig.utils.pytree import tree_map
+from proconfig.utils.misc import process_local_file_path_async
+from servers.base import app, APP_SAVE_ROOT, WORKFLOW_SAVE_ROOT, PROJECT_ROOT, get_file_times, UPLOAD_FOLDER, ASSET_ROOT
 
 from fastapi import FastAPI, UploadFile, File, HTTPException
 from fastapi.responses import JSONResponse, FileResponse
@@ -27,8 +28,9 @@ SAVE_ROOTS = {
 }
 
 TEMPLATES_ROOTS = {
-    "app": os.path.join(PROJECT_ROOT, "templates", "app"),
-    "workflow": os.path.join(PROJECT_ROOT, "templates", "workflow"),
+    "app": os.path.join(ASSET_ROOT, "templates", "app"),
+    "workflow": os.path.join(ASSET_ROOT, "templates", "workflow"),
+    "comfy_workflow": os.path.join(ASSET_ROOT, "templates", "comfy_workflow"),
 }
 
 LAST_CHECK_FILE = os.path.join(PROJECT_ROOT, 'last_check_time.json')
@@ -178,6 +180,50 @@ def get_unique_workflow_id(SAVE_ROOT):
     return workflow_id
 
 
+def duplicate_comfy_workflow(automata, source_path, target_path):
+    def duplicate_comfy_workflow_fn(comfy_workflow_id):
+        new_comfy_workflow_id = str(uuid.uuid4()).replace('-', '')
+        source_dir = os.path.join(source_path, comfy_workflow_id)
+        target_dir = os.path.join(target_path, new_comfy_workflow_id)
+        shutil.copytree(source_dir, target_dir)
+        return new_comfy_workflow_id
+    
+    for state_name, state in automata.get("blocks", {}).items():
+        for block in state.get("blocks", []):
+            if "comfy_workflow_id" in block:
+                block["comfy_workflow_id"] = duplicate_comfy_workflow_fn(block["comfy_workflow_id"])
+    return automata
+
+@app.post('/api/save_as_template')
+async def save_as_template(params: Dict):
+    app_id = params["app_id"]
+    
+    filenames = ["proconfig.json", "reactflow.json", "automata.json", "metadata.json"]
+        
+    new_app_id = get_unique_workflow_id(APP_SAVE_ROOT)
+    
+    for filename in filenames:
+        filepath = os.path.join(APP_SAVE_ROOT, app_id, "latest", filename)
+        json_data = json.load(open(filepath))
+            
+        if filename == "automata.json":
+            # handle the comfy_workflow_id
+            duplicate_comfy_workflow(json_data, os.path.join(PROJECT_ROOT, "comfy_workflow"), TEMPLATES_ROOTS["comfy_workflow"])
+            json_data = process_local_file_path_async(json_data)
+           
+        target_filepath = os.path.join(TEMPLATES_ROOTS["app"], new_app_id, "latest", filename)
+        os.makedirs(os.path.dirname(target_filepath), exist_ok=True)
+        with open(target_filepath, "w") as f:
+            json.dump(json_data, f, indent=2)
+            
+    return {
+        "data": {
+            "id": new_app_id
+        },
+        "success": True,
+        "message": ""
+    }
+    
 @app.post('/api/create')
 async def create_workflow(params: Dict):
     SAVE_ROOT = SAVE_ROOTS.get(params["type"])
@@ -209,6 +255,12 @@ async def create_workflow(params: Dict):
             json_data = json.load(open(template_path))
         else:
             json_data = {}
+            
+            
+        if params["type"] == "app" and filename == "automata.json":
+            # handle the comfy_workflow_id
+            duplicate_comfy_workflow(json_data, TEMPLATES_ROOTS["comfy_workflow"], os.path.join(PROJECT_ROOT, "comfy_workflow"))
+            
         with open(filepath, "w") as f:
             json.dump(json_data, f, indent=2)
 

@@ -165,9 +165,13 @@ def comfyui_run(api, workflow, prompt, schemas, user_inputs):
 
 
 def comfyui_run_myshell(workflow_id, inputs, extra_headers):
-    url = "https://openapi.myshell.ai/public/v1/workflow/run"
+    if "MYSHELL_TEST_DEPLOY" in os.environ:
+        url = "https://openapi-test.myshell.fun/public/v1/workflow/run"
+    else:
+        url = "https://openapi.myshell.ai/public/v1/workflow/run"
+
     headers = {
-        "x-myshell-openapi-key": os.environ["MYSHELL_DEPLOY_API_KEY"],
+        "x-myshell-openapi-key": os.environ["MYSHELL_API_KEY"],
         "Content-Type": "application/json",
         **extra_headers,
     }
@@ -195,11 +199,11 @@ class ComfyUIWidget(BaseWidget):
     def execute(self, environ, config):
         comfy_extra_inputs = config.pop("comfy_extra_inputs")
 
-        if "MYSHELL_DEPLOY_API_KEY" in os.environ:
+        if "MYSHELL_DEPLOY" in os.environ:
             outputs = comfyui_run_myshell(
                 comfy_extra_inputs["comfy_workflow_id"],
                 config,
-                environ["MYSHELL_HEADERS"],
+                environ.get("MYSHELL_HEADERS", {}),
             )
         else:    
             comfy_workflow_root = os.path.join(os.environ["PROCONFIG_PROJECT_ROOT"], "comfy_workflow")
