@@ -26,7 +26,6 @@ const Assistant = observer(() => {
 
   return (
     <>
-      <div style={{ display: 'none' }}>{model.drawer.isOpen}</div>
       <div className="fixed right-6 bottom-8">
         <IconButton
           icon={Bot}
