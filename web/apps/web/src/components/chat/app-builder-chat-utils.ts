@@ -57,7 +57,7 @@ export function serverMessageToMessage(
       'BOT_MESSAGE_COMPONENTS_TYPE_ROW'
   ) {
     return convertDtoC(serverMessage);
-  } else if (serverMessage.output.error_message) {
+  } else if (serverMessage.output?.error_message) {
     return convertErrorServerMessage(entity, serverMessage);
   } else {
     return commonServerMessageToMessage(entity, serverMessage);

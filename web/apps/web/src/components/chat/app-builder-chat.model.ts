@@ -9,7 +9,6 @@ import axios from 'axios';
 import { inject, injectable } from 'inversify';
 import { action, makeObservable, observable, runInAction } from 'mobx';
 import { JsonSchema7 } from 'node_modules/@shellagent/form-engine/src/types/jsonSchema7';
-import { v4 as uuidv4 } from 'uuid';
 
 import { upload } from '@/services/common';
 
