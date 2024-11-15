@@ -165,23 +165,23 @@ export const FlowCard = ({ id, metadata, onSuccess, type }: FlowCardProps) => {
                 Duplicate
               </DropdownMenuItem>
               {type === 'app' ? (
-                <ExportDialog id={id} name={metadata.name}>
-                  <DropdownMenuItem>
-                    <ArrowTopRightOnSquareIcon className="w-5 h-5 mr-1.5 text-icon" />
-                    Export
+                <>
+                  <ExportDialog id={id} name={metadata.name}>
+                    <DropdownMenuItem>
+                      <ArrowTopRightOnSquareIcon className="w-5 h-5 mr-1.5 text-icon" />
+                      Export
+                    </DropdownMenuItem>
+                  </ExportDialog>
+                  <DropdownMenuItem onClick={() => setOpenSaveTempDialog(true)}>
+                    <DocumentPlusIcon className="w-5 h-5 mr-1.5 text-icon" />
+                    Save As Template(Beta)
                   </DropdownMenuItem>
-                </ExportDialog>
+                </>
               ) : null}
               <DropdownMenuItem className="text-error" onClick={onDelete}>
                 <TrashIcon className="w-5 h-5 mr-1.5" />
                 Delete
               </DropdownMenuItem>
-              {type === 'app' ? (
-                <DropdownMenuItem onClick={() => setOpenSaveTempDialog(true)}>
-                  <DocumentPlusIcon className="w-5 h-5 mr-1.5 text-icon" />
-                  Save As Template(Beta)
-                </DropdownMenuItem>
-              ) : null}
             </DropdownMenuContent>
           </DropdownMenu>
         </CardFooter>
