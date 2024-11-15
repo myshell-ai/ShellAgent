@@ -2,20 +2,16 @@ import {
   EventSourceMessage,
   fetchEventSource,
 } from '@microsoft/fetch-event-source';
-import { Message, SlashCommandInput } from 'myshell-bundled-chat';
+import { SlashCommandInput } from 'myshell-bundled-chat';
 import { Automata } from '@shellagent/pro-config';
 import { ChatNewModel } from '@shellagent/ui';
 import axios from 'axios';
 import { inject, injectable } from 'inversify';
 import { action, makeObservable, observable, runInAction } from 'mobx';
 import { JsonSchema7 } from 'node_modules/@shellagent/form-engine/src/types/jsonSchema7';
-
-import { upload } from '@/services/common';
-
-import { serverMessageToMessage, testUserId } from './app-builder-chat-utils';
+import { serverMessageToMessage } from './app-builder-chat-utils';
 import type { ServerMessage } from '../../services/app/message-type';
 import { EventStatusEnum, RunAppRequest } from '../../services/app/type';
-import { generateUUID } from '../../utils/common-helper';
 import { EmitterModel } from '../../utils/emitter.model';
 
 @injectable()
@@ -56,21 +52,41 @@ export class AppBuilderChatModel {
     };
     this.chatNew.handlers.sendButtonInteractionMessagePost = async (
       buttonInteractionParams: {
-        text?: string;
-        componentInputMessage?: string;
-        imSlashCommandInput?: SlashCommandInput;
+        actionType: string;
         buttonId?: string;
+        componentInputMessage?: string;
+        text?: string;
+        imSlashCommandInput?: SlashCommandInput;
       },
       requestParams?: any,
     ) => {
-      const appReq: RunAppRequest = {
-        session_id: this.session_id!,
-        buttonId: buttonInteractionParams.buttonId,
-        messageType: 15,
-        text: '',
-        message: '',
-      };
-      await this.sendToServer(appReq);
+      let appReq: RunAppRequest;
+      if (
+        buttonInteractionParams.actionType ===
+        'MESSAGE_COMPONENTS_BUTTON_ACTION_TYPE_POP_UP_FORM'
+      ) {
+        appReq = {
+          session_id: this.session_id!,
+          buttonId: buttonInteractionParams.buttonId,
+          messageType: 15,
+          text: '',
+          message: '',
+          form_data: JSON.parse(
+            buttonInteractionParams.componentInputMessage || '{}',
+          ),
+        };
+      } else {
+        appReq = {
+          session_id: this.session_id!,
+          buttonId: buttonInteractionParams.buttonId,
+          messageType: 15,
+          text: '',
+          message: '',
+        };
+      }
+      if (appReq) {
+        await this.sendToServer(appReq);
+      }
     };
 
     this.chatNew.handlers.clearMemoryPost = this.greeting.bind(this);
@@ -220,38 +236,5 @@ export class AppBuilderChatModel {
         //
       },
     });
-  }
-
-  async onClickModalRun() {
-    const text2 = Object.keys(this.formValue)
-      .map(key => `${key}: ${this.formValue[key]}`)
-      .join('<br/>');
-    const message: any = {
-      id: generateUUID(),
-      userId: testUserId,
-      entityId: this.chatNew.entity.id,
-      type: 'TEXT',
-      status: 'DONE',
-      createdDateUnix: Date.now().toString(),
-      updatedDateUnix: Date.now().toString(),
-      text: `<span style="color: #3e5cfa;">/${
-        this.currentLuiButton!.buttonText
-      }</span><br/>${text2}`,
-    };
-    this.chatNew.innerMethods.appendMessages!(message, true);
-    const appReq: RunAppRequest = {
-      form_data: this.formValue,
-      session_id: this.session_id!,
-      buttonId: this.currentLuiButton!.buttonId,
-      messageType: 15,
-      text: '',
-      message: '',
-    };
-    await this.sendToServer(appReq);
-  }
-
-  async uploadFile(file: File) {
-    const { url } = await upload(file);
-    this.chatNew.innerMethods.sendTextMessage!(`Upload file, ${url}`);
   }
 }

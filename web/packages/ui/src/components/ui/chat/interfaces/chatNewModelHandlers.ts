@@ -5,8 +5,10 @@ export interface ChatNewModelHandlers {
   clearMemoryPost: () => void | Promise<void>;
   sendButtonInteractionMessagePost: (
     buttonInteractionParams: {
-      text?: string;
+      actionType: string;
+      buttonId?: string;
       componentInputMessage?: string;
+      text?: string;
       imSlashCommandInput?: SlashCommandInput;
     },
     requestParams?: any,
