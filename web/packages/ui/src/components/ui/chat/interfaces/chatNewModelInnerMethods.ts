@@ -1,4 +1,4 @@
-import { Message } from 'myshell-bundled-chat';
+import { Message, SlashCommandInput } from 'myshell-bundled-chat';
 
 /**
  * re-aggregate some methods of bundle chat here.
@@ -9,4 +9,5 @@ export interface ChatNewModelInnerMethods {
     needScrollToBottom?: boolean,
   ) => void;
   sendTextMessage: (text: string) => void;
+  onMessageReply: (message: Message) => void;
 }

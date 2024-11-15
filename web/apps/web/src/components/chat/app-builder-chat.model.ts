@@ -2,7 +2,7 @@ import {
   EventSourceMessage,
   fetchEventSource,
 } from '@microsoft/fetch-event-source';
-import { Message } from 'myshell-bundled-chat';
+import { Message, SlashCommandInput } from 'myshell-bundled-chat';
 import { Automata } from '@shellagent/pro-config';
 import { ChatNewModel } from '@shellagent/ui';
 import axios from 'axios';
@@ -45,8 +45,6 @@ export class AppBuilderChatModel {
 
   session_id: string | undefined;
 
-  serverMessageMap = new Map<string, ServerMessage>();
-
   constructor(
     @inject(EmitterModel) private emitter: EmitterModel,
     @inject(ChatNewModel) public chatNew: ChatNewModel,
@@ -60,6 +58,25 @@ export class AppBuilderChatModel {
       };
       await this.sendToServer(appReq);
     };
+    this.chatNew.handlers.sendButtonInteractionMessagePost = async (
+      buttonInteractionParams: {
+        text?: string;
+        componentInputMessage?: string;
+        imSlashCommandInput?: SlashCommandInput;
+        buttonId?: string;
+      },
+      requestParams?: any,
+    ) => {
+      const appReq: RunAppRequest = {
+        session_id: this.session_id!,
+        buttonId: buttonInteractionParams.buttonId,
+        messageType: 15,
+        text: '',
+        message: '',
+      };
+      await this.sendToServer(appReq);
+    };
+
     this.chatNew.handlers.clearMemoryPost = this.greeting.bind(this);
     makeObservable(this);
   }
@@ -74,10 +91,13 @@ export class AppBuilderChatModel {
     this.runOpen = false;
   }
 
-  async receiveServerMessage(serverMessage: ServerMessage) {
-    this.serverMessageMap.set(serverMessage.id, serverMessage);
+  async receiveServerMessage(serverMessage: ServerMessage, isGreeting = false) {
     const message = serverMessageToMessage(this.chatNew.entity, serverMessage);
-    this.chatNew.innerMethods.appendMessages!(message, true);
+    if (isGreeting) {
+      this.chatNew.innerMethods.appendMessages!(message, true);
+    } else {
+      this.chatNew.innerMethods.onMessageReply!(message);
+    }
   }
 
   async receiveServerMessageError(errorMessage: string) {
@@ -192,11 +212,7 @@ export class AppBuilderChatModel {
             } else {
               this.chatNew.disableIMAudio();
             }
-            // if (isGreeting && server_message.text === '') {
-            //   //
-            // } else {
-            this.receiveServerMessage!(server_message);
-            // }
+            this.receiveServerMessage!(server_message, isGreeting);
           } catch {
             this.emitter.emitter.emit(
               'message.error',

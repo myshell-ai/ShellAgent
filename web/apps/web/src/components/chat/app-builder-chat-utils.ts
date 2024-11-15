@@ -6,7 +6,11 @@ export function serverMessageToMessage(
   entity: EntityInfo,
   serverMessage: any,
 ): Message {
-  if ((serverMessage.componentContainer?.components || []).length > 0) {
+  if (
+    (serverMessage.componentContainer?.components || []).length > 0 &&
+    serverMessage.componentContainer?.components[0].type !==
+      'BOT_MESSAGE_COMPONENTS_TYPE_ROW'
+  ) {
     return convertDtoC(serverMessage);
   } else {
     return {
@@ -22,7 +26,13 @@ export function serverMessageToMessage(
   }
 }
 
-export function convertDtoC(d: any): any {
+/*
+patch
+1. BOT_MESSAGE_COMPONENTS_TYPE_ROW
+2. style
+3. action
+*/
+function convertDtoC(d: any): any {
   return {
     session_id: d.session_id,
     id: d.id,

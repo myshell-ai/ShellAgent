@@ -99,6 +99,7 @@ export const ChatNew = observer<ChatNewProps>(({ model }) => {
     audioQueue,
     sendButtonInteractionMessage,
     file: { uploadedFiles },
+    onMessageReply,
   } = useMessageParams({
     type: 'bot',
     id: model.entity.id,
@@ -220,7 +221,7 @@ export const ChatNew = observer<ChatNewProps>(({ model }) => {
       },
       sendButtonInteractionMessage: async (...args) => {
         sendButtonInteractionMessage(...args);
-        // TODO onMessageReply
+        model.handlers.sendButtonInteractionMessagePost?.(...args);
       },
       file: {
         isChoosingFile,
@@ -270,6 +271,7 @@ export const ChatNew = observer<ChatNewProps>(({ model }) => {
       model.isReadyPromiseResolve!('');
       model.innerMethods.appendMessages = appendMessages;
       model.innerMethods.sendTextMessage = sendTextMessage;
+      model.innerMethods.onMessageReply = onMessageReply;
     }
   }, [model]);
 

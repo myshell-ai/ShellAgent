@@ -160,7 +160,13 @@ describe('app-builder-chat-utils', () => {
         canUploadFile: false,
       },
     };
-    const ret = convertDtoC(d);
+    const ret = serverMessageToMessage(
+      {
+        id: 'shellagent-app-builder-chat',
+        name: 'ShellAgent App Builder Chat',
+      },
+      d,
+    );
     expect(ret).toEqual(c);
   });
 });
