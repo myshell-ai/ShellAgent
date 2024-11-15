@@ -22,6 +22,7 @@ if __name__ == '__main__':
     import servers.workflow
     import servers.settings
     import servers.comfy_runner
+    import servers.helper
     
 
     
