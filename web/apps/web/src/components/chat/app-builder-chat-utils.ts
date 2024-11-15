@@ -6,16 +6,20 @@ export function serverMessageToMessage(
   entity: EntityInfo,
   serverMessage: any,
 ): Message {
-  return {
-    id: serverMessage.id,
-    userId: testUserId,
-    entityId: entity.id,
-    type: 'REPLY',
-    status: serverMessage.status,
-    createdDateUnix: serverMessage.createdDateUnix,
-    updatedDateUnix: serverMessage.updatedDateUnix,
-    text: serverMessage.text,
-  };
+  if ((serverMessage.componentContainer?.components || []).length > 0) {
+    return convertDtoC(serverMessage);
+  } else {
+    return {
+      id: serverMessage.id,
+      userId: testUserId,
+      entityId: entity.id,
+      type: 'REPLY',
+      status: serverMessage.status,
+      createdDateUnix: serverMessage.createdDateUnix,
+      updatedDateUnix: serverMessage.updatedDateUnix,
+      text: serverMessage.text,
+    };
+  }
 }
 
 export function convertDtoC(d: any): any {
@@ -58,7 +62,7 @@ export function convertDtoC(d: any): any {
                     displayType:
                       'BOT_MESSAGE_COMPONENTS_BUTTON_ACTION_INTERACTION_INPUT_DISPLAY_TYPE_SLASH_COMMAND',
                     slashCommandInput: {
-                      name: '/MarkdownImage',
+                      name: `/${component.button.content.text}`,
                       paramMap: {},
                     },
                   },

@@ -1,6 +1,51 @@
-import { convertDtoC } from './app-builder-chat-utils';
+import { convertDtoC, serverMessageToMessage } from './app-builder-chat-utils';
 
 describe('app-builder-chat-utils', () => {
+  it('do not patch', () => {
+    const d = {
+      session_id: '27bc406e-a31f-11ef-9b11-9ebb585eaf7d',
+      id: '0',
+      status: 'DONE',
+      type: 'TEXT',
+      createdDateUnix: '2024-11-15 14:59:28',
+      updatedDateUnix: '2024-11-15 14:59:28',
+      text: 'Hi there!',
+      embedObjs: [],
+      replyId: '',
+      componentContainer: {
+        type: 'BOT_MESSAGE_COMPONENTS_TYPE_CONTAINER',
+        components: [],
+        button: null,
+      },
+      inputSetting: {
+        canInputText: false,
+        canInputAudio: false,
+        canUploadFile: false,
+      },
+    };
+
+    const ret = serverMessageToMessage(
+      {
+        id: 'shellagent-app-builder-chat',
+        name: 'ShellAgent App Builder Chat',
+      },
+      d,
+    );
+
+    expect(ret).toMatchInlineSnapshot(`
+      {
+        "createdDateUnix": "2024-11-15 14:59:28",
+        "entityId": "shellagent-app-builder-chat",
+        "id": "0",
+        "status": "DONE",
+        "text": "Hi there!",
+        "type": "REPLY",
+        "updatedDateUnix": "2024-11-15 14:59:28",
+        "userId": "test-app-builder",
+      }
+    `);
+  });
+
   it('patch convert shellagent server message to C site message', () => {
     const d = {
       session_id: 'f2350708-a31b-11ef-9b11-9ebb585eaf7d',
@@ -89,7 +134,7 @@ describe('app-builder-chat-utils', () => {
                         displayType:
                           'BOT_MESSAGE_COMPONENTS_BUTTON_ACTION_INTERACTION_INPUT_DISPLAY_TYPE_SLASH_COMMAND',
                         slashCommandInput: {
-                          name: '/MarkdownImage',
+                          name: '/Go',
                           paramMap: {},
                         },
                       },

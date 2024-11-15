@@ -13,11 +13,7 @@ import { v4 as uuidv4 } from 'uuid';
 
 import { upload } from '@/services/common';
 
-import {
-  convertDtoC,
-  serverMessageToMessage,
-  testUserId,
-} from './app-builder-chat-utils';
+import { serverMessageToMessage, testUserId } from './app-builder-chat-utils';
 import type {
   MessageComponentsButton,
   ServerMessage,
@@ -80,8 +76,7 @@ export class AppBuilderChatModel {
 
   async receiveServerMessage(serverMessage: ServerMessage) {
     this.serverMessageMap.set(serverMessage.id, serverMessage);
-    // const message = serverMessageToMessage(this.chatNew.entity, serverMessage);
-    const message = convertDtoC(serverMessage);
+    const message = serverMessageToMessage(this.chatNew.entity, serverMessage);
     this.chatNew.innerMethods.appendMessages!(message, true);
   }
 
