@@ -124,7 +124,7 @@ export const genAutomata: (
         type: 'state',
         name: node.data.name,
         render: nodeData[node.id]?.render,
-        blocks: nodeData[node.id]?.blocks.map((item: any) => ({
+        blocks: nodeData[node.id]?.blocks?.map((item: any) => ({
           ...item,
           ...(item.widget_class_name === 'ComfyUIWidget'
             ? { api: comfyui_api || item.api }
