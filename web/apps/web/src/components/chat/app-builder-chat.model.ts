@@ -225,28 +225,6 @@ export class AppBuilderChatModel {
     });
   }
 
-  async clickSimpleButton(button: MessageComponentsButton) {
-    const message: any = {
-      id: generateUUID(),
-      userId: testUserId,
-      entityId: this.chatNew.entity.id,
-      type: 'TEXT',
-      status: 'DONE',
-      createdDateUnix: Date.now().toString(),
-      updatedDateUnix: Date.now().toString(),
-      text: `Clicked ${button.content.text}`,
-    };
-    this.chatNew.innerMethods.appendMessages!(message, true);
-    const appReq: RunAppRequest = {
-      session_id: this.session_id!,
-      buttonId: button.buttonId,
-      messageType: 15,
-      text: '',
-      message: '',
-    };
-    await this.sendToServer(appReq);
-  }
-
   async onClickModalRun() {
     const text2 = Object.keys(this.formValue)
       .map(key => `${key}: ${this.formValue[key]}`)
