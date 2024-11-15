@@ -11,7 +11,6 @@ import { WidgetTask, WorkflowTask } from '@shellagent/shared/protocol/task';
 import { Drawer, FormRef } from '@shellagent/ui';
 import { useInjection } from 'inversify-react';
 import { isEqual, isNumber } from 'lodash-es';
-import { observer } from 'mobx-react-lite';
 import { useMemo, useRef, useCallback, useState } from 'react';
 
 import { ButtonConfig } from '@/components/app/config-form/button-config';
