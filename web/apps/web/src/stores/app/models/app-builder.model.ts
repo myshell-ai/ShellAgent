@@ -19,9 +19,9 @@ import { fetchAutomata, fetchFlow } from '@/services/app';
 import type { GetAppFlowRequest } from '@/services/app/type';
 import { fetchList as fetchFlowList } from '@/services/home';
 import type { GetListRequest, GetListResponse } from '@/services/home/type';
+import emitter, { EventType } from '@/stores/app/models/emitter';
 import { genNodeData } from '@/stores/app/utils/data-transformer';
 import type { NodeDataType, Config, Metadata } from '@/types/app/types';
-import emitter, { EventType } from '@/stores/app/models/emitter';
 
 import {
   CascaderOption,

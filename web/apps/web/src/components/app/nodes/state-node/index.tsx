@@ -27,6 +27,10 @@ import { EdgeDataTypeEnum, EdgeTypeEnum } from '@/components/app/edges';
 import NodeCard from '@/components/app/node-card';
 import NodeForm from '@/components/app/node-form';
 import { AppBuilderModel } from '@/stores/app/models/app-builder.model';
+import emitter, {
+  EventType,
+  useEventEmitter,
+} from '@/stores/app/models/emitter';
 import { useAppState } from '@/stores/app/use-app-state';
 import {
   getKeyboardKeyCodeBySystem,
@@ -34,10 +38,6 @@ import {
 } from '@/utils/common-helper';
 
 import { useDuplicateState } from './hook/use-duplicate-state';
-import emitter, {
-  EventType,
-  useEventEmitter,
-} from '@/stores/app/models/emitter';
 
 const StateNode: React.FC<NodeProps<StateNodeType>> = ({ selected, data }) => {
   const stateFormRef = useRef<FormRef>(null);

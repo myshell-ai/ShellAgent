@@ -21,14 +21,13 @@ import { EditableTitle } from '@/components/app/editable-title';
 import NodeForm from '@/components/app/node-form';
 import { AppBuilderChatModel } from '@/components/chat/app-builder-chat.model';
 import { AppBuilderModel } from '@/stores/app/models/app-builder.model';
-import { SchemaProvider } from '@/stores/app/schema-provider';
-import { useAppState } from '@/stores/app/use-app-state';
-import { stateConfigSchema } from '@/stores/app/utils/schema';
-
 import emitter, {
   EventType,
   useEventEmitter,
 } from '@/stores/app/models/emitter';
+import { SchemaProvider } from '@/stores/app/schema-provider';
+import { useAppState } from '@/stores/app/use-app-state';
+import { stateConfigSchema } from '@/stores/app/utils/schema';
 
 const StateConfigSheet: React.FC<{}> = () => {
   const appBuilderChatModel = useInjection(AppBuilderChatModel);
