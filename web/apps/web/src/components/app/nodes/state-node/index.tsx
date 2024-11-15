@@ -34,7 +34,10 @@ import {
 } from '@/utils/common-helper';
 
 import { useDuplicateState } from './hook/use-duplicate-state';
-import emitter, { EventType, useEventEmitter } from '../../emitter';
+import emitter, {
+  EventType,
+  useEventEmitter,
+} from '@/stores/app/models/emitter';
 
 const StateNode: React.FC<NodeProps<StateNodeType>> = ({ selected, data }) => {
   const stateFormRef = useRef<FormRef>(null);
@@ -67,6 +70,8 @@ const StateNode: React.FC<NodeProps<StateNodeType>> = ({ selected, data }) => {
     // 只能选一个，长度为1
     const selectedNode = selectedNodes[0];
     setSelectedNode(selectedNode);
+
+    appBuilder.selectedStateId = selectedNode?.id;
 
     if (selectedNode && selectedNode.type === NodeTypeEnum.state) {
       setStateConfigSheetOpen(selectedNode.id, true);

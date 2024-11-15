@@ -25,7 +25,10 @@ import { SchemaProvider } from '@/stores/app/schema-provider';
 import { useAppState } from '@/stores/app/use-app-state';
 import { stateConfigSchema } from '@/stores/app/utils/schema';
 
-import emitter, { EventType, useEventEmitter } from '../emitter';
+import emitter, {
+  EventType,
+  useEventEmitter,
+} from '@/stores/app/models/emitter';
 
 const StateConfigSheet: React.FC<{}> = () => {
   const appBuilderChatModel = useInjection(AppBuilderChatModel);

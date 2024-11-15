@@ -21,6 +21,7 @@ import { fetchList as fetchFlowList } from '@/services/home';
 import type { GetListRequest, GetListResponse } from '@/services/home/type';
 import { genNodeData } from '@/stores/app/utils/data-transformer';
 import type { NodeDataType, Config, Metadata } from '@/types/app/types';
+import emitter, { EventType } from '@/stores/app/models/emitter';
 
 import {
   CascaderOption,
@@ -44,9 +45,6 @@ export class AppBuilderModel {
   };
   flowInstance: ReactFlowInstance | null = null;
 
-  // TODO 收集所有form实例
-  formInstance: Map<string, FormRef> = new Map();
-
   nodeDataMode: Map<string, string> = new Map();
 
   refs: Refs = {};
@@ -55,6 +53,8 @@ export class AppBuilderModel {
     fieldsModeMap: {},
     refs: {},
   };
+
+  selectedStateId: string | null = null;
 
   flowList: GetListResponse['data'] = [];
 
@@ -244,7 +244,6 @@ export class AppBuilderModel {
     newRefs: Refs,
   ) {
     const updatedNodeData = cloneDeep(nodeData);
-
     if (evt.scene === RefSceneEnum.Enum.remove_ref_opts) {
       handleRemoveRefOpts(updatedNodeData, evt.params.paths);
     } else if (evt.scene === RefSceneEnum.Enum.remove_ref_opts_prefix) {
@@ -263,6 +262,12 @@ export class AppBuilderModel {
 
     runInAction(() => {
       this.nodeData = updatedNodeData;
+
+      emitter.emit(EventType.STATE_FORM_CHANGE, {
+        id: this.selectedStateId as any,
+        data: `${new Date().valueOf()}`,
+        type: 'StateCard',
+      });
     });
   }
 }
