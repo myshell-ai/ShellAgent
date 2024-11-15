@@ -1,6 +1,51 @@
-import { EntityInfo, Message } from 'myshell-bundled-chat';
+import { EmbedObjStatus } from '@/services/app/message-type';
+import { EntityInfo, Message, RunningErrorEnum } from 'myshell-bundled-chat';
 
 export const testUserId = 'test-app-builder';
+
+function commonServerMessageToMessage(
+  entity: EntityInfo,
+  serverMessage: any,
+): Message {
+  return {
+    id: serverMessage.id,
+    userId: testUserId,
+    entityId: entity.id,
+    type: 'REPLY',
+    status: serverMessage.status,
+    createdDateUnix: serverMessage.createdDateUnix,
+    updatedDateUnix: serverMessage.updatedDateUnix,
+    text: serverMessage.text,
+  };
+}
+
+function convertErrorServerMessage(
+  entity: EntityInfo,
+  serverMessage: any,
+): Message {
+  return {
+    id: serverMessage.task_id,
+    userId: testUserId,
+    entityId: entity.id,
+    type: 'REPLY',
+    status: serverMessage.node_status,
+    createdDateUnix: serverMessage.create_time,
+    updatedDateUnix: serverMessage.finish_time,
+    text: serverMessage.text,
+    asyncJobInfo: {
+      jobId: '',
+      componentInput: '',
+      status: 'EMBED_OBJ_STATUS_UNSPECIFIED' as EmbedObjStatus,
+    },
+    runningError: {
+      errorType: 'RUNNING_ERROR_TYPE_ENGINE_ERROR' as RunningErrorEnum,
+      errorDetail:
+        serverMessage.output.error_message +
+        '\n' +
+        serverMessage.output.error_message_detail,
+    },
+  };
+}
 
 export function serverMessageToMessage(
   entity: EntityInfo,
@@ -12,17 +57,10 @@ export function serverMessageToMessage(
       'BOT_MESSAGE_COMPONENTS_TYPE_ROW'
   ) {
     return convertDtoC(serverMessage);
+  } else if (serverMessage.output.error_message) {
+    return convertErrorServerMessage(entity, serverMessage);
   } else {
-    return {
-      id: serverMessage.id,
-      userId: testUserId,
-      entityId: entity.id,
-      type: 'REPLY',
-      status: serverMessage.status,
-      createdDateUnix: serverMessage.createdDateUnix,
-      updatedDateUnix: serverMessage.updatedDateUnix,
-      text: serverMessage.text,
-    };
+    return commonServerMessageToMessage(entity, serverMessage);
   }
 }
 

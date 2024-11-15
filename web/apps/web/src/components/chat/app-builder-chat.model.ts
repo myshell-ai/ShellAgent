@@ -100,18 +100,12 @@ export class AppBuilderChatModel {
     }
   }
 
-  async receiveServerMessageError(errorMessage: string) {
-    const message: Message = {
-      id: uuidv4(),
-      userId: testUserId,
-      entityId: this.chatNew.entity.id,
-      type: 'REPLY',
-      status: 'ERROR',
-      createdDateUnix: Date.now().toString(),
-      updatedDateUnix: Date.now().toString(),
-      text: errorMessage,
-    };
-    this.chatNew.innerMethods.appendMessages!(message, true);
+  async receiveServerMessageError(errorMessage: any) {
+    const message: Message = serverMessageToMessage(
+      this.chatNew.entity,
+      errorMessage,
+    );
+    this.chatNew.innerMethods.onMessageReply!(message);
   }
 
   async initBot(automata: Automata) {
@@ -191,9 +185,7 @@ export class AppBuilderChatModel {
           try {
             const data = JSON.parse(ev.data);
             if (data.node_status === 'failed') {
-              this.receiveServerMessageError(
-                `${data.output.error_message}_$$_${data.output.error_message_detail}`,
-              );
+              this.receiveServerMessageError(data);
               return;
             }
             const { server_message } = data;
