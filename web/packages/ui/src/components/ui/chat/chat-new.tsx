@@ -13,12 +13,14 @@ import {
   useMessageParams,
   useUploadFiles,
   useVirtuosoMessageListApi,
+  IMLocalFile,
 } from 'myshell-bundled-chat';
 import 'myshell-bundled-chat/styles.css';
 import { useCallback, useEffect, useMemo } from 'react';
 
 import { ChatNewProps } from './interfaces/chatNewProps';
 import { observer } from 'mobx-react-lite';
+import { message } from 'antd';
 
 export const ChatNew = observer<ChatNewProps>(({ model }) => {
   const {
@@ -188,7 +190,6 @@ export const ChatNew = observer<ChatNewProps>(({ model }) => {
       interacting,
       scrollToBottom,
       setDraftMessage,
-      sendTextMessage,
       sendAudioMessage: (audioBlob: Blob, mimeType?: string | undefined) => {
         return Promise.resolve();
       },
@@ -213,6 +214,14 @@ export const ChatNew = observer<ChatNewProps>(({ model }) => {
       inputMode,
       setInputMode,
       getInputProps,
+      sendTextMessage: async (
+        text: string,
+        files?: IMLocalFile[],
+        requestParams?: any,
+      ) => {
+        sendTextMessage(text, files, requestParams);
+        model.handlers.sendTextMessagePost?.(text);
+      },
       clearMemory: async () => {
         model.clearMemory();
       },
