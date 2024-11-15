@@ -80,6 +80,15 @@ function slashCommandAction(text: string) {
   ];
 }
 
+const typeMap: Record<string, string> = {
+  audio: 'BOT_IM_COMPONENT_INPUT_TYPE_FILE_UPLOAD', // TODO
+  image: 'BOT_IM_COMPONENT_INPUT_TYPE_IMAGE_UPLOAD',
+  video: 'BOT_IM_COMPONENT_INPUT_TYPE_VIDEO_UPLOAD',
+  text_file: 'BOT_IM_COMPONENT_INPUT_TYPE_TEXT_UPLOAD',
+  file: 'BOT_IM_COMPONENT_INPUT_TYPE_FILE_UPLOAD',
+  string: 'BOT_IM_COMPONENT_INPUT_TYPE_TEXT_INPUT',
+};
+
 export function popupFormAction(actions: any[]) {
   return actions.map(action => {
     return {
@@ -92,8 +101,11 @@ export function popupFormAction(actions: any[]) {
         description: 'Enter to run',
         githubUrl: '',
         componentsInput: Object.keys(action.formSchema.properties).map(k => {
+          const prop = action.formSchema.properties[k];
+          const type =
+            typeMap[prop.type] || 'BOT_IM_COMPONENT_INPUT_TYPE_UNSPECIFIED';
           return {
-            type: 'BOT_IM_COMPONENT_INPUT_TYPE_TEXT_INPUT',
+            type: type,
             name: action.formSchema.properties[k].name,
             description: '',
             stringDefault: '',
