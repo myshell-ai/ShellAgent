@@ -16,6 +16,7 @@ function commonServerMessageToMessage(
     createdDateUnix: serverMessage.createdDateUnix,
     updatedDateUnix: serverMessage.updatedDateUnix,
     text: serverMessage.text,
+    embedObjs: serverMessage.embedObjs,
   };
 }
 

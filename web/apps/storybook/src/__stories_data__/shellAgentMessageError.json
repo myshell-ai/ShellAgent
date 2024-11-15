@@ -1,0 +1,18 @@
+{
+    "id": "322c57d310a640fab38e87ccd17a900a",
+    "userId": "test-app-builder",
+    "entityId": "shellagent-app-builder-chat",
+    "type": "REPLY",
+    "status": "failed",
+    "createdDateUnix": 1731657737.861372,
+    "updatedDateUnix": 1731657737.864793,
+    "asyncJobInfo": {
+        "jobId": "",
+        "componentInput": "",
+        "status": "EMBED_OBJ_STATUS_UNSPECIFIED"
+    },
+    "runningError": {
+        "errorType": "RUNNING_ERROR_TYPE_ENGINE_ERROR",
+        "errorDetail": "some_text requires user_input=True but no input is provided!\nTraceback (most recent call last):\n  File \"/Users/shane/Downloads/ShellAgent_MacOS_release/ShellAgent/servers/automata.py\", line 606, in execute_automata\n    sess_state, render, event_mapping = runner.run_automata(automata, sess_state, environ, payload)\n  File \"/Users/shane/Downloads/ShellAgent_MacOS_release/ShellAgent/proconfig/runners/runner.py\", line 485, in run_automata\n    context, render, local_vars, output_vars = self.run_state(current_state, context, environ, payload)\n  File \"/Users/shane/Downloads/ShellAgent_MacOS_release/ShellAgent/proconfig/runners/runner.py\", line 432, in run_state\n    raise NotImplementedError(f\"{v.name} requires user_input=True but no input is provided!\")\nNotImplementedError: some_text requires user_input=True but no input is provided!\n"
+    }
+}

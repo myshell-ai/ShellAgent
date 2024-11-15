@@ -24,18 +24,18 @@ import {
   UserSourceEnum,
   ChatStoreProvider,
   StaticContextProps,
+  useUploadFiles,
+  ServerFileTypes,
 } from 'myshell-bundled-chat';
 import messages from '../messages/en.json';
-import historyMessage from './__stories_data__/historyMessage.json';
 import clearMemoryMessage from './__stories_data__/clearMemoryMessage.json';
 import greetingMessage from './__stories_data__/greetingMessage.json';
-import replaceMessage from './__stories_data__/replaceMessage.json';
-import updateReplyMessage from './__stories_data__/updateReplyMessage.json';
 import updateReplyMessageError from './__stories_data__/updateReplyMessageError.json';
 import updateReplyMessageLUIForm from './__stories_data__/updateReplyMessageLUIForm.json';
+import shellAgentMessageError from './__stories_data__/shellAgentMessageError.json';
+import multiImageMessage from './__stories_data__/multiImageMessage.json';
+import caseTplSingleImage from './__stories_data__/caseTplSingleImage.json';
 import { ChakraProvider, extendTheme } from '@chakra-ui/react';
-
-const theme = extendTheme({});
 
 const user = {
   avatar: 'default_avatars/Group10.png',
@@ -76,7 +76,7 @@ const meta = {
   component: ChatModule,
   decorators: [
     Story => (
-      <ChakraProvider theme={theme}>
+      <ChakraProvider>
         <NextIntlClientProvider
           locale="zh"
           messages={messages as unknown as AbstractIntlMessages}>
@@ -157,6 +157,9 @@ export const Primary: Story = {
       interactionDisabled: false,
       showInteractionCostEnergy: false,
       menuDisabled: false,
+      textDisabled: true,
+      audioDisabled: false,
+      uploadDisabled: false,
       menuFunctions: [
         // {
         //   menuFunction: 0
@@ -167,9 +170,9 @@ export const Primary: Story = {
         {
           menuFunction: 2,
         },
-        // {
-        //   menuFunction: 3
-        // }
+        {
+          menuFunction: 3,
+        },
       ],
       customMenuFunction: [],
       getList: async () => {
@@ -205,6 +208,7 @@ export const Primary: Story = {
       partialUpdateMsg,
       audioQueue,
       sendButtonInteractionMessage,
+      file: { uploadedFiles },
     } = useMessageParams({
       type: 'bot',
       id: botId,
@@ -226,6 +230,7 @@ export const Primary: Story = {
         onMixMessages,
       },
     });
+
     const userId = '3524834';
     const memberInfoMap = new Map();
     memberInfoMap.set('entity-undefined', {
@@ -250,18 +255,39 @@ export const Primary: Story = {
     const { editorMode, setEditorMode, inputMode, setInputMode } =
       useEditorMode();
 
-    const getInputProps: () => any = () => {
-      return {
-        accept:
-          'application/rtf,.rtf,text/markdown,.md,.markdown,application/pdf,.pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document,.docx,application/msword,.doc,text/plain,.txt,text/csv,.csv',
-        multiple: true,
-        style: {
-          display: 'none',
-        },
-        tabIndex: -1,
-        type: 'file',
-      };
-    };
+    const {
+      dragMaskVisible,
+      noValidLimitations,
+      handleUpload,
+      handleDelete,
+      getClickRootProps,
+      getDragRootProps,
+      getInputProps,
+      handlePastedFiles,
+      isChoosingFile,
+    } = useUploadFiles({
+      messageSettings: undefined,
+      panelSettings: {
+        supportedFileInfos: [
+          {
+            type: 'MESSAGE_METADATA_TYPE_ALL_FILE' as ServerFileTypes,
+            fileExtensions: [],
+            minUploadNum: 0,
+            maxUploadNum: 1,
+            maxSingleBytes: 10485760,
+            maxTotalBytes: 10485760,
+          },
+        ],
+      },
+      id: botId,
+      type: 'bot',
+      name: 'test',
+      uploadedFiles,
+      disabled: false,
+      dragDisabled: isEditorSticky,
+      scrollLayoutToTop,
+      textareaRef,
+    });
 
     const messageContextParams: MessageContextProps = useMemo(
       () => ({
@@ -279,7 +305,16 @@ export const Primary: Story = {
         interacting,
         scrollToBottom,
         setDraftMessage,
-        sendTextMessage,
+        getClickRootProps,
+        sendTextMessage: async (...args) => {
+          await sendTextMessage(...args);
+          setTimeout(() => {
+            // onMessageReply(updateReplyMessageError as any);
+            // onMessageReply(updateReplyMessageLUIForm as any);
+            // onMessageReply(updateReplyMessage as any);
+            onMessageReply(multiImageMessage as any);
+          }, 1500);
+        },
         sendAudioMessage: (audioBlob: Blob, mimeType?: string | undefined) => {
           return Promise.resolve();
         },
@@ -305,16 +340,28 @@ export const Primary: Story = {
         setInputMode,
         getInputProps,
         clearMemory: async () => {
+          console.log('Memory cleared!');
           appendMessages(clearMemoryMessage as unknown as Message, true);
           appendMessages(greetingMessage as unknown as Message, true);
         },
+        clearHistory: async () => {
+          deleteSpecifiedMessageId();
+        },
         sendButtonInteractionMessage: async (...args) => {
-          sendButtonInteractionMessage(...args);
+          await sendButtonInteractionMessage(...args);
           setTimeout(() => {
-            onMessageReply(updateReplyMessageError as any);
+            // onMessageReply(shellAgentMessageError as any);
+            // onMessageReply(updateReplyMessageError as any);
             // onMessageReply(updateReplyMessageLUIForm as any);
+            onMessageReply(caseTplSingleImage as any);
             // onMessageReply(updateReplyMessage as any);
           }, 1500);
+        },
+        file: {
+          isChoosingFile,
+          uploadedFiles,
+          uploadFiles: handleUpload,
+          deleteFile: handleDelete,
         },
       }),
       [
@@ -342,6 +389,7 @@ export const Primary: Story = {
         setEditorMode,
         inputMode,
         setInputMode,
+        getClickRootProps,
       ],
     );
 

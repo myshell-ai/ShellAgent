@@ -20,7 +20,6 @@ import { useCallback, useEffect, useMemo } from 'react';
 
 import { ChatNewProps } from './interfaces/chatNewProps';
 import { observer } from 'mobx-react-lite';
-import { message } from 'antd';
 
 export const ChatNew = observer<ChatNewProps>(({ model }) => {
   const {
