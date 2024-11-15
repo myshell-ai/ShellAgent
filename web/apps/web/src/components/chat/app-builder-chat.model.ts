@@ -99,14 +99,6 @@ export class AppBuilderChatModel {
     }
   }
 
-  async receiveServerMessageError(errorMessage: any) {
-    const message: Message = serverMessageToMessage(
-      this.chatNew.entity,
-      errorMessage,
-    );
-    this.chatNew.innerMethods.onMessageReply!(message);
-  }
-
   async initBot(automata: Automata) {
     runInAction(() => {
       this.isInitBotLoading = true;
@@ -184,7 +176,7 @@ export class AppBuilderChatModel {
           try {
             const data = JSON.parse(ev.data);
             if (data.node_status === 'failed') {
-              this.receiveServerMessageError(data);
+              this.receiveServerMessage(data, isGreeting);
               return;
             }
             const { server_message } = data;
