@@ -27,15 +27,23 @@ class XWidget(BaseWidget):
         # API endpoint URL
         url = "https://openapi.myshell.ai/public/v1/widget/run"
         
+        if "MYSHELL_TEST_DEPLOY" in os.environ:
+            url = "https://openapi-test.myshell.fun/public/v1/widget/run"
+            widget_id = "1784190400353771520"
+        else:
+            url = "https://openapi.myshell.ai/public/v1/widget/run"
+            widget_id = "1784206090390036480"
+        
         # Headers for the API request
         headers = {
             "x-myshell-openapi-key": os.environ["MYSHELL_API_KEY"],
-            "Content-Type": "application/json"
+            "Content-Type": "application/json",
+            **environ.get("MYSHELL_HEADERS", {})
         }
         
         # Request payload
         data = {
-            "widget_id": "1784206090390036480",
+            "widget_id": widget_id,
             "input": json.dumps({
                 "action": config.action,
                 "query": config.query,
