@@ -72,7 +72,8 @@
     "uuid": "^10.0.0",
     "zod": "^3.23.8",
     "zustand": "^4.5.4",
-    "zustand-computed-state": "^0.1.8"
+    "zustand-computed-state": "^0.1.8",
+    "@chakra-ui/react": "2.8.0"
   },
   "devDependencies": {
     "@shellagent/eslint-config": "workspace:*",
@@ -90,6 +91,9 @@
     "postcss": "^8.4.41",
     "raw-loader": "^4.0.2",
     "tailwindcss": "^3.4.10",
-    "typescript": "~5.3.3"
+    "typescript": "~5.3.3",
+    "@types/jest": "^29.4.0",
+    "jest": "^29.4.1",
+    "ts-jest": "^29.0.5"
   }
 }

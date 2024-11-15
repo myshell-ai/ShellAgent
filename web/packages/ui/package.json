@@ -87,6 +87,7 @@
     "reflect-metadata": "^0.1.14",
     "tailwind-merge": "^2.5.2",
     "tailwindcss-animate": "^1.0.7",
-    "vaul": "^0.9.1"
+    "vaul": "^0.9.1",
+    "@chakra-ui/react": "2.8.0"
   }
 }

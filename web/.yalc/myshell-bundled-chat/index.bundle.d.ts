@@ -1,5 +1,6 @@
 import * as react from 'react';
 import react__default, { ReactElement, ReactNode, MutableRefObject } from 'react';
+import * as react_dropzone from 'react-dropzone';
 import { DropzoneRootProps, DropzoneInputProps } from 'react-dropzone';
 import * as react_jsx_runtime from 'react/jsx-runtime';
 import { VirtuosoMessageListMethods } from '@virtuoso.dev/message-list';
@@ -903,6 +904,7 @@ type MessageContextProps = {
     clearQueue?: () => void;
     getJobInfo?: (jobId: string, messageId: string) => Promise<boolean>;
     clearMemory?: (successCb?: () => void) => Promise<void>;
+    clearHistory?: (successCb?: () => void) => Promise<void>;
     dragMaskVisible: boolean;
     getClickRootProps?: <T extends DropzoneRootProps>(props?: T) => T;
     getDragRootProps?: <T extends DropzoneRootProps>(props?: T) => T;
@@ -1084,6 +1086,31 @@ declare function useEditorMode(): {
     setEditorMode: react.Dispatch<react.SetStateAction<EditorMode>>;
 };
 
+type IProps = {
+    type: ChatModuleType;
+    id: string;
+    name?: string;
+    uploadedFiles?: IMLocalFile[];
+    disabled?: boolean;
+    panelSettings?: UploadSetting;
+    messageSettings?: UploadSetting;
+    dragDisabled?: boolean;
+    scrollLayoutToTop?: () => void;
+    textareaRef?: React.RefObject<HTMLTextAreaElement>;
+};
+declare function useUploadFiles({ panelSettings, uploadedFiles, messageSettings, type, id, name, disabled, dragDisabled, scrollLayoutToTop, textareaRef }: IProps): {
+    dragMaskVisible: boolean;
+    uploadedFiles: IMLocalFile[];
+    noValidLimitations: boolean;
+    handleUpload: (files: IMLocalFile[], retry?: boolean) => void;
+    handleDelete: (fileId?: string) => void;
+    getDragRootProps: <T extends react_dropzone.DropzoneRootProps>(props?: T) => T;
+    getClickRootProps: <T extends react_dropzone.DropzoneRootProps>(props?: T) => T;
+    getInputProps: <T extends react_dropzone.DropzoneInputProps>(props?: T) => T;
+    handlePastedFiles: (files: File[]) => void;
+    isChoosingFile: react.MutableRefObject<boolean>;
+};
+
 interface GlobalStoreProviderProps {
     isMobile: boolean;
     nonce?: string;
@@ -1108,4 +1135,4 @@ interface ChatStoreProviderProps {
 }
 declare const ChatStoreProvider: ({ children, type, id, messages }: ChatStoreProviderProps) => react_jsx_runtime.JSX.Element;
 
-export { ChatModule, type ChatModuleType, ChatStoreProvider, type DisplayMessage, type DraftMessage, type EntityInfo, FollowStatus, GlobalStoreProvider, type IRunningErrorProps, type LocalErrorMessage, LoginType, MenuFunctionEnum, type Message, type MessageComponentsContainer, MessageContext, type MessageContextProps, MessageToDisplayParser, RunningError, StaticContext, type StaticContextProps, type User, UserSourceEnum, UserStoreProvider, useAtBottom, useChatLayout, useEditorMode, useMessageParams, useVirtuosoMessageListApi };
+export { ChatModule, type ChatModuleType, ChatStoreProvider, type DisplayMessage, type DraftMessage, type EntityInfo, FollowStatus, GlobalStoreProvider, type IRunningErrorProps, type LocalErrorMessage, LoginType, MenuFunctionEnum, type Message, type MessageComponentsContainer, MessageContext, type MessageContextProps, MessageToDisplayParser, RunningError, ServerFileTypes, StaticContext, type StaticContextProps, type User, UserSourceEnum, UserStoreProvider, useAtBottom, useChatLayout, useEditorMode, useMessageParams, useUploadFiles, useVirtuosoMessageListApi };

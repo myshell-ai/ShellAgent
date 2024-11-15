@@ -304,7 +304,6 @@ export const Primary: Story = {
         setInputMode,
         getInputProps,
         clearMemory: async () => {
-          console.log('Memory cleared!');
           appendMessages(clearMemoryMessage as unknown as Message, true);
           appendMessages(greetingMessage as unknown as Message, true);
         },

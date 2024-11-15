@@ -2,7 +2,7 @@ import {
   EventSourceMessage,
   fetchEventSource,
 } from '@microsoft/fetch-event-source';
-import { EntityInfo, Message } from 'myshell-bundled-chat';
+import { Message } from 'myshell-bundled-chat';
 import { Automata } from '@shellagent/pro-config';
 import { ChatNewModel } from '@shellagent/ui';
 import axios from 'axios';
@@ -14,13 +14,12 @@ import { v4 as uuidv4 } from 'uuid';
 import { upload } from '@/services/common';
 
 import {
+  convertDtoC,
   serverMessageToMessage,
-  testEntity,
   testUserId,
 } from './app-builder-chat-utils';
 import type {
   MessageComponentsButton,
-  MessageComponentsButtonAction,
   ServerMessage,
 } from '../../services/app/message-type';
 import { EventStatusEnum, RunAppRequest } from '../../services/app/type';
@@ -29,13 +28,9 @@ import { EmitterModel } from '../../utils/emitter.model';
 
 @injectable()
 export class AppBuilderChatModel {
-  testEntity: EntityInfo = testEntity;
-
   @observable runOpen = false;
 
   @observable isInitBotLoading = false;
-
-  @observable isLuiButtonModalOpen = false;
 
   @observable isRunLoading = false;
 
@@ -69,6 +64,7 @@ export class AppBuilderChatModel {
       };
       await this.sendToServer(appReq);
     };
+    this.chatNew.handlers.clearMemoryPost = this.greeting.bind(this);
     makeObservable(this);
   }
 
@@ -82,59 +78,25 @@ export class AppBuilderChatModel {
     this.runOpen = false;
   }
 
-  @action.bound
-  openLuiButtonModal(
-    buttonId: string,
-    buttonText: string,
-    buttonAction: MessageComponentsButtonAction,
-  ) {
-    this.isLuiButtonModalOpen = true;
-    this.currentLuiButton = {
-      schema: buttonAction.formSchema!,
-      buttonText,
-      buttonId,
-    };
-  }
-
-  @action.bound
-  closeLuiButtonModal() {
-    this.isLuiButtonModalOpen = false;
-    this.currentLuiButton = undefined;
-    this.formValue = undefined;
-    // this.isFormValid = false;
-  }
-
-  onChangeModalForm(value: any) {
-    this.formValue = value;
-    // this.isFormValid = Object.values(value).every(value => value != null && value !== '');
-    setTimeout(() => {
-      this.isFormValid = Object.values(value).every(
-        value => value != null && value !== '',
-      );
-    });
-  }
-
-  /**
-   * 对 addMessage 的封装, 参数变成 server message
-   */
   async receiveServerMessage(serverMessage: ServerMessage) {
     this.serverMessageMap.set(serverMessage.id, serverMessage);
-    const message = serverMessageToMessage(testEntity, serverMessage);
-    this.chatNew.innerMethods.addMessage!(message);
+    // const message = serverMessageToMessage(this.chatNew.entity, serverMessage);
+    const message = convertDtoC(serverMessage);
+    this.chatNew.innerMethods.appendMessages!(message, true);
   }
 
   async receiveServerMessageError(errorMessage: string) {
     const message: Message = {
       id: uuidv4(),
       userId: testUserId,
-      entityId: this.testEntity.id,
+      entityId: this.chatNew.entity.id,
       type: 'REPLY',
       status: 'ERROR',
       createdDateUnix: Date.now().toString(),
       updatedDateUnix: Date.now().toString(),
       text: errorMessage,
     };
-    this.chatNew.innerMethods.addMessage!(message);
+    this.chatNew.innerMethods.appendMessages!(message, true);
   }
 
   async initBot(automata: Automata) {
@@ -156,8 +118,7 @@ export class AppBuilderChatModel {
       this.session_id = res.data.session_id;
       this.openRunDrawer();
       await this.chatNew.isReadyPromise;
-      this.chatNew.innerMethods.clearMessageList!();
-      this.greeting();
+      this.chatNew.clearMemory();
     } catch (e: any) {
       this.emitter.emitter.emit('message.error', e.message);
     } finally {
@@ -274,14 +235,14 @@ export class AppBuilderChatModel {
     const message: any = {
       id: generateUUID(),
       userId: testUserId,
-      entityId: this.testEntity.id,
+      entityId: this.chatNew.entity.id,
       type: 'TEXT',
       status: 'DONE',
       createdDateUnix: Date.now().toString(),
       updatedDateUnix: Date.now().toString(),
       text: `Clicked ${button.content.text}`,
     };
-    this.chatNew.innerMethods.addMessage!(message);
+    this.chatNew.innerMethods.appendMessages!(message, true);
     const appReq: RunAppRequest = {
       session_id: this.session_id!,
       buttonId: button.buttonId,
@@ -299,7 +260,7 @@ export class AppBuilderChatModel {
     const message: any = {
       id: generateUUID(),
       userId: testUserId,
-      entityId: this.testEntity.id,
+      entityId: this.chatNew.entity.id,
       type: 'TEXT',
       status: 'DONE',
       createdDateUnix: Date.now().toString(),
@@ -308,7 +269,7 @@ export class AppBuilderChatModel {
         this.currentLuiButton!.buttonText
       }</span><br/>${text2}`,
     };
-    this.chatNew.innerMethods.addMessage!(message);
+    this.chatNew.innerMethods.appendMessages!(message, true);
     const appReq: RunAppRequest = {
       form_data: this.formValue,
       session_id: this.session_id!,
@@ -318,7 +279,6 @@ export class AppBuilderChatModel {
       message: '',
     };
     await this.sendToServer(appReq);
-    this.closeLuiButtonModal();
   }
 
   async uploadFile(file: File) {

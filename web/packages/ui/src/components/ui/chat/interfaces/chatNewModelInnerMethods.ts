@@ -1,14 +1,12 @@
-import { DraftMessage, LocalErrorMessage, Message } from 'myshell-bundled-chat';
+import { Message } from 'myshell-bundled-chat';
 
 /**
- * 内部方法 对接 hooks 方法
+ * re-aggregate some methods of bundle chat here.
  */
 export interface ChatNewModelInnerMethods {
-  addMessage: (
-    messages:
-      | (Message | DraftMessage | LocalErrorMessage)
-      | Array<Message | DraftMessage | LocalErrorMessage>,
+  appendMessages: (
+    messages: Message | Message[],
+    needScrollToBottom?: boolean,
   ) => void;
   sendTextMessage: (text: string) => void;
-  clearMessageList: () => void;
 }

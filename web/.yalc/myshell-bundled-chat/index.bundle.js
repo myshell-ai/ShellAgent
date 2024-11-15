@@ -49,6 +49,7 @@ require('file-saver');
 var isMobile = require('ismobilejs');
 var uuid = require('uuid');
 require('viem');
+var reactDropzone = require('react-dropzone');
 var Hammer = require('hammerjs');
 var Select = require('react-select');
 var rxjs = require('rxjs');
@@ -59,7 +60,6 @@ var BotDetailBg = require('@/common/assets/images/workshop/BotDetailBg.png');
 var Cropper = require('react-cropper');
 require('cropperjs/dist/cropper.css');
 var Lottie = require('lottie-web');
-var reactDropzone = require('react-dropzone');
 var Editor$1 = require('@monaco-editor/react');
 var jsonSourceMap = require('json-source-map');
 var JSON5 = require('json5');
@@ -7785,7 +7785,8 @@ function ClearHistory({ type, id, disabled = false, onSuccess }) {
     const { deleteSpecifiedMessageId } = React.useContext(MessageContext);
     const [confirming, setConfirming] = reactUse.useBoolean(false);
     const chatLocale = nextIntl.useTranslations('chat');
-    const { clearing, clearHistory } = useClearHistory(type, id, getList, deleteSpecifiedMessageId);
+    const { clearing, clearHistory: handleClearHistory } = useClearHistory(type, id, getList, deleteSpecifiedMessageId);
+    const { clearHistory = handleClearHistory } = React.useContext(MessageContext);
     const onClick = () => {
         setConfirming(true);
     };
@@ -14721,7 +14722,7 @@ function Editor({ editorContainerRef, editorAnchorRef, textareaRef, scrollLayout
                     }, children: [dragMaskVisible && jsxRuntime.jsx(DragMask, {}), fileAlert.visible && jsxRuntime.jsx(SaveTipModal$1, { maxSize: 50 }), jsxRuntime.jsxs("div", { className: "relative flex flex-col gap-1", children: [terminatable && showTerminate && (jsxRuntime.jsx("div", { className: "flex justify-center absolute -top-[60px] md:-top-[78px] left-1/2 -translate-x-1/2 z-20", children: jsxRuntime.jsx(Termination, { onTerminate: () => terminate === null || terminate === void 0 ? void 0 : terminate(), loading: terminating }) })), inputMode === 'TEXT' &&
                                     (!isMobile ? (jsxRuntime.jsxs(jsxRuntime.Fragment, { children: [jsxRuntime.jsx(TextInput, { className: "w-full min-h-9 max-h-[156px]", onSend: sendTextHandler, sendDisabled: interactionDisabled || sending || interacting, autoFocus: true, value: text, ref: textareaRef, onChange: e => setText(e.target.value), disabled: interactionDisabled || textDisabled, disabledReason: disabledReason, onFocus: () => {
                                                     scrollLayoutToTop === null || scrollLayoutToTop === void 0 ? void 0 : scrollLayoutToTop();
-                                                } }), jsxRuntime.jsx(Attachments, {}), jsxRuntime.jsx("div", { className: "w-full flex items-center justify-between", children: jsxRuntime.jsxs("div", { className: "flex w-full justify-between items-center", children: [jsxRuntime.jsxs("div", { className: "flex gap-1", children: [jsxRuntime.jsx(MenuList$1, {}), jsxRuntime.jsx(FileUploader, { disabled: interactionDisabled })] }), text || uploadedFiles ? (jsxRuntime.jsx(SendButton, { loading: sending || interacting, disabled: interactionDisabled || sending || interacting, onSend: sendTextHandler, energyCost: energyCost, showEnergyCostIcon: showInteractionCostEnergy })) : (jsxRuntime.jsx(AudioInput, { onStart: switchToAudioInput, disabled: interactionDisabled }))] }) })] })) : (jsxRuntime.jsx(MobileTextInput, { onSend: sendTextHandler, value: text, ref: textareaRef, onChange: e => setText(e.target.value), sendDisabled: interactionDisabled || sending || interacting, disabled: interactionDisabled || textDisabled, disabledReason: disabledReason, showMobileDetail: showMobileDetail, audioInputSlot: jsxRuntime.jsxs("div", { className: "flex gap-1 items-center", children: [jsxRuntime.jsx(MenuList$1, {}), jsxRuntime.jsx(AudioInput, { onStart: switchToAudioInput, disabled: interactionDisabled || audioDisabled })] }), loading: sending || interacting, interactingDisabled: interactionDisabled || sending || interacting, energyCost: energyCost, showEnergyCostIcon: showInteractionCostEnergy }))), inputMode === 'AUDIO' && (jsxRuntime.jsx(AudioRecorder, { exitAudioInput: exitAudioInput, onSend: sendAudioHandler, interacting: sending, disabled: interactionDisabled || audioDisabled, scrollLayoutToTop: scrollLayoutToTop }))] })] }) })] }));
+                                                } }), jsxRuntime.jsx(Attachments, {}), jsxRuntime.jsx("div", { className: "w-full flex items-center justify-between", children: jsxRuntime.jsxs("div", { className: "flex w-full justify-between items-center", children: [jsxRuntime.jsxs("div", { className: "flex gap-1", children: [jsxRuntime.jsx(MenuList$1, {}), jsxRuntime.jsx(FileUploader, { disabled: interactionDisabled })] }), text || uploadedFiles ? (jsxRuntime.jsx(SendButton, { loading: sending || interacting, disabled: interactionDisabled || sending || interacting, onSend: sendTextHandler, energyCost: energyCost, showEnergyCostIcon: showInteractionCostEnergy })) : (jsxRuntime.jsx(AudioInput, { onStart: switchToAudioInput, disabled: interactionDisabled || audioDisabled }))] }) })] })) : (jsxRuntime.jsx(MobileTextInput, { onSend: sendTextHandler, value: text, ref: textareaRef, onChange: e => setText(e.target.value), sendDisabled: interactionDisabled || sending || interacting, disabled: interactionDisabled || textDisabled, disabledReason: disabledReason, showMobileDetail: showMobileDetail, audioInputSlot: jsxRuntime.jsxs("div", { className: "flex gap-1 items-center", children: [jsxRuntime.jsx(MenuList$1, {}), jsxRuntime.jsx(AudioInput, { onStart: switchToAudioInput, disabled: interactionDisabled || audioDisabled })] }), loading: sending || interacting, interactingDisabled: interactionDisabled || sending || interacting, energyCost: energyCost, showEnergyCostIcon: showInteractionCostEnergy }))), inputMode === 'AUDIO' && (jsxRuntime.jsx(AudioRecorder, { exitAudioInput: exitAudioInput, onSend: sendAudioHandler, interacting: sending, disabled: interactionDisabled || audioDisabled, scrollLayoutToTop: scrollLayoutToTop }))] })] }) })] }));
 }
 
 function ShareSelectAll() {
@@ -22855,6 +22856,419 @@ function useEditorMode() {
     };
 }
 
+const defaultMaxSize$1 = 50 * 1024 ** 2;
+const enableMIME$1 = {
+    AUDIO: {
+        '.mp3': 'audio/mpeg',
+        '.wav': 'audio/wav',
+        '.ogg': 'audio/ogg',
+        '.wma': 'audio/x-ms-wma',
+        '.flac': 'audio/flac',
+        '.ape': 'audio/ape'
+    },
+    VIDEO: {
+        '.mp4': 'video/mp4',
+        '.avi': 'video/x-msvideo',
+        '.mov': 'video/quicktime',
+        '.wmv': 'video/x-ms-wmv',
+        '.flv': 'video/x-flv'
+    },
+    APPLICATION: {
+        '.rtf': 'application/rtf',
+        '.md': 'text/markdown',
+        '.markdown': 'text/markdown',
+        '.pdf': 'application/pdf',
+        '.docx': 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+        '.doc': 'application/msword',
+        '.txt': 'text/plain',
+        '.csv': 'text/csv'
+    },
+    IMAGE: {
+        '.apng': 'image/apng',
+        '.png': 'image/png',
+        '.jpeg': 'image/jpeg',
+        '.jpg': 'image/jpg',
+        '.gif': 'image/gif',
+        '.bmp': 'image/bmp',
+        '.tiff': 'image/tiff',
+        '.tif': 'image/tiff',
+        '.heic': 'image/heic'
+    },
+    ALL: {
+        '*': '*/*'
+    }
+};
+const ex2MIME$1 = Object.assign(Object.assign(Object.assign(Object.assign(Object.assign({}, enableMIME$1.AUDIO), enableMIME$1.VIDEO), enableMIME$1.APPLICATION), enableMIME$1.IMAGE), enableMIME$1.ALL);
+const fileUIData$1 = {
+    md: {
+        icon: 'other',
+        type: 'Markdown File',
+        bg: '#6F8BB5',
+        iconUrl: 'https://www.myshellstatic.com/image/bot/icon/2023112610/embed_icon/Other.svg'
+    },
+    markdown: {
+        icon: 'other',
+        type: 'Markdown File',
+        bg: '#6F8BB5',
+        iconUrl: 'https://www.myshellstatic.com/image/bot/icon/2023112610/embed_icon/Other.svg'
+    },
+    pdf: {
+        icon: 'PDF',
+        type: 'PDF',
+        bg: '#EA3434',
+        iconUrl: 'https://www.myshellstatic.com/image/bot/icon/2023112610/embed_icon/PDF.svg'
+    },
+    docx: {
+        icon: 'W',
+        type: 'Word File',
+        bg: '#2684FF',
+        iconUrl: 'https://www.myshellstatic.com/image/bot/icon/2023112610/embed_icon/Word.svg'
+    },
+    doc: {
+        icon: 'W',
+        type: 'Word File',
+        bg: '#2684FF',
+        iconUrl: 'https://www.myshellstatic.com/image/bot/icon/2023112610/embed_icon/Word.svg'
+    },
+    txt: {
+        icon: 'T',
+        type: 'TXT',
+        bg: '#6F8BB5',
+        iconUrl: 'https://www.myshellstatic.com/image/bot/icon/2023112610/embed_icon/TXT.svg'
+    },
+    csv: {
+        icon: 'CSV',
+        type: 'CSV',
+        bg: '#079455',
+        iconUrl: 'https://www.myshellstatic.com/image/bot/icon/2024053011/embed_icon/CSV.svg'
+    },
+    other: {
+        icon: 'other',
+        type: 'Rich Text File',
+        bg: '#6F8BB5',
+        iconUrl: 'https://www.myshellstatic.com/image/bot/icon/2023112610/embed_icon/Other.svg'
+    }
+};
+
+const serverFileTypes2Local$1 = Object.fromEntries(Object.entries(ServerFileTypes).map(([key, value]) => [value, key]));
+const getAcceptTypes$1 = (serverTypes) => {
+    const res = {};
+    serverTypes.forEach(type => {
+        const localType = serverFileTypes2Local$1[type];
+        if (localType) {
+            const mimeMap = enableMIME$1[localType];
+            const keys = Object.keys(mimeMap);
+            keys.forEach(k => {
+                if (!res[mimeMap[k]]) {
+                    res[mimeMap[k]] = [k];
+                }
+                else {
+                    res[mimeMap[k]] = [...res[mimeMap[k]], k];
+                }
+            });
+        }
+    });
+    return res;
+};
+const getUIFileData$1 = (file) => {
+    const arr = file.name.split('.');
+    const ext = arr[arr.length - 1].toLowerCase();
+    const e2MIME = `.${ext}`;
+    const mimeType = file.type || ex2MIME$1[e2MIME];
+    const mt = mimeType.split('/')[0].toUpperCase();
+    const fileUI = fileUIData$1[ext] || fileUIData$1.other;
+    const ct = ext.toUpperCase();
+    return Object.assign({ mimeType: mt, orginalMIMEType: file.type, contentType: ContentTypeEnum[ct], name: file.name, ex: ext, serverType: mt === 'TEXT' ? ServerFileTypes.APPLICATION : ServerFileTypes[mt] }, fileUI);
+};
+const getObjectURL$1 = (file) => URL.createObjectURL(file);
+const loadImageDimensions$1 = async (url) => {
+    return new Promise((resolve, reject) => {
+        const image = new Image();
+        image.onload = () => {
+            resolve({ width: image.width, height: image.height });
+            URL.revokeObjectURL(url);
+        };
+        image.onerror = () => {
+            reject(new Error('Failed to load image.'));
+            URL.revokeObjectURL(url);
+        };
+        image.src = url;
+    });
+};
+const loadVideoDimensions$1 = async (url) => {
+    return new Promise((resolve, reject) => {
+        const video = document.createElement('video');
+        video.onloadedmetadata = () => {
+            resolve({ width: video.videoWidth, height: video.videoHeight });
+            URL.revokeObjectURL(url);
+        };
+        video.onerror = () => {
+            reject(new Error('Failed to load video.'));
+            URL.revokeObjectURL(url);
+        };
+        video.src = url;
+    });
+};
+const getMediaDimension$1 = async (data) => {
+    const url = getObjectURL$1(data.file);
+    if (data.uiData.mimeType === 'IMAGE') {
+        return loadImageDimensions$1(url);
+    }
+    if (data.uiData.mimeType === 'VIDEO') {
+        return loadVideoDimensions$1(url);
+    }
+    return null;
+};
+const processFiles = async (files) => {
+    const fs = files.map(f => {
+        const uiData = getUIFileData$1(f);
+        return {
+            file: f,
+            id: generateUUID(),
+            type: uiData === null || uiData === void 0 ? void 0 : uiData.serverType,
+            uiData,
+            status: 'PENDING'
+        };
+    });
+    const fsPromises = fs.map(async (file) => {
+        try {
+            const dimension = await getMediaDimension$1(file);
+            return Object.assign(Object.assign({}, file), { mediaFileMetadata: Object.assign(Object.assign({}, (dimension || {})), { thumbnail: '' }) });
+        }
+        catch (error) {
+            console.error(error);
+            return file;
+        }
+    });
+    const res = await Promise.all(fsPromises);
+    return res;
+};
+const processUploadFiles$1 = (files) => processFiles(files);
+const getServerFileTypeByExt = (fileExtension) => {
+    const fileType = Object.entries(enableMIME$1).find(([type, mimeMap]) => mimeMap[fileExtension.toLowerCase()]);
+    if (fileType) {
+        return ServerFileTypes[fileType[0]];
+    }
+    return ServerFileTypes.ALL;
+};
+
+function formatFileSize(bytes, decimals = 2) {
+    if (bytes === 0)
+        return '0 Bytes';
+    const k = 1024;
+    const dm = decimals < 0 ? 0 : decimals;
+    const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    return `${parseFloat((bytes / k ** i).toFixed(dm))} ${sizes[i]}`;
+}
+function useUploadFiles({ panelSettings, uploadedFiles = [], messageSettings, type, id, name, disabled = false, dragDisabled, scrollLayoutToTop, textareaRef }) {
+    var _a, _b, _c, _d;
+    const sensors = useSensors();
+    const [dragMaskVisible, setDragMaskVisible] = reactUse.useToggle(false);
+    const isChoosingFile = React.useRef(false);
+    const uploadFiles = useNewChatStore(state => state.uploadFiles);
+    const deleteFile = useNewChatStore(state => state.deleteUploadFile);
+    const setFileAlert = useNewChatStore(state => state.setFileAlert);
+    const { warning } = useNotification();
+    const chatT = nextIntl.useTranslations('chat');
+    const noValidLimitations = ((_b = (_a = messageSettings === null || messageSettings === void 0 ? void 0 : messageSettings.supportedFileInfos) === null || _a === void 0 ? void 0 : _a.length) !== null && _b !== void 0 ? _b : 0) + ((_d = (_c = panelSettings === null || panelSettings === void 0 ? void 0 : panelSettings.supportedFileInfos) === null || _c === void 0 ? void 0 : _c.length) !== null && _d !== void 0 ? _d : 0) === 0;
+    const computedSupportedFileInfos = React.useMemo(() => {
+        var _a;
+        return (_a = messageSettings === null || messageSettings === void 0 ? void 0 : messageSettings.supportedFileInfos) !== null && _a !== void 0 ? _a : panelSettings === null || panelSettings === void 0 ? void 0 : panelSettings.supportedFileInfos;
+    }, [panelSettings, messageSettings]);
+    const maxFiles = React.useMemo(() => {
+        return (computedSupportedFileInfos !== null && computedSupportedFileInfos !== void 0 ? computedSupportedFileInfos : []).reduce((acc, cur) => {
+            return acc + cur.maxUploadNum;
+        }, 0);
+    }, [computedSupportedFileInfos]);
+    const supportTypes = React.useMemo(() => {
+        return (computedSupportedFileInfos !== null && computedSupportedFileInfos !== void 0 ? computedSupportedFileInfos : []).reduce((acc, cur) => {
+            return [...acc, cur.type];
+        }, []);
+    }, [computedSupportedFileInfos]);
+    const acceptTypes = React.useMemo(() => getAcceptTypes$1(supportTypes), [supportTypes]);
+    const supportedFileTypes = React.useMemo(() => {
+        return supportTypes.flatMap((supportType) => {
+            const localType = serverFileTypes2Local$1[supportType];
+            return localType ? Object.keys(enableMIME$1[localType]) : [];
+        });
+    }, [supportTypes]);
+    const handleUpload = React.useCallback((files, retry) => {
+        uploadFiles(type, id, files, retry);
+    }, [id, type, uploadFiles]);
+    const onFileChange = React.useCallback(async (files) => {
+        const res = await processUploadFiles$1(files);
+        handleUpload(res);
+    }, [handleUpload]);
+    const onDrop = React.useCallback((acceptedFiles) => {
+        isChoosingFile.current = false;
+        setDragMaskVisible(false);
+        if (!acceptedFiles.length)
+            return;
+        const fileGroups = {};
+        const currentFileGroups = {};
+        uploadedFiles.forEach(file => {
+            var _a;
+            const serverType = ((_a = file.uiData) === null || _a === void 0 ? void 0 : _a.serverType) || ServerFileTypes.ALL;
+            if (!currentFileGroups[serverType]) {
+                currentFileGroups[serverType] = [];
+            }
+            currentFileGroups[serverType].push(file);
+        });
+        acceptedFiles.forEach(file => {
+            var _a;
+            const ext = ((_a = file.name.split('.').pop()) === null || _a === void 0 ? void 0 : _a.toLowerCase()) || '';
+            const serverType = getServerFileTypeByExt(`.${ext}`);
+            if (!fileGroups[serverType]) {
+                fileGroups[serverType] = [];
+            }
+            fileGroups[serverType].push(file);
+        });
+        const errors = [];
+        computedSupportedFileInfos === null || computedSupportedFileInfos === void 0 ? void 0 : computedSupportedFileInfos.forEach(info => {
+            const currentFiles = currentFileGroups[info.type] || [];
+            const newFiles = fileGroups[info.type] || [];
+            const totalFiles = [...currentFiles.map(f => f.file), ...newFiles];
+            if (totalFiles.length > info.maxUploadNum) {
+                errors.push(chatT('panel.maxTypeFiles', {
+                    type: info.type,
+                    number: info.maxUploadNum
+                }));
+            }
+            const totalSize = totalFiles.reduce((acc, file) => acc + file.size, 0);
+            if (totalSize > info.maxTotalBytes) {
+                errors.push(chatT('panel.maxTypeFileSize', {
+                    type: info.type,
+                    size: formatFileSize(info.maxTotalBytes)
+                }));
+            }
+        });
+        if (errors.length > 0) {
+            warning({ content: errors.join('\n') });
+        }
+        else {
+            onFileChange(acceptedFiles);
+        }
+        if (type === 'bot') {
+            const fileName = acceptedFiles[0].name;
+            const fileType = fileName.substring(fileName.lastIndexOf('.') + 1);
+            sensors === null || sensors === void 0 ? void 0 : sensors.track('UploadFile', {
+                item_type: 'bot',
+                item_id: id,
+                item_name: name,
+                file_type: fileType,
+                file_size: acceptedFiles[0].size.toString()
+            });
+        }
+    }, [
+        chatT,
+        computedSupportedFileInfos,
+        id,
+        name,
+        onFileChange,
+        sensors,
+        setDragMaskVisible,
+        type,
+        uploadedFiles,
+        warning
+    ]);
+    const onDropRejected = React.useCallback((fileRejections) => {
+        const unSupport = fileRejections
+            .filter(file => file.errors[0].code === reactDropzone.ErrorCode.FileInvalidType)
+            .map(file => ({
+            code: file.errors[0].code,
+            name: file.file.name
+        }));
+        const tooLarge = fileRejections
+            .filter(file => file.errors[0].code === reactDropzone.ErrorCode.FileTooLarge)
+            .map(file => ({
+            code: file.errors[0].code,
+            name: file.file.name
+        }));
+        setFileAlert({ visible: true, data: [unSupport, tooLarge] });
+    }, [setFileAlert]);
+    const fileValidator = React.useCallback((file) => {
+        var _a, _b;
+        const ext = file.name ? file.name.split('.')[1] : file.type ? file.type.split('/')[1] : '';
+        const serverType = getServerFileTypeByExt(`.${ext}`);
+        const info = computedSupportedFileInfos === null || computedSupportedFileInfos === void 0 ? void 0 : computedSupportedFileInfos.find(fileInfo => fileInfo.type === serverType);
+        const maxSingleBytes = (_a = info === null || info === void 0 ? void 0 : info.maxSingleBytes) !== null && _a !== void 0 ? _a : defaultMaxSize$1;
+        if (file.size > maxSingleBytes) {
+            const mbSize = formatFileSize(maxSingleBytes);
+            return {
+                code: reactDropzone.ErrorCode.FileTooLarge,
+                message: `Size is larger than ${mbSize} mb!`
+            };
+        }
+        const computedSupportedFileTypes = ((_b = info === null || info === void 0 ? void 0 : info.fileExtensions) === null || _b === void 0 ? void 0 : _b.length) ? info === null || info === void 0 ? void 0 : info.fileExtensions : supportedFileTypes;
+        if (!computedSupportedFileTypes.includes(`.${ext.toLowerCase()}`) && !supportedFileTypes.includes('*')) {
+            return {
+                code: reactDropzone.ErrorCode.FileInvalidType,
+                message: `${ext} is not support yet!`
+            };
+        }
+        return null;
+    }, [computedSupportedFileInfos, supportedFileTypes]);
+    const commonOptions = {
+        accept: acceptTypes,
+        maxFiles,
+        noKeyboard: true,
+        maxSize: defaultMaxSize$1,
+        onDragOver: () => setDragMaskVisible(true),
+        onDragLeave: () => setDragMaskVisible(false),
+        validator: fileValidator,
+        onDrop,
+        onDropRejected,
+        onFileDialogOpen: () => {
+            isChoosingFile.current = true;
+            scrollLayoutToTop === null || scrollLayoutToTop === void 0 ? void 0 : scrollLayoutToTop();
+        },
+        onFileDialogCancel: () => {
+            var _a;
+            isChoosingFile.current = false;
+            (_a = textareaRef === null || textareaRef === void 0 ? void 0 : textareaRef.current) === null || _a === void 0 ? void 0 : _a.focus();
+        }
+    };
+    const clickOptions = Object.assign(Object.assign({}, commonOptions), { noClick: false, noDrag: true, disabled: disabled || noValidLimitations });
+    const dragOptions = Object.assign(Object.assign({}, commonOptions), { noClick: true, noDrag: false, disabled: disabled || noValidLimitations || dragDisabled });
+    const handleDelete = React.useCallback((fileId) => {
+        deleteFile(type, id, fileId);
+    }, [deleteFile, id, type]);
+    const handlePastedFiles = React.useCallback((files) => {
+        const acceptedFiles = [];
+        const rejectedFiles = [];
+        files.forEach(file => {
+            const error = fileValidator(file);
+            if (error) {
+                rejectedFiles.push({ file, errors: [error] });
+            }
+            else {
+                acceptedFiles.push(file);
+            }
+        });
+        if (acceptedFiles.length > 0) {
+            onDrop(acceptedFiles);
+        }
+        if (rejectedFiles.length > 0) {
+            onDropRejected(rejectedFiles);
+        }
+    }, [fileValidator, onDrop, onDropRejected]);
+    const { getRootProps: getDragRootProps } = reactDropzone.useDropzone(dragOptions);
+    const { getRootProps: getClickRootProps, getInputProps } = reactDropzone.useDropzone(clickOptions);
+    return {
+        dragMaskVisible,
+        uploadedFiles,
+        noValidLimitations,
+        handleUpload,
+        handleDelete,
+        getDragRootProps,
+        getClickRootProps,
+        getInputProps,
+        handlePastedFiles,
+        isChoosingFile
+    };
+}
+
 const MobilePreview$2 = dynamic__default.default(() => Promise.resolve().then(function () { return index$1; }), {
     ssr: false
 });
@@ -25154,4 +25568,5 @@ exports.useAtBottom = useAtBottom;
 exports.useChatLayout = useChatLayout;
 exports.useEditorMode = useEditorMode;
 exports.useMessageParams = useMessageParams;
+exports.useUploadFiles = useUploadFiles;
 exports.useVirtuosoMessageListApi = useVirtuosoMessageListApi;

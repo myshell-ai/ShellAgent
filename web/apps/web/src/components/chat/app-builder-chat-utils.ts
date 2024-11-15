@@ -1,19 +1,7 @@
 import { EntityInfo, Message } from 'myshell-bundled-chat';
-import { v4 as uuidv4 } from 'uuid';
-
-export const testEntity = {
-  id: 'test-app-builder',
-  name: 'App Builder',
-  energyPerChat: 5,
-};
 
 export const testUserId = 'test-app-builder';
 
-/**
- * 拆这个文件是为了方便做 unit test
- * 一般来说没必要拆太多文件(over design)就放在 model 里了
- * 但是 model 里面目前依赖的 @shellagent/chat-engine 有 React 相关的
- */
 export function serverMessageToMessage(
   entity: EntityInfo,
   serverMessage: any,
@@ -30,19 +18,64 @@ export function serverMessageToMessage(
   };
 }
 
-export function draftMessageToMessage(
-  entity: EntityInfo,
-  text: string,
-): Message {
-  const id = uuidv4();
+export function convertDtoC(d: any): any {
   return {
-    id,
-    userId: testUserId,
-    entityId: entity.id,
-    type: 'REPLY',
-    status: 'PENDING',
-    createdDateUnix: Date.now().toString(),
-    updatedDateUnix: Date.now().toString(),
-    text,
+    session_id: d.session_id,
+    id: d.id,
+    status: d.status,
+    type: d.type,
+    createdDateUnix: d.createdDateUnix,
+    updatedDateUnix: d.updatedDateUnix,
+    text: d.text,
+    embedObjs: d.embedObjs,
+    replyId: d.replyId,
+    componentContainer: {
+      type: d.componentContainer.type,
+      button: d.componentContainer.button,
+      components: [
+        {
+          type: 'BOT_MESSAGE_COMPONENTS_TYPE_ROW',
+          components: d.componentContainer.components.map((component: any) => ({
+            type: component.type,
+            components: component.components,
+            button: {
+              content: component.button.content,
+              style: {
+                fontColorHex: '#202223',
+                backgroundColorHex: '#F6F6F7',
+                borderColorHex: '#E4E9F0',
+                darkModeFontColorHex: '#B8BCCF',
+                darkModeBackgroundColorHex: '#323339',
+                darkModeBorderColorHex: '#42434A',
+                iconLineColorHex: '#00000033',
+                darkModeIconLineColorHex: '#FFFFFF33',
+              },
+              buttonId: component.button.buttonId,
+              actions: [
+                {
+                  action: 'MESSAGE_COMPONENTS_BUTTON_ACTION_TYPE_INTERACTION',
+                  interactionInput: {
+                    displayType:
+                      'BOT_MESSAGE_COMPONENTS_BUTTON_ACTION_INTERACTION_INPUT_DISPLAY_TYPE_SLASH_COMMAND',
+                    slashCommandInput: {
+                      name: '/MarkdownImage',
+                      paramMap: {},
+                    },
+                  },
+                },
+              ],
+              disabled: component.button.disabled,
+              doubleCheck: {
+                isNeedDoubleCheck: false,
+                title: '',
+                description: '',
+              },
+              payload: component.button.payload,
+            },
+          })),
+        },
+      ],
+    },
+    inputSetting: d.inputSetting,
   };
 }
