@@ -11,17 +11,28 @@ import {
   Refs,
 } from '@shellagent/shared/protocol/app-scope';
 import type { FieldValues, FormRef } from '@shellagent/ui';
-import { injectable } from 'inversify';
-import { cloneDeep } from 'lodash-es';
+import { injectable, inject } from 'inversify';
+import { cloneDeep, isEmpty } from 'lodash-es';
 import { action, makeObservable, observable, runInAction } from 'mobx';
 
-import { fetchAutomata, fetchFlow } from '@/services/app';
-import type { GetAppFlowRequest } from '@/services/app/type';
+import {
+  fetchAutomata,
+  fetchFlow,
+  saveApp,
+  releaseApp,
+  fetchAppVersionList,
+} from '@/services/app';
+import type {
+  GetAppFlowRequest,
+  GetAppVersionListResponse,
+} from '@/services/app/type';
 import { fetchList as fetchFlowList } from '@/services/home';
 import type { GetListRequest, GetListResponse } from '@/services/home/type';
 import emitter, { EventType } from '@/stores/app/models/emitter';
 import { genNodeData } from '@/stores/app/utils/data-transformer';
 import type { NodeDataType, Config, Metadata } from '@/types/app/types';
+import { genAutomata } from '@/stores/app/utils/data-transformer';
+import { EmitterModel } from '@/utils/emitter.model';
 
 import {
   CascaderOption,
@@ -47,8 +58,6 @@ export class AppBuilderModel {
 
   nodeDataMode: Map<string, string> = new Map();
 
-  refs: Refs = {};
-
   config: Config = {
     fieldsModeMap: {},
     refs: {},
@@ -62,6 +71,11 @@ export class AppBuilderModel {
   @observable getAutomataLoading = false;
   @observable chatRunningLoading = false;
   @observable fetchFlowListLoading = false;
+  @observable versionData: GetAppVersionListResponse | undefined;
+  @observable getVersionLoading = false;
+  @observable releaseLoading = false;
+  @observable saveLoading = false;
+  @observable restoreLoading = false;
 
   get scopes(): Scopes | null {
     if (!this.flowInstance || !this.nodeData) return null;
@@ -69,7 +83,11 @@ export class AppBuilderModel {
     return convetNodeDataToScopes(this.nodeData, edges);
   }
 
-  constructor() {
+  get refs(): Refs {
+    return this.config.refs;
+  }
+
+  constructor(@inject(EmitterModel) private emitter: EmitterModel) {
     makeObservable(this);
   }
 
@@ -97,7 +115,7 @@ export class AppBuilderModel {
   hanldeRefScene(evt: HandleRefSceneEvent) {
     const newRefs = hanldeRefScene(this.refs, evt);
     this.updateNodeData(evt, this.nodeData, this.refs, newRefs);
-    this.refs = newRefs;
+    this.config.refs = newRefs;
 
     console.log('this.refs>>', this.refs, evt);
     console.log('this.nodeData>>', this.nodeData);
@@ -143,7 +161,10 @@ export class AppBuilderModel {
     }
 
     runInAction(() => {
-      this.refs = config?.refs || {};
+      this.config = config || {
+        fieldsModeMap: {},
+        refs: {},
+      };
       this.metadata = metadata;
       this.nodeData = genNodeData(automata);
     });
@@ -236,7 +257,6 @@ export class AppBuilderModel {
     };
   }
 
-  // TODO 解决nodeData变化不触发ui变更问题
   updateNodeData(
     evt: HandleRefSceneEvent,
     nodeData: NodeDataType,
@@ -269,5 +289,101 @@ export class AppBuilderModel {
         type: 'StateCard',
       });
     });
+  }
+
+  @action.bound
+  async getVersionList(app_id: string) {
+    try {
+      this.getVersionLoading = true;
+      const result = await fetchAppVersionList({ app_id });
+      runInAction(() => {
+        this.versionData = result;
+      });
+      return result;
+    } catch (error: any) {
+      this.emitter.emitter.emit('message.error', error.message);
+    } finally {
+      runInAction(() => {
+        this.getVersionLoading = false;
+      });
+    }
+  }
+
+  @action.bound
+  async releaseApp(app_id: string, version_name: string) {
+    const reactflow = this.flowInstance?.toObject() as IFlow;
+    if (!isEmpty(reactflow)) {
+      try {
+        this.releaseLoading = true;
+        const result = await releaseApp({
+          app_id,
+          reactflow,
+          automata: genAutomata(reactflow, this.nodeData),
+          config: this.config,
+          version_name,
+          metadata: this.metadata,
+        });
+        if (result.success) {
+          this.emitter.emitter.emit('message.success', 'publish success');
+          await this.getVersionList(app_id);
+        }
+      } catch (error) {
+        this.emitter.emitter.emit('message.error', 'publish error');
+      } finally {
+        runInAction(() => {
+          this.releaseLoading = false;
+        });
+      }
+    }
+  }
+
+  @action.bound
+  async saveApp(app_id: string) {
+    const reactflow = this.flowInstance?.toObject() as IFlow;
+    if (!isEmpty(reactflow) && app_id) {
+      try {
+        this.saveLoading = true;
+        const result = await saveApp({
+          reactflow,
+          config: this.config,
+          automata: genAutomata(reactflow, this.nodeData),
+          app_id,
+        });
+        if (result.success) {
+          this.emitter.emitter.emit('message.success', 'App Saved');
+        }
+      } catch (error: any) {
+        this.emitter.emitter.emit('message.error', error.message);
+      } finally {
+        runInAction(() => {
+          this.saveLoading = false;
+        });
+      }
+    }
+  }
+
+  @action.bound
+  async restoreApp(app_id: string) {
+    const reactflow = this.flowInstance?.toObject() as IFlow;
+    if (!isEmpty(reactflow) && app_id) {
+      try {
+        this.restoreLoading = true;
+        const result = await saveApp({
+          app_id,
+          reactflow,
+          automata: genAutomata(reactflow, this.nodeData),
+          config: this.config,
+        });
+        if (result.success) {
+          this.emitter.emitter.emit('message.success', 'restore success');
+        }
+      } catch (error: any) {
+        this.emitter.emitter.emit('message.error', 'restore error');
+      } finally {
+        runInAction(() => {
+          this.restoreLoading = false;
+        });
+      }
+    }
   }
 }
