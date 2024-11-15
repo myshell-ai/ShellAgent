@@ -506,9 +506,6 @@ export function removeState(
   params: z.infer<typeof removeStateParamSchema>,
 ) {
   // TODO 补充测试用例
-  // if (refs[params.stateName] == null) {
-  //   throw new Error(`cannot remove ${params.stateName}, refs not exist`);
-  // }
   delete refs[params.stateName];
   refs = removeRefOptsPrefix(refs, {
     prefix: [params.stateName],
