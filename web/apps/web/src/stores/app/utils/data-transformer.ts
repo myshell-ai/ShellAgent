@@ -83,7 +83,8 @@ export const genNodeData = (automata: Automata): AppStore['nodeData'] => {
 export const genAutomata: (
   flow: IFlow,
   nodeData: AppStore['nodeData'],
-) => Automata = (flow, nodeData) => {
+  comfyui_api?: string,
+) => Automata = (flow, nodeData, comfyui_api) => {
   const initial =
     (flow.edges.find(edge => edge.source === NodeIdEnum.start)
       ?.target as Lowercase<string>) || '';
@@ -123,7 +124,12 @@ export const genAutomata: (
         type: 'state',
         name: node.data.name,
         render: nodeData[node.id]?.render,
-        blocks: nodeData[node.id]?.blocks,
+        blocks: nodeData[node.id]?.blocks?.map((item: any) => ({
+          ...item,
+          ...(item.widget_class_name === 'ComfyUIWidget'
+            ? { api: comfyui_api || item.api }
+            : {}),
+        })),
         inputs: transformChoicesToValues(nodeData[node.id]?.input || {}),
         outputs: nodeData[node.id]?.output,
         transitions,

@@ -20,7 +20,7 @@ from proconfig.core import Automata, Workflow, State
 from proconfig.core.common import GLOBAL_CACHE_MODE
 from proconfig.core.variables import Variable
 from proconfig.core.constant import return_breakpoint_cache_dir
-from proconfig.core.chat import SessionState
+from proconfig.core.chat import SessionState, EventItem
 from proconfig.runners.utils import empty_callback_fn, _max_input_len_helper, _get_config_by_index_helper
 
 import psutil
@@ -216,7 +216,7 @@ class Runner(BaseModel):
             assert hasattr(task, "comfy_workflow_id"), "no comfy_workflow_id is founded"
             self.process_comfy_extra_inputs(task)
             
-        if task.mode == "widget":
+        if task.mode in ["widget", "comfy_workflow"]:
             return self.run_widget_task(container, task, environ, local_vars)
         elif task.mode == "workflow":
             return self.run_workflow_task(task, environ, local_vars)
@@ -562,13 +562,14 @@ class Runner(BaseModel):
                     setattr(input_var, k, tree_map(lambda x: calc_expression(x, visible_variables), getattr(input_var, k)))
                 
             # target_inputs = tree_map(lambda x: calc_expression(x, local_vars), target_inputs)
-            event_mapping[event_item["event_key"]] = {
+            event_mapping[event_item["event_key"]] = EventItem(**{
                 "target_state": target_state,
                 "target_inputs": target_inputs,
                 "target_inputs_transition": target_inputs_transition, # the target_inputs from the transition
-            }
-            
+            })
+        
         message_count = sess_state.message_count
         event_mapping = {f'MESSAGE_{message_count}_{k}' if k != "CHAT" else k: v for k, v in event_mapping.items()}
         sess_state.event_mapping.update(event_mapping)
+
         return sess_state, render

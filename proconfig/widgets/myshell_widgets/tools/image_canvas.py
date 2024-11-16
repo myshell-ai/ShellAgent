@@ -92,6 +92,27 @@ def automate_fabritor(json_file_path, output_png_path):
         
         browser.close()
 
+def get_next_image_filename(directory, prefix="ImageCanvas_", suffix=".png"):
+    # Ensure the directory exists
+    os.makedirs(directory, exist_ok=True)
+    
+    # Get a list of existing files in the directory
+    existing_files = os.listdir(directory)
+    
+    # Filter files that match the prefix and suffix
+    existing_files = [f for f in existing_files if f.startswith(prefix) and f.endswith(suffix)]
+    
+    # Extract numbers from existing filenames
+    existing_numbers = [
+        int(f[len(prefix):-len(suffix)]) for f in existing_files if f[len(prefix):-len(suffix)].isdigit()
+    ]
+    
+    # Determine the next number
+    next_number = max(existing_numbers, default=0) + 1
+    
+    # Return the next filename
+    return f"{prefix}{next_number:04d}{suffix}"
+
 @WIDGETS.register_module()
 class ImageCanvasWidget(BaseWidget):
     NAME = "Image Canvas"
@@ -134,20 +155,22 @@ class ImageCanvasWidget(BaseWidget):
             json.dump(parsed_config, temp_json)
             temp_json_path = temp_json.name
 
-        # Use a temporary file to save the downloaded PNG image
-        with tempfile.NamedTemporaryFile(suffix=".png", delete=False) as temp_png:
-            temp_png_path = temp_png.name
+        # Define the output directory
+        output_dir = os.path.join('output', 'image_canvas')
 
-        # Call the automate_fabritor function, passing the temporary JSON file path and temporary PNG file path
-        automate_fabritor(temp_json_path, temp_png_path)
+        # Get the next available image filename
+        output_png_path = os.path.join(output_dir, get_next_image_filename(output_dir))
+        print("output_png_path:", output_png_path)
+
+        # Call the automate_fabritor function, passing the temporary JSON file path and the new output PNG file path
+        automate_fabritor(temp_json_path, output_png_path)
 
         # Upload the image to myshell
-        return_dict['image'] = upload_file_to_myshell(temp_png_path)
+        return_dict['image'] = upload_file_to_myshell(output_png_path)
         print(return_dict['image'])
 
         # Clean up temporary files
         os.unlink(temp_json_path)
-        os.unlink(temp_png_path)
 
         return return_dict
 

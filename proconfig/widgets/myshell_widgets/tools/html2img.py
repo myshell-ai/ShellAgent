@@ -29,7 +29,8 @@ class Html2ImgWidget(BaseWidget):
         # Headers for the API request
         headers = {
             "x-myshell-openapi-key": os.environ["MYSHELL_API_KEY"],
-            "Content-Type": "application/json"
+            "Content-Type": "application/json",
+            **environ.get("MYSHELL_HEADERS", {})
         }
         
         # Request payload
