@@ -41,10 +41,7 @@ function convertErrorServerMessage(
     },
     runningError: {
       errorType: 'RUNNING_ERROR_TYPE_ENGINE_ERROR' as RunningErrorEnum,
-      errorDetail:
-        serverMessage.output.error_message +
-        '\n' +
-        serverMessage.output.error_message_detail,
+      errorDetail: `${serverMessage.output.error_message}\n${serverMessage.output.error_message_detai}`,
     },
   };
 }
@@ -107,7 +104,7 @@ export function popupFormAction(actions: any[]) {
           const type =
             typeMap[prop.type] || 'BOT_IM_COMPONENT_INPUT_TYPE_UNSPECIFIED';
           return {
-            type: type,
+            type,
             name: action.formSchema.properties[k].name,
             description: '',
             stringDefault: '',

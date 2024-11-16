@@ -19,10 +19,7 @@ export const AppBuilderChat = () => {
         <GlobalStoreProvider
           nonce="ZmEyZjU3NzktNTQ0NS00Y2YxLTgxMjctODMyM2JlNTVjZDEx"
           isMobile={false}>
-          <UserStoreProvider
-            user={model.chatNew.user}
-            isLogin={true}
-            language={'en'}>
+          <UserStoreProvider user={model.chatNew.user} isLogin language="en">
             <ChatStoreProvider>
               <ChatNew model={model.chatNew} />
             </ChatStoreProvider>
