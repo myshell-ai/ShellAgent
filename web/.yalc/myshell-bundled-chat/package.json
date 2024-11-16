@@ -58,6 +58,7 @@
     "remark-gfm": "^4.0.0",
     "remark-math": "^6.0.0",
     "rxjs": "^7.8.0",
+    "swiper": "^11.0.3",
     "tailwind-merge": "^2.2.0",
     "usehooks-ts": "^2.9.1",
     "uuid": "^9.0.0",
@@ -79,5 +80,5 @@
       "default": "./package.json"
     }
   },
-  "yalcSig": "cbf6a943b41880afdb9b62e819afd081"
+  "yalcSig": "e3324c5d15e060604d4f93f6b8c31cb1"
 }
