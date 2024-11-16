@@ -561,4 +561,164 @@ describe('app-builder-chat-utils', () => {
       }
     `);
   });
+
+  it.only('lastValidReplyMessage', () => {
+    const messageList = [
+      {
+        id: '1856539384440025088',
+        userId: '3537713',
+        referenceText: '',
+        text: '',
+        audioUrl: '',
+        duration: 0,
+        audioSpeed: 1,
+        status: 'DONE',
+        type: 'RESET',
+        createdDateUnix: '1731468456737',
+        updatedDateUnix: '1731468456737',
+        entityId: '1719284610',
+        replyId: '0',
+        feedbackState: 'Normal',
+        feedbackIssues: [],
+        asyncJobInfo: null,
+        runningWidgetInfo: [],
+        runningError: null,
+        handled: false,
+        imageGenMessageResponse: null,
+        inputSetting: null,
+        uploadSetting: null,
+        componentContainer: null,
+        embedObjs: [],
+        slashCommandInput: null,
+        referenceSource: [],
+        recommendatioQuestions: {
+          question: [],
+        },
+        regeneratedMessages: [],
+        extraInfo: {
+          consumeEnergy: 0,
+          canEdit: false,
+          canRegenerate: false,
+          runningWidgetInfo: [],
+          bgm: null,
+          senderInfo: null,
+        },
+        isLlmBot: false,
+      },
+      {
+        session_id: '38996918-a3ae-11ef-ba7c-9ebb585eaf7d',
+        id: '0',
+        status: 'DONE',
+        type: 'TEXT',
+        createdDateUnix: '2024-11-16 08:03:58',
+        updatedDateUnix: '2024-11-16 08:03:58',
+        text: 'Hi!',
+        embedObjs: [],
+        replyId: '',
+        componentContainer: {
+          type: 'BOT_MESSAGE_COMPONENTS_TYPE_CONTAINER',
+          button: null,
+          components: [
+            {
+              type: 'BOT_MESSAGE_COMPONENTS_TYPE_ROW',
+              components: [
+                {
+                  type: 'BOT_MESSAGE_COMPONENTS_TYPE_BUTTON',
+                  components: [],
+                  button: {
+                    content: {
+                      text: 'Go',
+                      iconUrl: null,
+                      iconLabel: null,
+                      direction: null,
+                      description: null,
+                    },
+                    style: {
+                      fontColorHex: '#202223',
+                      backgroundColorHex: '#F6F6F7',
+                      borderColorHex: '#E4E9F0',
+                      darkModeFontColorHex: '#B8BCCF',
+                      darkModeBackgroundColorHex: '#323339',
+                      darkModeBorderColorHex: '#42434A',
+                      iconLineColorHex: '#00000033',
+                      darkModeIconLineColorHex: '#FFFFFF33',
+                    },
+                    buttonId: 'MESSAGE_0_BUTTON_0',
+                    actions: [
+                      {
+                        action:
+                          'MESSAGE_COMPONENTS_BUTTON_ACTION_TYPE_POP_UP_FORM',
+                        componentInput: {
+                          name: 'Information',
+                          description: 'Enter to run',
+                          githubUrl: '',
+                          saveButtonContent: 'Run',
+                          energyConsumePerUse: 0,
+                          componentsFunction: [],
+                          componentsInput: [
+                            {
+                              type: 'BOT_IM_COMPONENT_INPUT_TYPE_TEXT_INPUT',
+                              name: 'some_text',
+                              description: '',
+                              stringDefault: '',
+                              numberDefault: 0,
+                              hasNumberLimitation: false,
+                              integerDefault: 0,
+                              hasIntegerLimitation: false,
+                              booleanDefault: false,
+                              textSelectorDefault: '',
+                              textSelectorAllOf: [],
+                              numberSelectorDefault: 0,
+                              numberSelectorAllOf: [],
+                              fieldName: 'key_1731713716445',
+                              isRequired: true,
+                              supportedFileTypes: [],
+                              fileDefaultParam: '',
+                              fileDefaultParamType:
+                                'MESSAGE_METADATA_TYPE_UNSPECIFIED',
+                              fileUploadSizeMaximum: 0,
+                              stringCharLengthLimitation: 0,
+                            },
+                          ],
+                        },
+                      },
+                    ],
+                    disabled: false,
+                    doubleCheck: {
+                      isNeedDoubleCheck: false,
+                      title: '',
+                      description: '',
+                    },
+                    payload: {},
+                  },
+                },
+              ],
+            },
+          ],
+        },
+        inputSetting: {
+          canInputText: false,
+          canInputAudio: false,
+          canUploadFile: false,
+        },
+      },
+    ];
+
+    const lastValidReplyMessage = messageList.reduceRight(
+      (lastDone: any, message: any) => {
+        console.log(message.type);
+        if (lastDone) return lastDone;
+        if (
+          (message.type === 'REPLY' || message.type === 'GREETING') &&
+          message.status === 'DONE'
+        ) {
+          return message;
+        }
+        return null;
+      },
+      null,
+    );
+
+    console.log(lastValidReplyMessage);
+  });
 });

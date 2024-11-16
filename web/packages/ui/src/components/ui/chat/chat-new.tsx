@@ -50,37 +50,6 @@ export const ChatNew = observer<ChatNewProps>(({ model }) => {
 
   const { atBottom, setAtBottom } = useAtBottom();
 
-  const staticContextProps: StaticContextProps = useMemo(() => {
-    return {
-      type: 'bot',
-      entityInfo: model.entity,
-      entitySetting: {},
-      chatSettingDisabled: false,
-      chatSettingLoading: false,
-      interactionDisabled: false,
-      showInteractionCostEnergy: false,
-      menuDisabled: false,
-      menuFunctions: [
-        {
-          menuFunction: 2,
-        },
-        {
-          menuFunction: 3,
-        },
-      ],
-      customMenuFunction: [],
-      getList: async () => {
-        return [];
-      },
-      atBottom,
-      setAtBottom,
-      globalContextMenuDisabled: true,
-      textDisabled: model.imTextDisabled,
-      audioDisabled: model.imAudioDisabled,
-      uploadDisabled: model.imUploadDisabled,
-    };
-  }, [model.imUploadDisabled, model.imTextDisabled, model.imAudioDisabled]);
-
   const {
     messageList,
     lastUserInteractionMsgId,
@@ -101,6 +70,7 @@ export const ChatNew = observer<ChatNewProps>(({ model }) => {
     sendButtonInteractionMessage,
     file: { uploadedFiles },
     onMessageReply,
+    lastValidReplyMessage,
   } = useMessageParams({
     type: 'bot',
     id: model.entity.id,
@@ -134,7 +104,7 @@ export const ChatNew = observer<ChatNewProps>(({ model }) => {
     handlePastedFiles,
     isChoosingFile,
   } = useUploadFiles({
-    messageSettings: undefined,
+    messageSettings: lastValidReplyMessage?.uploadSetting,
     panelSettings: {
       supportedFileInfos: [
         {
@@ -151,11 +121,53 @@ export const ChatNew = observer<ChatNewProps>(({ model }) => {
     type: 'bot',
     name: 'test',
     uploadedFiles,
-    disabled: false,
+    disabled: !(lastValidReplyMessage?.inputSetting?.canUploadFile ?? true),
     dragDisabled: isEditorSticky,
     scrollLayoutToTop,
     textareaRef,
   });
+
+  const staticContextProps: StaticContextProps = useMemo(() => {
+    return {
+      type: 'bot',
+      entityInfo: model.entity,
+      entitySetting: {},
+      chatSettingDisabled: false,
+      chatSettingLoading: false,
+      interactionDisabled: false,
+      showInteractionCostEnergy: false,
+      menuDisabled: false,
+      menuFunctions: [
+        {
+          menuFunction: 2,
+        },
+        {
+          menuFunction: 3,
+        },
+      ],
+      customMenuFunction: [],
+      getList: async () => {
+        return [];
+      },
+      atBottom,
+      setAtBottom,
+      globalContextMenuDisabled: true,
+
+      textDisabled: !(
+        lastValidReplyMessage?.inputSetting?.canInputText ?? true
+      ),
+      audioDisabled: !(
+        lastValidReplyMessage?.inputSetting?.canInputAudio ?? true
+      ),
+      uploadDisabled:
+        !(lastValidReplyMessage?.inputSetting?.canUploadFile ?? true) ||
+        noValidLimitations,
+    };
+  }, [
+    lastValidReplyMessage?.inputSetting?.canInputAudio,
+    lastValidReplyMessage?.inputSetting?.canInputText,
+    lastValidReplyMessage?.inputSetting?.canUploadFile,
+  ]);
 
   const memberInfoMap = new Map();
   memberInfoMap.set('entity-undefined', {

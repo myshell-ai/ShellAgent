@@ -106,6 +106,9 @@ export class AppBuilderChatModel {
   async receiveServerMessage(serverMessage: ServerMessage, isGreeting = false) {
     const message = serverMessageToMessage(this.chatNew.entity, serverMessage);
     if (isGreeting) {
+      if (message.type !== 'GREETING') {
+        message.type = 'GREETING';
+      }
       this.chatNew.innerMethods.appendMessages!(message, true);
     } else {
       this.chatNew.innerMethods.onMessageReply!(message);
@@ -193,21 +196,6 @@ export class AppBuilderChatModel {
               return;
             }
             const { server_message } = data;
-            if (server_message.inputSetting.canUploadFile) {
-              this.chatNew.enableIMUpload();
-            } else {
-              this.chatNew.disableIMUpload();
-            }
-            if (server_message.inputSetting.canInputText) {
-              this.chatNew.enableIMText();
-            } else {
-              this.chatNew.disableIMText();
-            }
-            if (server_message.inputSetting.canInputAudio) {
-              this.chatNew.enableIMAudio();
-            } else {
-              this.chatNew.disableIMAudio();
-            }
             this.receiveServerMessage!(server_message, isGreeting);
           } catch {
             this.emitter.emitter.emit(
