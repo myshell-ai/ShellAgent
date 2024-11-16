@@ -42,6 +42,11 @@ describe('app-builder-chat-utils', () => {
         "embedObjs": [],
         "entityId": "shellagent-app-builder-chat",
         "id": "0",
+        "inputSetting": {
+          "canInputAudio": false,
+          "canInputText": false,
+          "canUploadFile": false,
+        },
         "status": "DONE",
         "text": "Hi there!",
         "type": "REPLY",
@@ -368,6 +373,11 @@ describe('app-builder-chat-utils', () => {
         ],
         "entityId": "shellagent-app-builder-chat",
         "id": "3",
+        "inputSetting": {
+          "canInputAudio": false,
+          "canInputText": false,
+          "canUploadFile": false,
+        },
         "status": "DONE",
         "text": "Single image is rendered following certain rules to align with instant message apps' experience. Please check [the rules](https://www.notion.so/myshellai/FAQ-10d3f81ff51e8054b60ad7a23aed1fa6?pvs=4#1373f81ff51e8068b20bd816a1ebc784).",
         "type": "REPLY",

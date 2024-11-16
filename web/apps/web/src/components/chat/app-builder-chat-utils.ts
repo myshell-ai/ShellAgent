@@ -17,6 +17,7 @@ function commonServerMessageToMessage(
     updatedDateUnix: serverMessage.updatedDateUnix,
     text: serverMessage.text,
     embedObjs: patchEmbedObjs(serverMessage.embedObjs),
+    inputSetting: serverMessage.inputSetting,
   };
 }
 
