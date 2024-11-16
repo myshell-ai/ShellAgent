@@ -125,8 +125,9 @@ export const ChatNew = observer<ChatNewProps>(({ model }) => {
     dragDisabled: isEditorSticky,
     scrollLayoutToTop,
     textareaRef,
+    overrideUploadFileToS3WithProgress:
+      model.handlers.overrideUploadFileToS3WithProgress,
   });
-
   const staticContextProps: StaticContextProps = useMemo(() => {
     return {
       type: 'bot',
@@ -251,6 +252,7 @@ export const ChatNew = observer<ChatNewProps>(({ model }) => {
         overrideUploadFileToS3WithProgress:
           model.handlers.overrideUploadFileToS3WithProgress,
       },
+      getClickRootProps,
     }),
     [
       audioQueue.playingAudio,
@@ -285,6 +287,7 @@ export const ChatNew = observer<ChatNewProps>(({ model }) => {
       handleUpload,
       handleDelete,
       handlePastedFiles,
+      model.handlers.overrideUploadFileToS3WithProgress,
     ],
   );
 

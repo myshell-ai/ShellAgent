@@ -1101,8 +1101,12 @@ type IProps = {
     dragDisabled?: boolean;
     scrollLayoutToTop?: () => void;
     textareaRef?: React.RefObject<HTMLTextAreaElement>;
+    overrideUploadFileToS3WithProgress?: (file: File) => Promise<{
+        success: boolean;
+        objectAccessUrl?: string;
+    }>;
 };
-declare function useUploadFiles({ panelSettings, uploadedFiles, messageSettings, type, id, name, disabled, dragDisabled, scrollLayoutToTop, textareaRef }: IProps): {
+declare function useUploadFiles({ panelSettings, uploadedFiles, messageSettings, type, id, name, disabled, dragDisabled, scrollLayoutToTop, textareaRef, overrideUploadFileToS3WithProgress, }: IProps): {
     dragMaskVisible: boolean;
     uploadedFiles: IMLocalFile[];
     noValidLimitations: boolean;

@@ -23067,12 +23067,11 @@ function formatFileSize(bytes, decimals = 2) {
     const i = Math.floor(Math.log(bytes) / Math.log(k));
     return `${parseFloat((bytes / k ** i).toFixed(dm))} ${sizes[i]}`;
 }
-function useUploadFiles({ panelSettings, uploadedFiles = [], messageSettings, type, id, name, disabled = false, dragDisabled, scrollLayoutToTop, textareaRef }) {
+function useUploadFiles({ panelSettings, uploadedFiles = [], messageSettings, type, id, name, disabled = false, dragDisabled, scrollLayoutToTop, textareaRef, overrideUploadFileToS3WithProgress, }) {
     var _a, _b, _c, _d;
     const sensors = useSensors();
     const [dragMaskVisible, setDragMaskVisible] = reactUse.useToggle(false);
     const isChoosingFile = React.useRef(false);
-    const { file: globalFile } = React.useContext(MessageContext);
     const uploadFiles = useNewChatStore(state => state.uploadFiles);
     const deleteFile = useNewChatStore(state => state.deleteUploadFile);
     const setFileAlert = useNewChatStore(state => state.setFileAlert);
@@ -23101,8 +23100,8 @@ function useUploadFiles({ panelSettings, uploadedFiles = [], messageSettings, ty
         });
     }, [supportTypes]);
     const handleUpload = React.useCallback((files, retry) => {
-        uploadFiles(type, id, files, retry, globalFile === null || globalFile === void 0 ? void 0 : globalFile.overrideUploadFileToS3WithProgress);
-    }, [id, type, uploadFiles, globalFile === null || globalFile === void 0 ? void 0 : globalFile.overrideUploadFileToS3WithProgress]);
+        uploadFiles(type, id, files, retry, overrideUploadFileToS3WithProgress);
+    }, [id, type, uploadFiles, overrideUploadFileToS3WithProgress]);
     const onFileChange = React.useCallback(async (files) => {
         const res = await processUploadFiles$1(files);
         handleUpload(res);
