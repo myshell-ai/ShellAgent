@@ -13,4 +13,8 @@ export interface ChatNewModelHandlers {
     },
     requestParams?: any,
   ) => void;
+  overrideUploadFileToS3WithProgress: (file: File) => Promise<{
+    success: boolean;
+    objectAccessUrl?: string;
+  }>;
 }

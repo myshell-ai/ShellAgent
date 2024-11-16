@@ -9,10 +9,14 @@ import axios from 'axios';
 import { inject, injectable } from 'inversify';
 import { action, makeObservable, observable, runInAction } from 'mobx';
 import { JsonSchema7 } from 'node_modules/@shellagent/form-engine/src/types/jsonSchema7';
-import { serverMessageToMessage } from './app-builder-chat-utils';
+import {
+  patchImageUrl,
+  serverMessageToMessage,
+} from './app-builder-chat-utils';
 import type { ServerMessage } from '../../services/app/message-type';
 import { EventStatusEnum, RunAppRequest } from '../../services/app/type';
 import { EmitterModel } from '../../utils/emitter.model';
+import { upload } from '@/services/common';
 
 @injectable()
 export class AppBuilderChatModel {
@@ -90,6 +94,21 @@ export class AppBuilderChatModel {
     };
 
     this.chatNew.handlers.clearMemoryPost = this.greeting.bind(this);
+    this.chatNew.handlers.overrideUploadFileToS3WithProgress = async (
+      file: File,
+    ) => {
+      try {
+        const { url } = await upload(file);
+        return {
+          success: true,
+          objectAccessUrl: patchImageUrl(url),
+        };
+      } catch (e) {
+        return {
+          success: false,
+        };
+      }
+    };
     makeObservable(this);
   }
 

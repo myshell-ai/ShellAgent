@@ -1,5 +1,5 @@
 import { injectable } from 'inversify';
-import { action, makeObservable, observable } from 'mobx';
+import { makeObservable } from 'mobx';
 import { ChatNewModelHandlers } from './interfaces/chatNewModelHandlers';
 import { ChatNewModelInnerMethods } from './interfaces/chatNewModelInnerMethods';
 import {

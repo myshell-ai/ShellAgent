@@ -133,14 +133,17 @@ export function popupFormAction(actions: any[]) {
   });
 }
 
+export function patchImageUrl(url?: string) {
+  if (url?.startsWith('http') == false && url?.indexOf('api/files/') === -1) {
+    return `/api/files/${url}`;
+  } else {
+    return url;
+  }
+}
+
 export function patchEmbedObjs(embedObjs: any[]) {
   return embedObjs.map(embedObj => {
-    if (
-      embedObj.url?.startsWith('http') == false &&
-      embedObj.url.indexOf('api/files/') === -1
-    ) {
-      embedObj.url = `/api/files/${embedObj.url}`;
-    }
+    embedObj.url = patchImageUrl(embedObj.url);
     return embedObj;
   });
 }

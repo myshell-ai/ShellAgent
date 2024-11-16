@@ -430,7 +430,7 @@ const MessageContext = React.createContext({
     file: {
         uploadedFiles: [],
         uploadFiles: defaultFn,
-        deleteFile: defaultFn
+        deleteFile: defaultFn,
     },
     questions: [],
     scrolled: true,
@@ -7373,7 +7373,7 @@ const createChatStore = (messageList) => {
                     state.draftReplyMessageMap[mapKey] = '';
                 });
             },
-            async uploadFiles(type, id, files, retry) {
+            async uploadFiles(type, id, files, retry, overrideUploadFileToS3WithProgress) {
                 const mapKey = `${type}-${id}`;
                 set(state => {
                     const localDraftFiles = state.localFiles[mapKey] || [];
@@ -7402,30 +7402,36 @@ const createChatStore = (messageList) => {
                         set(state => {
                             state.fileUpload.uploading = file;
                         });
-                        const res = await uploadFileToS3WithProgress({
-                            scenario: Scenario.SCENARIO_IM_CHAT,
-                            contentType: file.uiData.contentType,
-                            onProgress: value => {
-                                set(state => {
-                                    state.fileUpload.uploading = Object.assign(Object.assign({}, file), { progress: value });
-                                });
-                            },
-                            file: file.file,
-                            cancelToken: (cancel) => {
-                                set(state => {
-                                    const localDraftFiles = state.localFiles[mapKey] || [];
-                                    const newFiles = localDraftFiles.map(draftFile => {
-                                        if (draftFile.id === file.id) {
-                                            return Object.assign(Object.assign({}, draftFile), { cancelToken: {
-                                                    cancel
-                                                } });
-                                        }
-                                        return draftFile;
+                        let res;
+                        if (typeof overrideUploadFileToS3WithProgress === 'function') {
+                            res = await overrideUploadFileToS3WithProgress(file.file);
+                        }
+                        else {
+                            res = await uploadFileToS3WithProgress({
+                                scenario: Scenario.SCENARIO_IM_CHAT,
+                                contentType: file.uiData.contentType,
+                                onProgress: value => {
+                                    set(state => {
+                                        state.fileUpload.uploading = Object.assign(Object.assign({}, file), { progress: value });
                                     });
-                                    state.localFiles[mapKey] = [...newFiles];
-                                });
-                            }
-                        });
+                                },
+                                file: file.file,
+                                cancelToken: (cancel) => {
+                                    set(state => {
+                                        const localDraftFiles = state.localFiles[mapKey] || [];
+                                        const newFiles = localDraftFiles.map(draftFile => {
+                                            if (draftFile.id === file.id) {
+                                                return Object.assign(Object.assign({}, draftFile), { cancelToken: {
+                                                        cancel
+                                                    } });
+                                            }
+                                            return draftFile;
+                                        });
+                                        state.localFiles[mapKey] = [...newFiles];
+                                    });
+                                }
+                            });
+                        }
                         const deletedListAfter = get().fileUpload.deletedList;
                         if (deletedListAfter.includes(file.id)) {
                             set(state => {
@@ -23066,6 +23072,7 @@ function useUploadFiles({ panelSettings, uploadedFiles = [], messageSettings, ty
     const sensors = useSensors();
     const [dragMaskVisible, setDragMaskVisible] = reactUse.useToggle(false);
     const isChoosingFile = React.useRef(false);
+    const { file: globalFile } = React.useContext(MessageContext);
     const uploadFiles = useNewChatStore(state => state.uploadFiles);
     const deleteFile = useNewChatStore(state => state.deleteUploadFile);
     const setFileAlert = useNewChatStore(state => state.setFileAlert);
@@ -23094,8 +23101,8 @@ function useUploadFiles({ panelSettings, uploadedFiles = [], messageSettings, ty
         });
     }, [supportTypes]);
     const handleUpload = React.useCallback((files, retry) => {
-        uploadFiles(type, id, files, retry);
-    }, [id, type, uploadFiles]);
+        uploadFiles(type, id, files, retry, globalFile === null || globalFile === void 0 ? void 0 : globalFile.overrideUploadFileToS3WithProgress);
+    }, [id, type, uploadFiles, globalFile === null || globalFile === void 0 ? void 0 : globalFile.overrideUploadFileToS3WithProgress]);
     const onFileChange = React.useCallback(async (files) => {
         const res = await processUploadFiles$1(files);
         handleUpload(res);
@@ -24596,20 +24603,27 @@ function FileUpload(props) {
         setFormValue(`x_ms_size_${name}`, undefined);
     };
     const isChoosingFile = React.useRef(false);
+    const { file: globalFile } = React.useContext(MessageContext);
     const uploadFiles = async (files, retry) => {
         var _a, _b;
         for (const file of files) {
             setFile(Object.assign(Object.assign({}, file), { status: 'pending' }));
-            const res = await uploadFileToS3WithProgress({
-                scenario: Scenario.SCENARIO_IM_CHAT,
-                contentType: file.uiData.contentType,
-                onProgress: value => {
-                    setFile(Object.assign(Object.assign({}, file), { status: 'pending' }));
-                },
-                file: file.file,
-                cancelToken: (cancel) => {
-                }
-            });
+            let res;
+            if (typeof (globalFile === null || globalFile === void 0 ? void 0 : globalFile.overrideUploadFileToS3WithProgress) === 'function') {
+                res = await globalFile.overrideUploadFileToS3WithProgress(file.file);
+            }
+            else {
+                res = await uploadFileToS3WithProgress({
+                    scenario: Scenario.SCENARIO_IM_CHAT,
+                    contentType: file.uiData.contentType,
+                    onProgress: value => {
+                        setFile(Object.assign(Object.assign({}, file), { status: 'pending' }));
+                    },
+                    file: file.file,
+                    cancelToken: (cancel) => {
+                    }
+                });
+            }
             if (res.success) {
                 setFile(Object.assign(Object.assign({}, file), { status: (res === null || res === void 0 ? void 0 : res.objectAccessUrl) ? 'completed' : 'error', url: res === null || res === void 0 ? void 0 : res.objectAccessUrl, defaultUrl: res === null || res === void 0 ? void 0 : res.objectAccessUrl }));
                 setFormValue(name, res === null || res === void 0 ? void 0 : res.objectAccessUrl);

@@ -927,6 +927,10 @@ type MessageContextProps = {
         uploadedFiles: IMLocalFile[];
         uploadFiles: (files: IMLocalFile[], retry?: boolean) => void;
         deleteFile: (fileId?: string) => void;
+        overrideUploadFileToS3WithProgress?: (file: File) => Promise<{
+            success: boolean;
+            objectAccessUrl?: string;
+        }>;
     };
     questions?: string[];
     publish?: {

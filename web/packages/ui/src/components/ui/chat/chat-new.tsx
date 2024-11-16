@@ -248,6 +248,8 @@ export const ChatNew = observer<ChatNewProps>(({ model }) => {
         uploadedFiles,
         uploadFiles: handleUpload,
         deleteFile: handleDelete,
+        overrideUploadFileToS3WithProgress:
+          model.handlers.overrideUploadFileToS3WithProgress,
       },
     }),
     [

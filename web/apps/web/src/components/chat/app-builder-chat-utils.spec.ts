@@ -1,4 +1,6 @@
 import {
+  patchImageUpload,
+  patchImageUrl,
   popupFormAction,
   serverMessageToMessage,
 } from './app-builder-chat-utils';
@@ -904,5 +906,24 @@ describe('app-builder-chat-utils', () => {
         "updatedDateUnix": "2024-11-16 08:13:40",
       }
     `);
+  });
+
+  it('patch image url', () => {
+    const url = '/api/files/input/IMG_1906.JPG';
+    expect(patchImageUrl(url)).toMatchInlineSnapshot(
+      `"/api/files/input/IMG_1906.JPG"`,
+    );
+
+    const url2 = 'input/IMG_1906.JPG';
+    expect(patchImageUrl(url2)).toMatchInlineSnapshot(
+      `"/api/files/input/IMG_1906.JPG"`,
+    );
+
+    const url3 = 'http://input/IMG_1906.JPG';
+    expect(patchImageUrl(url3)).toMatchInlineSnapshot(
+      `"http://input/IMG_1906.JPG"`,
+    );
+
+    expect(patchImageUrl(undefined)).toMatchInlineSnapshot(`undefined`);
   });
 });
