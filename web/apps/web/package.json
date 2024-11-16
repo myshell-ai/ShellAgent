@@ -19,7 +19,6 @@
     "@microsoft/fetch-event-source": "^2.0.1",
     "@monaco-editor/react": "^4.6.0",
     "@paralleldrive/cuid2": "^2.2.2",
-    "@shellagent/chat-engine": "workspace:*",
     "@shellagent/flow-engine": "workspace:*",
     "@shellagent/form-engine": "workspace:*",
     "@shellagent/pro-config": "workspace:*",

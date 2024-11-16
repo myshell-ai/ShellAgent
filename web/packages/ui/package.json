@@ -75,7 +75,6 @@
     "lucide-react": "^0.404.0",
     "mobx": "^6.13.1",
     "mobx-react-lite": "^4.0.7",
-    "@shellagent/chat-engine": "workspace:*",
     "myshell-bundled-chat": "workspace:*",
     "rc-image": "^7.10.0",
     "react": "^18.3.1",
