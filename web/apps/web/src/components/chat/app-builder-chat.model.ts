@@ -106,6 +106,7 @@ export class AppBuilderChatModel {
   async receiveServerMessage(serverMessage: ServerMessage, isGreeting = false) {
     const message = serverMessageToMessage(this.chatNew.entity, serverMessage);
     if (isGreeting) {
+      // patch
       if (message.type !== 'GREETING') {
         message.type = 'GREETING';
       }

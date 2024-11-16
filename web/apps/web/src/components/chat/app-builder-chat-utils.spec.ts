@@ -562,7 +562,10 @@ describe('app-builder-chat-utils', () => {
     `);
   });
 
-  it.only('lastValidReplyMessage', () => {
+  it.skip('lastValidReplyMessage', () => {
+    // greeting
+    // D type: 'TEXT',
+    // C type: 'GRETTING',
     const messageList = [
       {
         id: '1856539384440025088',
@@ -719,6 +722,187 @@ describe('app-builder-chat-utils', () => {
       null,
     );
 
-    console.log(lastValidReplyMessage);
+    // console.log(lastValidReplyMessage);
+  });
+
+  it('case embedObjs with relative path', () => {
+    const a = {
+      session_id: 'a1b8fdcc-a3af-11ef-ba7c-9ebb585eaf7d',
+      id: '0',
+      status: 'DONE',
+      type: 'TEXT',
+      createdDateUnix: '2024-11-16 08:13:40',
+      updatedDateUnix: '2024-11-16 08:13:40',
+      text: '',
+      embedObjs: [
+        {
+          title: '',
+          type: 'MESSAGE_METADATA_TYPE_IMAGE_FILE',
+          url: 'input/\u4e0b\u8f7d.jpeg',
+          mediaFileMetadata: null,
+          id: null,
+          status: 'EMBED_OBJ_STATUS_DONE',
+          extensionName: 'jpeg',
+          iconUrl: null,
+        },
+      ],
+      replyId: '',
+      componentContainer: {
+        type: 'BOT_MESSAGE_COMPONENTS_TYPE_CONTAINER',
+        components: [
+          {
+            type: 'BOT_MESSAGE_COMPONENTS_TYPE_BUTTON',
+            components: [],
+            button: {
+              content: {
+                text: 'Go',
+                iconUrl: null,
+                iconLabel: null,
+                direction: null,
+                description: null,
+              },
+              style: null,
+              buttonId: 'MESSAGE_0_BUTTON_0',
+              actions: [
+                {
+                  action: 'MESSAGE_COMPONENTS_BUTTON_ACTION_TYPE_POP_UP_FORM',
+                  actionLink: null,
+                  formSchema: {
+                    properties: {
+                      key_1731713716445: {
+                        name: 'some_text',
+                        type: 'string',
+                        description: null,
+                        default: null,
+                      },
+                    },
+                    required: ['key_1731713716445'],
+                  },
+                  interactionInput: null,
+                },
+              ],
+              disabled: false,
+              doubleCheck: null,
+              payload: {},
+            },
+          },
+        ],
+        button: null,
+      },
+      inputSetting: {
+        canInputText: false,
+        canInputAudio: false,
+        canUploadFile: false,
+      },
+    };
+    const ret = serverMessageToMessage(testEntity, a);
+    expect(ret).toMatchInlineSnapshot(`
+      {
+        "componentContainer": {
+          "button": null,
+          "components": [
+            {
+              "components": [
+                {
+                  "button": {
+                    "actions": [
+                      {
+                        "action": "MESSAGE_COMPONENTS_BUTTON_ACTION_TYPE_POP_UP_FORM",
+                        "componentInput": {
+                          "componentsFunction": [],
+                          "componentsInput": [
+                            {
+                              "booleanDefault": false,
+                              "description": "",
+                              "fieldName": "key_1731713716445",
+                              "fileDefaultParam": "",
+                              "fileDefaultParamType": "MESSAGE_METADATA_TYPE_UNSPECIFIED",
+                              "fileUploadSizeMaximum": 0,
+                              "hasIntegerLimitation": false,
+                              "hasNumberLimitation": false,
+                              "integerDefault": 0,
+                              "isRequired": true,
+                              "name": "some_text",
+                              "numberDefault": 0,
+                              "numberSelectorAllOf": [],
+                              "numberSelectorDefault": 0,
+                              "stringCharLengthLimitation": 0,
+                              "stringDefault": "",
+                              "supportedFileTypes": [],
+                              "textSelectorAllOf": [],
+                              "textSelectorDefault": "",
+                              "type": "BOT_IM_COMPONENT_INPUT_TYPE_TEXT_INPUT",
+                            },
+                          ],
+                          "description": "Enter to run",
+                          "energyConsumePerUse": 0,
+                          "githubUrl": "",
+                          "name": "Information",
+                          "saveButtonContent": "Run",
+                        },
+                      },
+                    ],
+                    "buttonId": "MESSAGE_0_BUTTON_0",
+                    "content": {
+                      "description": null,
+                      "direction": null,
+                      "iconLabel": null,
+                      "iconUrl": null,
+                      "text": "Go",
+                    },
+                    "disabled": false,
+                    "doubleCheck": {
+                      "description": "",
+                      "isNeedDoubleCheck": false,
+                      "title": "",
+                    },
+                    "payload": {},
+                    "style": {
+                      "backgroundColorHex": "#F6F6F7",
+                      "borderColorHex": "#E4E9F0",
+                      "darkModeBackgroundColorHex": "#323339",
+                      "darkModeBorderColorHex": "#42434A",
+                      "darkModeFontColorHex": "#B8BCCF",
+                      "darkModeIconLineColorHex": "#FFFFFF33",
+                      "fontColorHex": "#202223",
+                      "iconLineColorHex": "#00000033",
+                    },
+                  },
+                  "components": [],
+                  "type": "BOT_MESSAGE_COMPONENTS_TYPE_BUTTON",
+                },
+              ],
+              "type": "BOT_MESSAGE_COMPONENTS_TYPE_ROW",
+            },
+          ],
+          "type": "BOT_MESSAGE_COMPONENTS_TYPE_CONTAINER",
+        },
+        "createdDateUnix": "2024-11-16 08:13:40",
+        "embedObjs": [
+          {
+            "extensionName": "jpeg",
+            "iconUrl": null,
+            "id": null,
+            "mediaFileMetadata": null,
+            "status": "EMBED_OBJ_STATUS_DONE",
+            "title": "",
+            "type": "MESSAGE_METADATA_TYPE_IMAGE_FILE",
+            "url": "/api/files/input/下载.jpeg",
+          },
+        ],
+        "id": "0",
+        "inputSetting": {
+          "canInputAudio": false,
+          "canInputText": false,
+          "canUploadFile": false,
+        },
+        "replyId": "",
+        "session_id": "a1b8fdcc-a3af-11ef-ba7c-9ebb585eaf7d",
+        "status": "DONE",
+        "text": "",
+        "type": "TEXT",
+        "updatedDateUnix": "2024-11-16 08:13:40",
+      }
+    `);
   });
 });

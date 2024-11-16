@@ -16,7 +16,7 @@ function commonServerMessageToMessage(
     createdDateUnix: serverMessage.createdDateUnix,
     updatedDateUnix: serverMessage.updatedDateUnix,
     text: serverMessage.text,
-    embedObjs: serverMessage.embedObjs,
+    embedObjs: patchEmbedObjs(serverMessage.embedObjs),
   };
 }
 
@@ -133,6 +133,18 @@ export function popupFormAction(actions: any[]) {
   });
 }
 
+export function patchEmbedObjs(embedObjs: any[]) {
+  return embedObjs.map(embedObj => {
+    if (
+      embedObj.url?.startsWith('http') == false &&
+      embedObj.url.indexOf('api/files/') === -1
+    ) {
+      embedObj.url = `/api/files/${embedObj.url}`;
+    }
+    return embedObj;
+  });
+}
+
 /*
 patch
 1. BOT_MESSAGE_COMPONENTS_TYPE_ROW
@@ -148,7 +160,7 @@ function convertDtoC(d: any): any {
     createdDateUnix: d.createdDateUnix,
     updatedDateUnix: d.updatedDateUnix,
     text: d.text,
-    embedObjs: d.embedObjs,
+    embedObjs: patchEmbedObjs(d.embedObjs),
     replyId: d.replyId,
     componentContainer: {
       type: d.componentContainer.type,
