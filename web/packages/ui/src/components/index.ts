@@ -55,6 +55,8 @@ export * from './ui/icons/outline/plus';
 export * from './ui/icons/outline/lego';
 export * from './ui/icons/outline/setting';
 export * from './ui/icons/outline/export';
+export * from './ui/icons/outline/create-blank';
+export * from './ui/icons/outline/create-template';
 
 // solid icons
 export * from './ui/icons/solid/caret-down';
@@ -72,6 +74,9 @@ export * from './ui/icons/solid/arrow-down';
 export * from './ui/icons/solid/import';
 export * from './ui/icons/solid/save';
 export * from './ui/icons/solid/trash';
+export * from './ui/icons/solid/bot';
+export * from './ui/icons/solid/clear';
+export * from './ui/icons/solid/loading';
 
 export * from './ui/theme.tsx';
 export * from './ui/a-components';

@@ -130,6 +130,26 @@ const ModelForm: React.FC = () => (
                       <Form.Item
                         key={urlField.key}
                         label={urlIndex === 0 ? 'URL' : ''}
+                        tooltip={
+                          urlIndex === 0 ? (
+                            <div>
+                              We recommend using publicly accessible links, such
+                              as those from Hugging Face. If your download link
+                              is private or temporary, please consider using a
+                              different link or uploading your model to Hugging
+                              Face.
+                              <br />
+                              The download link for a model should directly
+                              start downloading the model file when clicked,
+                              rather than directing to an informational webpage
+                              about the model. For example, on Hugging Face, the
+                              download link for flux1-dev is
+                              https://huggingface.co/black-forest-labs/FLUX.1-dev/resolve/main/flux1-dev.safetensors?download=true.
+                            </div>
+                          ) : (
+                            ''
+                          )
+                        }
                         required>
                         <Input.Group compact>
                           <Form.Item
@@ -140,6 +160,32 @@ const ModelForm: React.FC = () => (
                                 required: true,
                                 whitespace: true,
                                 message: 'Please input URL',
+                              },
+                              {
+                                warningOnly: true,
+                                validator: (_, url: string) => {
+                                  if (
+                                    url?.includes('huggingface.co') &&
+                                    !url?.includes('resolve/main')
+                                  ) {
+                                    return Promise.reject(
+                                      new Error(
+                                        `HuggingFace warning："The download link for models on Hugging Face should be the URL associated with the download button for the model file found under the 'Files' tab. For example: https://huggingface.co/black-forest-labs/FLUX.1-dev/resolve/main/flux1-dev.safetensors?download=true."`,
+                                      ),
+                                    );
+                                  }
+                                  if (
+                                    url?.includes('civitai.com') &&
+                                    !url?.includes('api/download/models')
+                                  ) {
+                                    return Promise.reject(
+                                      new Error(
+                                        `Civitai warning: "The download link for models on Civitai should be the URL associated with the download button for the model or file listed in the 'File' information card. For example: https://civitai.com/api/download/models/691639?type=Model&format=SafeTensor&size=full&fp=fp32."`,
+                                      ),
+                                    );
+                                  }
+                                  return Promise.resolve();
+                                },
                               },
                             ]}
                             noStyle>
