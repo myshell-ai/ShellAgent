@@ -19,6 +19,7 @@ module.exports = {
       '@/common/assets/audio-playing.json': false,
       '@/components/rewards-center/reward-redemption/components/redemption-success-modal/assets/images/reward-success-bg.png': false,
       '@/common/assets/images/workshop/BotDetailBg.png': false,
+      langium: false,
     };
     config.resolve.fallback = {
       ...config.resolve?.fallback,
