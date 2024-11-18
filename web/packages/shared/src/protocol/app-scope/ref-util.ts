@@ -413,6 +413,13 @@ export function getBeforeAndAfterNodes(
   };
 }
 
+/**
+ * @deprecated remove edge affect nothing
+ * keep function, but nowhere ref
+ * @param refs
+ * @param param
+ * @returns
+ */
 export function removeEdge(
   refs: Refs,
   param: z.infer<typeof removeEdgeScheam>,
@@ -534,7 +541,9 @@ export function hanldeRefScene(refs: Refs, evt: HandleRefSceneEvent) {
       return removeRefOptsPrefix(refs, evt.params);
 
     case 'remove_edge':
-      return removeEdge(refs, evt.params);
+      // PRODUCT UPDATE: remove edge affect nothing
+      return refs;
+    // return removeEdge(refs, evt.params);
 
     case 'duplicate_state':
       return duplicateState(refs, evt.params);
