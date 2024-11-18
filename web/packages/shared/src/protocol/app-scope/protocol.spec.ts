@@ -32,9 +32,38 @@ describe('protocol', () => {
       expect(customSnakeCase('Image Canvas')).toBe('image_canvas');
     });
 
-    it.skip('custonSnakeCase utf-8', () => {
-      expect(customSnakeCase('👍🏻')).toBe('1f44d_1f3fb');
-      expect(customSnakeCase('Hello🌟World')).toBe('hello_1f31f_world');
+    it('CJK', () => {
+      expect(customSnakeCase('中文')).toMatchInlineSnapshot(`"zhong_wen"`);
+      expect(customSnakeCase('中文abc')).toMatchInlineSnapshot(
+        `"zhong_wen_abc"`,
+      );
+      expect(customSnakeCase('中文aBc')).toMatchInlineSnapshot(
+        `"zhong_wen_a_bc"`,
+      );
+      expect(customSnakeCase('123中文abc')).toMatchInlineSnapshot(
+        `"123_zhong_wen_abc"`,
+      );
+    });
+
+    it('emoj', () => {
+      expect(customSnakeCase('😀')).toMatchInlineSnapshot(`"grinning_face"`);
+      expect(customSnakeCase('😀😀123')).toMatchInlineSnapshot(
+        `"grinning_face_grinning_face_123"`,
+      );
+    });
+
+    it('custonSnakeCase emoj', () => {
+      expect(customSnakeCase('Hello🌟World')).toMatchInlineSnapshot(
+        `"hello_glowing_star_world"`,
+      );
+    });
+
+    it('custonSnakeCase emoj special', () => {
+      expect(customSnakeCase('👍🏻')).toMatchInlineSnapshot(`"1f44d"`);
+      expect(customSnakeCase('ab👍🏻cd')).toMatchInlineSnapshot(`"ab_1f44d_cd"`);
+      expect(customSnakeCase('中文👍🏻cd🌟英文')).toMatchInlineSnapshot(
+        `"zhong_wen_1f44d_cd_glowing_star_ying_wen"`,
+      );
     });
   });
 

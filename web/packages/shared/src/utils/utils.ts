@@ -1,31 +1,21 @@
-// export function customSnakeCase(s: string) {
-//   if (typeof s !== 'string') return s;
+import emoji from 'emojilib';
+import { pinyin } from 'pinyin-pro';
+import emojiRegex from 'emoji-regex'; // 导入 emoji-regex 库
 
-//   // 如果已经是snake_case格式（只包含小写字母、数字和下划线），直接返回
-//   if (/^[a-z0-9_]+$/.test(s)) {
-//     return s;
-//   }
-
-//   // 更新正则表达式以包含数字
-//   const parts = s.split(/([a-zA-Z0-9\s#]+)/);
-
-//   return parts
-//     .map(part => {
-//       if (!part) return '';
-
-//       if (/[a-zA-Z0-9\s#]/.test(part)) {
-//         const withoutHash = part.replace(/#/g, '_');
-//         const r = withoutHash.split(/(?<![A-Z])(?=[A-Z])|\s+/);
-//         return r.map(i => i.toLowerCase()).join('_');
-//       }
-
-//       return Array.from(part)
-//         .map(char => char.codePointAt(0)?.toString(16))
-//         .join('_');
-//     })
-//     .filter(Boolean)
-//     .join('_');
-// }
+function emojiUnicode(emoji: string) {
+  var comp;
+  if (emoji.length === 1) {
+    comp = emoji.charCodeAt(0);
+  }
+  comp =
+    (emoji.charCodeAt(0) - 0xd800) * 0x400 +
+    (emoji.charCodeAt(1) - 0xdc00) +
+    0x10000;
+  if (comp < 0) {
+    comp = emoji.charCodeAt(0);
+  }
+  return comp.toString(16);
+}
 
 export const removeBrackets = (key: string): string => {
   return key.replace(/\{\{\s*(.*?)\s*\}\}/g, '$1');
@@ -33,6 +23,25 @@ export const removeBrackets = (key: string): string => {
 
 export function customSnakeCase(s: string) {
   if (!s) return s;
+  const chineseRegex = /[\u4e00-\u9fa5]+/g;
+
+  s = s
+    .replace(/([\u4e00-\u9fa5])([^ \u4e00-\u9fa5])/g, '$1 $2')
+    .replace(/([^ \u4e00-\u9fa5])([\u4e00-\u9fa5])/g, '$1 $2');
+
+  s = s.replace(emojiRegex(), match => {
+    if (emoji[match]?.[0]) {
+      return ` ${emoji[match][0]} `;
+    } else {
+      return ` ${emojiUnicode(match)} `;
+      // return ` ${slug(match)} `
+    }
+  });
+
+  s = s.replace(chineseRegex, match => {
+    return pinyin(match, { toneType: 'none' });
+  });
+  s = s.trim();
   const str = removeBrackets(s);
   const r = str.split(/(?<![A-Z])(?=[A-Z])|\#|\s+/);
   return r.map(i => i.toLowerCase()).join('_');
