@@ -122,6 +122,12 @@ export const removeStateParamSchema = z.object({
   stateName: customKeySchema,
 });
 
+export const reorderTaskSchema = z.object({
+  previousTasks: z.array(z.string()),
+  currentTasks: z.array(z.string()),
+  stateName: customKeySchema,
+});
+
 export const RefSceneEnum = z.enum([
   'set_nodedata_key_val',
   'change_nodedata_mode',
@@ -132,6 +138,7 @@ export const RefSceneEnum = z.enum([
   'remove_edge',
   'duplicate_state',
   'remove_state',
+  'reorder_task',
 ]);
 
 export type RefScene = z.infer<typeof RefSceneEnum>;
@@ -178,6 +185,10 @@ export const handleRefSceneSchema = z.union([
   z.object({
     scene: z.literal(RefSceneEnum.Enum.remove_state),
     params: removeStateParamSchema,
+  }),
+  z.object({
+    scene: z.literal(RefSceneEnum.Enum.reorder_task),
+    params: reorderTaskSchema,
   }),
 ]);
 

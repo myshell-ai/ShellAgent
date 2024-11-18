@@ -16,6 +16,8 @@ import {
   hanldeRefScene,
   removeEmptyLeaves,
   removeState,
+  findMissingPrevious,
+  reorderTasks,
 } from './ref-util';
 import { Edge, Edges, edgeSchema, edgesSchema, refsSchema } from './scope';
 
@@ -1122,7 +1124,9 @@ state#3
           'outputs.arg1': {
             ref: 'state_1.inputs.input_a',
           },
-          'render.buttons.button_a.on_click.payload.arg1': {
+          // Hit Me!
+          // custom snakecase 少了一个 display name form field []
+          'render.buttons.u1234_hit_me.on_click.payload.arg1': {
             ref: 'state_1.inputs.input_a',
           },
           'render.message.text': {
@@ -1702,6 +1706,164 @@ state#3
             },
           },
         }
+      `);
+    });
+  });
+
+  describe('task re order', () => {
+    it('reorder tasks', () => {
+      const refs = refsSchema.parse({
+        state_1: {
+          'block.a.inputs.system_prompt': {},
+          'block.b.inputs.system_prompt': {},
+          'block.c.inputs.system_prompt': { ref: 'state_1.block.b.outputs.o1' },
+          'block.d.inputs.system_prompt': { ref: 'state_1.block.b.outputs.o1' },
+        },
+      });
+
+      const ret = reorderTasks(refs, {
+        stateName: 'state_1',
+        previousTasks: ['a', 'b', 'c', 'd'],
+        currentTasks: ['a', 'c', 'd', 'b'],
+      });
+      expect(ret).toMatchInlineSnapshot(`
+        {
+          "state_1": {
+            "block.a.inputs.system_prompt": {},
+            "block.b.inputs.system_prompt": {},
+            "block.c.inputs.system_prompt": {},
+            "block.d.inputs.system_prompt": {},
+          },
+        }
+      `);
+    });
+
+    it('reorder tasks case#2', () => {
+      const refs = refsSchema.parse({
+        state_1: {
+          'block.a.inputs.system_prompt': {},
+          'block.b.inputs.system_prompt': {},
+          'block.c.inputs.system_prompt': {
+            ui: ['state_1.block.b.outputs.o1', 'state_1.block.a.outputs.o1'],
+          },
+          'block.d.inputs.system_prompt': { ref: 'state_1.block.b.outputs.o1' },
+        },
+      });
+
+      const ret = reorderTasks(refs, {
+        stateName: 'state_1',
+        previousTasks: ['a', 'b', 'c', 'd'],
+        currentTasks: ['a', 'c', 'd', 'b'],
+      });
+      expect(ret).toMatchInlineSnapshot(`
+        {
+          "state_1": {
+            "block.a.inputs.system_prompt": {},
+            "block.b.inputs.system_prompt": {},
+            "block.c.inputs.system_prompt": {
+              "ui": [
+                "state_1.block.a.outputs.o1",
+              ],
+            },
+            "block.d.inputs.system_prompt": {},
+          },
+        }
+      `);
+    });
+
+    it('reorder tasks case#3', () => {
+      const refs = refsSchema.parse({
+        state_1: {
+          'block.a.inputs.system_prompt': {},
+          'block.b.inputs.system_prompt': {},
+          'block.c.inputs.system_prompt': {},
+          'block.d.inputs.system_prompt': { ref: 'state_1.block.b.outputs.o1' },
+          'block.d.inputs.system_prompt_2': {
+            ref: 'state_1.block.c.outputs.o1',
+          },
+          'block.d.inputs.system_prompt_3': {
+            ref: 'state_1.block.a.outputs.o1',
+          },
+        },
+      });
+
+      const ret = reorderTasks(refs, {
+        stateName: 'state_1',
+        previousTasks: ['a', 'b', 'c', 'd'],
+        currentTasks: ['a', 'd', 'b', 'c'],
+      });
+      expect(ret).toMatchInlineSnapshot(`
+        {
+          "state_1": {
+            "block.a.inputs.system_prompt": {},
+            "block.b.inputs.system_prompt": {},
+            "block.c.inputs.system_prompt": {},
+            "block.d.inputs.system_prompt": {},
+            "block.d.inputs.system_prompt_2": {},
+            "block.d.inputs.system_prompt_3": {
+              "ref": "state_1.block.a.outputs.o1",
+            },
+          },
+        }
+      `);
+    });
+
+    it('case#1', () => {
+      const orig = ['a', 'b', 'c', 'd'];
+      const cur = ['a', 'c', 'd', 'b'];
+      const ret = findMissingPrevious(orig, cur);
+      expect(ret).toMatchInlineSnapshot(`
+        [
+          {
+            "item": "a",
+            "missing": [],
+          },
+          {
+            "item": "c",
+            "missing": [
+              "b",
+            ],
+          },
+          {
+            "item": "d",
+            "missing": [
+              "b",
+            ],
+          },
+          {
+            "item": "b",
+            "missing": [],
+          },
+        ]
+      `);
+    });
+
+    it('case#2', () => {
+      const orig = ['a', 'b', 'c', 'd'];
+      const cur = ['a', 'd', 'b', 'c'];
+      const ret = findMissingPrevious(orig, cur);
+      expect(ret).toMatchInlineSnapshot(`
+        [
+          {
+            "item": "a",
+            "missing": [],
+          },
+          {
+            "item": "d",
+            "missing": [
+              "b",
+              "c",
+            ],
+          },
+          {
+            "item": "b",
+            "missing": [],
+          },
+          {
+            "item": "c",
+            "missing": [],
+          },
+        ]
       `);
     });
   });

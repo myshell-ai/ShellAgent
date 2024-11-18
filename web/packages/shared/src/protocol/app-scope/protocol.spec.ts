@@ -1,3 +1,4 @@
+import { padStart } from 'lodash-es';
 import {
   buttonSchema,
   buttonsSchema,
@@ -18,6 +19,8 @@ import {
   variablesSchema,
 } from './protocol';
 
+import slug from 'slug';
+
 describe('protocol', () => {
   describe('customSnakeCase', () => {
     it('customSnakeCase', () => {
@@ -28,12 +31,31 @@ describe('protocol', () => {
       expect(customSnakeCase('a_1')).toBe('a_1');
       expect(customSnakeCase('GPT2')).toBe('gpt2');
       expect(customSnakeCase('State#2')).toBe('state_2');
+      expect(customSnakeCase('State#2')).toBe('state_2');
       // Can use a mask input
       expect(customSnakeCase('Image Canvas')).toBe('image_canvas');
     });
 
     it('Chinese', () => {
+      function uni(str: string) {
+        const unicodeString = Array.from(str)
+          .map(
+            char =>
+              `\\u${padStart(char.codePointAt(0)?.toString(16) ?? '', 4, '0')}`,
+          )
+          .join('');
+        return unicodeString;
+      }
+
       expect(customSnakeCase('中文')).toMatchInlineSnapshot(`"zhong_wen"`);
+      expect(uni('中文')).toMatchInlineSnapshot(`"\\u4e2d\\u6587"`);
+
+      expect(uni('こんにちは')).toMatchInlineSnapshot(
+        `"\\u3053\\u3093\\u306b\\u3061\\u306f"`,
+      );
+
+      expect(uni('😀')).toMatchInlineSnapshot(`"\\u1f600"`);
+
       expect(customSnakeCase('中文abc')).toMatchInlineSnapshot(
         `"zhong_wen_abc"`,
       );
