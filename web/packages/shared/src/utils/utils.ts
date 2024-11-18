@@ -34,7 +34,6 @@ export function customSnakeCase(s: string) {
       return ` ${emoji[match][0]} `;
     } else {
       return ` ${emojiUnicode(match)} `;
-      // return ` ${slug(match)} `
     }
   });
 

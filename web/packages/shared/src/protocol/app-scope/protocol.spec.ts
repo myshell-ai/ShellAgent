@@ -32,7 +32,7 @@ describe('protocol', () => {
       expect(customSnakeCase('Image Canvas')).toBe('image_canvas');
     });
 
-    it('CJK', () => {
+    it('Chinese', () => {
       expect(customSnakeCase('中文')).toMatchInlineSnapshot(`"zhong_wen"`);
       expect(customSnakeCase('中文abc')).toMatchInlineSnapshot(
         `"zhong_wen_abc"`,
