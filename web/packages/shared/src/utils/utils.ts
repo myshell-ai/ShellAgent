@@ -1,6 +1,6 @@
-import emoji from 'emojilib';
-import { pinyin } from 'pinyin-pro';
-import emojiRegex from 'emoji-regex'; // 导入 emoji-regex 库
+// import emoji from 'emojilib';
+// import { pinyin } from 'pinyin-pro';
+// import emojiRegex from 'emoji-regex'; // 导入 emoji-regex 库
 
 function emojiUnicode(emoji: string) {
   var comp;
@@ -18,30 +18,13 @@ function emojiUnicode(emoji: string) {
 }
 
 export const removeBrackets = (key: string): string => {
-  return key.replace(/\{\{\s*(.*?)\s*\}\}/g, '$1');
+  return key.replace(/[^a-zA-Z0-9_ ]/g, '');
 };
 
 export function customSnakeCase(s: string) {
   if (!s) return s;
-  const chineseRegex = /[\u4e00-\u9fa5]+/g;
-
-  s = s
-    .replace(/([\u4e00-\u9fa5])([^ \u4e00-\u9fa5])/g, '$1 $2')
-    .replace(/([^ \u4e00-\u9fa5])([\u4e00-\u9fa5])/g, '$1 $2');
-
-  s = s.replace(emojiRegex(), match => {
-    if (emoji[match]?.[0]) {
-      return ` ${emoji[match][0]} `;
-    } else {
-      return ` ${emojiUnicode(match)} `;
-    }
-  });
-
-  s = s.replace(chineseRegex, match => {
-    return pinyin(match, { toneType: 'none' });
-  });
+  s = removeBrackets(s);
   s = s.trim();
-  const str = removeBrackets(s);
-  const r = str.split(/(?<![A-Z])(?=[A-Z])|\#|\s+/);
+  const r = s.split(/(?<![A-Z])(?=[A-Z])|\#|\s+/);
   return r.map(i => i.toLowerCase()).join('_');
 }

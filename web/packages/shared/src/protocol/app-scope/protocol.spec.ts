@@ -30,13 +30,26 @@ describe('protocol', () => {
       expect(customSnakeCase('123a123b')).toBe('123a123b');
       expect(customSnakeCase('a_1')).toBe('a_1');
       expect(customSnakeCase('GPT2')).toBe('gpt2');
-      expect(customSnakeCase('State#2')).toBe('state_2');
-      expect(customSnakeCase('State#2')).toBe('state_2');
+      expect(customSnakeCase('State#2')).toBe('state2');
+      expect(customSnakeCase('State#2')).toBe('state2');
       // Can use a mask input
       expect(customSnakeCase('Image Canvas')).toBe('image_canvas');
     });
 
-    it('Chinese', () => {
+    it('special char', () => {
+      expect(customSnakeCase('中文')).toBe('');
+      expect(customSnakeCase('こんにちは')).toBe('');
+      expect(customSnakeCase('😀')).toBe('');
+      expect(customSnakeCase('中 文')).toBe('');
+      expect(customSnakeCase('中  文')).toBe('');
+      expect(customSnakeCase(' 中  文 ')).toBe('');
+
+      expect(customSnakeCase(' 123中  文abc ')).toBe('123_abc');
+
+      expect(customSnakeCase('中文_')).toBe('_');
+    });
+
+    it.skip('Chinese', () => {
       function uni(str: string) {
         const unicodeString = Array.from(str)
           .map(
@@ -67,20 +80,20 @@ describe('protocol', () => {
       );
     });
 
-    it('emoj', () => {
+    it.skip('emoj', () => {
       expect(customSnakeCase('😀')).toMatchInlineSnapshot(`"grinning_face"`);
       expect(customSnakeCase('😀😀123')).toMatchInlineSnapshot(
         `"grinning_face_grinning_face_123"`,
       );
     });
 
-    it('custonSnakeCase emoj', () => {
+    it.skip('custonSnakeCase emoj', () => {
       expect(customSnakeCase('Hello🌟World')).toMatchInlineSnapshot(
         `"hello_glowing_star_world"`,
       );
     });
 
-    it('custonSnakeCase emoj special', () => {
+    it.skip('custonSnakeCase emoj special', () => {
       expect(customSnakeCase('👍🏻')).toMatchInlineSnapshot(`"1f44d"`);
       expect(customSnakeCase('ab👍🏻cd')).toMatchInlineSnapshot(`"ab_1f44d_cd"`);
       expect(customSnakeCase('中文👍🏻cd🌟英文')).toMatchInlineSnapshot(

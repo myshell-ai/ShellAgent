@@ -95,6 +95,11 @@ export const customKeySchema = z
         code: z.ZodIssueCode.custom,
         message: `${arg} is not a string`,
       });
+    } else if (arg.indexOf('.') > -1) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: `${arg} is invalid, contains dots`,
+      });
     } else if (arg !== customSnakeCase(arg)) {
       ctx.addIssue({
         code: z.ZodIssueCode.custom,
@@ -109,11 +114,6 @@ export const customKeySchema = z
       ctx.addIssue({
         code: z.ZodIssueCode.custom,
         message: `${arg} is a reserved key`,
-      });
-    } else if (arg.indexOf('.') > -1) {
-      ctx.addIssue({
-        code: z.ZodIssueCode.custom,
-        message: `${arg} is invalid, contains dots`,
       });
     }
   }) satisfies z.Schema<CustomKey>;
