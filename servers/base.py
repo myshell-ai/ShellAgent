@@ -30,6 +30,7 @@ templates = Jinja2Templates(directory=str(web_build_path))
 # Set environment variables and directories
 os.environ["PROCONFIG_PROJECT_ROOT"] = os.environ.get("PROCONFIG_PROJECT_ROOT", "data")
 PROJECT_ROOT = os.environ["PROCONFIG_PROJECT_ROOT"]
+ASSET_ROOT = "assets"
 print("current project root:", PROJECT_ROOT)
 
 UPLOAD_FOLDER = os.path.join("input")  # To be compatible with ComfyUI

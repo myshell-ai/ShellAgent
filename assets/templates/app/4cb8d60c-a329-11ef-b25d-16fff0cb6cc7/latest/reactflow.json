@@ -1,0 +1,1572 @@
+{
+  "config": {
+    "fieldsModeMap": {
+      "key_1729790785383": {
+        "render.image": "ref"
+      },
+      "key_1731004797517": {
+        "render.text": "ui"
+      },
+      "key_1731007593384": {
+        "output.key_1731008360535.value": "raw"
+      },
+      "key_1731016186627": {
+        "output.__context__key_1731004782444__.value": "raw"
+      },
+      "key_1731016503383.condition.0": {
+        "key_1731016538235": "ui"
+      },
+      "key_1731017092731": {
+        "output.key_1731017936328.value": "ui",
+        "output.key_1731017975217.value": "ui",
+        "render.image": "raw"
+      },
+      "key_1731022659933": {
+        "output.key_1731025752183.value": "ui",
+        "output.key_1731025759555.value": "ui",
+        "render.image": "raw"
+      },
+      "key_1731007331763.blocks.0": {
+        "inputs.user_prompt": "ref"
+      },
+      "key_1731438818456": {
+        "output.key_1731438818458.value": "raw",
+        "output.__context__key_1731004782444__.value": "raw"
+      },
+      "key_1731021998817.blocks.0": {
+        "inputs.user_prompt": "ref"
+      }
+    },
+    "schemaModeMap": {}
+  },
+  "reactflow": {
+    "nodes": [
+      {
+        "width": 500,
+        "height": 156,
+        "id": "@@@start",
+        "position": {
+          "x": 988.6981736915632,
+          "y": 120.75201238024158
+        },
+        "type": "start",
+        "selectable": true,
+        "focusable": true,
+        "draggable": true,
+        "data": {
+          "type": "start",
+          "id": "@@@start"
+        },
+        "selected": false,
+        "positionAbsolute": {
+          "x": 988.6981736915632,
+          "y": 120.75201238024158
+        },
+        "dragging": false
+      },
+      {
+        "id": "key_1729790620672",
+        "position": {
+          "x": 1728.4737192561156,
+          "y": 45.61344468238684
+        },
+        "type": "state",
+        "selectable": true,
+        "focusable": true,
+        "draggable": true,
+        "data": {
+          "type": "state",
+          "id": "key_1729790620672",
+          "name": "State",
+          "display_name": "Intro"
+        },
+        "width": 500,
+        "height": 506,
+        "selected": false,
+        "positionAbsolute": {
+          "x": 1728.4737192561156,
+          "y": 45.61344468238684
+        },
+        "dragging": false
+      },
+      {
+        "id": "key_1731004797517",
+        "position": {
+          "x": 177.3673948725559,
+          "y": 773.1634591893097
+        },
+        "type": "state",
+        "selectable": true,
+        "focusable": true,
+        "draggable": true,
+        "data": {
+          "type": "state",
+          "id": "key_1731004797517",
+          "name": "State",
+          "display_name": "Chat Intro"
+        },
+        "width": 500,
+        "height": 266,
+        "selected": false,
+        "positionAbsolute": {
+          "x": 177.3673948725559,
+          "y": 773.1634591893097
+        },
+        "dragging": false
+      },
+      {
+        "id": "key_1731007331763",
+        "position": {
+          "x": 178.34575645341,
+          "y": 1071.9130050820922
+        },
+        "type": "state",
+        "selectable": true,
+        "focusable": true,
+        "draggable": true,
+        "data": {
+          "type": "state",
+          "id": "key_1731007331763",
+          "name": "State",
+          "display_name": "Reply"
+        },
+        "width": 500,
+        "height": 304,
+        "selected": false,
+        "positionAbsolute": {
+          "x": 178.34575645341,
+          "y": 1071.9130050820922
+        },
+        "dragging": false
+      },
+      {
+        "id": "key_1731007593384",
+        "position": {
+          "x": 785.3012391999221,
+          "y": 769.017292573221
+        },
+        "type": "state",
+        "selectable": true,
+        "focusable": true,
+        "draggable": true,
+        "data": {
+          "type": "state",
+          "id": "key_1731007593384",
+          "name": "State",
+          "display_name": "About Random Transition Example"
+        },
+        "width": 500,
+        "height": 266,
+        "selected": false,
+        "positionAbsolute": {
+          "x": 785.3012391999221,
+          "y": 769.017292573221
+        },
+        "dragging": false
+      },
+      {
+        "id": "key_1731007762330",
+        "position": {
+          "x": 779.5143289242612,
+          "y": 1078.7413224820796
+        },
+        "type": "state",
+        "selectable": true,
+        "focusable": true,
+        "draggable": true,
+        "data": {
+          "type": "state",
+          "id": "key_1731007762330",
+          "name": "State",
+          "display_name": "0-4"
+        },
+        "width": 500,
+        "height": 314,
+        "selected": false,
+        "positionAbsolute": {
+          "x": 779.5143289242612,
+          "y": 1078.7413224820796
+        },
+        "dragging": false
+      },
+      {
+        "id": "key_1731008012254",
+        "position": {
+          "x": 764.006384419092,
+          "y": 1440.7117239170295
+        },
+        "type": "state",
+        "selectable": true,
+        "focusable": true,
+        "draggable": true,
+        "data": {
+          "type": "state",
+          "id": "key_1731008012254",
+          "name": "State",
+          "display_name": "5-9"
+        },
+        "width": 500,
+        "height": 314,
+        "selected": false,
+        "positionAbsolute": {
+          "x": 764.006384419092,
+          "y": 1440.7117239170295
+        },
+        "dragging": false
+      },
+      {
+        "id": "key_1731016186627",
+        "position": {
+          "x": 1374.8537108984367,
+          "y": 682.6851541928719
+        },
+        "type": "state",
+        "selectable": true,
+        "focusable": true,
+        "draggable": true,
+        "data": {
+          "type": "state",
+          "id": "key_1731016186627",
+          "name": "State",
+          "display_name": "About Click Count Example"
+        },
+        "width": 500,
+        "height": 362,
+        "selected": false,
+        "positionAbsolute": {
+          "x": 1374.8537108984367,
+          "y": 682.6851541928719
+        },
+        "dragging": false
+      },
+      {
+        "id": "key_1731016503383",
+        "position": {
+          "x": 1970.9317594649408,
+          "y": 741.2235279329651
+        },
+        "type": "state",
+        "selectable": true,
+        "focusable": true,
+        "draggable": true,
+        "data": {
+          "type": "state",
+          "id": "key_1731016503383",
+          "name": "State",
+          "display_name": "Passing Inputs"
+        },
+        "width": 500,
+        "height": 362,
+        "selected": false,
+        "positionAbsolute": {
+          "x": 1970.9317594649408,
+          "y": 741.2235279329651
+        },
+        "dragging": false
+      },
+      {
+        "id": "key_1731016529261",
+        "position": {
+          "x": 1977.6063867511034,
+          "y": 1179.3072971136457
+        },
+        "type": "state",
+        "selectable": true,
+        "focusable": true,
+        "draggable": true,
+        "data": {
+          "type": "state",
+          "id": "key_1731016529261",
+          "name": "State",
+          "display_name": "Accepting Inputs"
+        },
+        "width": 500,
+        "height": 266,
+        "selected": false,
+        "positionAbsolute": {
+          "x": 1977.6063867511034,
+          "y": 1179.3072971136457
+        },
+        "dragging": false
+      },
+      {
+        "id": "key_1731017092731",
+        "position": {
+          "x": 2551.618011823401,
+          "y": 741.1146347415929
+        },
+        "type": "state",
+        "selectable": true,
+        "focusable": true,
+        "draggable": true,
+        "data": {
+          "type": "state",
+          "id": "key_1731017092731",
+          "name": "State",
+          "display_name": "Render Message"
+        },
+        "width": 500,
+        "height": 314,
+        "selected": false,
+        "positionAbsolute": {
+          "x": 2551.618011823401,
+          "y": 741.1146347415929
+        },
+        "dragging": false
+      },
+      {
+        "id": "key_1731021998817",
+        "position": {
+          "x": 3131.9482122777395,
+          "y": 1076.7562390809012
+        },
+        "type": "state",
+        "selectable": true,
+        "focusable": true,
+        "draggable": true,
+        "data": {
+          "type": "state",
+          "id": "key_1731021998817",
+          "name": "State",
+          "display_name": "Generate"
+        },
+        "width": 500,
+        "height": 304,
+        "selected": false,
+        "positionAbsolute": {
+          "x": 3131.9482122777395,
+          "y": 1076.7562390809012
+        },
+        "dragging": false
+      },
+      {
+        "id": "key_1731022629550",
+        "position": {
+          "x": 2567.7838013526116,
+          "y": 1147.6834752404197
+        },
+        "type": "state",
+        "selectable": true,
+        "focusable": true,
+        "draggable": true,
+        "data": {
+          "type": "state",
+          "id": "key_1731022629550",
+          "name": "State",
+          "display_name": "Render Single Image"
+        },
+        "width": 500,
+        "height": 218,
+        "selected": false,
+        "positionAbsolute": {
+          "x": 2567.7838013526116,
+          "y": 1147.6834752404197
+        },
+        "dragging": false
+      },
+      {
+        "id": "key_1731022659933",
+        "position": {
+          "x": 2564.778832111259,
+          "y": 1422.800322437906
+        },
+        "type": "state",
+        "selectable": true,
+        "focusable": true,
+        "draggable": true,
+        "data": {
+          "type": "state",
+          "id": "key_1731022659933",
+          "name": "State",
+          "display_name": "Render Multiple Image"
+        },
+        "width": 500,
+        "height": 218,
+        "selected": false,
+        "positionAbsolute": {
+          "x": 2564.778832111259,
+          "y": 1422.800322437906
+        },
+        "dragging": false
+      },
+      {
+        "id": "key_1731438818456",
+        "position": {
+          "x": 1373.2776826011539,
+          "y": 1123.316026965351
+        },
+        "type": "state",
+        "selectable": true,
+        "focusable": true,
+        "draggable": true,
+        "data": {
+          "type": "state",
+          "id": "key_1731438818456",
+          "name": "State",
+          "display_name": "Click"
+        },
+        "width": 500,
+        "height": 362,
+        "selected": false,
+        "positionAbsolute": {
+          "x": 1373.2776826011539,
+          "y": 1123.316026965351
+        },
+        "dragging": false
+      },
+      {
+        "id": "key_1731439294532",
+        "position": {
+          "x": 1388.439887912186,
+          "y": 1539.3580359488785
+        },
+        "type": "state",
+        "selectable": true,
+        "focusable": true,
+        "draggable": true,
+        "data": {
+          "type": "state",
+          "id": "key_1731439294532",
+          "name": "State",
+          "display_name": "Show Count"
+        },
+        "width": 500,
+        "height": 362,
+        "selected": false,
+        "positionAbsolute": {
+          "x": 1388.439887912186,
+          "y": 1539.3580359488785
+        },
+        "dragging": false
+      },
+      {
+        "id": "key_1731440652559",
+        "position": {
+          "x": 3127.491651298928,
+          "y": 759.6898950124917
+        },
+        "type": "state",
+        "selectable": true,
+        "focusable": true,
+        "draggable": true,
+        "data": {
+          "type": "state",
+          "id": "key_1731440652559",
+          "name": "State",
+          "display_name": "About Regenerate"
+        },
+        "width": 500,
+        "height": 266,
+        "selected": false,
+        "positionAbsolute": {
+          "x": 3127.491651298928,
+          "y": 759.6898950124917
+        },
+        "dragging": false
+      },
+      {
+        "id": "key_1731442179658",
+        "position": {
+          "x": 3122.6635631914787,
+          "y": 1419.7598845874056
+        },
+        "type": "state",
+        "selectable": true,
+        "focusable": true,
+        "draggable": true,
+        "data": {
+          "type": "state",
+          "id": "key_1731442179658",
+          "name": "State",
+          "display_name": "Regenerate"
+        },
+        "width": 500,
+        "height": 304,
+        "selected": false,
+        "positionAbsolute": {
+          "x": 3122.6635631914787,
+          "y": 1419.7598845874056
+        },
+        "dragging": false
+      }
+    ],
+    "edges": [
+      {
+        "type": "default_edge",
+        "style": {
+          "strokeWidth": 2,
+          "stroke": "#d1d5db"
+        },
+        "markerEnd": {
+          "color": "#5A646Es",
+          "height": 25,
+          "strokeWidth": 2,
+          "type": "arrowclosed",
+          "width": 10
+        },
+        "source": "@@@start",
+        "sourceHandle": "@@@start",
+        "target": "key_1729790620672",
+        "targetHandle": "key_1729790620672",
+        "animated": false,
+        "id": "reactflow__edge-@@@start@@@start-key_1729790620672key_1729790620672"
+      },
+      {
+        "type": "custom_edge",
+        "style": {
+          "stroke": "var(--flow-color-03)"
+        },
+        "markerEnd": {
+          "color": "#5A646Es",
+          "height": 25,
+          "strokeWidth": 2,
+          "type": "arrowclosed",
+          "width": 10
+        },
+        "source": "key_1729790620672",
+        "sourceHandle": "custom_button-source-handle-6120b338-8331-42b0-85fa-d092b6812a4a#0",
+        "target": "key_1731004797517",
+        "targetHandle": "key_1731004797517",
+        "data": {
+          "id": "405cd7e2-2d2d-46cb-8593-d4e3536ea31d",
+          "custom": true,
+          "event_key": "6120b338-8331-42b0-85fa-d092b6812a4a",
+          "type": "STATE",
+          "source": "key_1729790620672",
+          "target": "key_1731004797517",
+          "conditions": []
+        },
+        "id": "reactflow__edge-key_1729790620672custom_button-source-handle-6120b338-8331-42b0-85fa-d092b6812a4a#0-key_1731004797517key_1731004797517",
+        "selected": false
+      },
+      {
+        "type": "custom_edge",
+        "style": {
+          "stroke": "var(--flow-color-04)"
+        },
+        "markerEnd": {
+          "color": "#5A646Es",
+          "height": 25,
+          "strokeWidth": 2,
+          "type": "arrowclosed",
+          "width": 10
+        },
+        "source": "key_1731004797517",
+        "sourceHandle": "custom_message-input-source-handle-key_1731004797517",
+        "target": "key_1731007331763",
+        "targetHandle": "key_1731007331763",
+        "data": {
+          "id": "1f06ade3-1a86-4406-947c-4e7cb7caa837",
+          "custom": true,
+          "type": "CHAT",
+          "source": "key_1731004797517",
+          "target": "key_1731007331763",
+          "conditions": []
+        },
+        "id": "reactflow__edge-key_1731004797517custom_message-input-source-handle-key_1731004797517-key_1731007331763key_1731007331763"
+      },
+      {
+        "type": "custom_edge",
+        "style": {
+          "stroke": "var(--flow-color-05)"
+        },
+        "markerEnd": {
+          "color": "#5A646Es",
+          "height": 25,
+          "strokeWidth": 2,
+          "type": "arrowclosed",
+          "width": 10
+        },
+        "source": "key_1731007331763",
+        "sourceHandle": "custom_message-input-source-handle-key_1731007331763",
+        "target": "key_1731007331763",
+        "targetHandle": "key_1731007331763",
+        "data": {
+          "id": "5526b204-1e3c-4778-b39d-6537bf97d36c",
+          "custom": true,
+          "type": "CHAT",
+          "source": "key_1731007331763",
+          "target": "key_1731007331763",
+          "conditions": []
+        },
+        "id": "reactflow__edge-key_1731007331763custom_message-input-source-handle-key_1731007331763-key_1731007331763key_1731007331763"
+      },
+      {
+        "type": "custom_edge",
+        "style": {
+          "stroke": "var(--flow-color-05)"
+        },
+        "markerEnd": {
+          "color": "#5A646Es",
+          "height": 25,
+          "strokeWidth": 2,
+          "type": "arrowclosed",
+          "width": 10
+        },
+        "source": "key_1731007331763",
+        "sourceHandle": "custom_button-source-handle-60d0e2b1-a849-416e-9785-b9bf976f331b#0",
+        "target": "key_1729790620672",
+        "targetHandle": "key_1729790620672",
+        "data": {
+          "id": "6f68a604-f449-455a-984c-b811e6e2fbeb",
+          "custom": true,
+          "event_key": "60d0e2b1-a849-416e-9785-b9bf976f331b",
+          "type": "STATE",
+          "source": "key_1731007331763",
+          "target": "key_1729790620672",
+          "conditions": []
+        },
+        "id": "reactflow__edge-key_1731007331763custom_button-source-handle-60d0e2b1-a849-416e-9785-b9bf976f331b#0-key_1729790620672key_1729790620672"
+      },
+      {
+        "type": "custom_edge",
+        "style": {
+          "stroke": "var(--flow-color-05)"
+        },
+        "markerEnd": {
+          "color": "#5A646Es",
+          "height": 25,
+          "strokeWidth": 2,
+          "type": "arrowclosed",
+          "width": 10
+        },
+        "source": "key_1731004797517",
+        "sourceHandle": "custom_button-source-handle-7ff36d30-b730-4f36-814a-26a7ec7e86af#0",
+        "target": "key_1729790620672",
+        "targetHandle": "key_1729790620672",
+        "data": {
+          "id": "fd4765ee-26aa-4aa9-ad8c-d392ce7c9851",
+          "custom": true,
+          "event_key": "7ff36d30-b730-4f36-814a-26a7ec7e86af",
+          "type": "STATE",
+          "source": "key_1731004797517",
+          "target": "key_1729790620672",
+          "conditions": []
+        },
+        "id": "reactflow__edge-key_1731004797517custom_button-source-handle-7ff36d30-b730-4f36-814a-26a7ec7e86af#0-key_1729790620672key_1729790620672"
+      },
+      {
+        "type": "custom_edge",
+        "style": {
+          "stroke": "var(--flow-color-10)"
+        },
+        "markerEnd": {
+          "color": "#5A646Es",
+          "height": 25,
+          "strokeWidth": 2,
+          "type": "arrowclosed",
+          "width": 10
+        },
+        "source": "key_1731007593384",
+        "sourceHandle": "custom_button-source-handle-57ac7720-ced8-42ac-84b3-d3fee0d5cd9c#0",
+        "target": "key_1731007762330",
+        "targetHandle": "key_1731007762330",
+        "data": {
+          "id": "3f3ffd2c-6a29-4f79-9d24-07f7557531ca",
+          "custom": true,
+          "event_key": "57ac7720-ced8-42ac-84b3-d3fee0d5cd9c",
+          "type": "STATE",
+          "source": "key_1731007593384",
+          "target": "key_1731007762330",
+          "conditions": [
+            {
+              "condition": "{{ key_1731008360535 < 5 }}",
+              "target_inputs": {
+                "key_1731008183587": "{{key_1731008360535}}"
+              }
+            }
+          ]
+        },
+        "id": "reactflow__edge-key_1731007593384custom_button-source-handle-57ac7720-ced8-42ac-84b3-d3fee0d5cd9c#0-key_1731007762330key_1731007762330"
+      },
+      {
+        "type": "custom_edge",
+        "style": {
+          "stroke": "var(--flow-color-05)"
+        },
+        "markerEnd": {
+          "color": "#5A646Es",
+          "height": 25,
+          "strokeWidth": 2,
+          "type": "arrowclosed",
+          "width": 10
+        },
+        "source": "key_1731008012254",
+        "sourceHandle": "custom_button-source-handle-78f5b793-4fc5-479e-8289-0e4cfa60ff25#0",
+        "target": "key_1729790620672",
+        "targetHandle": "key_1729790620672",
+        "data": {
+          "id": "4ef4291a-f359-4291-bce6-e8ecb49ff56e",
+          "custom": true,
+          "event_key": "78f5b793-4fc5-479e-8289-0e4cfa60ff25",
+          "type": "STATE",
+          "source": "key_1731008012254",
+          "target": "key_1729790620672",
+          "conditions": []
+        },
+        "id": "reactflow__edge-key_1731008012254custom_button-source-handle-78f5b793-4fc5-479e-8289-0e4cfa60ff25#0-key_1729790620672key_1729790620672"
+      },
+      {
+        "type": "custom_edge",
+        "style": {
+          "stroke": "var(--flow-color-10)"
+        },
+        "markerEnd": {
+          "color": "#5A646Es",
+          "height": 25,
+          "strokeWidth": 2,
+          "type": "arrowclosed",
+          "width": 10
+        },
+        "source": "key_1731007593384",
+        "sourceHandle": "custom_button-source-handle-57ac7720-ced8-42ac-84b3-d3fee0d5cd9c#0",
+        "target": "key_1731008012254",
+        "targetHandle": "key_1731008012254",
+        "data": {
+          "id": "9b291435-6fed-464c-b20a-c91d0831dfb5",
+          "custom": true,
+          "event_key": "57ac7720-ced8-42ac-84b3-d3fee0d5cd9c",
+          "type": "STATE",
+          "source": "key_1731007593384",
+          "target": "key_1731008012254",
+          "conditions": [
+            {
+              "condition": "{{ key_1731008360535 > 4 }}",
+              "target_inputs": {
+                "key_1731009518966": "{{key_1731008360535}}"
+              }
+            }
+          ]
+        },
+        "id": "reactflow__edge-key_1731007593384custom_button-source-handle-57ac7720-ced8-42ac-84b3-d3fee0d5cd9c#0-key_1731008012254key_1731008012254"
+      },
+      {
+        "type": "custom_edge",
+        "style": {
+          "stroke": "var(--flow-color-04)"
+        },
+        "markerEnd": {
+          "color": "#5A646Es",
+          "height": 25,
+          "strokeWidth": 2,
+          "type": "arrowclosed",
+          "width": 10
+        },
+        "source": "key_1731007762330",
+        "sourceHandle": "custom_button-source-handle-43ee36f4-3d10-4dc6-a50d-df16e323921a#0",
+        "target": "key_1729790620672",
+        "targetHandle": "key_1729790620672",
+        "data": {
+          "id": "1ff0ce4e-8922-40c8-9375-e7a21c39d66d",
+          "custom": true,
+          "event_key": "43ee36f4-3d10-4dc6-a50d-df16e323921a",
+          "type": "STATE",
+          "source": "key_1731007762330",
+          "target": "key_1729790620672",
+          "conditions": []
+        },
+        "id": "reactflow__edge-key_1731007762330custom_button-source-handle-43ee36f4-3d10-4dc6-a50d-df16e323921a#0-key_1729790620672key_1729790620672"
+      },
+      {
+        "type": "custom_edge",
+        "style": {
+          "stroke": "var(--flow-color-08)"
+        },
+        "markerEnd": {
+          "color": "#5A646Es",
+          "height": 25,
+          "strokeWidth": 2,
+          "type": "arrowclosed",
+          "width": 10
+        },
+        "source": "key_1729790620672",
+        "sourceHandle": "custom_button-source-handle-6875382b-8fa7-4b43-a13f-fb4d11d81281#1",
+        "target": "key_1731007593384",
+        "targetHandle": "key_1731007593384",
+        "data": {
+          "id": "93846abc-53b9-452f-a5e1-16acbd352776",
+          "custom": true,
+          "event_key": "6875382b-8fa7-4b43-a13f-fb4d11d81281",
+          "type": "STATE",
+          "source": "key_1729790620672",
+          "target": "key_1731007593384",
+          "conditions": []
+        },
+        "id": "reactflow__edge-key_1729790620672custom_button-source-handle-6875382b-8fa7-4b43-a13f-fb4d11d81281#1-key_1731007593384key_1731007593384"
+      },
+      {
+        "type": "custom_edge",
+        "style": {
+          "stroke": "var(--flow-color-07)"
+        },
+        "markerEnd": {
+          "color": "#5A646Es",
+          "height": 25,
+          "strokeWidth": 2,
+          "type": "arrowclosed",
+          "width": 10
+        },
+        "source": "key_1731008012254",
+        "sourceHandle": "custom_button-source-handle-87cfdc84-a47e-4fae-bb07-15838984c08a#1",
+        "target": "key_1731007593384",
+        "targetHandle": "key_1731007593384",
+        "data": {
+          "id": "cb3b3304-b0b7-4571-bde7-c5b08972d984",
+          "custom": true,
+          "event_key": "87cfdc84-a47e-4fae-bb07-15838984c08a",
+          "type": "STATE",
+          "source": "key_1731008012254",
+          "target": "key_1731007593384",
+          "conditions": []
+        },
+        "id": "reactflow__edge-key_1731008012254custom_button-source-handle-87cfdc84-a47e-4fae-bb07-15838984c08a#1-key_1731007593384key_1731007593384"
+      },
+      {
+        "type": "custom_edge",
+        "style": {
+          "stroke": "var(--flow-color-03)"
+        },
+        "markerEnd": {
+          "color": "#5A646Es",
+          "height": 25,
+          "strokeWidth": 2,
+          "type": "arrowclosed",
+          "width": 10
+        },
+        "source": "key_1731007762330",
+        "sourceHandle": "custom_button-source-handle-31cddc46-4731-424d-8590-23f114e0837c#1",
+        "target": "key_1731007593384",
+        "targetHandle": "key_1731007593384",
+        "data": {
+          "id": "67013dfd-4180-4706-b10e-2865f7c19789",
+          "custom": true,
+          "event_key": "31cddc46-4731-424d-8590-23f114e0837c",
+          "type": "STATE",
+          "source": "key_1731007762330",
+          "target": "key_1731007593384",
+          "conditions": []
+        },
+        "id": "reactflow__edge-key_1731007762330custom_button-source-handle-31cddc46-4731-424d-8590-23f114e0837c#1-key_1731007593384key_1731007593384"
+      },
+      {
+        "type": "custom_edge",
+        "style": {
+          "stroke": "var(--flow-color-05)"
+        },
+        "markerEnd": {
+          "color": "#5A646Es",
+          "height": 25,
+          "strokeWidth": 2,
+          "type": "arrowclosed",
+          "width": 10
+        },
+        "source": "key_1731016186627",
+        "sourceHandle": "custom_button-source-handle-12f42298-dcc9-4b1d-91f5-98254819cd44#1",
+        "target": "key_1729790620672",
+        "targetHandle": "key_1729790620672",
+        "data": {
+          "id": "cf767cfc-7bca-4317-9b3f-4cab26ca3681",
+          "custom": true,
+          "event_key": "12f42298-dcc9-4b1d-91f5-98254819cd44",
+          "type": "STATE",
+          "source": "key_1731016186627",
+          "target": "key_1729790620672",
+          "conditions": []
+        },
+        "id": "reactflow__edge-key_1731016186627custom_button-source-handle-12f42298-dcc9-4b1d-91f5-98254819cd44#1-key_1729790620672key_1729790620672"
+      },
+      {
+        "type": "custom_edge",
+        "style": {
+          "stroke": "var(--flow-color-10)"
+        },
+        "markerEnd": {
+          "color": "#5A646Es",
+          "height": 25,
+          "strokeWidth": 2,
+          "type": "arrowclosed",
+          "width": 10
+        },
+        "source": "key_1729790620672",
+        "sourceHandle": "custom_button-source-handle-53d6f0a4-e860-4270-a780-5c18fd6fe27b#2",
+        "target": "key_1731016186627",
+        "targetHandle": "key_1731016186627",
+        "data": {
+          "id": "1e865755-9506-46f2-b8cd-5c087e4bc25f",
+          "custom": true,
+          "event_key": "53d6f0a4-e860-4270-a780-5c18fd6fe27b",
+          "type": "STATE",
+          "source": "key_1729790620672",
+          "target": "key_1731016186627",
+          "conditions": []
+        },
+        "id": "reactflow__edge-key_1729790620672custom_button-source-handle-53d6f0a4-e860-4270-a780-5c18fd6fe27b#2-key_1731016186627key_1731016186627"
+      },
+      {
+        "type": "custom_edge",
+        "style": {
+          "stroke": "var(--flow-color-10)"
+        },
+        "markerEnd": {
+          "color": "#5A646Es",
+          "height": 25,
+          "strokeWidth": 2,
+          "type": "arrowclosed",
+          "width": 10
+        },
+        "source": "key_1731016503383",
+        "sourceHandle": "custom_button-source-handle-7f9ea3bb-c7c5-4064-abc8-4c627e698dc1#0",
+        "target": "key_1731016529261",
+        "targetHandle": "key_1731016529261",
+        "data": {
+          "id": "98edb3a8-03b2-4142-9c41-8b8091a9b90a",
+          "custom": true,
+          "event_key": "7f9ea3bb-c7c5-4064-abc8-4c627e698dc1",
+          "type": "STATE",
+          "source": "key_1731016503383",
+          "target": "key_1731016529261",
+          "conditions": [
+            {
+              "condition": "",
+              "target_inputs": {
+                "key_1731016538235": "1"
+              }
+            }
+          ]
+        },
+        "id": "reactflow__edge-key_1731016503383custom_button-source-handle-7f9ea3bb-c7c5-4064-abc8-4c627e698dc1#0-key_1731016529261key_1731016529261",
+        "selected": false
+      },
+      {
+        "type": "custom_edge",
+        "style": {
+          "stroke": "var(--flow-color-04)"
+        },
+        "markerEnd": {
+          "color": "#5A646Es",
+          "height": 25,
+          "strokeWidth": 2,
+          "type": "arrowclosed",
+          "width": 10
+        },
+        "source": "key_1731016503383",
+        "sourceHandle": "custom_button-source-handle-1e9e4325-f96f-426c-91c1-589f9606b99a#1",
+        "target": "key_1731016529261",
+        "targetHandle": "key_1731016529261",
+        "data": {
+          "id": "6a575461-29c3-44cf-9566-e12323967399",
+          "custom": true,
+          "event_key": "1e9e4325-f96f-426c-91c1-589f9606b99a",
+          "type": "STATE",
+          "source": "key_1731016503383",
+          "target": "key_1731016529261",
+          "conditions": [
+            {
+              "condition": "",
+              "target_inputs": {
+                "key_1731016538235": "2"
+              }
+            }
+          ]
+        },
+        "id": "reactflow__edge-key_1731016503383custom_button-source-handle-1e9e4325-f96f-426c-91c1-589f9606b99a#1-key_1731016529261key_1731016529261"
+      },
+      {
+        "type": "custom_edge",
+        "style": {
+          "stroke": "var(--flow-color-02)"
+        },
+        "markerEnd": {
+          "color": "#5A646Es",
+          "height": 25,
+          "strokeWidth": 2,
+          "type": "arrowclosed",
+          "width": 10
+        },
+        "source": "key_1731016503383",
+        "sourceHandle": "custom_button-source-handle-80ef2de6-c29a-4278-9bef-15c21480fbe3#2",
+        "target": "key_1731016529261",
+        "targetHandle": "key_1731016529261",
+        "data": {
+          "id": "96ca391a-f309-483f-92a5-fb76f5023241",
+          "custom": true,
+          "event_key": "80ef2de6-c29a-4278-9bef-15c21480fbe3",
+          "type": "STATE",
+          "source": "key_1731016503383",
+          "target": "key_1731016529261",
+          "conditions": [
+            {
+              "condition": "",
+              "target_inputs": {
+                "key_1731016538235": "3"
+              }
+            }
+          ]
+        },
+        "id": "reactflow__edge-key_1731016503383custom_button-source-handle-80ef2de6-c29a-4278-9bef-15c21480fbe3#2-key_1731016529261key_1731016529261"
+      },
+      {
+        "type": "custom_edge",
+        "style": {
+          "stroke": "var(--flow-color-02)"
+        },
+        "markerEnd": {
+          "color": "#5A646Es",
+          "height": 25,
+          "strokeWidth": 2,
+          "type": "arrowclosed",
+          "width": 10
+        },
+        "source": "key_1731016529261",
+        "sourceHandle": "custom_button-source-handle-0f1bb690-40c5-4b74-a9b2-c24dd6f0cae4#0",
+        "target": "key_1729790620672",
+        "targetHandle": "key_1729790620672",
+        "data": {
+          "id": "e022deca-5da0-4652-9bf3-26dba7863c56",
+          "custom": true,
+          "event_key": "0f1bb690-40c5-4b74-a9b2-c24dd6f0cae4",
+          "type": "STATE",
+          "source": "key_1731016529261",
+          "target": "key_1729790620672",
+          "conditions": []
+        },
+        "id": "reactflow__edge-key_1731016529261custom_button-source-handle-0f1bb690-40c5-4b74-a9b2-c24dd6f0cae4#0-key_1729790620672key_1729790620672",
+        "selected": false
+      },
+      {
+        "type": "custom_edge",
+        "style": {
+          "stroke": "var(--flow-color-02)"
+        },
+        "markerEnd": {
+          "color": "#5A646Es",
+          "height": 25,
+          "strokeWidth": 2,
+          "type": "arrowclosed",
+          "width": 10
+        },
+        "source": "key_1729790620672",
+        "sourceHandle": "custom_button-source-handle-b6e8e3fa-f4d4-440e-92bd-fa2543ed8db9#3",
+        "target": "key_1731016503383",
+        "targetHandle": "key_1731016503383",
+        "data": {
+          "id": "cdc3c8a4-0c30-40c7-ab84-535b6503bfb4",
+          "custom": true,
+          "event_key": "b6e8e3fa-f4d4-440e-92bd-fa2543ed8db9",
+          "type": "STATE",
+          "source": "key_1729790620672",
+          "target": "key_1731016503383",
+          "conditions": []
+        },
+        "id": "reactflow__edge-key_1729790620672custom_button-source-handle-b6e8e3fa-f4d4-440e-92bd-fa2543ed8db9#3-key_1731016503383key_1731016503383",
+        "selected": false
+      },
+      {
+        "type": "custom_edge",
+        "style": {
+          "stroke": "var(--flow-color-08)"
+        },
+        "markerEnd": {
+          "color": "#5A646Es",
+          "height": 25,
+          "strokeWidth": 2,
+          "type": "arrowclosed",
+          "width": 10
+        },
+        "source": "key_1729790620672",
+        "sourceHandle": "custom_button-source-handle-d7d23f03-8cb9-4403-a100-bbf3716205fe#4",
+        "target": "key_1731017092731",
+        "targetHandle": "key_1731017092731",
+        "data": {
+          "id": "54998385-3cfc-4808-a852-af4308125e22",
+          "custom": true,
+          "event_key": "d7d23f03-8cb9-4403-a100-bbf3716205fe",
+          "type": "STATE",
+          "source": "key_1729790620672",
+          "target": "key_1731017092731",
+          "conditions": []
+        },
+        "id": "reactflow__edge-key_1729790620672custom_button-source-handle-d7d23f03-8cb9-4403-a100-bbf3716205fe#4-key_1731017092731key_1731017092731"
+      },
+      {
+        "type": "custom_edge",
+        "style": {
+          "stroke": "var(--flow-color-04)"
+        },
+        "markerEnd": {
+          "color": "#5A646Es",
+          "height": 25,
+          "strokeWidth": 2,
+          "type": "arrowclosed",
+          "width": 10
+        },
+        "source": "key_1731017092731",
+        "sourceHandle": "custom_button-source-handle-aa779b73-4df4-45b0-aa04-aa2f202b3cf3#0",
+        "target": "key_1729790620672",
+        "targetHandle": "key_1729790620672",
+        "data": {
+          "id": "008749e6-fb07-4869-8174-d40e3041084e",
+          "custom": true,
+          "event_key": "aa779b73-4df4-45b0-aa04-aa2f202b3cf3",
+          "type": "STATE",
+          "source": "key_1731017092731",
+          "target": "key_1729790620672",
+          "conditions": []
+        },
+        "id": "reactflow__edge-key_1731017092731custom_button-source-handle-aa779b73-4df4-45b0-aa04-aa2f202b3cf3#0-key_1729790620672key_1729790620672"
+      },
+      {
+        "type": "custom_edge",
+        "style": {
+          "stroke": "var(--flow-color-09)"
+        },
+        "markerEnd": {
+          "color": "#5A646Es",
+          "height": 25,
+          "strokeWidth": 2,
+          "type": "arrowclosed",
+          "width": 10
+        },
+        "source": "key_1731016186627",
+        "sourceHandle": "custom_button-source-handle-8399a18e-dd38-48f7-a103-c73f1c12f162#2",
+        "target": "key_1729790620672",
+        "targetHandle": "key_1729790620672",
+        "data": {
+          "id": "83d97dba-fc7d-4297-bc50-d5ca407e86d4",
+          "custom": true,
+          "event_key": "8399a18e-dd38-48f7-a103-c73f1c12f162",
+          "type": "STATE",
+          "source": "key_1731016186627",
+          "target": "key_1729790620672",
+          "conditions": []
+        },
+        "id": "reactflow__edge-key_1731016186627custom_button-source-handle-8399a18e-dd38-48f7-a103-c73f1c12f162#2-key_1729790620672key_1729790620672"
+      },
+      {
+        "type": "custom_edge",
+        "style": {
+          "stroke": "var(--flow-color-04)"
+        },
+        "markerEnd": {
+          "color": "#5A646Es",
+          "height": 25,
+          "strokeWidth": 2,
+          "type": "arrowclosed",
+          "width": 10
+        },
+        "source": "key_1731021998817",
+        "sourceHandle": "custom_button-source-handle-26a88ba1-42a0-4cea-9aa1-4df3f2c1924c#0",
+        "target": "key_1731021998817",
+        "targetHandle": "key_1731021998817",
+        "data": {
+          "id": "a9f6643e-85cc-426b-9720-53ef31f01e5e",
+          "custom": true,
+          "event_key": "26a88ba1-42a0-4cea-9aa1-4df3f2c1924c",
+          "type": "STATE",
+          "source": "key_1731021998817",
+          "target": "key_1731021998817",
+          "conditions": []
+        },
+        "id": "reactflow__edge-key_1731021998817custom_button-source-handle-26a88ba1-42a0-4cea-9aa1-4df3f2c1924c#0-key_1731021998817key_1731021998817"
+      },
+      {
+        "type": "custom_edge",
+        "style": {
+          "stroke": "var(--flow-color-04)"
+        },
+        "markerEnd": {
+          "color": "#5A646Es",
+          "height": 25,
+          "strokeWidth": 2,
+          "type": "arrowclosed",
+          "width": 10
+        },
+        "source": "key_1731017092731",
+        "sourceHandle": "custom_button-source-handle-ac228972-0a6f-4e70-a155-79479f07e2fc#0",
+        "target": "key_1731022629550",
+        "targetHandle": "key_1731022629550",
+        "data": {
+          "id": "6792e100-d07e-44dd-8e82-d52eca7787f3",
+          "custom": true,
+          "event_key": "ac228972-0a6f-4e70-a155-79479f07e2fc",
+          "type": "STATE",
+          "source": "key_1731017092731",
+          "target": "key_1731022629550",
+          "conditions": []
+        },
+        "id": "reactflow__edge-key_1731017092731custom_button-source-handle-ac228972-0a6f-4e70-a155-79479f07e2fc#0-key_1731022629550key_1731022629550"
+      },
+      {
+        "type": "custom_edge",
+        "style": {
+          "stroke": "var(--flow-color-05)"
+        },
+        "markerEnd": {
+          "color": "#5A646Es",
+          "height": 25,
+          "strokeWidth": 2,
+          "type": "arrowclosed",
+          "width": 10
+        },
+        "source": "key_1731017092731",
+        "sourceHandle": "custom_button-source-handle-c5d875bc-6e1c-44a9-8811-cebefb644ea2#1",
+        "target": "key_1731022659933",
+        "targetHandle": "key_1731022659933",
+        "data": {
+          "id": "a48480e7-6bc1-4639-8244-6f0fe4a0fc5f",
+          "custom": true,
+          "event_key": "c5d875bc-6e1c-44a9-8811-cebefb644ea2",
+          "type": "STATE",
+          "source": "key_1731017092731",
+          "target": "key_1731022659933",
+          "conditions": []
+        },
+        "id": "reactflow__edge-key_1731017092731custom_button-source-handle-c5d875bc-6e1c-44a9-8811-cebefb644ea2#1-key_1731022659933key_1731022659933"
+      },
+      {
+        "type": "custom_edge",
+        "style": {
+          "stroke": "var(--flow-color-07)"
+        },
+        "markerEnd": {
+          "color": "#5A646Es",
+          "height": 25,
+          "strokeWidth": 2,
+          "type": "arrowclosed",
+          "width": 10
+        },
+        "source": "key_1731016186627",
+        "sourceHandle": "custom_button-source-handle-4f090bda-0953-4171-bf6f-c517be3aec27#0",
+        "target": "key_1731438818456",
+        "targetHandle": "key_1731438818456",
+        "data": {
+          "id": "9cfb9e1e-e544-4d58-9b74-875fba273ea8",
+          "custom": true,
+          "event_key": "4f090bda-0953-4171-bf6f-c517be3aec27",
+          "type": "STATE",
+          "source": "key_1731016186627",
+          "target": "key_1731438818456",
+          "conditions": []
+        },
+        "id": "reactflow__edge-key_1731016186627custom_button-source-handle-4f090bda-0953-4171-bf6f-c517be3aec27#0-key_1731438818456key_1731438818456"
+      },
+      {
+        "type": "custom_edge",
+        "style": {
+          "stroke": "var(--flow-color-04)"
+        },
+        "markerEnd": {
+          "color": "#5A646Es",
+          "height": 25,
+          "strokeWidth": 2,
+          "type": "arrowclosed",
+          "width": 10
+        },
+        "source": "key_1731438818456",
+        "sourceHandle": "custom_button-source-handle-956bd89e-c9f3-4141-8ed7-d46418d39c07#0",
+        "target": "key_1731438818456",
+        "targetHandle": "key_1731438818456",
+        "data": {
+          "id": "2dda35ec-ba82-4f9e-9fb9-eadada9709d6",
+          "custom": true,
+          "event_key": "956bd89e-c9f3-4141-8ed7-d46418d39c07",
+          "type": "STATE",
+          "source": "key_1731438818456",
+          "target": "key_1731438818456",
+          "conditions": []
+        },
+        "id": "reactflow__edge-key_1731438818456custom_button-source-handle-956bd89e-c9f3-4141-8ed7-d46418d39c07#0-key_1731438818456key_1731438818456"
+      },
+      {
+        "type": "custom_edge",
+        "style": {
+          "stroke": "var(--flow-color-07)"
+        },
+        "markerEnd": {
+          "color": "#5A646Es",
+          "height": 25,
+          "strokeWidth": 2,
+          "type": "arrowclosed",
+          "width": 10
+        },
+        "source": "key_1731438818456",
+        "sourceHandle": "custom_button-source-handle-a647c5d2-5f4c-4225-a3ee-95dc2677a4d4#2",
+        "target": "key_1729790620672",
+        "targetHandle": "key_1729790620672",
+        "data": {
+          "id": "c4e0bc4a-5044-46cf-a19c-1621a7f69f75",
+          "custom": true,
+          "event_key": "a647c5d2-5f4c-4225-a3ee-95dc2677a4d4",
+          "type": "STATE",
+          "source": "key_1731438818456",
+          "target": "key_1729790620672",
+          "conditions": []
+        },
+        "id": "reactflow__edge-key_1731438818456custom_button-source-handle-a647c5d2-5f4c-4225-a3ee-95dc2677a4d4#2-key_1729790620672key_1729790620672"
+      },
+      {
+        "type": "custom_edge",
+        "style": {
+          "stroke": "var(--flow-color-10)"
+        },
+        "markerEnd": {
+          "color": "#5A646Es",
+          "height": 25,
+          "strokeWidth": 2,
+          "type": "arrowclosed",
+          "width": 10
+        },
+        "source": "key_1731438818456",
+        "sourceHandle": "custom_button-source-handle-71d0e180-c270-4323-a797-e73caf1f392e#1",
+        "target": "key_1731439294532",
+        "targetHandle": "key_1731439294532",
+        "data": {
+          "id": "e1a5f8a1-902d-43bd-a56c-8bf4fb99ab05",
+          "custom": true,
+          "event_key": "71d0e180-c270-4323-a797-e73caf1f392e",
+          "type": "STATE",
+          "source": "key_1731438818456",
+          "target": "key_1731439294532",
+          "conditions": []
+        },
+        "id": "reactflow__edge-key_1731438818456custom_button-source-handle-71d0e180-c270-4323-a797-e73caf1f392e#1-key_1731439294532key_1731439294532"
+      },
+      {
+        "type": "custom_edge",
+        "style": {
+          "stroke": "var(--flow-color-04)"
+        },
+        "markerEnd": {
+          "color": "#5A646Es",
+          "height": 25,
+          "strokeWidth": 2,
+          "type": "arrowclosed",
+          "width": 10
+        },
+        "source": "key_1731439294532",
+        "sourceHandle": "custom_button-source-handle-14a16cab-5a73-4e0f-8225-0582482f279c#1",
+        "target": "key_1731439294532",
+        "targetHandle": "key_1731439294532",
+        "data": {
+          "id": "f4f0d28a-aea3-40dd-8e49-d2f2eb585d4a",
+          "custom": true,
+          "event_key": "14a16cab-5a73-4e0f-8225-0582482f279c",
+          "type": "STATE",
+          "source": "key_1731439294532",
+          "target": "key_1731439294532",
+          "conditions": []
+        },
+        "id": "reactflow__edge-key_1731439294532custom_button-source-handle-14a16cab-5a73-4e0f-8225-0582482f279c#1-key_1731439294532key_1731439294532"
+      },
+      {
+        "type": "custom_edge",
+        "style": {
+          "stroke": "var(--flow-color-07)"
+        },
+        "markerEnd": {
+          "color": "#5A646Es",
+          "height": 25,
+          "strokeWidth": 2,
+          "type": "arrowclosed",
+          "width": 10
+        },
+        "source": "key_1731439294532",
+        "sourceHandle": "custom_button-source-handle-6ccea65a-4fb4-4af2-adbf-f2c9ae482936#0",
+        "target": "key_1731438818456",
+        "targetHandle": "key_1731438818456",
+        "data": {
+          "id": "f614da44-9cac-4f4f-a6a8-33a6cdb4855e",
+          "custom": true,
+          "event_key": "6ccea65a-4fb4-4af2-adbf-f2c9ae482936",
+          "type": "STATE",
+          "source": "key_1731439294532",
+          "target": "key_1731438818456",
+          "conditions": []
+        },
+        "id": "reactflow__edge-key_1731439294532custom_button-source-handle-6ccea65a-4fb4-4af2-adbf-f2c9ae482936#0-key_1731438818456key_1731438818456"
+      },
+      {
+        "type": "custom_edge",
+        "style": {
+          "stroke": "var(--flow-color-09)"
+        },
+        "markerEnd": {
+          "color": "#5A646Es",
+          "height": 25,
+          "strokeWidth": 2,
+          "type": "arrowclosed",
+          "width": 10
+        },
+        "source": "key_1731016186627",
+        "sourceHandle": "custom_button-source-handle-066fd778-c241-4dd0-a3a1-9bee16f04243#1",
+        "target": "key_1731439294532",
+        "targetHandle": "key_1731439294532",
+        "data": {
+          "id": "31d60f0d-5b46-4d9e-912c-9f972df9066e",
+          "custom": true,
+          "event_key": "066fd778-c241-4dd0-a3a1-9bee16f04243",
+          "type": "STATE",
+          "source": "key_1731016186627",
+          "target": "key_1731439294532",
+          "conditions": []
+        },
+        "id": "reactflow__edge-key_1731016186627custom_button-source-handle-066fd778-c241-4dd0-a3a1-9bee16f04243#1-key_1731439294532key_1731439294532"
+      },
+      {
+        "type": "custom_edge",
+        "style": {
+          "stroke": "var(--flow-color-08)"
+        },
+        "markerEnd": {
+          "color": "#5A646Es",
+          "height": 25,
+          "strokeWidth": 2,
+          "type": "arrowclosed",
+          "width": 10
+        },
+        "source": "key_1731439294532",
+        "sourceHandle": "custom_button-source-handle-e8ff0da8-3d85-41d2-90a3-6212a82d9ea2#2",
+        "target": "key_1729790620672",
+        "targetHandle": "key_1729790620672",
+        "data": {
+          "id": "41f76496-5dea-438a-abf6-196303a0d737",
+          "custom": true,
+          "event_key": "e8ff0da8-3d85-41d2-90a3-6212a82d9ea2",
+          "type": "STATE",
+          "source": "key_1731439294532",
+          "target": "key_1729790620672",
+          "conditions": []
+        },
+        "id": "reactflow__edge-key_1731439294532custom_button-source-handle-e8ff0da8-3d85-41d2-90a3-6212a82d9ea2#2-key_1729790620672key_1729790620672"
+      },
+      {
+        "type": "custom_edge",
+        "style": {
+          "stroke": "var(--flow-color-08)"
+        },
+        "markerEnd": {
+          "color": "#5A646Es",
+          "height": 25,
+          "strokeWidth": 2,
+          "type": "arrowclosed",
+          "width": 10
+        },
+        "source": "key_1729790620672",
+        "sourceHandle": "custom_button-source-handle-939829f6-0a91-43e7-ba8d-b176dec587ea#5",
+        "target": "key_1731440652559",
+        "targetHandle": "key_1731440652559",
+        "data": {
+          "id": "0fea25ab-18b3-4ee0-ae98-24cb46377d7c",
+          "custom": true,
+          "event_key": "939829f6-0a91-43e7-ba8d-b176dec587ea",
+          "type": "STATE",
+          "source": "key_1729790620672",
+          "target": "key_1731440652559",
+          "conditions": []
+        },
+        "id": "reactflow__edge-key_1729790620672custom_button-source-handle-939829f6-0a91-43e7-ba8d-b176dec587ea#5-key_1731440652559key_1731440652559"
+      },
+      {
+        "type": "custom_edge",
+        "style": {
+          "stroke": "var(--flow-color-05)"
+        },
+        "markerEnd": {
+          "color": "#5A646Es",
+          "height": 25,
+          "strokeWidth": 2,
+          "type": "arrowclosed",
+          "width": 10
+        },
+        "source": "key_1731440652559",
+        "sourceHandle": "custom_button-source-handle-b833b5f6-0b89-4a61-b3d8-7960a398c56f#0",
+        "target": "key_1731021998817",
+        "targetHandle": "key_1731021998817",
+        "data": {
+          "id": "94de0533-5e05-4d76-a6d5-377ae1c62244",
+          "custom": true,
+          "event_key": "b833b5f6-0b89-4a61-b3d8-7960a398c56f",
+          "type": "STATE",
+          "source": "key_1731440652559",
+          "target": "key_1731021998817",
+          "conditions": []
+        },
+        "id": "reactflow__edge-key_1731440652559custom_button-source-handle-b833b5f6-0b89-4a61-b3d8-7960a398c56f#0-key_1731021998817key_1731021998817"
+      },
+      {
+        "type": "custom_edge",
+        "style": {
+          "stroke": "var(--flow-color-04)"
+        },
+        "markerEnd": {
+          "color": "#5A646Es",
+          "height": 25,
+          "strokeWidth": 2,
+          "type": "arrowclosed",
+          "width": 10
+        },
+        "source": "key_1731021998817",
+        "sourceHandle": "custom_button-source-handle-3d92b377-0984-4763-8ac6-f02cad5bb1d3#0",
+        "target": "key_1731442179658",
+        "targetHandle": "key_1731442179658",
+        "data": {
+          "id": "0fa5f23d-11a8-49e8-b7a4-f5d62d84a091",
+          "custom": true,
+          "event_key": "3d92b377-0984-4763-8ac6-f02cad5bb1d3",
+          "type": "STATE",
+          "source": "key_1731021998817",
+          "target": "key_1731442179658",
+          "conditions": [
+            {
+              "condition": "",
+              "target_inputs": {
+                "key_1731442179663": "{{key_1731022060803}}"
+              }
+            }
+          ]
+        },
+        "id": "reactflow__edge-key_1731021998817custom_button-source-handle-3d92b377-0984-4763-8ac6-f02cad5bb1d3#0-key_1731442179658key_1731442179658"
+      },
+      {
+        "type": "custom_edge",
+        "style": {
+          "stroke": "var(--flow-color-04)"
+        },
+        "markerEnd": {
+          "color": "#5A646Es",
+          "height": 25,
+          "strokeWidth": 2,
+          "type": "arrowclosed",
+          "width": 10
+        },
+        "source": "key_1731442179658",
+        "sourceHandle": "custom_button-source-handle-bcaa72c3-1797-4f05-ac49-a0d264125b15#0",
+        "target": "key_1731442179658",
+        "targetHandle": "key_1731442179658",
+        "data": {
+          "id": "376bf033-a04a-4042-acfb-ebc157810ddc",
+          "custom": true,
+          "event_key": "bcaa72c3-1797-4f05-ac49-a0d264125b15",
+          "type": "STATE",
+          "source": "key_1731442179658",
+          "target": "key_1731442179658",
+          "conditions": [
+            {
+              "condition": "",
+              "target_inputs": {
+                "key_1731442179663": "{{key_1731442179663}}"
+              }
+            }
+          ]
+        },
+        "id": "reactflow__edge-key_1731442179658custom_button-source-handle-bcaa72c3-1797-4f05-ac49-a0d264125b15#0-key_1731442179658key_1731442179658",
+        "selected": false
+      }
+    ],
+    "viewport": {
+      "x": 359.2691113881075,
+      "y": 94.44190680656374,
+      "zoom": 0.3090775911532467
+    }
+  }
+}

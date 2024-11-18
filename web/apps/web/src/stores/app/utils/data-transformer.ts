@@ -76,10 +76,11 @@ export const genNodeData = (automata: Automata): NodeDataType => {
 };
 
 // 根据生成automata
-export const genAutomata: (flow: IFlow, nodeData: NodeDataType) => Automata = (
-  flow,
-  nodeData,
-) => {
+export const genAutomata: (
+  flow: IFlow,
+  nodeData: NodeDataType,
+  comfyui_api?: string,
+) => Automata = (flow, nodeData, comfyui_api) => {
   const initial =
     (flow.edges.find(edge => edge.source === NodeIdEnum.start)
       ?.target as Lowercase<string>) || '';
@@ -119,7 +120,12 @@ export const genAutomata: (flow: IFlow, nodeData: NodeDataType) => Automata = (
         type: nodeData[node.id]?.type || 'state',
         name: nodeData[node.id]?.name,
         render: nodeData[node.id]?.render,
-        blocks: nodeData[node.id]?.blocks,
+        blocks: nodeData[node.id]?.blocks?.map((item: any) => ({
+          ...item,
+          ...(item.widget_class_name === 'ComfyUIWidget'
+            ? { api: comfyui_api || item.api }
+            : {}),
+        })),
         inputs: transformChoicesToValues(nodeData[node.id]?.inputs || {}),
         outputs: nodeData[node.id]?.outputs,
         transitions,

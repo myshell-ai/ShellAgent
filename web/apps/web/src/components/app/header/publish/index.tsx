@@ -17,19 +17,16 @@ import {
   ScrollArea,
   SaveIcon,
 } from '@shellagent/ui';
-import { useBoolean } from 'ahooks';
 import { Dropdown } from 'antd';
 import dayjs from 'dayjs';
-import { useInjection } from 'inversify-react';
 import { isEmpty } from 'lodash-es';
-import { observer } from 'mobx-react-lite';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
 import React, { useCallback, useState } from 'react';
-
-import { GetAppVersionListResponse } from '@/services/app/type';
+import { useInjection } from 'inversify-react';
 import { AppBuilderModel } from '@/stores/app/models/app-builder.model';
+
 import { cn } from '@/utils/cn';
+import { GetAppVersionListResponse } from '@/services/app/type';
 
 import VersionSkeleton from '../skeleton';
 
@@ -149,95 +146,94 @@ const DropdownRender = ({
   );
 };
 
-function Publish({ app_id, version_name, loading }: PublishProps) {
-  const appBuilder = useInjection<AppBuilderModel>('AppBuilderModel');
-  const router = useRouter();
+export default function Publish({
+  app_id,
+  version_name,
+  loading,
+}: PublishProps) {
   const [versionName, setVersionName] = useState('');
-  const [showPublishPopover, publishPopoverActions] = useBoolean(false);
   const hiddenOperation = !!version_name;
+  const appBuilder = useInjection<AppBuilderModel>('AppBuilderModel');
 
-  const handleSave = useCallback(async () => {
+  const handleSave = useCallback(() => {
     appBuilder.saveApp(app_id);
   }, [app_id]);
 
   const handleRelease = useCallback(async () => {
-    appBuilder.releaseApp(app_id, versionName);
-    publishPopoverActions.setFalse();
-  }, [app_id, versionName]);
+    appBuilder.releaseApp(app_id);
+  }, [app_id]);
 
-  const handleRestore = useCallback(async () => {
+  const handleRestore = useCallback(() => {
     appBuilder.restoreApp(app_id);
   }, [app_id]);
 
-  const onOpenChange = (open: boolean) => {
-    if (open && app_id && !appBuilder.versionData?.data) {
-      appBuilder.getVersionList(app_id);
-    }
+  const onOpenChange = useCallback(
+    (open: boolean) => {
+      if (open && app_id && !appBuilder.versionData?.data) {
+        appBuilder.getVersionList(app_id);
+      }
+    },
+    [app_id, appBuilder.versionData?.data],
+  );
 
-    return (
-      <div>
-        {hiddenOperation ? (
-          <>
-            <Link href={`${window.location.pathname}?id=${app_id}`}>
-              <Button
-                className="w-28 px-8 ml-3"
-                size="md"
-                color="default"
-                icon={XMarkIcon}>
-                Cancel
-              </Button>
-            </Link>
+  return (
+    <div>
+      {hiddenOperation ? (
+        <>
+          <Link href={`${window.location.pathname}?id=${app_id}`}>
             <Button
-              disabled={loading}
-              loading={appBuilder.restoreLoading}
-              onClick={handleRestore}
               className="w-28 px-8 ml-3"
               size="md"
-              icon={ArrowUturnLeftIcon}>
-              Restore
+              color="default"
+              icon={XMarkIcon}>
+              Cancel
             </Button>
-          </>
-        ) : (
-          <Dropdown.Button
-            onOpenChange={onOpenChange}
-            // eslint-disable-next-line react/no-unstable-nested-components
-            dropdownRender={() => (
-              <DropdownRender
-                versionData={appBuilder.versionData}
-                getVersionLoading={appBuilder.getVersionLoading}
-                app_id={app_id}
-                versionName={versionName}
-                setVersionName={setVersionName}
-                handleRelease={handleRelease}
-                releaseLoading={appBuilder.releaseLoading}
-                handleSave={handleSave}
-                saveLoading={appBuilder.saveLoading}
-              />
-            )}
-            buttonsRender={() => {
-              return [
-                <Button
-                  size="md"
-                  className="w-20 !rounded-r-none ml-3"
-                  loading={appBuilder.saveLoading}
-                  onClick={handleSave}
-                  icon={SaveIcon}>
-                  Save
-                </Button>,
-                <Button
-                  size="md"
-                  className="w-8 border-l border-surface-primary-hovered !rounded-l-none"
-                  icon={ChevronDownIcon}
-                />,
-              ];
-            }}
-          />
-        )}
-      </div>
-    );
-  };
-
-  return <div>{onOpenChange(showPublishPopover)}</div>;
+          </Link>
+          <Button
+            disabled={loading}
+            loading={appBuilder.restoreLoading}
+            onClick={handleRestore}
+            className="w-28 px-8 ml-3"
+            size="md"
+            icon={ArrowUturnLeftIcon}>
+            Restore
+          </Button>
+        </>
+      ) : (
+        <Dropdown.Button
+          onOpenChange={onOpenChange}
+          dropdownRender={() => (
+            <DropdownRender
+              versionData={appBuilder.versionData}
+              getVersionLoading={appBuilder.getVersionLoading}
+              app_id={app_id}
+              versionName={versionName}
+              setVersionName={setVersionName}
+              handleRelease={handleRelease}
+              releaseLoading={appBuilder.releaseLoading}
+              handleSave={handleSave}
+              saveLoading={appBuilder.saveLoading}
+            />
+          )}
+          buttonsRender={() => {
+            return [
+              <Button
+                size="md"
+                className="w-20 !rounded-r-none ml-3"
+                loading={appBuilder.saveLoading}
+                onClick={handleSave}
+                icon={SaveIcon}>
+                Save
+              </Button>,
+              <Button
+                size="md"
+                className="w-8 border-l border-surface-primary-hovered !rounded-l-none"
+                icon={ChevronDownIcon}
+              />,
+            ];
+          }}
+        />
+      )}
+    </div>
+  );
 }
-
-export default observer(Publish);

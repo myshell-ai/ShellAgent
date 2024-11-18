@@ -22,6 +22,7 @@ import { AppBuilderModel } from '@/stores/app/models/app-builder.model';
 import { EmitterModel } from '@/utils/emitter.model';
 import { ModalModel } from '@/utils/modal.model';
 import { RequestModel } from '@/utils/request.model';
+import { AssistantModel } from '@/components/assistant/model';
 
 if (typeof window !== 'undefined') {
   // Client-side-only code
@@ -101,3 +102,5 @@ container
     }
     return model;
   });
+// assistant
+container.bind(AssistantModel).toSelf().inSingletonScope();

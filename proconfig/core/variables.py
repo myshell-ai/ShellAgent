@@ -19,33 +19,33 @@ class VariableBase(BaseModel):
     
 class TextVar(VariableBase):
     type: Literal["text", "string"]
-    value: str = None
+    value: str | None = None
    
 class NumVar(VariableBase):
     type: Literal["number", "integer"]
-    value: Union[int, float, NumExpression] = None
+    value: Union[int, float, NumExpression] | None = None
     
 class BoolVar(VariableBase):
     type: Literal["boolean"]
-    value: Union[bool, BoolExpression] = None
+    value: Union[bool, BoolExpression] | None = None
     
 class FileVar(VariableBase):
     type: Literal["image", "audio", "video", "text_file", "file"]
-    value: URLString = None
+    value: URLString | None = None
    
 class ArrayVar(VariableBase):
     type: Literal["array"]
     items: VariableDefinition = None
-    value: Union[List[Any], Expression] = None
+    value: Union[List[Any], Expression] | None = None
     
 class ObjectVar(VariableBase):
     type: Literal["object"]
-    properties: Dict[str, VariableDefinition] = None
-    value: Union[Dict[str, Any], Expression] = None
+    properties: Dict[str, VariableDefinition] | None = None
+    value: Union[Dict[str, Any], Expression] | None = None
     
 class UnknownVar(VariableBase):
     type: Literal["unknown"]
-    value: Union[Dict[str, Any], Expression] = None
+    value: Union[Dict[str, Any], Expression] | None = None
     
 Variable = Union[TextVar, NumVar, BoolVar, FileVar, ArrayVar, ObjectVar, UnknownVar]
 Value = Union[str, int, float, bool, URLString, List[Any], Dict[str, Any]] | None
@@ -65,13 +65,13 @@ class Validation(BaseModel):
     
 
 class ChoicesBase(Generic[T]):
-    choices: Union[List[Union[T, Expression]], Expression] = None
+    choices: Union[List[Union[T, Expression]], Expression] | None = None
     
 class InputVariableBase(VariableBase, Generic[T]):
     validations: List[Validation] = []
-    description: str = None
-    default_value: Union[T, Expression] = None
-    value: Union[T, Expression] = None
+    description: str | None = None
+    default_value: Union[T, Expression] | None = None
+    value: Union[T, Expression] | None = None
     user_input: bool = False
     source: Literal["IM", "form"] = None
     

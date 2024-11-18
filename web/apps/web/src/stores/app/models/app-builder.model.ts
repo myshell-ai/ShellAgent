@@ -67,6 +67,8 @@ export class AppBuilderModel {
 
   flowList: GetListResponse['data'] = [];
 
+  @observable versionName = '';
+
   @observable getReactFlowLoading = false;
   @observable getAutomataLoading = false;
   @observable chatRunningLoading = false;
@@ -310,7 +312,7 @@ export class AppBuilderModel {
   }
 
   @action.bound
-  async releaseApp(app_id: string, version_name: string) {
+  async releaseApp(app_id: string) {
     const reactflow = this.flowInstance?.toObject() as IFlow;
     if (!isEmpty(reactflow)) {
       try {
@@ -320,12 +322,13 @@ export class AppBuilderModel {
           reactflow,
           automata: genAutomata(reactflow, this.nodeData),
           config: this.config,
-          version_name,
+          version_name: this.versionName,
           metadata: this.metadata,
         });
         if (result.success) {
-          this.emitter.emitter.emit('message.success', 'publish success');
           await this.getVersionList(app_id);
+          this.versionName = '';
+          this.emitter.emitter.emit('message.success', 'publish success');
         }
       } catch (error) {
         this.emitter.emitter.emit('message.error', 'publish error');

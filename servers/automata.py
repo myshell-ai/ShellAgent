@@ -347,10 +347,10 @@ async def app_run(event_data: RunAppRequest):
     else:
         event_name = None
     
-    target_state = automata.initial if event_name is None else sess_state.event_mapping[event_name]["target_state"]
+    target_state = automata.initial if event_name is None else sess_state.event_mapping[event_name].target_state
     payload = {}
     if event_name is not None:
-        payload.update(sess_state.event_mapping[event_name].get("target_inputs_transition", {}))
+        payload.update(getattr(sess_state.event_mapping[event_name], "target_inputs_transition", {}))
     payload.update(event_data.form_data)
         
     sess_state.current_state = target_state
@@ -482,7 +482,7 @@ def parse_server_message(session_id, render, event_mapping, message_count):
     buttons = []
     for button_count, button in enumerate(render.get("buttons", [])):
         buttonId = f'MESSAGE_{message_count}_BUTTON_{button_count}'
-        schema, _ = build_form_schema(event_mapping[buttonId]["target_inputs"])
+        schema, _ = build_form_schema(event_mapping[buttonId].target_inputs)
         
         if schema is not None:
             actions = [MessageComponentsButtonAction(
@@ -497,7 +497,7 @@ def parse_server_message(session_id, render, event_mapping, message_count):
             content=content,
             buttonId=buttonId,
             actions=actions,
-            payload=event_mapping[buttonId]["target_inputs_transition"],
+            payload=event_mapping[buttonId].target_inputs_transition,
         )
         buttons.append(
             MessageComponentsContainer(
@@ -507,7 +507,7 @@ def parse_server_message(session_id, render, event_mapping, message_count):
         )
         
     if "CHAT" in event_mapping:
-        _, inputSetting = build_form_schema(event_mapping["CHAT"]["target_inputs"])
+        _, inputSetting = build_form_schema(event_mapping["CHAT"].target_inputs)
     else:
         inputSetting = MessageInputSetting(
             canInputText=False,
@@ -673,7 +673,8 @@ def run_automata_stateless_impl(request: MyShellRunAppRequest):
     if request.store_session == "":
         sess_state = SessionState()
     else:
-        sess_state = json.loads(request.store_session)
+        sess_state_dict = json.loads(request.store_session)
+        sess_state = SessionState.model_validate(sess_state_dict)
         
     sess_state.environ["MYSHELL_HEADERS"] = request.headers
     sess_state.environ["CURRENT_TASK_ID"] = hash_dict(request.headers)
@@ -682,6 +683,7 @@ def run_automata_stateless_impl(request: MyShellRunAppRequest):
     sess_state, render = runner.run_automata(automata, sess_state, payload)
     server_message = parse_server_message("", render, sess_state.event_mapping, sess_state.message_count)
     sess_state.message_count += 1
+    
     sess_state_str = sess_state.model_dump_json()
     
     try:
@@ -696,4 +698,13 @@ def run_automata_stateless_impl(request: MyShellRunAppRequest):
     
 @app.post('/api/app/run_stateless')
 async def run_automata_stateless(request: MyShellRunAppRequest):
-    return run_automata_stateless_impl(request)
+    try:
+        result = run_automata_stateless_impl(request)
+        return result
+    except Exception as e:
+        error_message = str(traceback.format_exc())
+        result = {
+            "error_message_detail": error_message,
+            "error_message": str(e),
+        }
+        return result

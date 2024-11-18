@@ -10,7 +10,7 @@ import { useInjection } from 'inversify-react';
 import { observer } from 'mobx-react-lite';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
-import React, { useCallback } from 'react';
+import React, { useCallback, useMemo } from 'react';
 import { toast } from 'react-toastify';
 
 import { AppBuilderChatModel } from '@/components/chat/app-builder-chat.model';
@@ -19,18 +19,33 @@ import { AppBuilderModel } from '@/stores/app/models/app-builder.model';
 import { useAppState } from '@/stores/app/use-app-state';
 import { genAutomata } from '@/stores/app/utils/data-transformer';
 import { validateAutomata } from '@/stores/app/utils/date-validate';
+import { SettingsModel } from '@/components/settings/settings.model';
+import {
+  COMFYUI_API,
+  DEFAULT_COMFYUI_API,
+} from '@/components/app/plugins/comfyui/constant';
 
 import { ExtraActions } from './extra-action';
 import Publish from './publish';
 import { ExportDialog } from '../export-dialog';
 
-export const Header: React.FC = () => {
+const settingsDisabled = process.env.NEXT_PUBLIC_DISABLE_SETTING === 'yes';
+
+export const Header: React.FC = observer(() => {
+  const model = useInjection(SettingsModel);
   const appBuilderChatModel = useInjection(AppBuilderChatModel);
   const appBuilder = useInjection<AppBuilderModel>('AppBuilderModel');
   const params = useSearchParams();
   const version_name = params.get('version_name') as string;
 
   const id = params.get('id') as string;
+
+  const comfyui_api = useMemo(() => {
+    if (settingsDisabled) {
+      return DEFAULT_COMFYUI_API;
+    }
+    return model.envs.get(COMFYUI_API) || '';
+  }, [model.envs.get(COMFYUI_API), settingsDisabled]);
 
   const { editing, setEditing } = useAppState(state => state);
 
@@ -54,7 +69,7 @@ export const Header: React.FC = () => {
 
   const handleRun = useCallback(async () => {
     const reactflow = appBuilder.flowInstance?.toObject() as IFlow;
-    const automata = genAutomata(reactflow, appBuilder.nodeData);
+    const automata = genAutomata(reactflow, appBuilder.nodeData, comfyui_api);
 
     try {
       // 数据校验
@@ -72,7 +87,12 @@ export const Header: React.FC = () => {
         },
       });
     }
-  }, [appBuilder.flowInstance, appBuilderChatModel, appBuilder.nodeData]);
+  }, [
+    appBuilder.flowInstance,
+    appBuilderChatModel,
+    appBuilder.nodeData,
+    comfyui_api,
+  ]);
 
   return (
     <div className="w-full h-full relative flex items-center justify-between p-3 border-b border-default font-medium">
@@ -145,4 +165,4 @@ export const Header: React.FC = () => {
       </div>
     </div>
   );
-};
+});

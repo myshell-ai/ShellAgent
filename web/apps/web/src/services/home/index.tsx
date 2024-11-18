@@ -11,6 +11,9 @@ import {
   DuplicateResponse,
   DeleteRequest,
   DeleteResponse,
+  TemplateListRequest,
+  TemplateListResponse,
+  SaveAsTemplateResponse,
 } from './type';
 import { APIFetch } from '../base';
 
@@ -46,6 +49,20 @@ export const duplicateItem = (params: DuplicateRequest) => {
 export const deleteItem = (params: DeleteRequest) => {
   return APIFetch.post<DeleteResponse>('/api/delete', {
     body: params,
+  });
+};
+
+// 获取模版列表
+export const getTemplateList = (params: TemplateListRequest) => {
+  return APIFetch.post<TemplateListResponse>('/api/template_list', {
+    body: params,
+  });
+};
+
+// 保存模版
+export const saveAsTemplate = (app_id: string) => {
+  return APIFetch.post<SaveAsTemplateResponse>('/api/save_as_template', {
+    body: { app_id },
   });
 };
 
