@@ -4,6 +4,7 @@ import {
   patchImageUrl,
   patchMessageActionPopupForm,
   popupFormAction,
+  removeImageUrlPrefix,
   serverMessageToMessage,
 } from './app-builder-chat-utils';
 
@@ -987,7 +988,7 @@ describe('app-builder-chat-utils', () => {
       {
         "buttonId": "MESSAGE_2_BUTTON_0",
         "form_data": {
-          "key_1731719509453": "/api/files/input/v2-02b0a4b75023d456044fac01de6132ce_b.jpg",
+          "key_1731719509453": "/input/v2-02b0a4b75023d456044fac01de6132ce_b.jpg",
           "x_ms_name_key_1731719509453": "v2-02b0a4b75023d456044fac01de6132ce_b.jpg",
           "x_ms_size_key_1731719509453": 47536,
         },
@@ -997,5 +998,14 @@ describe('app-builder-chat-utils', () => {
         "text": "",
       }
     `);
+  });
+
+  it('patch remove image url prefix', () => {
+    const ret = removeImageUrlPrefix(
+      '/api/files/input/v2-02b0a4b75023d456044fac01de6132ce_b.jpg',
+    );
+    expect(ret).toMatchInlineSnapshot(
+      `"/input/v2-02b0a4b75023d456044fac01de6132ce_b.jpg"`,
+    );
   });
 });

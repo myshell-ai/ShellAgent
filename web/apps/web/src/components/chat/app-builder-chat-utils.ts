@@ -1,4 +1,5 @@
 import { EmbedObjStatus } from '@/services/app/message-type';
+import { mapValues } from 'lodash-es';
 import {
   ButtonFnParams,
   EntityInfo,
@@ -144,6 +145,14 @@ export function patchImageUrl(url?: string) {
   }
 }
 
+export function removeImageUrlPrefix(url?: string) {
+  if (url?.startsWith('http') === false && url?.indexOf('/api/files/') > -1) {
+    return url.replace('/api/files/', '');
+  } else {
+    return url;
+  }
+}
+
 export function patchEmbedObjs(embedObjs: any[]) {
   return embedObjs.map(embedObj => {
     embedObj.url = patchImageUrl(embedObj.url);
@@ -220,8 +229,14 @@ export function patchMessageActionPopupForm(
     messageType: 15,
     text: '',
     message: '',
-    form_data: JSON.parse(
-      buttonInteractionParams.componentInputMessage || '{}',
+    form_data: mapValues(
+      JSON.parse(buttonInteractionParams.componentInputMessage || '{}'),
+      v => {
+        if (typeof v === 'string') {
+          return removeImageUrlPrefix(v);
+        }
+        return v;
+      },
     ),
   };
 }
