@@ -1,5 +1,10 @@
 import { EmbedObjStatus } from '@/services/app/message-type';
-import { EntityInfo, Message, RunningErrorEnum } from 'myshell-bundled-chat';
+import {
+  ButtonFnParams,
+  EntityInfo,
+  Message,
+  RunningErrorEnum,
+} from 'myshell-bundled-chat';
 
 export const testUserId = 'test-app-builder';
 
@@ -202,5 +207,21 @@ function convertDtoC(d: any): any {
       ],
     },
     inputSetting: d.inputSetting,
+  };
+}
+
+export function patchMessageActionPopupForm(
+  buttonInteractionParams: ButtonFnParams,
+  session_id: string,
+) {
+  return {
+    session_id,
+    buttonId: buttonInteractionParams.buttonId,
+    messageType: 15,
+    text: '',
+    message: '',
+    form_data: JSON.parse(
+      buttonInteractionParams.componentInputMessage || '{}',
+    ),
   };
 }

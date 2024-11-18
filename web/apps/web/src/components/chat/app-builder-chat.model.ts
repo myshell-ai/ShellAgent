@@ -2,7 +2,7 @@ import {
   EventSourceMessage,
   fetchEventSource,
 } from '@microsoft/fetch-event-source';
-import { SlashCommandInput } from 'myshell-bundled-chat';
+import { ButtonFnParams, IMLocalFile } from 'myshell-bundled-chat';
 import { Automata } from '@shellagent/pro-config';
 import { ChatNewModel } from '@shellagent/ui';
 import axios from 'axios';
@@ -11,6 +11,7 @@ import { action, makeObservable, observable, runInAction } from 'mobx';
 import { JsonSchema7 } from 'node_modules/@shellagent/form-engine/src/types/jsonSchema7';
 import {
   patchImageUrl,
+  patchMessageActionPopupForm,
   serverMessageToMessage,
 } from './app-builder-chat-utils';
 import type { ServerMessage } from '../../services/app/message-type';
@@ -45,7 +46,11 @@ export class AppBuilderChatModel {
     @inject(EmitterModel) private emitter: EmitterModel,
     @inject(ChatNewModel) public chatNew: ChatNewModel,
   ) {
-    this.chatNew.handlers.sendTextMessagePost = async (text: string) => {
+    this.chatNew.handlers.sendTextMessagePost = async (
+      text: string,
+      files?: IMLocalFile[],
+      requestParams?: any,
+    ) => {
       const appReq: RunAppRequest = {
         session_id: this.session_id!,
         messageType: 1,
@@ -55,13 +60,7 @@ export class AppBuilderChatModel {
       await this.sendToServer(appReq);
     };
     this.chatNew.handlers.sendButtonInteractionMessagePost = async (
-      buttonInteractionParams: {
-        actionType: string;
-        buttonId?: string;
-        componentInputMessage?: string;
-        text?: string;
-        imSlashCommandInput?: SlashCommandInput;
-      },
+      buttonInteractionParams: ButtonFnParams,
       requestParams?: any,
     ) => {
       let appReq: RunAppRequest;
@@ -69,16 +68,10 @@ export class AppBuilderChatModel {
         buttonInteractionParams.actionType ===
         'MESSAGE_COMPONENTS_BUTTON_ACTION_TYPE_POP_UP_FORM'
       ) {
-        appReq = {
-          session_id: this.session_id!,
-          buttonId: buttonInteractionParams.buttonId,
-          messageType: 15,
-          text: '',
-          message: '',
-          form_data: JSON.parse(
-            buttonInteractionParams.componentInputMessage || '{}',
-          ),
-        };
+        appReq = patchMessageActionPopupForm(
+          buttonInteractionParams,
+          this.session_id!,
+        );
       } else {
         appReq = {
           session_id: this.session_id!,

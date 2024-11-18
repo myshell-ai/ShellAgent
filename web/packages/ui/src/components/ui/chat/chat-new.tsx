@@ -232,7 +232,7 @@ export const ChatNew = observer<ChatNewProps>(({ model }) => {
         requestParams?: any,
       ) => {
         sendTextMessage(text, files, requestParams);
-        model.handlers.sendTextMessagePost?.(text);
+        model.handlers.sendTextMessagePost?.(text, files, requestParams);
       },
       clearMemory: async () => {
         model.clearMemory();

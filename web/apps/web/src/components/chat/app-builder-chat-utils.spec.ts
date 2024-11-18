@@ -1,6 +1,8 @@
+import { ButtonFnParams } from 'myshell-bundled-chat';
 import {
   patchImageUpload,
   patchImageUrl,
+  patchMessageActionPopupForm,
   popupFormAction,
   serverMessageToMessage,
 } from './app-builder-chat-utils';
@@ -935,5 +937,65 @@ describe('app-builder-chat-utils', () => {
     );
 
     expect(patchImageUrl(undefined)).toMatchInlineSnapshot(`undefined`);
+  });
+
+  it('patch im upload files', () => {
+    const text = '';
+    const files = [
+      {
+        file: {
+          path: 'v2-02b0a4b75023d456044fac01de6132ce_b.jpg',
+        },
+        id: '2dd41233-69b2-49f8-b88a-888431dc70ae',
+        type: 'MESSAGE_METADATA_TYPE_IMAGE_FILE',
+        uiData: {
+          mimeType: 'IMAGE',
+          orginalMIMEType: 'image/jpeg',
+          contentType: 'CONTENT_TYPE_IMAGE_JPG',
+          name: 'v2-02b0a4b75023d456044fac01de6132ce_b.jpg',
+          ex: 'jpg',
+          serverType: 'MESSAGE_METADATA_TYPE_IMAGE_FILE',
+          icon: 'other',
+          type: 'Rich Text File',
+          bg: '#6F8BB5',
+          iconUrl:
+            'https://www.myshellstatic.com/image/bot/icon/2023112610/embed_icon/Other.svg',
+        },
+        status: 'SUCCESS',
+        mediaFileMetadata: {
+          width: 600,
+          height: 800,
+          thumbnail: '',
+        },
+        url: '/api/files/input/v2-02b0a4b75023d456044fac01de6132ce_b.jpg',
+      },
+    ];
+    // TODO wait for protocol alignment, hard to patch
+  });
+
+  it('patch lui form image', () => {
+    const buttonInteractionParams = {
+      actionType: 'MESSAGE_COMPONENTS_BUTTON_ACTION_TYPE_POP_UP_FORM',
+      buttonId: 'MESSAGE_2_BUTTON_0',
+      msgId: '2',
+      text: 'Information',
+      componentInputMessage:
+        '{"key_1731719509453":"/api/files/input/v2-02b0a4b75023d456044fac01de6132ce_b.jpg","x_ms_name_key_1731719509453":"v2-02b0a4b75023d456044fac01de6132ce_b.jpg","x_ms_size_key_1731719509453":47536}',
+    } as ButtonFnParams;
+    const ret = patchMessageActionPopupForm(buttonInteractionParams, 'test');
+    expect(ret).toMatchInlineSnapshot(`
+      {
+        "buttonId": "MESSAGE_2_BUTTON_0",
+        "form_data": {
+          "key_1731719509453": "/api/files/input/v2-02b0a4b75023d456044fac01de6132ce_b.jpg",
+          "x_ms_name_key_1731719509453": "v2-02b0a4b75023d456044fac01de6132ce_b.jpg",
+          "x_ms_size_key_1731719509453": 47536,
+        },
+        "message": "",
+        "messageType": 15,
+        "session_id": "test",
+        "text": "",
+      }
+    `);
   });
 });

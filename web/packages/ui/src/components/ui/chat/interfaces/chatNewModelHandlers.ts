@@ -1,16 +1,18 @@
-import { SlashCommandInput } from 'myshell-bundled-chat';
+import {
+  ButtonFnParams,
+  IMLocalFile,
+  SlashCommandInput,
+} from 'myshell-bundled-chat';
 
 export interface ChatNewModelHandlers {
-  sendTextMessagePost: (text: string) => void | Promise<void>;
+  sendTextMessagePost: (
+    text: string,
+    files?: IMLocalFile[],
+    requestParams?: any,
+  ) => void | Promise<void>;
   clearMemoryPost: () => void | Promise<void>;
   sendButtonInteractionMessagePost: (
-    buttonInteractionParams: {
-      actionType: string;
-      buttonId?: string;
-      componentInputMessage?: string;
-      text?: string;
-      imSlashCommandInput?: SlashCommandInput;
-    },
+    buttonInteractionParams: ButtonFnParams,
     requestParams?: any,
   ) => void;
   overrideUploadFileToS3WithProgress: (file: File) => Promise<{
