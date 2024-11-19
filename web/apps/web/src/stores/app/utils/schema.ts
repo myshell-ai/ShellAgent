@@ -366,6 +366,7 @@ const stateConfigSchema: ISchema = {
           },
         },
         'x-type': 'Inline',
+        'x-draggable': true,
         'x-deletable': true,
         'x-edit-dialog': {
           type: 'object',
