@@ -4,6 +4,7 @@ import '../../reflect-metadata-client-side';
 import { FlowEngine, FlowRef } from '@shellagent/flow-engine';
 import { enableMapSet } from 'immer';
 import { useInjection } from 'inversify-react';
+import { observer } from 'mobx-react-lite';
 import dynamic from 'next/dynamic';
 import { useSearchParams } from 'next/navigation';
 import { useEffect, useRef } from 'react';
@@ -19,7 +20,6 @@ import { ImageCanvasDialog } from '@/components/image-canvas/open-image-canvas';
 import { AppBuilderModel } from '@/stores/app/models/app-builder.model';
 import { useAppState } from '@/stores/app/use-app-state';
 import { useWorkflowStore } from '@/stores/workflow/workflow-provider';
-import { observer } from 'mobx-react-lite';
 
 enableMapSet();
 
@@ -46,62 +46,71 @@ interface FlowEngineWrapperProps {
   versionName: string;
 }
 
-const FlowEngineWrapper = observer(({ appId, versionName }: FlowEngineWrapperProps) => {
-  const appBuilder = useInjection<AppBuilderModel>('AppBuilderModel');
-  const flowRef = useRef<FlowRef>(null);
-  const appBuilderChatModel = useInjection(AppBuilderChatModel);
-  const getWidgetList = useWorkflowStore(state => state.getWidgetList);
-  const flowInstance = flowRef?.current?.getFlowInstance();
+const FlowEngineWrapper = observer(
+  ({ appId, versionName }: FlowEngineWrapperProps) => {
+    const appBuilder = useInjection<AppBuilderModel>('AppBuilderModel');
+    const flowRef = useRef<FlowRef>(null);
+    const appBuilderChatModel = useInjection(AppBuilderChatModel);
+    const getWidgetList = useWorkflowStore(state => state.getWidgetList);
+    const flowInstance = flowRef?.current?.getFlowInstance();
 
-  const { resetState } = useAppState();
+    const { resetState } = useAppState();
 
-  useEffect(() => {
-    appBuilderChatModel.closeRunDrawer();
-  }, [appId]);
+    useEffect(() => {
+      appBuilderChatModel.closeRunDrawer();
+    }, [appId]);
 
-  // 退出页面初始化状态
-  useEffect(() => {
-    return () => {
-      resetState();
-    };
-  }, []);
+    // 退出页面初始化状态
+    useEffect(() => {
+      return () => {
+        resetState();
+      };
+    }, []);
 
-  useEffect(() => {
-    appBuilder.getAutomata({ app_id: appId, version_name: versionName });
-    getWidgetList({});
-    appBuilder.getFlowList({ type: 'workflow' });
-  }, [appId, versionName]);
+    useEffect(() => {
+      appBuilder.getAutomata({ app_id: appId, version_name: versionName });
+      getWidgetList({});
+      appBuilder.getFlowList({ type: 'workflow' });
+    }, [appId, versionName]);
 
-
-  useEffect(() => {
-    console.log('flowInstance>>>', flowInstance)
-    if (flowInstance) {
-      appBuilder.setFlowInstance(flowInstance);
-      appBuilder.getReactFlow({ app_id: appId, version_name: versionName }, flowInstance);
-    }
-  }, [flowInstance, appId, versionName]);
-
-  console.log('loading>>>', appBuilder.getAutomataLoading || appBuilder.getReactFlowLoading)
-
-  return (
-    <FlowEngine
-      listLoading={false}
-      loading={appBuilder.getAutomataLoading || appBuilder.getReactFlowLoading}
-      ref={flowRef}
-      nodeTypes={nodeTypes}
-      edgeTypes={edgeTypes}
-      materialList={materialList}
-      footerExtra={<ListFooterExtra />}
-      header={
-        <>
-          <FlowHeader appId={appId} versionName={versionName} />
-          <StateConfigSheet />
-          <TransitionSheet />
-        </>
+    useEffect(() => {
+      console.log('flowInstance>>>', flowInstance);
+      if (flowInstance) {
+        appBuilder.setFlowInstance(flowInstance);
+        appBuilder.getReactFlow(
+          { app_id: appId, version_name: versionName },
+          flowInstance,
+        );
       }
-    />
-  );
-});
+    }, [flowInstance, appId, versionName]);
+
+    console.log(
+      'loading>>>',
+      appBuilder.getAutomataLoading || appBuilder.getReactFlowLoading,
+    );
+
+    return (
+      <FlowEngine
+        listLoading={false}
+        loading={
+          appBuilder.getAutomataLoading || appBuilder.getReactFlowLoading
+        }
+        ref={flowRef}
+        nodeTypes={nodeTypes}
+        edgeTypes={edgeTypes}
+        materialList={materialList}
+        footerExtra={<ListFooterExtra />}
+        header={
+          <>
+            <FlowHeader appId={appId} versionName={versionName} />
+            <StateConfigSheet />
+            <TransitionSheet />
+          </>
+        }
+      />
+    );
+  },
+);
 
 export default function AppBuilderDetail() {
   const params = useSearchParams();
