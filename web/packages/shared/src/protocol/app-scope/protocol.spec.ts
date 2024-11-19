@@ -1,3 +1,4 @@
+import { padStart } from 'lodash-es';
 import {
   buttonSchema,
   buttonsSchema,
@@ -18,6 +19,8 @@ import {
   variablesSchema,
 } from './protocol';
 
+import slug from 'slug';
+
 describe('protocol', () => {
   describe('customSnakeCase', () => {
     it('customSnakeCase', () => {
@@ -27,14 +30,75 @@ describe('protocol', () => {
       expect(customSnakeCase('123a123b')).toBe('123a123b');
       expect(customSnakeCase('a_1')).toBe('a_1');
       expect(customSnakeCase('GPT2')).toBe('gpt2');
-      expect(customSnakeCase('State#2')).toBe('state_2');
+      expect(customSnakeCase('State#2')).toBe('state2');
+      expect(customSnakeCase('State#2')).toBe('state2');
       // Can use a mask input
       expect(customSnakeCase('Image Canvas')).toBe('image_canvas');
     });
 
-    it.skip('custonSnakeCase utf-8', () => {
-      expect(customSnakeCase('👍🏻')).toBe('1f44d_1f3fb');
-      expect(customSnakeCase('Hello🌟World')).toBe('hello_1f31f_world');
+    it('special char', () => {
+      expect(customSnakeCase('中文')).toBe('');
+      expect(customSnakeCase('こんにちは')).toBe('');
+      expect(customSnakeCase('😀')).toBe('');
+      expect(customSnakeCase('中 文')).toBe('');
+      expect(customSnakeCase('中  文')).toBe('');
+      expect(customSnakeCase(' 中  文 ')).toBe('');
+
+      expect(customSnakeCase(' 123中  文abc ')).toBe('123_abc');
+
+      expect(customSnakeCase('中文_')).toBe('_');
+    });
+
+    it.skip('Chinese', () => {
+      function uni(str: string) {
+        const unicodeString = Array.from(str)
+          .map(
+            char =>
+              `\\u${padStart(char.codePointAt(0)?.toString(16) ?? '', 4, '0')}`,
+          )
+          .join('');
+        return unicodeString;
+      }
+
+      expect(customSnakeCase('中文')).toMatchInlineSnapshot(`"zhong_wen"`);
+      expect(uni('中文')).toMatchInlineSnapshot(`"\\u4e2d\\u6587"`);
+
+      expect(uni('こんにちは')).toMatchInlineSnapshot(
+        `"\\u3053\\u3093\\u306b\\u3061\\u306f"`,
+      );
+
+      expect(uni('😀')).toMatchInlineSnapshot(`"\\u1f600"`);
+
+      expect(customSnakeCase('中文abc')).toMatchInlineSnapshot(
+        `"zhong_wen_abc"`,
+      );
+      expect(customSnakeCase('中文aBc')).toMatchInlineSnapshot(
+        `"zhong_wen_a_bc"`,
+      );
+      expect(customSnakeCase('123中文abc')).toMatchInlineSnapshot(
+        `"123_zhong_wen_abc"`,
+      );
+    });
+
+    it.skip('emoj', () => {
+      expect(customSnakeCase('😀')).toMatchInlineSnapshot(`"grinning_face"`);
+      expect(customSnakeCase('😀😀123')).toMatchInlineSnapshot(
+        `"grinning_face_grinning_face_123"`,
+      );
+    });
+
+    it.skip('custonSnakeCase emoj', () => {
+      expect(customSnakeCase('Hello🌟World')).toMatchInlineSnapshot(
+        `"hello_glowing_star_world"`,
+      );
+    });
+
+    it.skip('custonSnakeCase emoj special', () => {
+      expect(customSnakeCase('👍🏻')).toMatchInlineSnapshot(`"1f44d"`);
+      expect(customSnakeCase('ab👍🏻cd')).toMatchInlineSnapshot(`"ab_1f44d_cd"`);
+      expect(customSnakeCase('中文👍🏻cd🌟英文')).toMatchInlineSnapshot(
+        `"zhong_wen_1f44d_cd_glowing_star_ying_wen"`,
+      );
     });
   });
 

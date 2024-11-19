@@ -18,10 +18,12 @@ import {
   duplicateStateSchema,
   removeStateParamSchema,
   refsSchema,
+  reorderTaskSchema,
 } from './scope';
 import { reservedStateNameSchema } from '../node';
 import {
   cloneDeep,
+  find,
   isArray,
   isEmpty,
   isNumber,
@@ -30,6 +32,7 @@ import {
   omitBy,
   pickBy,
   set,
+  some,
   transform,
 } from 'lodash-es';
 import { z } from 'zod';
@@ -413,6 +416,13 @@ export function getBeforeAndAfterNodes(
   };
 }
 
+/**
+ * @deprecated remove edge affect nothing
+ * keep function, but nowhere ref
+ * @param refs
+ * @param param
+ * @returns
+ */
 export function removeEdge(
   refs: Refs,
   param: z.infer<typeof removeEdgeScheam>,
@@ -534,12 +544,16 @@ export function hanldeRefScene(refs: Refs, evt: HandleRefSceneEvent) {
       return removeRefOptsPrefix(refs, evt.params);
 
     case 'remove_edge':
-      return removeEdge(refs, evt.params);
+      // PRODUCT UPDATE: remove edge affect nothing
+      return refs;
+    // return removeEdge(refs, evt.params);
 
     case 'duplicate_state':
       return duplicateState(refs, evt.params);
     case 'remove_state':
       return removeState(refs, evt.params);
+    case 'reorder_task':
+      return reorderTasks(refs, evt.params);
     default:
       // @ts-expect-error
       throw new Error(`Not implemented, ${evt.scene}`);
@@ -563,4 +577,67 @@ export function removeEmptyLeaves(obj: Record<string, unknown>) {
     },
     {},
   );
+}
+
+export function findMissingPrevious(orig: string[], cur: string[]) {
+  const missingItems = cur.map(item => {
+    const origIndex = orig.indexOf(item);
+    const curIndex = cur.indexOf(item);
+    const missing = orig
+      .slice(0, origIndex)
+      .filter(i => cur.slice(0, curIndex).indexOf(i) === -1);
+    return { item, missing };
+  });
+  return missingItems;
+}
+
+export function reorderTasks(
+  refs: Refs,
+  params: z.infer<typeof reorderTaskSchema>,
+) {
+  const prefix = 'block';
+  const { stateName, currentTasks, previousTasks } = params;
+  const missingItems = findMissingPrevious(previousTasks, currentTasks);
+  const ret = mapValues(refs, (v1, k1) => {
+    if (k1 === stateName) {
+      return mapValues(v1, (v2, k2) => {
+        const s = find(missingItems, a => {
+          return k2.startsWith(`${prefix}.${a.item}`) && a.missing.length > 0;
+        });
+        if (s) {
+          s.missing.forEach(m => {
+            const p = `${stateName}.${prefix}.${m}`;
+            if (typeof v2.ref === 'string' && v2.ref.startsWith(p)) {
+              delete v2.ref;
+            }
+            if (Array.isArray(v2.ui)) {
+              v2.ui = v2.ui
+                .map(i => {
+                  if (i.startsWith(p)) {
+                    return undefined;
+                  }
+                  return i;
+                })
+                .filter(i => i != null);
+            }
+
+            if (Array.isArray(v2.raw)) {
+              v2.raw = v2.raw
+                .map(i => {
+                  if (i.startsWith(p)) {
+                    return undefined;
+                  }
+                  return i;
+                })
+                .filter(i => i != null);
+            }
+          });
+        }
+        return v2;
+      });
+    } else {
+      return v1;
+    }
+  });
+  return ret;
 }
