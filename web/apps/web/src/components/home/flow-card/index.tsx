@@ -34,8 +34,8 @@ import { Metadata, Type } from '@/services/home/type';
 import { cn } from '@/utils/cn';
 
 import { DeleteDialog } from '../delete-dialog';
-import { SaveTemplateDialog } from '../save-template-dialog';
 import { EditDialog } from '../edit-dialog';
+import { SaveTemplateDialog } from '../save-template-dialog';
 
 const relativeTime = require('dayjs/plugin/relativeTime');
 

@@ -13,17 +13,17 @@ import { useSearchParams } from 'next/navigation';
 import React, { useCallback, useMemo } from 'react';
 import { toast } from 'react-toastify';
 
+import {
+  COMFYUI_API,
+  DEFAULT_COMFYUI_API,
+} from '@/components/app/plugins/comfyui/constant';
 import { AppBuilderChatModel } from '@/components/chat/app-builder-chat.model';
+import { SettingsModel } from '@/components/settings/settings.model';
 import { editItem } from '@/services/home';
 import { AppBuilderModel } from '@/stores/app/models/app-builder.model';
 import { useAppState } from '@/stores/app/use-app-state';
 import { genAutomata } from '@/stores/app/utils/data-transformer';
 import { validateAutomata } from '@/stores/app/utils/date-validate';
-import { SettingsModel } from '@/components/settings/settings.model';
-import {
-  COMFYUI_API,
-  DEFAULT_COMFYUI_API,
-} from '@/components/app/plugins/comfyui/constant';
 
 import { ExtraActions } from './extra-action';
 import Publish from './publish';

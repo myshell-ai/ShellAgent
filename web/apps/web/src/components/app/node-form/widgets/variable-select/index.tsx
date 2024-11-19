@@ -49,9 +49,7 @@ const VariableSelect = (props: VariableSelectProps) => {
           ? removeBrackets(val)
           : contextReg.test(val)
             ? removeBrackets(val)
-            : `${stateId}.${parentKey ? `${parentKey}.` : ''}${removeBrackets(
-                val,
-              )}`;
+            : `${stateId}.${parentKey ? `${parentKey}.` : ''}${removeBrackets(val)}`;
 
       // TODO 引用state output有问题
       //   {

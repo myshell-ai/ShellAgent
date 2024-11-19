@@ -8,6 +8,7 @@ import { Container, interfaces } from 'inversify';
 import { toJS } from 'mobx';
 import { toast } from 'react-toastify';
 
+import { AssistantModel } from '@/components/assistant/model';
 import { AppBuilderChatModel } from '@/components/chat/app-builder-chat.model';
 import { DownloadModel } from '@/components/download/download.model';
 import { OpenImageCanvasModel } from '@/components/image-canvas/open-image-canvas.model';
@@ -22,7 +23,6 @@ import { AppBuilderModel } from '@/stores/app/models/app-builder.model';
 import { EmitterModel } from '@/utils/emitter.model';
 import { ModalModel } from '@/utils/modal.model';
 import { RequestModel } from '@/utils/request.model';
-import { AssistantModel } from '@/components/assistant/model';
 
 if (typeof window !== 'undefined') {
   // Client-side-only code

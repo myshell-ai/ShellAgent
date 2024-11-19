@@ -1,5 +1,5 @@
 import type { IFlow, ReactFlowInstance } from '@shellagent/flow-engine';
-import type { TValues, TFieldMode } from '@shellagent/form-engine';
+import type { TFieldMode } from '@shellagent/form-engine';
 import { CustomKey, CustomEventName, Automata } from '@shellagent/pro-config';
 import {
   RefSceneEnum,
@@ -10,7 +10,7 @@ import {
   hanldeRefScene,
   Refs,
 } from '@shellagent/shared/protocol/app-scope';
-import type { FieldValues, FormRef } from '@shellagent/ui';
+import type { FieldValues } from '@shellagent/ui';
 import { injectable, inject } from 'inversify';
 import { cloneDeep, isEmpty } from 'lodash-es';
 import { action, makeObservable, observable, runInAction } from 'mobx';
@@ -29,9 +29,8 @@ import type {
 import { fetchList as fetchFlowList } from '@/services/home';
 import type { GetListRequest, GetListResponse } from '@/services/home/type';
 import emitter, { EventType } from '@/stores/app/models/emitter';
-import { genNodeData } from '@/stores/app/utils/data-transformer';
+import { genNodeData, genAutomata } from '@/stores/app/utils/data-transformer';
 import type { NodeDataType, Config, Metadata } from '@/types/app/types';
-import { genAutomata } from '@/stores/app/utils/data-transformer';
 import { EmitterModel } from '@/utils/emitter.model';
 
 import {
@@ -278,8 +277,6 @@ export class AppBuilderModel {
       );
     } else if (evt.scene === RefSceneEnum.Enum.remove_state) {
       handleRemoveState(updatedNodeData, evt.params.stateName);
-    } else if (evt.scene === RefSceneEnum.Enum.remove_edge) {
-      // 待实现
     }
 
     runInAction(() => {
@@ -301,7 +298,6 @@ export class AppBuilderModel {
       runInAction(() => {
         this.versionData = result;
       });
-      return result;
     } catch (error: any) {
       this.emitter.emitter.emit('message.error', error.message);
     } finally {
