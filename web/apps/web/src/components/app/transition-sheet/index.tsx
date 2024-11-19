@@ -130,7 +130,9 @@ const TransitionSheet: React.FC<{}> = () => {
   return (
     <Drawer
       style={{
-        transform: `translateX(${appBuilderChatModel.runOpen ? `-${runDrawerWidth + 24}px` : '-12px'}) translateY(12px)`,
+        transform: `translateX(${
+          appBuilderChatModel.runOpen ? `-${runDrawerWidth + 24}px` : '-12px'
+        }) translateY(12px)`,
         height: 'calc(100% - 24px)',
       }}
       className="rounded-lg translate-x-[-12px] translate-y-3"

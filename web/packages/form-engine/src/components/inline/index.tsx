@@ -227,7 +227,7 @@ const Inline: React.FC<IInlineProps> = props => {
         ref={preview as any}>
         {xDraggable ? (
           <div
-            className="w-6 h-6 flex items-center justify-center cursor-grab"
+            className="w-6 flex items-center justify-center cursor-grab"
             role="Handle"
             data-handler-id={handlerId}
             ref={dragRef}>

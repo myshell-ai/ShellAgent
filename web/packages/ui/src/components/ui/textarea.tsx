@@ -17,7 +17,9 @@ const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(
       />
       {maxLength ? (
         <div className="absolute text-right bottom-5 right-4 border-default">
-          <span className="text-subtlest text-sm">{`${props.value?.toString()?.length || 0}/${maxLength}`}</span>
+          <span className="text-subtlest text-sm">{`${
+            props.value?.toString()?.length || 0
+          }/${maxLength}`}</span>
         </div>
       ) : null}
     </div>
