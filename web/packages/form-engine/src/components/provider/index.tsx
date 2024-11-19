@@ -1,6 +1,13 @@
 import { useFormContext } from '@shellagent/ui';
 import { omit, set, merge } from 'lodash-es';
-import React, { createContext, useContext, useCallback, useState } from 'react';
+import React, {
+  createContext,
+  useContext,
+  useCallback,
+  useState,
+  useRef,
+  useEffect,
+} from 'react';
 
 import {
   SchemaReactComponents,
@@ -51,12 +58,21 @@ export const useFormEngineContext = () => {
   return useContext(FormEngineContext);
 };
 
-const Counter: { [path: string]: number } = {};
-
 export const FormEngineProvider: React.FC<IFormEngineProviderProps> = props => {
   const { children, fields, components, parent, layout, onStatusChange } =
     props;
   const { getValues, setValue } = useFormContext();
+  const counterRef = useRef<{ [path: string]: number }>({});
+
+  // TODO计数器的初始化
+  // useEffect(() => {
+  //   if (parent) {
+  //     const parentValue = getValues(parent);
+  //     if (parentValue && typeof parentValue === 'object') {
+  //       counterRef.current[parent] = Object.keys(parentValue).length;
+  //     }
+  //   }
+  // }, [parent]);
 
   const [modeMap, setModeMap] = useState(props.modeMap || {});
 
@@ -129,12 +145,15 @@ export const FormEngineProvider: React.FC<IFormEngineProviderProps> = props => {
         let parsedKey = xKey;
 
         if (Array.isArray(variables) && variables.indexOf('counter') !== -1) {
-          if (isNaN(Counter[path])) {
-            Counter[path] = 1;
+          if (isNaN(counterRef.current[path])) {
+            counterRef.current[path] = 1;
           } else {
-            Counter[path]++;
+            counterRef.current[path]++;
           }
-          parsedKey = parsedKey.replace('{{counter}}', String(Counter[path]));
+          parsedKey = parsedKey.replace(
+            '{{counter}}',
+            String(counterRef.current[path]),
+          );
         }
 
         variables.forEach(variable => {

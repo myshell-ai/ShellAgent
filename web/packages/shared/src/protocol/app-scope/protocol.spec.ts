@@ -30,8 +30,8 @@ describe('protocol', () => {
       expect(customSnakeCase('123a123b')).toBe('123a123b');
       expect(customSnakeCase('a_1')).toBe('a_1');
       expect(customSnakeCase('GPT2')).toBe('gpt2');
-      expect(customSnakeCase('State#2')).toBe('state2');
-      expect(customSnakeCase('State#2')).toBe('state2');
+      expect(customSnakeCase('State#2')).toBe('state_2');
+      expect(customSnakeCase('State#2')).toBe('state_2');
       // Can use a mask input
       expect(customSnakeCase('Image Canvas')).toBe('image_canvas');
     });

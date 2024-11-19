@@ -174,18 +174,23 @@ export const FlowStoreProvider = ({ children }: FlowStoreProviderProps) => {
   const onAddNode = useCallback(
     ({ type, position, data, isCopy }: AddNodeProps) => {
       const { name, display_name: displayName } = data;
-      const lastNodeName =
-        findLast(nodes, node => node.data.name === name)?.data.display_name ||
-        '';
-      const lastIndex = parseNodeName(lastNodeName as NodeName).index || 0;
+      // 找出所有同名节点
+      const sameNameNodes = nodes.filter(node =>
+        node.data.display_name?.startsWith(displayName),
+      );
 
-      const index = (nodeIndex[name] || lastIndex) + 1;
-      setNodeIndex({
-        ...nodeIndex,
-        [name]: index,
+      // 获取最大编号
+      let maxIndex = 0;
+      sameNameNodes.forEach(node => {
+        const match = node.data.display_name?.match(/#(\d+)$/);
+        if (match) {
+          const num = parseInt(match[1]);
+          maxIndex = Math.max(maxIndex, num);
+        }
       });
 
-      const nodeName = isCopy ? displayName : getNodeName(displayName, index);
+      // 生成新的节点名称
+      const nodeName = isCopy ? displayName : `${displayName}#${maxIndex + 1}`;
       const id = customSnakeCase(nodeName);
 
       setNodes(
@@ -209,7 +214,7 @@ export const FlowStoreProvider = ({ children }: FlowStoreProviderProps) => {
           ] as any,
       );
     },
-    [nodeIndex, nodes],
+    [nodes],
   );
 
   const onDelNode = useCallback(({ id }: DelNodeProps) => {

@@ -6,13 +6,11 @@ import { customSnakeCase, getTaskDisplayName } from '@shellagent/shared/utils';
 import { Button, useFormContext, Drag } from '@shellagent/ui';
 import { useClickAway } from 'ahooks';
 import { Dropdown } from 'antd';
-import { useInjection } from 'inversify-react';
 import { useState, useRef, useCallback } from 'react';
 import { useDrag, useDrop } from 'react-dnd';
 
 import { materialList } from '@/components/app/constants';
 import { TaskList } from '@/components/app/task-list';
-import { AppBuilderModel } from '@/stores/app/models/app-builder.model';
 import { useAppState } from '@/stores/app/use-app-state';
 
 const TaskItem = ({
@@ -128,7 +126,6 @@ const TasksConfig = ({
   const [open, setOpen] = useState(false);
   const { getValues } = useFormContext();
   const values = getValues(name) as Task[];
-  const appBuilder = useInjection<AppBuilderModel>('AppBuilderModel');
 
   const { currentStateId, setInsideSheetOpen } = useAppState(state => state);
 
