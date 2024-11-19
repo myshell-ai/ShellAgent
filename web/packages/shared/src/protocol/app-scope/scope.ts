@@ -6,10 +6,11 @@ import {
   taskSchema,
   variablesSchema,
 } from './protocol';
+import { reservedStateNameSchema } from '../node';
 
 export const edgeSchema = z.object({
-  source: customKeySchema,
-  target: customKeySchema,
+  source: z.union([customKeySchema, reservedStateNameSchema]),
+  target: z.union([customKeySchema, reservedStateNameSchema]),
 });
 export type Edge = z.infer<typeof edgeSchema>;
 

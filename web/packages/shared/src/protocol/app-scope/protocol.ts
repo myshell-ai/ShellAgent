@@ -6,6 +6,7 @@ import {
 } from '@shellagent/pro-config';
 import { customSnakeCase } from '../../utils/utils';
 import { z } from 'zod';
+import { reservedStateNameSchema } from '../node';
 
 /**
  * only process Space, not continous Uppercase letters
@@ -232,8 +233,8 @@ export const scopesSchema = z.object({
     }),
     edges: z.array(
       z.object({
-        target: customKeySchema,
-        source: customKeySchema,
+        target: z.union([customKeySchema, reservedStateNameSchema]),
+        source: z.union([customKeySchema, reservedStateNameSchema]),
       }),
     ),
     states: z.record(customKeySchema, stateSchema),
