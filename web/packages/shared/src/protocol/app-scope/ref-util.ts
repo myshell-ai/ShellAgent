@@ -618,7 +618,7 @@ export function reorderTasks(
                   }
                   return i;
                 })
-                .filter(i => i != null);
+                .filter((i): i is string => i !== undefined);
             }
 
             if (Array.isArray(v2.raw)) {
@@ -629,7 +629,7 @@ export function reorderTasks(
                   }
                   return i;
                 })
-                .filter(i => i != null);
+                .filter((i): i is string => i !== undefined);
             }
           });
         }

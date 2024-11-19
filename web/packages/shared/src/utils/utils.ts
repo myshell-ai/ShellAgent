@@ -17,14 +17,15 @@ function emojiUnicode(emoji: string) {
   return comp.toString(16);
 }
 
-export const removeBrackets = (key: string): string => {
-  return key.replace(/[^a-zA-Z0-9_ ]/g, '');
-};
-
 export function customSnakeCase(s: string) {
   if (!s) return s;
-  s = removeBrackets(s);
+  // 移除所有非字母数字下划线和空格的字符
+  s = s.replace(/[^a-zA-Z0-9_ ]/g, '');
   s = s.trim();
   const r = s.split(/(?<![A-Z])(?=[A-Z])|\#|\s+/);
   return r.map(i => i.toLowerCase()).join('_');
 }
+
+export const removeBrackets = (key: string): string => {
+  return key.replace(/\{\{\s*(.*?)\s*\}\}/g, '$1');
+};
