@@ -52,6 +52,7 @@ export default {
           'hoverd-static': 'var(--surface-hovered-static)',
           pressed: 'var(--surface-pressed)',
           'pressed-static': 'var(--surface-pressed-static)',
+          special: 'var(--surface-container-special-default)',
           disabled: 'var(--surface-disabled)',
           'disabled-static': 'var(--surface-disabled-static)',
           'search-field': 'var(--surface-search-field)',
