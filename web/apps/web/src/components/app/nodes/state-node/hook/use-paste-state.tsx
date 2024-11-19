@@ -12,7 +12,7 @@ import {
   isEventTargetInputArea,
 } from '@/utils/common-helper';
 
-import { AppBuilderModel } from '../../../../../stores/app/models/app-builder.model';
+import { AppBuilderModel } from '@/stores/app/models/app-builder.model';
 
 export const usePasteState = ({
   enabeKeyboard = false,
@@ -37,7 +37,9 @@ export const usePasteState = ({
     const index = Object.values(appBuilder.nodeData).map(
       value => value.type === 'state',
     )?.length;
-    const displayName = `${data?.display_name} Copy${index > 0 ? `#${index}` : ''}`;
+    const displayName = `${data?.display_name} Copy${
+      index > 0 ? `#${index}` : ''
+    }`;
     const newId = customSnakeCase(displayName) as Lowercase<string>;
 
     appBuilder.setNodeData({ id: newId, data });

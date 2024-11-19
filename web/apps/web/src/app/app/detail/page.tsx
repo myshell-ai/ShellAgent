@@ -74,7 +74,6 @@ const FlowEngineWrapper = observer(
     }, [appId, versionName]);
 
     useEffect(() => {
-      console.log('flowInstance>>>', flowInstance);
       if (flowInstance) {
         appBuilder.setFlowInstance(flowInstance);
         appBuilder.getReactFlow(
@@ -83,11 +82,6 @@ const FlowEngineWrapper = observer(
         );
       }
     }, [flowInstance, appId, versionName]);
-
-    console.log(
-      'loading>>>',
-      appBuilder.getAutomataLoading || appBuilder.getReactFlowLoading,
-    );
 
     return (
       <FlowEngine
