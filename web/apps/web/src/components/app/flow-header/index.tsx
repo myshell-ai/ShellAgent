@@ -18,10 +18,10 @@ dayjs.extend(relativeTime);
 
 const FlowHeader = ({
   appId,
-  version_name,
+  versionName,
 }: {
   appId: string;
-  version_name: string;
+  versionName: string;
 }) => {
   const [autoSavedTime, setAutoSavedTime] = useState('');
   const [autoSavedSuccess, setAutoSavedSuccess] = useState(true);
@@ -84,18 +84,18 @@ const FlowHeader = ({
 
   useEffect(() => {
     if (
-      !version_name &&
+      !versionName &&
       !appBuilder.getAutomataLoading &&
       !appBuilder.fetchFlowListLoading
     ) {
       handleAutoSave();
     }
-  }, [debouncedValues, version_name]);
+  }, [debouncedValues, versionName]);
 
   return (
     <div className="absolute right-3 w-full text-right z-10">
       <div className="h-5">
-        {autoSavedTime && !version_name && autoSavedSuccess ? (
+        {autoSavedTime && !versionName && autoSavedSuccess ? (
           <Text size="sm" color="subtlest">
             Auto Saved {dayjs(autoSavedTime).format('HH:mm:ss')}
           </Text>
@@ -105,9 +105,9 @@ const FlowHeader = ({
             Auto Saved Error
           </Text>
         ) : null}
-        {version_name ? (
+        {versionName ? (
           <Text size="sm" color="subtlest">
-            Current preview version: {version_name}
+            Current preview version: {versionName}
           </Text>
         ) : null}
       </div>

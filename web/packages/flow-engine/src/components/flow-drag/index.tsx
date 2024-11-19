@@ -171,4 +171,4 @@ const MemoizedFlowDag = memo(FlowDag, (prevProps, nextProps) =>
   isEqual(prevProps.loading, nextProps.loading),
 );
 
-export default FlowDag;
+export default MemoizedFlowDag;
