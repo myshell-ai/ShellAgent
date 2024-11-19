@@ -7,6 +7,7 @@ import { FormRef } from '@shellagent/ui';
 import { useInjection } from 'inversify-react';
 import { get, cloneDeep, isEqual, debounce, isNil } from 'lodash-es';
 import { useEffect, useRef, useCallback } from 'react';
+import { produce } from 'immer';
 
 import { AppBuilderModel } from '@/stores/app/models/app-builder.model';
 import { useSchemaContext } from '@/stores/app/schema-provider';
@@ -270,29 +271,59 @@ export function useFieldWatch(formRef: React.RefObject<FormRef>) {
   // 处理 render 变化的函数
   const handleRenderChange = useCallback(
     debounce((newValue: TValues, prevValue: TValues, name: string) => {
-      const oldButtons = get(prevValue, [
-        reservedKeySchema.Enum.render,
-        reservedKeySchema.Enum.buttons,
-      ]);
-      const newButtons = get(newValue, [
-        reservedKeySchema.Enum.render,
-        reservedKeySchema.Enum.buttons,
-      ]);
+      if (
+        name ===
+        `${reservedKeySchema.Enum.render}.${reservedKeySchema.Enum.buttons}`
+      ) {
+        // 删除button
+        const oldButtons = get(prevValue, [
+          reservedKeySchema.Enum.render,
+          reservedKeySchema.Enum.buttons,
+        ]);
+        const newButtons = get(newValue, [
+          reservedKeySchema.Enum.render,
+          reservedKeySchema.Enum.buttons,
+        ]);
+        getDiffPath(oldButtons, newButtons).forEach(diff => {
+          const { type, path } = diff;
+          switch (type) {
+            case DiffTypeEnum.Deleted:
+              appBuilder.hanldeRefScene({
+                scene: RefSceneEnum.Enum.remove_ref_opts,
+                params: { paths: [`${stateId}.${name}.${path}`] },
+              });
+              break;
+            default:
+              break;
+          }
+        });
+      } else if (
+        name.startsWith(
+          `${reservedKeySchema.Enum.render}.${reservedKeySchema.Enum.buttons}`,
+        )
+      ) {
+        const oldButtonPayloadValue = get(
+          prevValue,
+          `${name}.on_click.payload`,
+        );
+        const newButtonPayloadValue = get(newValue, `${name}.on_click.payload`);
 
-      getDiffPath(oldButtons, newButtons).forEach(diff => {
-        const { type, path, oldValue, newValue: diffNewValue } = diff;
+        const oldButtonsValue = get(prevValue, [
+          reservedKeySchema.Enum.render,
+          reservedKeySchema.Enum.buttons,
+        ]);
+        const newButtonsValue = get(newValue, [
+          reservedKeySchema.Enum.render,
+          reservedKeySchema.Enum.buttons,
+        ]);
 
-        switch (type) {
-          case DiffTypeEnum.Deleted:
-            appBuilder.hanldeRefScene({
-              scene: RefSceneEnum.Enum.remove_ref_opts,
-              params: { paths: [`${stateId}.${path}`] },
-            });
-            break;
+        // 修改button名称
+        getDiffPath(oldButtonsValue, newButtonsValue).forEach(diff => {
+          const { type, path, newValue: diffNewValue, oldValue } = diff;
 
-          case DiffTypeEnum.Modified:
+          if (type === DiffTypeEnum.Modified) {
             if (path?.split('.').pop() === 'content') {
-              const newName = getNewName(newButtons, 'Buttons');
+              const newName = getNewName(newButtonsValue, 'Buttons');
               const event = `${customSnakeCase(
                 `${diffNewValue || newName}`,
               )}.on_click`;
@@ -302,7 +333,6 @@ export function useFieldWatch(formRef: React.RefObject<FormRef>) {
               formRef.current?.setValue(`${name}.id`, event);
               formRef.current?.setValue(`${name}.on_click.event`, event);
 
-              // TODO 处理payload rename
               appBuilder.hanldeRefScene({
                 scene: RefSceneEnum.Enum.rename_ref_opt,
                 params: {
@@ -311,12 +341,76 @@ export function useFieldWatch(formRef: React.RefObject<FormRef>) {
                 },
               });
             }
+          }
+        });
 
-            break;
-          default:
-            break;
-        }
-      });
+        getDiffPath(oldButtonPayloadValue, newButtonPayloadValue).forEach(
+          diff => {
+            const { type, path, oldValue, newValue: diffNewValue } = diff;
+
+            switch (type) {
+              case DiffTypeEnum.Deleted:
+                appBuilder.hanldeRefScene({
+                  scene: RefSceneEnum.Enum.remove_ref_opts,
+                  params: { paths: [`${stateId}.${path}`] },
+                });
+                break;
+              case DiffTypeEnum.Modified:
+                if (
+                  path?.split('.').pop() === 'name' &&
+                  !isNil(oldValue) &&
+                  !isNil(diffNewValue) &&
+                  oldValue !== diffNewValue
+                ) {
+                  const pathParts = path.split('.');
+                  const oldPayloadKey = pathParts[pathParts.length - 2];
+                  const newName = getNewName(
+                    newButtonPayloadValue,
+                    'Buttons Payload',
+                  );
+
+                  const values = formRef.current?.getValues();
+                  const buttons = get(values, 'render.buttons', []);
+                  const buttonIndex = parseInt(name.split('.')[2]);
+
+                  const newButtons = produce(buttons, (draft: any) => {
+                    const newPayloadKey = customSnakeCase(
+                      diffNewValue || newName,
+                    );
+                    const oldPayloadValue = get(
+                      draft[buttonIndex]?.on_click?.payload,
+                      oldPayloadKey,
+                    );
+
+                    if (oldPayloadValue) {
+                      draft[buttonIndex].on_click.payload[newPayloadKey] = {
+                        ...oldPayloadValue,
+                        name: diffNewValue || newName,
+                      };
+                      delete draft[buttonIndex].on_click.payload[oldPayloadKey];
+                    }
+                  });
+
+                  formRef.current?.setValue('render.buttons', newButtons);
+                }
+              case DiffTypeEnum.Renamed:
+                // 修改payload name
+                appBuilder.hanldeRefScene({
+                  scene: RefSceneEnum.Enum.rename_ref_opt,
+                  params: {
+                    oldPath: `${stateId}.${path}`,
+                    newPath: `${stateId}.${customSnakeCase(
+                      diffNewValue?.name || '',
+                    )}`,
+                  },
+                });
+                break;
+              default:
+                break;
+            }
+          },
+        );
+      }
     }, 300),
     [],
   );

@@ -46,7 +46,5 @@ export const useSelectOptions = (name?: string) => {
     currentEdegData?.event_key as CustomEventName | undefined,
   );
 
-  console.log('refOptions>>', refOptions);
-
   return refOptions;
 };

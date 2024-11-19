@@ -1422,7 +1422,7 @@ const buttonConfigSchema: ISchema = {
                 'x-title-component-props': {
                   showDialog: true,
                   dialogConfig: {
-                    title: 'Edit Context',
+                    title: 'Edit Payload',
                     schema: {
                       type: 'object',
                       properties: {
