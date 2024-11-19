@@ -4,6 +4,10 @@
     "image-canvas": {
       "signature": "d6d65885ab636e962897b652948eb01a",
       "pure": true
+    },
+    "myshell-bundled-chat": {
+      "signature": "a559fab51d05f3ee5fe7ae0ab79a8482",
+      "pure": true
     }
   }
 }

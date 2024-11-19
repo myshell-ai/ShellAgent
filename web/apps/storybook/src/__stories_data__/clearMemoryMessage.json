@@ -1,0 +1,41 @@
+{
+    "id": "1856539384440025088",
+    "userId": "3537713",
+    "referenceText": "",
+    "text": "",
+    "audioUrl": "",
+    "duration": 0,
+    "audioSpeed": 1,
+    "status": "DONE",
+    "type": "RESET",
+    "createdDateUnix": "1731468456737",
+    "updatedDateUnix": "1731468456737",
+    "entityId": "1719284610",
+    "replyId": "0",
+    "feedbackState": "Normal",
+    "feedbackIssues": [],
+    "asyncJobInfo": null,
+    "runningWidgetInfo": [],
+    "runningError": null,
+    "handled": false,
+    "imageGenMessageResponse": null,
+    "inputSetting": null,
+    "uploadSetting": null,
+    "componentContainer": null,
+    "embedObjs": [],
+    "slashCommandInput": null,
+    "referenceSource": [],
+    "recommendatioQuestions": {
+        "question": []
+    },
+    "regeneratedMessages": [],
+    "extraInfo": {
+        "consumeEnergy": 0,
+        "canEdit": false,
+        "canRegenerate": false,
+        "runningWidgetInfo": [],
+        "bgm": null,
+        "senderInfo": null
+    },
+    "isLlmBot": false
+}

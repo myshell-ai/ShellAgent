@@ -17,6 +17,9 @@ module.exports = {
       ...config.resolve.alias,
       '@/styles/md-viewer.scss': false,
       '@/common/assets/audio-playing.json': false,
+      '@/components/rewards-center/reward-redemption/components/redemption-success-modal/assets/images/reward-success-bg.png': false,
+      '@/common/assets/images/workshop/BotDetailBg.png': false,
+      langium: false,
     };
     config.resolve.fallback = {
       ...config.resolve?.fallback,
@@ -40,7 +43,10 @@ module.exports = {
       },
       {
         source: '/models_searcher/:path*',
-        destination: `${process.env.NEXT_PUBLIC_MODELS_SEARCHER || 'https://shellagent.myshell.ai/models_searcher'}/:path*`,
+        destination: `${
+          process.env.NEXT_PUBLIC_MODELS_SEARCHER ||
+          'https://shellagent.myshell.ai/models_searcher'
+        }/:path*`,
       },
     ];
   },

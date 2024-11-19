@@ -22,7 +22,6 @@
     "@microsoft/fetch-event-source": "^2.0.1",
     "@monaco-editor/react": "^4.6.0",
     "@paralleldrive/cuid2": "^2.2.2",
-    "@shellagent/chat-engine": "workspace:*",
     "@shellagent/flow-engine": "workspace:*",
     "@shellagent/form-engine": "workspace:*",
     "@shellagent/pro-config": "workspace:*",
@@ -40,6 +39,7 @@
     "formik": "^2.4.6",
     "github-markdown-css": "^5.7.0",
     "image-canvas": "workspace:*",
+    "myshell-bundled-chat": "workspace:*",
     "immer": "^10.1.1",
     "inversify": "^6.0.2",
     "inversify-react": "^1.1.1",
@@ -80,7 +80,8 @@
     "uuid": "^10.0.0",
     "zod": "^3.23.8",
     "zustand": "^4.5.4",
-    "zustand-computed-state": "^0.1.8"
+    "zustand-computed-state": "^0.1.8",
+    "@chakra-ui/react": "2.8.0"
   },
   "devDependencies": {
     "@shellagent/eslint-config": "workspace:*",
