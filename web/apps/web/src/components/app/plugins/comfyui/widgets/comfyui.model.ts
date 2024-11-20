@@ -1,12 +1,13 @@
-import { injectable } from 'inversify';
+import { inject, injectable } from 'inversify';
 import { action, computed, makeObservable, observable } from 'mobx';
 import { isEmpty } from 'lodash-es';
+import { ModalModel } from '@/utils/modal.model.ts';
 
 @injectable()
 export class ComfyUIModel {
   @observable location?: string = undefined;
 
-  constructor() {
+  constructor(@inject(ModalModel) public iframeDialog: ModalModel) {
     makeObservable(this);
   }
 
