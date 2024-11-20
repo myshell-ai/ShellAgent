@@ -47,7 +47,7 @@ function convertErrorServerMessage(
     },
     runningError: {
       errorType: 'RUNNING_ERROR_TYPE_ENGINE_ERROR' as RunningErrorEnum,
-      errorDetail: `${serverMessage.output.error_message}\n${serverMessage.output.error_message_detai}`,
+      errorDetail: `${serverMessage.output.error_message}\n${serverMessage.output.error_message_detail}`,
     },
   };
 }
@@ -107,13 +107,13 @@ export function popupFormAction(actions: any[]) {
         componentsFunction: [],
         componentsInput: Object.keys(action.formSchema.properties).map(k => {
           const prop = action.formSchema.properties[k];
-          const type =
+          let type =
             typeMap[prop.type] || 'BOT_IM_COMPONENT_INPUT_TYPE_UNSPECIFIED';
-          return {
+          let ret = {
             type,
             name: action.formSchema.properties[k].name,
-            description: '',
-            stringDefault: '',
+            description: action.formSchema.properties[k].description,
+            stringDefault: action.formSchema.properties[k].default,
             numberDefault: 0,
             hasNumberLimitation: false,
             integerDefault: 0,
@@ -131,6 +131,21 @@ export function popupFormAction(actions: any[]) {
             fileUploadSizeMaximum: 0,
             stringCharLengthLimitation: 0,
           };
+          if (prop.type === 'string' && Array.isArray(prop.enum)) {
+            type = 'BOT_IM_COMPONENT_INPUT_TYPE_TEXT_SELECTOR';
+            ret = Object.assign(ret, {
+              type,
+              textSelectorDefault: action.formSchema.properties[k].default,
+              textSelectorAllOf: action.formSchema.properties[k].enum.map(
+                (e: string) => ({
+                  value: e,
+                  iconUrl: '',
+                  label: e,
+                }),
+              ),
+            });
+          }
+          return ret;
         }),
       },
     };
