@@ -19,6 +19,7 @@ import { EmitterModel } from '@/utils/emitter.model';
 import { ModalModel } from '@/utils/modal.model';
 import { RequestModel } from '@/utils/request.model';
 import { AssistantModel } from '@/components/assistant/model';
+import { ComfyUIModel } from '@/components/app/plugins/comfyui/widgets/comfyui.model.ts';
 
 export const container = new Container();
 
@@ -74,6 +75,11 @@ container.bind(DownloadModel).toSelf().inSingletonScope();
 // image canvas
 container.bind('ImageCanvasModel').to(ImageCanvasModel).inSingletonScope();
 container.bind(OpenImageCanvasModel).toSelf().inSingletonScope();
+
+container
+  .bind<ComfyUIModel>('ComfyUIModel')
+  .to(ComfyUIModel)
+  .inSingletonScope();
 
 // assistant
 container.bind(AssistantModel).toSelf().inSingletonScope();

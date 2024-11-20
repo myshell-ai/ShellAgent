@@ -1,31 +1,38 @@
+/** @jsxImportSource @emotion/react */
+
 import {
-  UploadOutlined,
-  ReloadOutlined,
   ExportOutlined,
-  FullscreenOutlined,
   FullscreenExitOutlined,
+  FullscreenOutlined,
+  ReloadOutlined,
+  UploadOutlined,
 } from '@ant-design/icons';
-import { Button, useFormContext, Spinner } from '@shellagent/ui';
+import { Button, Spinner, useFormContext } from '@shellagent/ui';
 import { useRequest } from 'ahooks';
-import { Modal, Upload, Tooltip } from 'antd';
+import { Form, Input, Modal, Tooltip, Upload } from 'antd';
 import { useInjection } from 'inversify-react';
 import React, {
-  useState,
-  useRef,
-  useEffect,
   useCallback,
+  useEffect,
   useMemo,
+  useRef,
+  useState,
 } from 'react';
 import { toast } from 'react-toastify';
+import { FolderOpenIcon } from '@heroicons/react/24/outline';
 
 import { SettingsModel } from '@/components/settings/settings.model';
 
 import { CheckDialog } from '../check-dialog';
-import { COMFYUI_API, MessageType, DEFAULT_COMFYUI_API } from '../constant';
+import { COMFYUI_API, DEFAULT_COMFYUI_API, MessageType } from '../constant';
 import emitter, { EventType } from '../emitter';
-import { saveComfy, uploadComfy, getFile } from '../services';
+import { getFile, saveComfy, uploadComfy } from '../services';
 import type { SaveResponse } from '../services/type';
-import { isValidUrl, checkDependency } from '../utils';
+import { checkDependency, isValidUrl } from '../utils';
+import { Box, Flex } from 'react-system';
+import { css } from '@emotion/react';
+import { observer } from 'mobx-react-lite';
+import { ComfyUIModel } from './comfyui.model';
 
 const settingsDisabled = process.env.NEXT_PUBLIC_DISABLE_SETTING === 'yes';
 
@@ -44,7 +51,7 @@ export const ComfyUIEditor = ({
   >(null);
   const iframeRef = useRef<HTMLIFrameElement>(null);
   const { getValues, setValue } = useFormContext();
-  const model = useInjection(SettingsModel);
+  const settingsModel = useInjection(SettingsModel);
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [messageDetailOpen, setMessageDetailOpen] = useState(false);
   const [messageDetail, setMessageDetail] = useState<string | null>(null);
@@ -53,8 +60,8 @@ export const ComfyUIEditor = ({
     if (settingsDisabled) {
       return DEFAULT_COMFYUI_API;
     }
-    return model.envs.get(COMFYUI_API) || '';
-  }, [model.envs.get(COMFYUI_API), settingsDisabled]);
+    return settingsModel.envs.get(COMFYUI_API) || '';
+  }, [settingsModel.envs.get(COMFYUI_API), settingsDisabled]);
 
   const showModal = () => {
     setModalOpen(true);
@@ -259,7 +266,7 @@ export const ComfyUIEditor = ({
   };
 
   const showSettings = () => {
-    model.modal.open();
+    settingsModel.modal.open();
   };
 
   const showSettingButton = useMemo(() => {
@@ -270,7 +277,7 @@ export const ComfyUIEditor = ({
   }, [value, settingsDisabled]);
 
   const reloadSettings = async () => {
-    const settings = await model.loadSettingsEnv();
+    const settings = await settingsModel.loadSettingsEnv();
     const api = settings?.envs?.find(env => env.key === COMFYUI_API)?.value;
     if (api && isValidUrl(api)) {
       setValue('api', api);
@@ -338,9 +345,7 @@ export const ComfyUIEditor = ({
 
   return (
     <div>
-      <Button size="sm" className="w-full" onClick={showModal}>
-        Edit in ComfyUI
-      </Button>
+      <ComfyUIEditorButton />
       <Modal
         title={
           <div className="flex justify-between items-center">
@@ -460,3 +465,33 @@ export const ComfyUIEditor = ({
     </div>
   );
 };
+
+const ComfyUIEditorButton = observer(props => {
+  const model = useInjection<ComfyUIModel>('ComfyUIModel');
+  return (
+    <>
+      <Form.Item
+        label="Location"
+        css={css`
+          margin-bottom: 12px;
+        `}>
+        <Flex alignItems="center">
+          <Input
+            value={model.location}
+            onChange={e => {
+              model.setLocation(e.target.value);
+            }}
+            placeholder="File path of extended ComfyUI json"
+          />
+          <Box ml={1}>
+            <FolderOpenIcon className="w-5 h-5 text-icon-brand" />
+          </Box>
+        </Flex>
+      </Form.Item>
+
+      <Button size="sm" className="w-full">
+        {model.buttonName}
+      </Button>
+    </>
+  );
+});
