@@ -1,6 +1,12 @@
 import { FormRef } from '@shellagent/ui';
 
-import { DiffTypeEnum, getDiffPath, replaceKey, getNewKey } from './form-utils';
+import {
+  DiffTypeEnum,
+  getDiffPath,
+  replaceKey,
+  getNewKey,
+  getExisiedKey,
+} from './form-utils';
 
 describe('form-utils', () => {
   describe('replaceKey', () => {
@@ -1629,6 +1635,53 @@ describe('form-utils', () => {
         name: '2',
         key: '2',
       });
+    });
+  });
+
+  describe('getExisiedKey', () => {
+    it('should find key in array values', () => {
+      const values = [
+        { name: 'test1', value: 1 },
+        { name: 'test2', value: 2 },
+      ];
+
+      const result = getExisiedKey({ values, name: 'test2' });
+      expect(result).toBe('test2');
+    });
+
+    it('should return undefined if name not found in array', () => {
+      const values = [
+        { name: 'test1', value: 1 },
+        { name: 'test2', value: 2 },
+      ];
+
+      const result = getExisiedKey({ values, name: 'test3' });
+      expect(result).toBeUndefined();
+    });
+
+    it('should find key in object values', () => {
+      const values = {
+        key1: { name: 'test1', value: 1 },
+        key2: { name: 'test2', value: 2 },
+      };
+
+      const result = getExisiedKey({ values, name: 'test2' });
+      expect(result).toBe('key2');
+    });
+
+    it('should return undefined if name not found in object', () => {
+      const values = {
+        key1: { name: 'test1', value: 1 },
+        key2: { name: 'test2', value: 2 },
+      };
+
+      const result = getExisiedKey({ values, name: 'test3' });
+      expect(result).toBeUndefined();
+    });
+
+    it('should handle empty values', () => {
+      expect(getExisiedKey({ values: [], name: 'test' })).toBeUndefined();
+      expect(getExisiedKey({ values: {}, name: 'test' })).toBeUndefined();
     });
   });
 });

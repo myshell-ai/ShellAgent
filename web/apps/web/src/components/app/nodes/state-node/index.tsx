@@ -173,12 +173,7 @@ const StateNode: React.FC<NodeProps<StateNodeType>> = ({ selected, data }) => {
   );
 
   useEventEmitter(EventType.STATE_FORM_CHANGE, eventData => {
-    const currentFormData = stateFormRef.current?.getValues();
-    if (
-      eventData.id === data.id &&
-      eventData.type === 'StateConfigSheet' &&
-      !isEqual(currentFormData, eventData.data)
-    ) {
+    if (eventData.id === data.id && eventData.type === 'StateConfigSheet') {
       setFormKey(eventData.data);
     }
   });

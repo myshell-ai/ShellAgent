@@ -14,7 +14,13 @@ import { useSchemaContext } from '@/stores/app/schema-provider';
 import { contextTempReg } from '@/stores/app/utils/data-transformer';
 import { refReg } from '@/utils/common-helper';
 
-import { replaceKey, getDiffPath, DiffTypeEnum, getNewKey } from './form-utils';
+import {
+  replaceKey,
+  getDiffPath,
+  DiffTypeEnum,
+  getNewKey,
+  getExisiedKey,
+} from './form-utils';
 
 export function useFieldWatch(formRef: React.RefObject<FormRef>) {
   const prevValuesRef = useRef<Record<string, TValues | undefined>>({});
@@ -127,17 +133,15 @@ export function useFieldWatch(formRef: React.RefObject<FormRef>) {
             break;
 
           case DiffTypeEnum.Renamed:
-            const { key: newKey } = getNewKey({
-              name: diffNewValue?.name as string,
-              nameKey: 'name',
+            const key = getExisiedKey({
               values: newInputs,
-              prefix: 'Inputs',
+              name: diffNewValue?.name,
             });
             appBuilder.hanldeRefScene({
               scene: RefSceneEnum.Enum.rename_ref_opt,
               params: {
                 oldPath: `${stateId}.${path}`,
-                newPath: `${stateId}.${newKey}`,
+                newPath: `${stateId}.${key}`,
               },
             });
             break;
@@ -194,17 +198,15 @@ export function useFieldWatch(formRef: React.RefObject<FormRef>) {
             }
             break;
           case DiffTypeEnum.Renamed:
-            const { key: newKey } = getNewKey({
-              name: diffNewValue?.name as string,
-              nameKey: 'name',
+            const key = getExisiedKey({
               values: newOutputs,
-              prefix: 'Outputs',
+              name: diffNewValue?.name as string,
             });
             appBuilder.hanldeRefScene({
               scene: RefSceneEnum.Enum.rename_ref_opt,
               params: {
                 oldPath: `${stateId}.${path}`,
-                newPath: `${stateId}.${newKey}`,
+                newPath: `${stateId}.${key}`,
               },
             });
             break;
@@ -422,18 +424,16 @@ export function useFieldWatch(formRef: React.RefObject<FormRef>) {
                   formRef.current?.setValue('render.buttons', newButtons);
                 }
               case DiffTypeEnum.Renamed:
-                const { key: newKey } = getNewKey({
-                  name: diffNewValue?.name as string,
-                  nameKey: 'name',
+                const key = getExisiedKey({
                   values: newButtonPayloadValue,
-                  prefix: 'Buttons Payload',
+                  name: diffNewValue?.name,
                 });
                 // 修改payload name
                 appBuilder.hanldeRefScene({
                   scene: RefSceneEnum.Enum.rename_ref_opt,
                   params: {
                     oldPath: `${stateId}.${path}`,
-                    newPath: `${stateId}.${newKey}`,
+                    newPath: `${stateId}.${key}`,
                   },
                 });
                 break;

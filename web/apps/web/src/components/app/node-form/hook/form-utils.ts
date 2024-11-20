@@ -1,7 +1,7 @@
 /* eslint-disable */
 import { TValues } from '@shellagent/form-engine';
 import { FormRef } from '@shellagent/ui';
-import { isEqual, omit, merge } from 'lodash-es';
+import { isEqual, omit, merge, find, entries } from 'lodash-es';
 import { customSnakeCase } from '@shellagent/shared/utils';
 
 export enum DiffTypeEnum {
@@ -191,7 +191,7 @@ export function getNewKey({
 }: {
   name: string;
   nameKey: string;
-  values: Record<string, any> | any[];
+  values: TValues | TValues[];
   prefix: string;
 }) {
   // 如果名称为空，使用 Untitled
@@ -235,4 +235,20 @@ export function getNewKey({
       : `${snakeName}_${maxCount + 1}`;
 
   return { name, key };
+}
+
+export function getExisiedKey({
+  values,
+  name,
+}: {
+  values: TValues | TValues[];
+  name: string;
+}) {
+  if (Array.isArray(values)) {
+    return find(values, { name })?.name;
+  }
+
+  const [key] =
+    find(entries(values), ([_, value]) => value.name === name) || [];
+  return key;
 }

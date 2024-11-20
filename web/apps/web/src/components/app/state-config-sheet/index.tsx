@@ -187,12 +187,7 @@ const StateConfigSheet: React.FC<{}> = () => {
   );
 
   useEventEmitter(EventType.STATE_FORM_CHANGE, eventData => {
-    const currentFormData = nodeFormRef.current?.getValues();
-    if (
-      eventData.id === currentStateId &&
-      eventData.type === 'StateCard' &&
-      !isEqual(currentFormData, eventData.data)
-    ) {
+    if (eventData.id === currentStateId && eventData.type === 'StateCard') {
       setFormKey(eventData.data);
     }
   });
