@@ -20,6 +20,7 @@ import { ModalModel } from '@/utils/modal.model';
 import { RequestModel } from '@/utils/request.model';
 import { AssistantModel } from '@/components/assistant/model';
 import { ComfyUIModel } from '@/components/app/plugins/comfyui/widgets/comfyui.model.ts';
+import { ToggleModel } from '@/utils/toggle.model.ts';
 
 export const container = new Container();
 
@@ -29,6 +30,7 @@ container.bind(RequestModel).toSelf().inTransientScope();
 
 // common
 container.bind(ModalModel).toSelf().inTransientScope();
+container.bind(ToggleModel).toSelf().inTransientScope();
 container
   .bind(EmitterModel)
   .toSelf()

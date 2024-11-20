@@ -21,8 +21,6 @@ import React, {
 import { toast } from 'react-toastify';
 import { FolderOpenIcon } from '@heroicons/react/24/outline';
 
-import { SettingsModel } from '@/components/settings/settings.model';
-
 import { CheckDialog } from '../check-dialog';
 import { COMFYUI_API, DEFAULT_COMFYUI_API, MessageType } from '../constant';
 import emitter, { EventType } from '../emitter';
@@ -38,7 +36,7 @@ const settingsDisabled = process.env.NEXT_PUBLIC_DISABLE_SETTING === 'yes';
 
 export const ComfyUIEditor = observer(
   ({ onChange }: { onChange: (value: string) => void }) => {
-    const comfyUIModel = useInjection<ComfyUIModel>('ComfyUIModel');
+    const model = useInjection<ComfyUIModel>('ComfyUIModel');
     const [checkDialogOpen, setCheckDialogOpen] = useState(false);
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState<string>('');
@@ -48,8 +46,6 @@ export const ComfyUIEditor = observer(
     >(null);
     const iframeRef = useRef<HTMLIFrameElement>(null);
     const { getValues, setValue } = useFormContext();
-    const settingsModel = useInjection(SettingsModel);
-    const [isFullscreen, setIsFullscreen] = useState(false);
     const [messageDetailOpen, setMessageDetailOpen] = useState(false);
     const [messageDetail, setMessageDetail] = useState<string | null>(null);
 
@@ -57,8 +53,8 @@ export const ComfyUIEditor = observer(
       if (settingsDisabled) {
         return DEFAULT_COMFYUI_API;
       }
-      return settingsModel.envs.get(COMFYUI_API) || '';
-    }, [settingsModel.envs.get(COMFYUI_API), settingsDisabled]);
+      return model.settings.envs.get(COMFYUI_API) || '';
+    }, [model.settings.envs.get(COMFYUI_API), settingsDisabled]);
 
     useEffect(() => {
       onChange(value);
@@ -102,7 +98,7 @@ export const ComfyUIEditor = observer(
               setCheckDialogOpen(true);
               setDependencies(data.dependencies);
             } else {
-              comfyUIModel.iframeDialog.close();
+              model.iframeDialog.close();
               const comfy_workflow_id = getValues('comfy_workflow_id');
               emitter.emit(EventType.UPDATE_FORM, {
                 data: result.data.schemas,
@@ -254,10 +250,6 @@ export const ComfyUIEditor = observer(
       setError('Failed to load ComfyUI. Please ensure the API URL correct.');
     };
 
-    const showSettings = () => {
-      settingsModel.modal.open();
-    };
-
     const showSettingButton = useMemo(() => {
       if (settingsDisabled) {
         return false;
@@ -266,7 +258,7 @@ export const ComfyUIEditor = observer(
     }, [value, settingsDisabled]);
 
     const reloadSettings = async () => {
-      const settings = await settingsModel.loadSettingsEnv();
+      const settings = await model.settings.loadSettingsEnv();
       const api = settings?.envs?.find(env => env.key === COMFYUI_API)?.value;
       if (api && isValidUrl(api)) {
         setValue('api', api);
@@ -287,11 +279,7 @@ export const ComfyUIEditor = observer(
       [showSettingButton, isLoading, loaded],
     );
 
-    const toggleFullscreen = () => {
-      setIsFullscreen(!isFullscreen);
-    };
-
-    const modalStyles = isFullscreen
+    const modalStyles = model.fullscreen.isOn
       ? {
           mask: {
             height: '100vh',
@@ -364,9 +352,11 @@ export const ComfyUIEditor = observer(
                   </Button>
                 </Upload>
                 <Tooltip
-                  title={isFullscreen ? 'Exit fullscreen' : 'Fullscreen'}>
-                  <Button onClick={toggleFullscreen} variant="plain">
-                    {isFullscreen ? (
+                  title={
+                    model.fullscreen.isOn ? 'Exit fullscreen' : 'Fullscreen'
+                  }>
+                  <Button onClick={model.fullscreen.toggle} variant="plain">
+                    {model.fullscreen.isOn ? (
                       <FullscreenExitOutlined />
                     ) : (
                       <FullscreenOutlined />
@@ -378,17 +368,17 @@ export const ComfyUIEditor = observer(
           }
           styles={modalStyles}
           forceRender
-          open={comfyUIModel.iframeDialog.isOpen}
+          open={model.iframeDialog.isOpen}
           onOk={handleSave}
           mask={false}
-          width={isFullscreen ? '100%' : '80%'}
-          className={isFullscreen ? 'top-0 p-0 m-0' : 'top-5'}
+          width={model.fullscreen.isOn ? '100%' : '80%'}
+          className={model.fullscreen.isOn ? 'top-0 p-0 m-0' : 'top-5'}
           footer={
             <div className="flex justify-end gap-2">
               <Button
                 size="sm"
                 variant="outline"
-                onClick={comfyUIModel.iframeDialog.close}>
+                onClick={model.iframeDialog.close}>
                 Cancel
               </Button>
               <Button
@@ -414,7 +404,7 @@ export const ComfyUIEditor = observer(
                 settings.
                 <Button
                   size="sm"
-                  onClick={showSettings}
+                  onClick={model.settings.modal.open}
                   variant="outline"
                   className="ml-2">
                   Settings
@@ -430,9 +420,9 @@ export const ComfyUIEditor = observer(
             title="comfyui"
             ref={iframeRef}
             src={value}
-            className={`w-full ${isFullscreen ? 'h-full' : 'h-[80vh]'} ${
-              isLoading || showSettingButton ? 'hidden' : ''
-            }`}
+            className={`w-full ${
+              model.fullscreen.isOn ? 'h-full' : 'h-[80vh]'
+            } ${isLoading || showSettingButton ? 'hidden' : ''}`}
             onLoad={handleIframeLoad}
             onError={handleIframeError}
           />
@@ -454,7 +444,7 @@ export const ComfyUIEditor = observer(
         </Modal>
         <CheckDialog
           open={checkDialogOpen}
-          setModalOpen={comfyUIModel.iframeDialog.open}
+          setModalOpen={model.iframeDialog.open}
           setOpen={setCheckDialogOpen}
           dependencies={dependencies}
           comfy_workflow_id={getValues('comfy_workflow_id')}
