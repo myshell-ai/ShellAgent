@@ -4,7 +4,7 @@ import { type FormikProps } from 'formik';
 @injectable()
 export class FormikModel {
   isFormikReadyPromise: Promise<unknown>;
-  public formikProps: FormikProps<any> | undefined;
+  public formikProps!: FormikProps<any>; // if undef throw error, fail fast
   private isFormikReadyPromiseResolve: ((value: unknown) => void) | undefined;
 
   constructor() {

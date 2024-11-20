@@ -4,6 +4,7 @@ import { isEmpty } from 'lodash-es';
 import { ModalModel } from '@/utils/modal.model.ts';
 import { ToggleModel } from '@/utils/toggle.model.ts';
 import { SettingsModel } from '@/components/settings/settings.model.ts';
+import { FormikModel } from '@/utils/formik.model.ts';
 
 @injectable()
 export class ComfyUIModel {
@@ -11,6 +12,7 @@ export class ComfyUIModel {
 
   constructor(
     @inject(ModalModel) public iframeDialog: ModalModel,
+    @inject(FormikModel) public locationFormFormik: FormikModel,
     @inject(ModalModel) public locationFormDialog: ModalModel,
     @inject(ToggleModel) public fullscreen: ToggleModel,
     @inject(SettingsModel) public settings: SettingsModel,
@@ -30,5 +32,17 @@ export class ComfyUIModel {
   @action.bound
   setLocation(location: string) {
     this.location = location;
+  }
+
+  @action.bound
+  async onLocationDialogOk() {
+    await this.locationFormFormik.isFormikReadyPromise;
+    await this.locationFormFormik.formikProps.submitForm();
+    this.locationFormDialog.close();
+  }
+
+  @action.bound
+  submitLocationDialog() {
+    this.location = this.locationFormFormik.formikProps.values['location'];
   }
 }

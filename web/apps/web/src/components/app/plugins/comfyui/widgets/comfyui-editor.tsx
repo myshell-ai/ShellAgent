@@ -32,6 +32,7 @@ import { css } from '@emotion/react';
 import { observer } from 'mobx-react-lite';
 import { ComfyUIModel } from './comfyui.model';
 import { isEmpty } from 'lodash-es';
+import { Field, FieldProps, Formik } from 'formik';
 
 const settingsDisabled = process.env.NEXT_PUBLIC_DISABLE_SETTING === 'yes';
 
@@ -447,10 +448,14 @@ export const ComfyUIEditor = observer(
             />
           </Modal>
           <AModal
-            title="Provide file path of extended ComfyUI json"
+            hideCancelButton
+            okText="Ok"
+            width={420}
+            title="File path of extended ComfyUI json"
             open={model.locationFormDialog.isOpen}
+            onOk={model.onLocationDialogOk}
             onCancel={model.locationFormDialog.close}>
-            xxx
+            <LocationForm />
           </AModal>
         </Modal>
         <CheckDialog
@@ -465,32 +470,74 @@ export const ComfyUIEditor = observer(
   },
 );
 
+export const LocationFormItem = (props: {
+  value?: string;
+  onChange: (value: string) => void;
+}) => {
+  return (
+    <Form.Item
+      label="Location"
+      css={css`
+        margin-bottom: 12px;
+      `}>
+      <Flex alignItems="center">
+        <Input
+          value={props.value}
+          onChange={e => {
+            props.onChange(e.target.value);
+          }}
+          placeholder="File path of extended ComfyUI json"
+        />
+        <Box ml={1}>
+          <FolderOpenIcon className="w-5 h-5 text-icon-brand" />
+        </Box>
+      </Flex>
+    </Form.Item>
+  );
+};
+
 const ComfyUIEditorButton = observer(props => {
   const model = useInjection<ComfyUIModel>('ComfyUIModel');
   return (
     <>
-      <Form.Item
-        label="Location"
-        css={css`
-          margin-bottom: 12px;
-        `}>
-        <Flex alignItems="center">
-          <Input
-            value={model.location}
-            onChange={e => {
-              model.setLocation(e.target.value);
-            }}
-            placeholder="File path of extended ComfyUI json"
-          />
-          <Box ml={1}>
-            <FolderOpenIcon className="w-5 h-5 text-icon-brand" />
-          </Box>
-        </Flex>
-      </Form.Item>
-
+      <LocationFormItem onChange={model.setLocation} value={model.location} />
       <Button size="sm" className="w-full" onClick={model.iframeDialog.open}>
         {model.buttonName}
       </Button>
     </>
+  );
+});
+
+export const LocationForm = observer(() => {
+  const model = useInjection<ComfyUIModel>('ComfyUIModel');
+  return (
+    <Formik<{ location?: string }>
+      initialValues={{
+        location: model.location,
+      }}
+      onSubmit={values => {
+        model.submitLocationDialog();
+      }}>
+      {formikProps => {
+        model.locationFormFormik.setFormikProps(formikProps);
+        return (
+          <Form
+            layout="horizontal"
+            labelCol={{ span: 6 }}
+            wrapperCol={{ span: 18 }}>
+            <Field name="location">
+              {({ field }: FieldProps) => (
+                <LocationFormItem
+                  value={field.value}
+                  onChange={v => {
+                    formikProps.setFieldValue('location', v);
+                  }}
+                />
+              )}
+            </Field>
+          </Form>
+        );
+      }}
+    </Formik>
   );
 });
