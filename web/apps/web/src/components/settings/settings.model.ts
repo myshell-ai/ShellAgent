@@ -1,5 +1,4 @@
 import axios from 'axios';
-import { FormikProps } from 'formik';
 import { inject, injectable, postConstruct } from 'inversify';
 import { action, makeObservable, observable } from 'mobx';
 
@@ -7,12 +6,13 @@ import { EmitterModel } from '@/utils/emitter.model';
 import { ModalModel } from '@/utils/modal.model';
 
 import {
+  DefaultEnvs,
+  DefaultEnvsMap,
   loadSettingEnvFormUrl,
   saveSettingEnvFormUrl,
   SettingEnvFormValue,
-  DefaultEnvs,
-  DefaultEnvsMap,
 } from './settings-definitions';
+import { FormikModel } from '@/utils/formik.model.ts';
 
 export type SidebarValue = 'Environment' | 'SoftwareUpdate';
 
@@ -44,47 +44,15 @@ const formatEnvs2Api = (envs: SettingEnvFormValue['envs']) => {
 
 @injectable()
 export class SettingsModel {
-  constructor(
-    @inject(EmitterModel) private emitter: EmitterModel,
-    @inject(ModalModel) public modal: ModalModel,
-    @inject(ModalModel) public changelogModal: ModalModel,
-  ) {
-    makeObservable(this);
-
-    this.isFormikReadyPromise = new Promise(resolve => {
-      this.isFormikReadyPromiseResolve = resolve;
-    });
-  }
-
-  @postConstruct()
-  init() {
-    this.loadSettingsEnv(); // @joe compatible
-  }
-
-  isFormikReadyPromise: Promise<unknown>;
-
-  private isFormikReadyPromiseResolve: ((value: unknown) => void) | undefined;
-
-  private formikProps: FormikProps<any> | undefined;
-
   @observable sidebar?: SidebarValue = undefined;
-
   @observable isAutoCheck = true;
-
   @observable isAutoCheckLoading = false;
-
   @observable isChecking = false;
-
   @observable isUpdating = false;
-
   @observable checkedStatus: 'newUpdate' | 'latest' | null = null;
-
   @observable isToRestart = false;
-
   @observable isRestarting = false;
-
   @observable isLoadLoading = false;
-
   @observable checkRet: Partial<{
     has_new_stable: true;
     target_release_date: string;
@@ -92,8 +60,22 @@ export class SettingsModel {
     latest_tag_name: string;
     changelog: string;
   }> = {};
-
   @observable lastChecktime = '';
+  @observable envs: Map<string, string> = new Map();
+
+  constructor(
+    @inject(EmitterModel) private emitter: EmitterModel,
+    @inject(ModalModel) public modal: ModalModel,
+    @inject(ModalModel) public changelogModal: ModalModel,
+    @inject(FormikModel) public formik: FormikModel,
+  ) {
+    makeObservable(this);
+  }
+
+  @postConstruct()
+  init() {
+    this.loadSettingsEnv(); // @joe compatible
+  }
 
   @action.bound
   autoCheck() {
@@ -102,26 +84,19 @@ export class SettingsModel {
     }
   }
 
-  @observable envs: Map<string, string> = new Map();
-
   @action.bound
   setSidebar(v: SidebarValue) {
     // onBlur + leave and save
     if (this.sidebar === 'Environment') {
-      this.formikProps?.submitForm();
+      this.formik.formikProps?.submitForm();
     }
     this.sidebar = v;
   }
 
-  setFormikProps(formikProps: FormikProps<any>) {
-    this.formikProps = formikProps;
-    this.isFormikReadyPromiseResolve!('');
-  }
-
   async loadSettingsEnvAndFillForm() {
     const values = await this.loadSettingsEnv();
-    await this.isFormikReadyPromise;
-    this.formikProps?.setValues(values);
+    await this.formik.isFormikReadyPromise;
+    this.formik.formikProps?.setValues(values);
   }
 
   @action.bound
