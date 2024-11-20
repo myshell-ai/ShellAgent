@@ -1,4 +1,8 @@
 import {
+  ClipboardDocumentCheckIcon,
+  ClipboardDocumentIcon,
+} from '@heroicons/react/24/outline';
+import {
   Avatar,
   Clear,
   Text,
@@ -7,17 +11,13 @@ import {
   TooltipContent,
   Loading,
 } from '@shellagent/ui';
-import {
-  ClipboardDocumentCheckIcon,
-  ClipboardDocumentIcon,
-} from '@heroicons/react/24/outline';
 import { useInterval } from 'ahooks';
-import React, { memo, useEffect, useMemo, useRef, useState } from 'react';
 import { useInjection } from 'inversify-react';
 import { observer } from 'mobx-react-lite';
+import React, { memo, useEffect, useMemo, useRef, useState } from 'react';
 import ReactMarkdown, { Components } from 'react-markdown';
-import { atelierHeathLight } from 'react-syntax-highlighter/dist/esm/styles/hljs';
 import SyntaxHighlighter from 'react-syntax-highlighter';
+import { atelierHeathLight } from 'react-syntax-highlighter/dist/esm/styles/hljs';
 import { Virtuoso, VirtuosoHandle } from 'react-virtuoso';
 
 import { AssistantModel } from '@/components/assistant/model';

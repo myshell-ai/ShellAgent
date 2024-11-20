@@ -3,16 +3,16 @@
 import '../reflect-metadata-client-side';
 import { Heading, Text, Spinner } from '@shellagent/ui';
 import { useScroll } from 'ahooks';
+import { useInjection } from 'inversify-react';
 import { useEffect, useRef } from 'react';
 import useSWR from 'swr';
-import { useInjection } from 'inversify-react';
 
 import { CreateDialog } from '@/components/home/create-dialog';
 import { FlowCard } from '@/components/home/flow-card';
+import { ImportDialog } from '@/components/home/import-dialog';
+import { SettingsModel } from '@/components/settings/settings.model';
 import { fetchList } from '@/services/home';
 import { cn } from '@/utils/cn';
-import { SettingsModel } from '@/components/settings/settings.model';
-import { ImportDialog } from '@/components/home/import-dialog';
 
 export default function AppPage() {
   const contentRef = useRef(null);

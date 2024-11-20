@@ -6,8 +6,8 @@ import {
   MessageItem,
   DefaultMessages,
 } from '@/components/assistant/definitions';
-import { ModalModel } from '@/utils/modal.model';
 import { clearMemory, query } from '@/services/assistant';
+import { ModalModel } from '@/utils/modal.model';
 
 @injectable()
 export class AssistantModel {

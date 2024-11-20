@@ -18,21 +18,21 @@ import {
   ScrollArea,
   SaveIcon,
 } from '@shellagent/ui';
-import { Dropdown } from 'antd';
 import { useRequest } from 'ahooks';
+import { Dropdown } from 'antd';
 import dayjs from 'dayjs';
 import { isEmpty } from 'lodash-es';
-import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import React, { useCallback, useState } from 'react';
 import { toast } from 'react-toastify';
 
-import { AppState } from '@/stores/app/app-store';
 import { saveApp, releaseApp, fetchAppVersionList } from '@/services/app';
+import { GetAppVersionListResponse } from '@/services/app/type';
+import { Metadata } from '@/services/home/type';
+import { AppState } from '@/stores/app/app-store';
 import { genAutomata } from '@/stores/app/utils/data-transformer';
 import { cn } from '@/utils/cn';
-import { Metadata } from '@/services/home/type';
-import { GetAppVersionListResponse } from '@/services/app/type';
 
 import VersionSkeleton from '../skeleton';
 
