@@ -50,6 +50,7 @@ const NodeForm = forwardRef<FormRef, NodeFormProps>(
     }));
 
     const currentSchema = schema || formSchema;
+
     const defaultValues = useMemo(
       () => getDefaultValueBySchema(currentSchema, false),
       [currentSchema],
