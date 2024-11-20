@@ -70,7 +70,12 @@ export function convertNodeDataToState(nodeData: any): State {
       },
     },
   };
-  return stateSchema.parse(ret);
+  try {
+    return stateSchema.parse(ret);
+  } catch (error) {
+    console.warn('StateSchema Zod Validate Error', error);
+    return ret;
+  }
 }
 
 export function convetNodeDataToScopes(nodeDatas: any, edges: any[]) {
@@ -103,9 +108,14 @@ export function convetNodeDataToScopes(nodeDatas: any, edges: any[]) {
     };
   });
 
-  return scopesSchema.parse({
-    scopes: ret,
-  });
+  try {
+    return scopesSchema.parse({
+      scopes: ret,
+    });
+  } catch (error) {
+    console.warn('ScopesSchema Zod Validate Error', error);
+    return ret;
+  }
 }
 
 export function convertRefOptsToCascaderOpts(
