@@ -114,7 +114,9 @@ export function convetNodeDataToScopes(nodeDatas: any, edges: any[]) {
     });
   } catch (error) {
     console.warn('ScopesSchema Zod Validate Error', error);
-    return ret;
+    return {
+      scopes: ret,
+    };
   }
 }
 

@@ -99,6 +99,10 @@ container
       (window as any)._get_app_builder_node_data = function () {
         return model.nodeData;
       };
+      /* eslint-disable no-underscore-dangle, func-names */
+      (window as any)._get_app_builder_scopes = function () {
+        return model.scopes;
+      };
     }
     return model;
   });
