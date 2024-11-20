@@ -11,6 +11,7 @@ export class ComfyUIModel {
 
   constructor(
     @inject(ModalModel) public iframeDialog: ModalModel,
+    @inject(ModalModel) public locationFormDialog: ModalModel,
     @inject(ToggleModel) public fullscreen: ToggleModel,
     @inject(SettingsModel) public settings: SettingsModel,
   ) {

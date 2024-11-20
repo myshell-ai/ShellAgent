@@ -7,7 +7,7 @@ import {
   ReloadOutlined,
   UploadOutlined,
 } from '@ant-design/icons';
-import { Button, Spinner, useFormContext } from '@shellagent/ui';
+import { AModal, Button, Spinner, useFormContext } from '@shellagent/ui';
 import { useRequest } from 'ahooks';
 import { Form, Input, Modal, Tooltip, Upload } from 'antd';
 import { useInjection } from 'inversify-react';
@@ -31,6 +31,7 @@ import { Box, Flex } from 'react-system';
 import { css } from '@emotion/react';
 import { observer } from 'mobx-react-lite';
 import { ComfyUIModel } from './comfyui.model';
+import { isEmpty } from 'lodash-es';
 
 const settingsDisabled = process.env.NEXT_PUBLIC_DISABLE_SETTING === 'yes';
 
@@ -196,6 +197,10 @@ export const ComfyUIEditor = observer(
     }, [handleMessage]);
 
     const handleSave = () => {
+      if (isEmpty(model.location)) {
+        model.locationFormDialog.open();
+        return;
+      }
       iframeRef.current?.contentWindow?.postMessage(
         { type: MessageType.SAVE },
         value,
@@ -441,6 +446,12 @@ export const ComfyUIEditor = observer(
               }}
             />
           </Modal>
+          <AModal
+            title="Provide file path of extended ComfyUI json"
+            open={model.locationFormDialog.isOpen}
+            onCancel={model.locationFormDialog.close}>
+            xxx
+          </AModal>
         </Modal>
         <CheckDialog
           open={checkDialogOpen}
