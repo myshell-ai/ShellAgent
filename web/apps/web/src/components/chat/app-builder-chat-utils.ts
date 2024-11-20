@@ -1,4 +1,3 @@
-import { EmbedObjStatus } from '@/services/app/message-type';
 import { mapValues } from 'lodash-es';
 import {
   ButtonFnParams,
@@ -6,6 +5,8 @@ import {
   Message,
   RunningErrorEnum,
 } from 'myshell-bundled-chat';
+
+import { EmbedObjStatus } from '@/services/app/message-type';
 
 export const testUserId = 'test-app-builder';
 
@@ -62,11 +63,11 @@ export function serverMessageToMessage(
       'BOT_MESSAGE_COMPONENTS_TYPE_ROW'
   ) {
     return convertDtoC(serverMessage);
-  } else if (serverMessage.output?.error_message) {
-    return convertErrorServerMessage(entity, serverMessage);
-  } else {
-    return commonServerMessageToMessage(entity, serverMessage);
   }
+  if (serverMessage.output?.error_message) {
+    return convertErrorServerMessage(entity, serverMessage);
+  }
+  return commonServerMessageToMessage(entity, serverMessage);
 }
 
 function slashCommandAction(text: string) {
@@ -140,17 +141,15 @@ export function popupFormAction(actions: any[]) {
 export function patchImageUrl(url?: string) {
   if (url?.startsWith('http') == false && url?.indexOf('api/files/') === -1) {
     return `/api/files/${url}`;
-  } else {
-    return url;
   }
+  return url;
 }
 
 export function removeImageUrlPrefix(url?: string) {
   if (url?.startsWith('http') === false && url?.indexOf('/api/files/') > -1) {
     return url.replace('/api/files/', '');
-  } else {
-    return url;
   }
+  return url;
 }
 
 export function patchEmbedObjs(embedObjs: any[]) {

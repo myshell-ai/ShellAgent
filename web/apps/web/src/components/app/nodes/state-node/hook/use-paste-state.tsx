@@ -6,13 +6,12 @@ import { useInjection } from 'inversify-react';
 import { useObserver } from 'mobx-react-lite';
 import { useCallback } from 'react';
 
+import { AppBuilderModel } from '@/stores/app/models/app-builder.model';
 import { useAppState } from '@/stores/app/use-app-state';
 import {
   getKeyboardKeyCodeBySystem,
   isEventTargetInputArea,
 } from '@/utils/common-helper';
-
-import { AppBuilderModel } from '@/stores/app/models/app-builder.model';
 
 export const usePasteState = ({
   enabeKeyboard = false,

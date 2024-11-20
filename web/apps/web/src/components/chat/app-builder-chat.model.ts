@@ -2,13 +2,16 @@ import {
   EventSourceMessage,
   fetchEventSource,
 } from '@microsoft/fetch-event-source';
-import { ButtonFnParams, IMLocalFile } from 'myshell-bundled-chat';
 import { Automata } from '@shellagent/pro-config';
 import { ChatNewModel } from '@shellagent/ui';
 import axios from 'axios';
 import { inject, injectable } from 'inversify';
 import { action, makeObservable, observable, runInAction } from 'mobx';
+import { ButtonFnParams, IMLocalFile } from 'myshell-bundled-chat';
 import { JsonSchema7 } from 'node_modules/@shellagent/form-engine/src/types/jsonSchema7';
+
+import { upload } from '@/services/common';
+
 import {
   patchImageUrl,
   patchMessageActionPopupForm,
@@ -17,7 +20,6 @@ import {
 import type { ServerMessage } from '../../services/app/message-type';
 import { EventStatusEnum, RunAppRequest } from '../../services/app/type';
 import { EmitterModel } from '../../utils/emitter.model';
-import { upload } from '@/services/common';
 
 @injectable()
 export class AppBuilderChatModel {

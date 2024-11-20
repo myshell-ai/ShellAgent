@@ -19,14 +19,14 @@ import {
 } from '@shellagent/ui';
 import { Dropdown } from 'antd';
 import dayjs from 'dayjs';
+import { useInjection } from 'inversify-react';
 import { isEmpty } from 'lodash-es';
 import Link from 'next/link';
 import React, { useCallback, useState } from 'react';
-import { useInjection } from 'inversify-react';
-import { AppBuilderModel } from '@/stores/app/models/app-builder.model';
 
-import { cn } from '@/utils/cn';
 import { GetAppVersionListResponse } from '@/services/app/type';
+import { AppBuilderModel } from '@/stores/app/models/app-builder.model';
+import { cn } from '@/utils/cn';
 
 import VersionSkeleton from '../skeleton';
 
