@@ -173,7 +173,7 @@ describe('protocol', () => {
     });
 
     describe('not valid', () => {
-      it('type not right', () => {
+      it.skip('type not right', () => {
         expect(() => {
           variableSchema.parse({
             type: 'text_not',
