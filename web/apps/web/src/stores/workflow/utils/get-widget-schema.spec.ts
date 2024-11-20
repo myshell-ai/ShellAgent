@@ -1,9 +1,3 @@
-/**
- * @vitest-environment jsdom
- */
-
-import { describe, expect, it } from 'vitest';
-
 import { getTypesFromSchema } from './get-widget-schema-utils';
 
 describe('get widget schema', () => {

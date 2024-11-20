@@ -1,0 +1,161 @@
+{
+    "id": "1856678149704998912",
+    "uid": "f2b186d384fb4a259a9e3ea9833d7f4e",
+    "userId": "17723600",
+    "type": "REPLY",
+    "botId": "1731073436",
+    "replyUid": "",
+    "status": "DONE",
+    "text": "Get results[https://www.myshellstatic.com/image/chat/embed_obj/202411131241/57fea7e338d042e1930059f8045e506a.png https://www.myshellstatic.com/image/chat/embed_obj/202411131241/3d0cbaa0566245c7b8727dbf68ceac6d.png https://www.myshellstatic.com/image/chat/embed_obj/202411131241/e00eadc354c84707b3370a5ef440f1f9.png]",
+    "handled": false,
+    "translation": "",
+    "voiceUrl": "",
+    "voiceFileDurationSeconds": 0,
+    "feedbackState": "Normal",
+    "feedbackIssues": [],
+    "createdDateUnix": "1731501540958",
+    "updatedDateUnix": "1731501540958",
+    "audioSpeed": 1,
+    "imageGenMessageResponse": null,
+    "embedObjs": [
+        {
+            "type": "MESSAGE_METADATA_TYPE_IMAGE_FILE",
+            "status": "EMBED_OBJ_STATUS_DONE",
+            "title": "",
+            "extensionName": "PNG",
+            "url": "https://www.myshellstatic.com/image/chat/embed_obj/202411131241/57fea7e338d042e1930059f8045e506a.png",
+            "iconUrl": "",
+            "mediaFileMetadata": {
+                "width": 1024,
+                "height": 1504,
+                "thumbnail": "",
+                "generateModel": ""
+            }
+        },
+        {
+            "type": "MESSAGE_METADATA_TYPE_IMAGE_FILE",
+            "status": "EMBED_OBJ_STATUS_DONE",
+            "title": "",
+            "extensionName": "PNG",
+            "url": "https://www.myshellstatic.com/image/chat/embed_obj/202411131241/3d0cbaa0566245c7b8727dbf68ceac6d.png",
+            "iconUrl": "",
+            "mediaFileMetadata": {
+                "width": 1024,
+                "height": 1504,
+                "thumbnail": "",
+                "generateModel": ""
+            }
+        },
+        {
+            "type": "MESSAGE_METADATA_TYPE_IMAGE_FILE",
+            "status": "EMBED_OBJ_STATUS_DONE",
+            "title": "",
+            "extensionName": "PNG",
+            "url": "https://www.myshellstatic.com/image/chat/embed_obj/202411131241/e00eadc354c84707b3370a5ef440f1f9.png",
+            "iconUrl": "",
+            "mediaFileMetadata": {
+                "width": 1024,
+                "height": 1504,
+                "thumbnail": "",
+                "generateModel": ""
+            }
+        }
+    ],
+    "imSlashCommandInput": null,
+    "asyncJobInfo": {
+        "jobId": "1856678149725970432",
+        "componentInput": "",
+        "status": "EMBED_OBJ_STATUS_DONE"
+    },
+    "widgetId": "0",
+    "replyId": "1856678149612724224",
+    "referenceSource": [],
+    "recommendationQuestion": {
+        "question": []
+    },
+    "componentContainer": {
+        "type": "BOT_MESSAGE_COMPONENTS_TYPE_CONTAINER",
+        "components": [
+            {
+                "type": "BOT_MESSAGE_COMPONENTS_TYPE_ROW",
+                "components": [
+                    {
+                        "type": "BOT_MESSAGE_COMPONENTS_TYPE_BUTTON",
+                        "components": [],
+                        "button": {
+                            "content": {
+                                "text": "restart",
+                                "iconUrl": "",
+                                "description": "",
+                                "energyConsume": 0,
+                                "energyConsumeAccurate": false
+                            },
+                            "style": {
+                                "fontColorHex": "#202223",
+                                "backgroundColorHex": "#F6F6F7",
+                                "borderColorHex": "#E4E9F0",
+                                "darkModeFontColorHex": "#B8BCCF",
+                                "darkModeBackgroundColorHex": "#323339",
+                                "darkModeBorderColorHex": "#42434A",
+                                "iconLineColorHex": "#00000033",
+                                "darkModeIconLineColorHex": "#FFFFFF33"
+                            },
+                            "buttonId": "root:key_1730984689843:0:0",
+                            "actions": [
+                                {
+                                    "action": "MESSAGE_COMPONENTS_BUTTON_ACTION_TYPE_INTERACTION",
+                                    "interactionInput": {
+                                        "displayType": "BOT_MESSAGE_COMPONENTS_BUTTON_ACTION_INTERACTION_INPUT_DISPLAY_TYPE_SLASH_COMMAND",
+                                        "slashCommandInput": {
+                                            "name": "/restart",
+                                            "paramMap": {}
+                                        }
+                                    }
+                                }
+                            ],
+                            "disabled": false,
+                            "doubleCheck": {
+                                "isNeedDoubleCheck": false,
+                                "title": "",
+                                "description": ""
+                            }
+                        }
+                    }
+                ]
+            }
+        ]
+    },
+    "inputSetting": {
+        "canInputText": false,
+        "canInputAudio": false,
+        "canUploadFile": false,
+        "supportedEmbedTypes": [],
+        "embedNumberLimit": 0,
+        "embedNumberMinimum": 0,
+        "embedMaxFileBytesEach": "0"
+    },
+    "regeneratedMessages": [],
+    "extraInfo": {
+        "consumeEnergy": 0,
+        "canEdit": false,
+        "canRegenerate": false,
+        "runningWidgetInfo": [
+            {
+                "widgetLogo": "",
+                "widgetName": "ComfyUI",
+                "startTimeTimestamp": "1731501541",
+                "status": "DONE",
+                "endTimeTimestamp": "1731501698"
+            }
+        ],
+        "bgm": null,
+        "senderInfo": null
+    },
+    "isBot": false,
+    "runningError": null,
+    "referenceText": "",
+    "uploadSetting": {
+        "supportedFileInfos": []
+    },
+    "isLlmBot": false
+}

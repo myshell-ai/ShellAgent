@@ -1,7 +1,22 @@
+import {
+  ButtonFnParams,
+  IMLocalFile,
+  SlashCommandInput,
+} from 'myshell-bundled-chat';
+
 export interface ChatNewModelHandlers {
-  /**
-   * 内部方法 sendTextMessage Post hook
-   * e.g. 用来对接后端
-   */
-  sendTextMessagePost: (text: string) => void | Promise<void>;
+  sendTextMessagePost: (
+    text: string,
+    files?: IMLocalFile[],
+    requestParams?: any,
+  ) => void | Promise<void>;
+  clearMemoryPost: () => void | Promise<void>;
+  sendButtonInteractionMessagePost: (
+    buttonInteractionParams: ButtonFnParams,
+    requestParams?: any,
+  ) => void;
+  overrideUploadFileToS3WithProgress: (file: File) => Promise<{
+    success: boolean;
+    objectAccessUrl?: string;
+  }>;
 }

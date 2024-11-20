@@ -46,23 +46,15 @@ const ComfyUIPlugin: React.FC<CommonWidgetConfigProps> = ({
     [schema],
   );
 
-  const mergeValues = (oldValues: TValues, newValues?: TValues) => {
-    return {
-      ...merge({}, oldValues, newValues),
-      inputs: newValues?.inputs || oldValues?.inputs,
-      outputs: newValues?.outputs || oldValues?.outputs,
-    };
-  };
-
   const handleOnChange = useCallback(
     (newValues: TValues) => {
-      onChange(mergeValues(defaultValues, newValues));
+      onChange(merge({}, defaultValues, newValues));
     },
     [defaultValues, onChange],
   );
 
   useEffect(() => {
-    onChange(mergeValues(defaultValues, values));
+    onChange(merge({}, defaultValues, values));
   }, [schema]);
 
   const { run: getComfySchema, loading: isLoading } = useRequest(getFile, {

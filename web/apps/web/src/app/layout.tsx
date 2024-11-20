@@ -9,6 +9,7 @@ import type { Metadata } from 'next';
 import { PropsWithChildren } from 'react';
 
 import MainLayout from '@/components/layouts/main-layout';
+import Script from 'next/script';
 
 export const metadata: Metadata = {
   metadataBase: process.env.VERCEL_URL
@@ -34,6 +35,11 @@ export default function RootLayout({
         />
       </head>
       <body>
+        <Script strategy="beforeInteractive" id="sc-global">
+          {`
+        window.$global = window.$global || {};
+      `}
+        </Script>
         <MainLayout>{children}</MainLayout>
       </body>
     </html>

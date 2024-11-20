@@ -8,6 +8,7 @@ on:
       - "web/packages/**"
       - ".github/**"
       - "web/.yalc/image-canvas/**"
+      - "web/.yalc/myshell-bundled-chat/**"
 
 jobs:
   build:

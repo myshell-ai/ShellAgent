@@ -411,6 +411,7 @@ const config: Omit<Config, 'content' | 'plugins'> = {
           '--surface-hovered-static': ' var(--neutral-95)',
           '--surface-pressed': ' var(--neutral-90)',
           '--surface-pressed-static': ' var(--neutral-90)',
+          '--surface-container-special-default': 'var(--neutral-variant-99)',
           '--surface-disabled': ' var(--neutral-99)',
           '--surface-disabled-static': ' var(--neutral-99)',
           '--surface-search-field': ' var(--white)',
