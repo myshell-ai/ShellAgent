@@ -365,6 +365,7 @@ const stateConfigSchema: ISchema = {
         },
         'x-key': '{{name}} Inputs_{{counter}}',
         'x-type': 'Inline',
+        'x-draggable': true,
         'x-deletable': true,
         'x-edit-dialog': {
           type: 'object',

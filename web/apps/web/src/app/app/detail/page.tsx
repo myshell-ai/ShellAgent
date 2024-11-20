@@ -10,6 +10,7 @@ import { useSearchParams } from 'next/navigation';
 import { useEffect, useRef } from 'react';
 import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
+import { useShallow } from 'zustand/react/shallow';
 
 import { edgeTypes, materialList, nodeTypes } from '@/components/app/constants';
 import FlowHeader from '@/components/app/flow-header';

@@ -6,8 +6,11 @@ import {
   Heading,
   Paragraph,
   IconButton,
+  Drag,
 } from '@shellagent/ui';
-import React, { useState } from 'react';
+import type { Identifier } from 'dnd-core';
+import React, { useState, useRef } from 'react';
+import { useDrag, useDrop } from 'react-dnd';
 
 import { cn } from '../../utils/cn';
 import Control from '../control';
@@ -16,7 +19,14 @@ import { useFormEngineContext } from '../provider';
 
 export interface IInlineProps {
   name?: string;
+  index?: number;
   children?: React.ReactNode;
+}
+
+interface DragItem {
+  index: number;
+  id: string;
+  type: string;
 }
 
 /**
@@ -24,9 +34,48 @@ export interface IInlineProps {
  * @returns
  */
 const Inline: React.FC<IInlineProps> = props => {
-  const { name = '', children } = props;
-  const { fields, append, remove, components } = useFormEngineContext();
-  const { schema } = fields[name] || {};
+  const { name = '', children, index } = props;
+  const { fields, append, remove, reorder, components } =
+    useFormEngineContext();
+  const { schema, parent } = fields[name] || {};
+  const dragRef = useRef<HTMLDivElement>(null);
+
+  const [{ handlerId }, drop] = useDrop<
+    DragItem,
+    void,
+    { handlerId: Identifier | null }
+  >({
+    accept: parent,
+    collect(monitor) {
+      return {
+        handlerId: monitor.getHandlerId(),
+      };
+    },
+    hover(item: DragItem) {
+      if (!dragRef.current || index === undefined) {
+        return;
+      }
+      const startIndex = item.index;
+      const endIndex = index;
+
+      if (startIndex === endIndex) {
+        return;
+      }
+      reorder(name, startIndex, endIndex);
+      item.index = endIndex;
+    },
+  });
+
+  const [{ opacity }, drag, preview] = useDrag(() => ({
+    type: parent,
+    item: () => {
+      return { id: name, index };
+    },
+    collect: monitor => ({
+      isDragging: monitor.isDragging(),
+      opacity: monitor.isDragging() ? 0 : 1,
+    }),
+  }));
 
   if (!schema) {
     return null;
@@ -42,12 +91,14 @@ const Inline: React.FC<IInlineProps> = props => {
     'x-addable': xAddable,
     'x-component': xComponent,
     'x-edit-dialog': xEditDialog,
+    'x-draggable': xDraggable,
     // 'x-empty': xEmpty,
     'x-class': xClass,
     'x-wrapper-class': xWrapperClass,
     'x-deletable': xDeletable,
     'x-suffix': xSuffix,
     'x-prefix': xPrefix,
+    'x-hidden': xHidden,
   } = schema;
   const [isExpand, setIsExpand] = useState(xDefaultExpand ?? true);
   const { control } = useFormContext();
@@ -70,6 +121,8 @@ const Inline: React.FC<IInlineProps> = props => {
   const onAdd = () => {
     append(name);
   };
+
+  drag(drop(dragRef));
 
   const renderCollapsibleTitle = () => {
     return xCollapsible ? (
@@ -167,7 +220,20 @@ const Inline: React.FC<IInlineProps> = props => {
 
   const render = () => {
     return (
-      <div className={cn('flex flex-col', xWrapperClass)} data-ui="inline">
+      <div
+        className={cn('flex', xWrapperClass)}
+        data-ui="inline"
+        style={{ opacity }}
+        ref={preview as any}>
+        {xDraggable ? (
+          <div
+            className="w-6 flex items-center justify-center cursor-grab"
+            role="Handle"
+            data-handler-id={handlerId}
+            ref={dragRef}>
+            <Drag size="md" color="subtle" />
+          </div>
+        ) : null}
         {title ? renderTitle() : null}
         {description ? (
           <Paragraph size="lg" color="subtler" lineClamp={2} className="mt-1">
@@ -191,11 +257,18 @@ const Inline: React.FC<IInlineProps> = props => {
       </div>
     );
   };
-
-  return type === 'void' ? (
-    render()
-  ) : (
-    <FormField control={control} name={name} render={render} />
+  return (
+    <div
+      className={cn({ hidden: xHidden })}
+      style={{ opacity }}
+      data-ui="inline"
+      ref={drop as any}>
+      {type === 'void' ? (
+        render()
+      ) : (
+        <FormField control={control} name={name} render={render} />
+      )}
+    </div>
   );
 };
 

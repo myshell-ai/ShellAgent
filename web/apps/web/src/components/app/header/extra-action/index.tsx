@@ -9,7 +9,6 @@ import {
   DropdownMenuItem,
 } from '@shellagent/ui';
 import { useInjection } from 'inversify-react';
-import { observer } from 'mobx-react-lite';
 import { useState } from 'react';
 import { toast } from 'react-toastify';
 
