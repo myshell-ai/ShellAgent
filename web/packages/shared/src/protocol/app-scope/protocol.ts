@@ -38,18 +38,20 @@ export const variableTypeSchema = z
         code: z.ZodIssueCode.custom,
         message: `should not be empty`,
       });
-    } else if (arg.indexOf('|') === -1) {
-      const ret = primitiveVariableTypeSchema.safeParse(arg);
-      if (!ret.success) {
-        ret.error?.issues.forEach(iss => ctx.addIssue(iss));
-        ctx.addIssue({
-          code: z.ZodIssueCode.custom,
-          message: `${arg} is not valid, only allowed compound type, e.g. string|object`,
-        });
-      }
-    } else {
-      // noops
     }
+    // TODO: check compound type
+    // else if (arg.indexOf('|') === -1) {
+    //   const ret = primitiveVariableTypeSchema.safeParse(arg);
+    //   if (!ret.success) {
+    //     ret.error?.issues.forEach(iss => ctx.addIssue(iss));
+    //     ctx.addIssue({
+    //       code: z.ZodIssueCode.custom,
+    //       message: `${arg} is not valid, only allowed compound type, e.g. string|object`,
+    //     });
+    //   }
+    // } else {
+    //   // noops
+    // }
   });
 
 // FIX: Primitive variables cannot be nested.

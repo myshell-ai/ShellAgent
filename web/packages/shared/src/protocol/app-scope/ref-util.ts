@@ -92,7 +92,12 @@ export function getRefOptions(
     }
   }
 
-  return refOptionsOutputSchema.parse(ret);
+  try {
+    return refOptionsOutputSchema.parse(ret);
+  } catch (error) {
+    console.warn('RefOptionsOutputSchema Zod Validate Error', error);
+    return ret;
+  }
 
   function assignStateRender() {
     // assignAncestralStatesOutput();
