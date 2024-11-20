@@ -265,29 +265,37 @@ export class AppBuilderModel {
     newRefs: Refs,
   ) {
     const updatedNodeData = cloneDeep(nodeData);
+    let isUpdated = false;
+
     if (evt.scene === RefSceneEnum.Enum.remove_ref_opts) {
       handleRemoveRefOpts(updatedNodeData, evt.params.paths);
+      isUpdated = true;
     } else if (evt.scene === RefSceneEnum.Enum.remove_ref_opts_prefix) {
       handleRemoveRefOptsPrefix(updatedNodeData, evt.params.prefix);
+      isUpdated = true;
     } else if (evt.scene === RefSceneEnum.Enum.rename_ref_opt) {
       handleRenameRefOpt(
         updatedNodeData,
         evt.params.oldPath,
         evt.params.newPath,
       );
+      isUpdated = true;
     } else if (evt.scene === RefSceneEnum.Enum.remove_state) {
       handleRemoveState(updatedNodeData, evt.params.stateName);
+      isUpdated = true;
     }
 
-    runInAction(() => {
-      this.nodeData = updatedNodeData;
+    if (isUpdated) {
+      runInAction(() => {
+        this.nodeData = updatedNodeData;
 
-      emitter.emit(EventType.STATE_FORM_CHANGE, {
-        id: this.selectedStateId as any,
-        data: `${new Date().valueOf()}`,
-        type: 'StateCard',
+        emitter.emit(EventType.STATE_FORM_CHANGE, {
+          id: this.selectedStateId as any,
+          data: `${new Date().valueOf()}`,
+          type: 'StateCard',
+        });
       });
-    });
+    }
   }
 
   @action.bound
