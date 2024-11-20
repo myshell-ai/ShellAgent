@@ -182,6 +182,9 @@ body {
     .chakra-modal__content {
       z-index: 12 !important;
     }
+
+    .flex {
+      display: flex !important;
+    }
   }
 }
-
