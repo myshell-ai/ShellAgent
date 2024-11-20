@@ -1,13 +1,6 @@
 import { useFormContext } from '@shellagent/ui';
 import { omit, set, merge } from 'lodash-es';
-import React, {
-  createContext,
-  useContext,
-  useCallback,
-  useState,
-  useRef,
-  useEffect,
-} from 'react';
+import React, { createContext, useContext, useCallback, useState } from 'react';
 
 import {
   SchemaReactComponents,
@@ -19,8 +12,7 @@ import {
 } from '../../types';
 import { getDefaultValueBySchema } from '../../utils/generate-schema';
 import { reorder as order } from '../../utils/reorder';
-import { uuid } from '../../utils/uuid';
-import { customSnakeCase } from '@shellagent/shared/utils';
+import { uuid, getVariableKey } from '../../utils/uuid';
 
 const FormEngineContext = createContext<{
   components: SchemaReactComponents;
@@ -62,18 +54,6 @@ export const FormEngineProvider: React.FC<IFormEngineProviderProps> = props => {
   const { children, fields, components, parent, layout, onStatusChange } =
     props;
   const { getValues, setValue } = useFormContext();
-  const counterRef = useRef<{ [path: string]: number }>({});
-
-  // TODO计数器的初始化
-  // useEffect(() => {
-  //   if (parent) {
-  //     const parentValue = getValues(parent);
-  //     if (parentValue && typeof parentValue === 'object') {
-  //       counterRef.current[parent] = Object.keys(parentValue).length;
-  //     }
-  //   }
-  // }, [parent]);
-
   const [modeMap, setModeMap] = useState(props.modeMap || {});
 
   const onModeChange = useCallback(
@@ -139,31 +119,8 @@ export const FormEngineProvider: React.FC<IFormEngineProviderProps> = props => {
 
       if (key) {
         newKey = key;
-      } else if (xKey && /{{(\w+)}}/.test(xKey)) {
-        const variables =
-          xKey.match(/{{(\w+)}}/g)?.map(v => v.replace(/[{}]/g, '')) || [];
-        let parsedKey = xKey;
-
-        if (Array.isArray(variables) && variables.indexOf('counter') !== -1) {
-          if (isNaN(counterRef.current[path])) {
-            counterRef.current[path] = 1;
-          } else {
-            counterRef.current[path]++;
-          }
-          parsedKey = parsedKey.replace(
-            '{{counter}}',
-            String(counterRef.current[path]),
-          );
-        }
-
-        variables.forEach(variable => {
-          if (variable !== 'counter' && newItem[variable]) {
-            const newValue = newItem[variable];
-            parsedKey = parsedKey.replace(`{{${variable}}}`, newValue);
-          }
-        });
-
-        newKey = customSnakeCase(parsedKey);
+      } else if (xKey) {
+        newKey = getVariableKey(xKey, value, newItem);
       } else {
         newKey = uuid();
       }
