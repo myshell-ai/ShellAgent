@@ -1,24 +1,24 @@
-import { CustomKey, CustomEventName } from '@shellagent/pro-config';
+import { CustomEventName, CustomKey } from '@shellagent/pro-config';
 import { Scopes } from './protocol';
 import {
   changNodedataModeParamSchema,
+  duplicateStateSchema,
+  Edge,
   Edges,
   HandleRefSceneEvent,
   RefOptionsOutput,
   refOptionsOutputSchema,
   Refs,
+  refsSchema,
   RefType,
+  removeEdgeScheam,
   removeRefOptsPrefixScheam,
   removeRefOptsSchema,
+  removeStateParamSchema,
   renameRefOptParamSchema,
   renameStateNameParamSchema,
-  setNodedataKeyValParamSchema,
-  removeEdgeScheam,
-  Edge,
-  duplicateStateSchema,
-  removeStateParamSchema,
-  refsSchema,
   reorderTaskSchema,
+  setNodedataKeyValParamSchema,
 } from './scope';
 import { reservedStateNameSchema } from '../node';
 import {
@@ -32,7 +32,6 @@ import {
   omitBy,
   pickBy,
   set,
-  some,
   transform,
 } from 'lodash-es';
 import { z } from 'zod';
@@ -61,17 +60,20 @@ export function getRefOptions(
 
   switch (refType) {
     case 'state_input': {
-      assignAncestralStatesOutput();
+      // assignAncestralStatesOutput();
+      assignOtherStatesOutput();
       break;
     }
     case 'state_task': {
-      assignAncestralStatesOutput();
+      // assignAncestralStatesOutput();
+      assignOtherStatesOutput();
       assignCurrentStateInput();
       assignPreviousTasks();
       break;
     }
     case 'state_output': {
-      assignAncestralStatesOutput();
+      // assignAncestralStatesOutput();
+      assignOtherStatesOutput();
       assignCurrentStateInput();
       assignAllTasks();
       break;
@@ -93,7 +95,8 @@ export function getRefOptions(
   return refOptionsOutputSchema.parse(ret);
 
   function assignStateRender() {
-    assignAncestralStatesOutput();
+    // assignAncestralStatesOutput();
+    assignOtherStatesOutput();
     assignCurrentStateInput();
     assignAllTasks();
     assignCurrentStateOutput();
@@ -110,6 +113,9 @@ export function getRefOptions(
     ret.local.buttons = pickBy(buttons, button => button?.event === eventKey);
   }
 
+  /**
+   * @deprecated Product update. use assignOtherStatesOutput
+   */
   function assignAncestralStatesOutput() {
     const ancestors = findAncestors(scopes.scopes.edges, stateName);
     ancestors.forEach((a: CustomKey) => {
@@ -117,6 +123,19 @@ export function getRefOptions(
       const state = scopes.scopes.states[a];
       if (state == null) throw new Error(`${a} is in edges, but not in scopes`);
       ret.global[a] = {
+        display_name: state.display_name,
+        variables: state.children.outputs.variables,
+      };
+    });
+  }
+
+  function assignOtherStatesOutput() {
+    Object.keys(scopes.scopes.states).forEach((a: string) => {
+      if (a === stateName) return;
+      if (a === reservedStateNameSchema.enum.start) return;
+      const state = scopes.scopes.states[a as CustomKey];
+      if (state == null) throw new Error(`${a} is null, should not happen`);
+      ret.global[a as CustomKey] = {
         display_name: state.display_name,
         variables: state.children.outputs.variables,
       };

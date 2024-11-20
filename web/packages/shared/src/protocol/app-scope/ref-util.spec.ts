@@ -193,6 +193,22 @@ state#3
                 },
               },
             },
+            state_3: {
+              name: 'state_3',
+              display_name: 'State#3',
+              children: {
+                inputs: {
+                  variables: {},
+                },
+                tasks: [],
+                outputs: {
+                  variables: {
+                    output_b: { type: 'text', display_name: 'Hello world' },
+                  },
+                  render: { buttons: {} },
+                },
+              },
+            },
           },
         },
       });
@@ -215,6 +231,15 @@ state#3
               "display_name": "State#1",
               "variables": {
                 "output_a": {
+                  "display_name": "Hello world",
+                  "type": "text",
+                },
+              },
+            },
+            "state_3": {
+              "display_name": "State#3",
+              "variables": {
+                "output_b": {
                   "display_name": "Hello world",
                   "type": "text",
                 },
