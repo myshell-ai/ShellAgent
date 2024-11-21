@@ -5,18 +5,27 @@ import { ModalModel } from '@/utils/modal.model.ts';
 import { ToggleModel } from '@/utils/toggle.model.ts';
 import { SettingsModel } from '@/components/settings/settings.model.ts';
 import { FormikModel } from '@/utils/formik.model.ts';
+import { FormEngineModel } from '@/utils/form-engine.model.ts';
 
 export const LocTip =
   'The file must be a ShellAgent-extended ComfyUI JSON file with the .shellagent.json suffix.';
 
+export type LocationFormType = {
+  location?: string;
+};
+
 @injectable()
 export class ComfyUIModel {
+  // TODO: use formik
   @observable location?: string = undefined;
+  @observable locationTemp?: string = undefined;
   @observable locErrorMsg?: string = undefined;
 
   constructor(
     @inject(ModalModel) public iframeDialog: ModalModel,
-    @inject(FormikModel) public locationFormFormik: FormikModel,
+    @inject(FormikModel)
+    public locationFormFormik: FormikModel<LocationFormType>,
+    @inject(FormEngineModel) public formRef: FormEngineModel,
     @inject(ModalModel) public locationFormDialog: ModalModel,
     @inject(ToggleModel) public fullscreen: ToggleModel,
     @inject(SettingsModel) public settings: SettingsModel,
@@ -34,20 +43,28 @@ export class ComfyUIModel {
   }
 
   @action.bound
-  setLocation(location: string) {
+  async setLocation(location?: string) {
     this.location = location;
+    await this.formRef.isReadyPromise;
+    this.formRef.formRef.setValue('location', location);
+  }
+
+  @action.bound
+  setLocationTemp(location?: string) {
+    this.locationTemp = location;
   }
 
   @action.bound
   async onLocationDialogOk() {
-    await this.locationFormFormik.isFormikReadyPromise;
+    await this.locationFormFormik.isReadyPromise;
     await this.locationFormFormik.formikProps.submitForm();
     this.locationFormDialog.close();
   }
 
   @action.bound
   submitLocationDialog() {
-    this.location = this.locationFormFormik.formikProps.values['location'];
+    const loc = this.locationFormFormik.formikProps.values['location'];
+    this.setLocation(loc);
   }
 
   checkLocation(loc?: string) {
@@ -63,6 +80,9 @@ export class ComfyUIModel {
 
   @action.bound
   checkLocation2() {
-    this.locErrorMsg = this.checkLocation(this.location);
+    this.locErrorMsg = this.checkLocation(this.locationTemp);
+    if (!this.locErrorMsg) {
+      this.setLocation(this.locationTemp);
+    }
   }
 }

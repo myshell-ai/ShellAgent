@@ -67,7 +67,7 @@ export class SettingsModel {
     @inject(EmitterModel) private emitter: EmitterModel,
     @inject(ModalModel) public modal: ModalModel,
     @inject(ModalModel) public changelogModal: ModalModel,
-    @inject(FormikModel) public formik: FormikModel,
+    @inject(FormikModel) public formik: FormikModel<any>,
   ) {
     makeObservable(this);
   }
@@ -95,7 +95,7 @@ export class SettingsModel {
 
   async loadSettingsEnvAndFillForm() {
     const values = await this.loadSettingsEnv();
-    await this.formik.isFormikReadyPromise;
+    await this.formik.isReadyPromise;
     this.formik.formikProps?.setValues(values);
   }
 

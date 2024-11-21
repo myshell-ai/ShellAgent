@@ -17,6 +17,7 @@ export interface SaveRequest {
   name: string;
   comfy_workflow_id: string;
   comfyui_api: string;
+  location: string;
 }
 
 export interface SaveResponse {

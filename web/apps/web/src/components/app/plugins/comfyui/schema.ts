@@ -172,6 +172,13 @@ export const defaultSchema: ISchema = {
       'x-title-size': 'h4',
       'x-hidden': true,
     },
+    location: {
+      type: 'string',
+      'x-component': 'Input',
+      'x-type': 'Control',
+      'x-title-size': 'h4',
+      'x-hidden': true,
+    },
   },
 };
 
@@ -212,6 +219,13 @@ export const getComfyuiSchema = ({
         'x-title-size': 'h4',
       },
       comfy_workflow_id: {
+        type: 'string',
+        'x-component': 'Input',
+        'x-type': 'Control',
+        'x-title-size': 'h4',
+        'x-hidden': true,
+      },
+      location: {
         type: 'string',
         'x-component': 'Input',
         'x-type': 'Control',

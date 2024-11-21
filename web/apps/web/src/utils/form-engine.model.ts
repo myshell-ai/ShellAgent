@@ -1,10 +1,10 @@
 import { injectable } from 'inversify';
-import { type FormikProps } from 'formik';
+import { type FormRef } from '@shellagent/ui';
 
 @injectable()
-export class FormikModel<T> {
+export class FormEngineModel {
   isReadyPromise: Promise<unknown>;
-  public formikProps!: FormikProps<T>; // if undef throw error, fail fast
+  public formRef!: FormRef; // if undef throw error, fail fast
   private isReadyPromiseResolve: ((value: unknown) => void) | undefined;
 
   constructor() {
@@ -13,8 +13,8 @@ export class FormikModel<T> {
     });
   }
 
-  setFormikProps(formikProps: FormikProps<any>) {
-    this.formikProps = formikProps;
+  setFormRef(formRef: FormRef) {
+    this.formRef = formRef;
     this.isReadyPromiseResolve!('');
   }
 }

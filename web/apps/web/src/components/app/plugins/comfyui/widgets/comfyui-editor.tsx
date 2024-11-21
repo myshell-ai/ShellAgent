@@ -47,7 +47,11 @@ export const ComfyUIEditor = observer(
       SaveResponse['data']['dependencies'] | null
     >(null);
     const iframeRef = useRef<HTMLIFrameElement>(null);
-    const { getValues, setValue } = useFormContext();
+    const formRef = useFormContext();
+    const { getValues, setValue } = formRef;
+    useEffect(() => {
+      model.formRef.setFormRef(formRef);
+    }, [formRef]);
     const [messageDetailOpen, setMessageDetailOpen] = useState(false);
     const [messageDetail, setMessageDetail] = useState<string | null>(null);
 
@@ -172,12 +176,26 @@ export const ComfyUIEditor = observer(
               console.log('ComfyUI loaded');
               break;
             case MessageType.SAVE:
+              if (model.locationTemp == null) {
+                toast.error(
+                  'The file location of ShellAgent-extended ComfyUI JSON file is invalid',
+                  {
+                    position: 'top-center',
+                    autoClose: 3000,
+                    hideProgressBar: true,
+                    pauseOnHover: true,
+                    closeButton: false,
+                  },
+                );
+                return;
+              }
               saveComfyRequest({
                 prompt: event.data.prompt,
                 comfyui_api: valueUrl.origin,
                 workflow: event.data.workflow,
                 name: event.data.name,
                 comfy_workflow_id,
+                location: model.locationTemp,
               });
               break;
             default:
@@ -198,7 +216,7 @@ export const ComfyUIEditor = observer(
     }, [handleMessage]);
 
     const handleSave = () => {
-      if (isEmpty(model.location)) {
+      if (isEmpty(model.locationTemp)) {
         model.locationFormDialog.open();
         return;
       }
@@ -345,18 +363,6 @@ export const ComfyUIEditor = observer(
                 />
               </div>
               <div className="flex items-center gap-2">
-                {/* <Upload
-                  accept=".json"
-                  showUploadList={false}
-                  beforeUpload={file => {
-                    handleImport(file);
-                    return false;
-                  }}>
-                  <Button size="sm" disabled={disabled}>
-                    <UploadOutlined className="mr-2" />
-                    Import
-                  </Button>
-                </Upload> */}
                 <Tooltip
                   title={
                     model.fullscreen.isOn ? 'Exit fullscreen' : 'Fullscreen'
@@ -498,9 +504,9 @@ export const LocationFormItem = observer(
             onBlur={e => props.onBlur(props.value)}
             placeholder="File path of extended ComfyUI json"
           />
-          <Box ml={1}>
+          {/* <Box ml={1}>
             <FolderOpenIcon className="w-5 h-5 text-icon-brand" />
-          </Box>
+          </Box> */}
         </Flex>
       </Form.Item>
     );
@@ -512,8 +518,8 @@ const ComfyUIEditorButton = observer(props => {
   return (
     <>
       <LocationFormItem
-        onChange={model.setLocation}
-        value={model.location}
+        onChange={model.setLocationTemp}
+        value={model.locationTemp}
         errorMsg={model.locErrorMsg}
         onBlur={() => model.checkLocation2()}
       />
@@ -529,7 +535,7 @@ export const LocationForm = observer(() => {
   return (
     <Formik<{ location?: string }>
       initialValues={{
-        location: model.location,
+        location: model.locationTemp,
       }}
       onSubmit={values => {
         model.submitLocationDialog();
