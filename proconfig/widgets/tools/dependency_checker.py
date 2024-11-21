@@ -6,7 +6,7 @@ from proconfig.widgets import build_widgets
 from proconfig.widgets.imagen_widgets.utils.model_manager import compute_sha256
 from proconfig.utils.expressions import calc_expression, tree_map
 from functools import partial
-from proconfig.utils.misc import windows_to_linux_path
+from proconfig.utils.misc import windows_to_linux_path, generate_comfyui_workflow_id
 import logging
 from easydict import EasyDict as edict
 
@@ -123,6 +123,7 @@ def check_missing_widgets(config, missing_widgets):
 # non_existed_models: cannot find in local disk
 # missing_models: found in local disk, but not in model-list (failed when imported)
 # missing widgets: widgets installed locally but haven't registered in widget-list
+comfy_workflow_path_id_map = {}
 def check_dependency_recursive(config, non_existed_models: list, missing_models: dict, undefined_widgets: list, missing_widgets: dict, local_vars: dict, payload: dict, workflow_ids: list, comfyui_workflow_ids: list):
     # config is a json
     if config.type == "task": # leaf nodes
@@ -133,6 +134,9 @@ def check_dependency_recursive(config, non_existed_models: list, missing_models:
         elif config.mode == "widget":
             if hasattr(config, "comfy_workflow_id"):
                 config.mode = "comfy_workflow"
+                if getattr(config, "location", None): # location
+                    config.comfy_workflow_id = comfy_workflow_path_id_map.get(config.location, generate_comfyui_workflow_id())
+                    comfy_workflow_path_id_map[config.location] = config.comfy_workflow_id
                 if config.comfy_workflow_id not in comfyui_workflow_ids:
                     comfyui_workflow_ids.append(config.comfy_workflow_id)
                 return # models in ComfyWorkflowTask already checked
@@ -200,6 +204,8 @@ def check_dependency(config):
     missing_models = {}
     undefined_widgets = []
     missing_widgets = {}
+    comfy_workflow_path_id_map.clear()
+    
     check_dependency_recursive(config, non_existed_models=non_existed_models, missing_models=missing_models, 
                                        undefined_widgets=undefined_widgets, missing_widgets=missing_widgets, 
                                        workflow_ids=workflow_ids, comfyui_workflow_ids=comfyui_workflow_ids, local_vars={}, payload={})
@@ -210,6 +216,7 @@ def check_dependency(config):
         "widgets": missing_widgets,
         "workflow_ids": workflow_ids,
         "comfyui_workflow_ids": comfyui_workflow_ids,
+        "comfy_workflow_path_id_map": copy.deepcopy(comfy_workflow_path_id_map),
     }, config
     
 if __name__ == "__main__":

@@ -211,8 +211,17 @@ async def export_app(data: dict):
         }
         custom_node_names = []
         
-        for comfyui_workflow_id in dependency_results["comfyui_workflow_ids"]:
-            shellagent_json_path = os.path.join(PROJECT_ROOT, "comfy_workflow", comfyui_workflow_id, "workflow.shellagent.json")
+        if len(dependency_results["comfy_workflow_path_id_map"]) > 0:
+            comfy_workflow_path_id_map = dependency_results["comfy_workflow_path_id_map"]
+        else: # old
+            comfy_workflow_path_id_map = {}
+            for comfyui_workflow_id in dependency_results["comfyui_workflow_ids"]:
+                shellagent_json_path = os.path.join(PROJECT_ROOT, "comfy_workflow", comfyui_workflow_id, "workflow.shellagent.json")
+                comfy_workflow_path_id_map[shellagent_json_path] = comfyui_workflow_id
+        
+        for shellagent_json_path, comfyui_workflow_id in comfy_workflow_path_id_map.items():
+        # for comfyui_workflow_id in dependency_results["comfyui_workflow_ids"]:
+        #     shellagent_json_path = os.path.join(PROJECT_ROOT, "comfy_workflow", comfyui_workflow_id, "workflow.shellagent.json")
             with open(shellagent_json_path) as f:
                 shellagent_json = json.load(f)
             comfyui_workflows[comfyui_workflow_id] = {
@@ -640,8 +649,9 @@ class MyShellRunAppRequest(BaseModel):
     headers: Dict = {}
 
 class MyShellRunAppResponse(BaseModel):
-    store_session: str # json string
-    render_result: ServerMessage
+    store_session: str | None # json string
+    render_result: ServerMessage | None
+    running_error: Dict | None
     
 
 def prepare_payload(automata: Automata, event_data: MyShellUserInput, sess_state: SessionState):
@@ -666,51 +676,56 @@ def prepare_payload(automata: Automata, event_data: MyShellUserInput, sess_state
 
 def run_automata_stateless_impl(request: MyShellRunAppRequest, queue):
     # first version: no sse
-    runner = Runner()
-    automata = json.loads(request.proconfig_json)
-    automata = Automata.model_validate(automata)  # Validate input
-    
-    if request.store_session == "":
-        sess_state = SessionState()
-    else:
-        sess_state_dict = json.loads(request.store_session)
-        sess_state = SessionState.model_validate(sess_state_dict)
-        
-    sess_state.environ["MYSHELL_HEADERS"] = request.headers
-    sess_state.environ["CURRENT_TASK_ID"] = hash_dict(request.headers)
-        
-    payload = prepare_payload(automata, request.user_input, sess_state)
-    sess_state, render = runner.run_automata(automata, sess_state, payload)
-    server_message = parse_server_message("", render, sess_state.event_mapping, sess_state.message_count)
-    sess_state.message_count += 1
-    
-    sess_state_str = sess_state.model_dump_json()
-    
     try:
-        result = MyShellRunAppResponse(
-            store_session=sess_state_str,
-            render_result=server_message
-        )
-    except:
-        import pdb; pdb.set_trace()
+        runner = Runner()
+        automata = json.loads(request.proconfig_json)
+        automata = Automata.model_validate(automata)  # Validate input
+        
+        if request.store_session == "":
+            sess_state = SessionState()
+        else:
+            sess_state_dict = json.loads(request.store_session)
+            sess_state = SessionState.model_validate(sess_state_dict)
+            
+        sess_state.environ["MYSHELL_HEADERS"] = request.headers
+        sess_state.environ["CURRENT_TASK_ID"] = hash_dict(request.headers)
+            
+        payload = prepare_payload(automata, request.user_input, sess_state)
+        sess_state, render = runner.run_automata(automata, sess_state, payload)
+        server_message = parse_server_message("", render, sess_state.event_mapping, sess_state.message_count)
+        sess_state.message_count += 1
+        sess_state_str = sess_state.model_dump_json()
+        running_error = None
+    except ShellException as e:
+        if e.traceback is None:
+            e.traceback = traceback.format_exc()
+        server_message = sess_state_str = None
+        running_error = e.format_dict()
+    except Exception as e:
+        error_message_detail = traceback.format_exc()
+        error_message = str(e)
+        empty_exception = ShellException("UNKNOWN-9999", "Unknown Error", error_message, error_message_detail)
+        running_error = empty_exception.format_dict()
+        
+    if running_error is not None:
+        running_error["trace_id"] = request.headers.get("x-myshell-openapi-trace-id", "")
+        
+    result = MyShellRunAppResponse(
+        store_session=sess_state_str,
+        render_result=server_message,
+        running_error=running_error
+    )
+
     queue.put(result)
     return result
     
     
 @app.post('/api/app/run_stateless')
 async def run_automata_stateless(request: MyShellRunAppRequest):
-    try:
-        result_queue = queue.Queue()
-        thread = threading.Thread(target=run_automata_stateless_impl, args=(request, result_queue))
-        thread.start()
-        thread.join()
-        result = result_queue.get()
-        # result = run_automata_stateless_impl(request)
-        return result
-    except Exception as e:
-        error_message = str(traceback.format_exc())
-        result = {
-            "error_message_detail": error_message,
-            "error_message": str(e),
-        }
-        return result
+    result_queue = queue.Queue()
+    thread = threading.Thread(target=run_automata_stateless_impl, args=(request, result_queue))
+    thread.start()
+    thread.join()
+    result = result_queue.get()
+    # result = run_automata_stateless_impl(request)
+    return result

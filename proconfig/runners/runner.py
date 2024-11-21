@@ -224,6 +224,7 @@ class Runner(BaseModel):
         comfy_extra_inputs = {
             "api": task.api,
             "comfy_workflow_id": task.comfy_workflow_id,
+            "location": task.location,
         }
         task.inputs["comfy_extra_inputs"] = comfy_extra_inputs
             

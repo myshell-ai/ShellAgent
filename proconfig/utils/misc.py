@@ -10,6 +10,7 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 from urllib.parse import urlparse
 from typing import Any, IO
 import tempfile
+import uuid
 from pathlib import PurePosixPath, Path, PureWindowsPath
 from proconfig.core.exception import ShellException
 
@@ -243,3 +244,6 @@ def upload_file_to_myshell(local_file: str) -> str:
         }
         raise ShellException(**error)
     
+    
+def generate_comfyui_workflow_id():
+    str(uuid.uuid4()).replace('-', '')
