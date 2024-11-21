@@ -6,7 +6,7 @@ class ShellException(Exception):
         self.error_head = error_head
         self.msg = msg
         self.traceback = traceback
-        self.trace_id = trace_id
+        self.link = link
         
     def format_dict(self):
         return {

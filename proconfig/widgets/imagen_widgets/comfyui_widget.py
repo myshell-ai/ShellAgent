@@ -335,9 +335,9 @@ class ComfyUIWidget(BaseWidget):
                 shellagent_json_path = comfy_extra_inputs["location"]
             else:
                 comfy_workflow_root = os.path.join(os.environ["PROCONFIG_PROJECT_ROOT"], "comfy_workflow")
-                shellagent_json = os.path.join(comfy_workflow_root, comfy_extra_inputs["comfy_workflow_id"], "workflow.shellagent.json")
+                shellagent_json_path = os.path.join(comfy_workflow_root, comfy_extra_inputs["comfy_workflow_id"], "workflow.shellagent.json")
                 
-            shellagent_json = json.load(shellagent_json_path)
+            shellagent_json = json.load(open(shellagent_json_path))
             outputs = comfyui_run(
                 comfy_extra_inputs["api"],
                 shellagent_json["workflow"],

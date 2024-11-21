@@ -134,6 +134,8 @@ async def fetch_workflow_list(params: Dict):
     if not SAVE_ROOT:
         raise HTTPException(status_code=400, detail="Invalid type specified")
 
+    category = params.get("category", "")
+    
     # List workflow IDs
     workflow_ids = [item for item in os.listdir(SAVE_ROOT) if not item.startswith(".")][::-1]
     data = []
@@ -157,7 +159,9 @@ async def fetch_workflow_list(params: Dict):
             'metadata': metadata,
             'timestamp': os.path.getmtime(reactflow_file)
         }
-        data.append(item)
+        
+        if category == "" or metadata.get("category", "") == category:
+            data.append(item)
 
     # Sort data by timestamp in descending order
     data = sorted(data, key=lambda x: x['timestamp'], reverse=True)
@@ -210,6 +214,9 @@ async def save_as_template(params: Dict):
             # handle the comfy_workflow_id
             duplicate_comfy_workflow(json_data, os.path.join(PROJECT_ROOT, "comfy_workflow"), TEMPLATES_ROOTS["comfy_workflow"])
             json_data = process_local_file_path_async(json_data)
+            
+        elif filename == "metadata.json":
+            json_data["category"] = params.get("category", "")
            
         target_filepath = os.path.join(TEMPLATES_ROOTS["app"], new_app_id, "latest", filename)
         os.makedirs(os.path.dirname(target_filepath), exist_ok=True)
