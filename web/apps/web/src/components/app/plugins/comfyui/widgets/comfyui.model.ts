@@ -6,9 +6,13 @@ import { ToggleModel } from '@/utils/toggle.model.ts';
 import { SettingsModel } from '@/components/settings/settings.model.ts';
 import { FormikModel } from '@/utils/formik.model.ts';
 
+export const LocTip =
+  'The file must be a ShellAgent-extended ComfyUI JSON file with the .shellagent.json suffix.';
+
 @injectable()
 export class ComfyUIModel {
   @observable location?: string = undefined;
+  @observable locErrorMsg?: string = undefined;
 
   constructor(
     @inject(ModalModel) public iframeDialog: ModalModel,
@@ -44,5 +48,21 @@ export class ComfyUIModel {
   @action.bound
   submitLocationDialog() {
     this.location = this.locationFormFormik.formikProps.values['location'];
+  }
+
+  checkLocation(loc?: string) {
+    if (isEmpty(loc)) {
+      return undefined;
+    }
+    if (loc?.endsWith('.shellagent.json') === false) {
+      return LocTip;
+    } else {
+      return undefined;
+    }
+  }
+
+  @action.bound
+  checkLocation2() {
+    this.locErrorMsg = this.checkLocation(this.location);
   }
 }

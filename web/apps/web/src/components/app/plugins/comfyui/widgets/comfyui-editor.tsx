@@ -30,7 +30,7 @@ import { checkDependency, isValidUrl } from '../utils';
 import { Box, Flex } from 'react-system';
 import { css } from '@emotion/react';
 import { observer } from 'mobx-react-lite';
-import { ComfyUIModel } from './comfyui.model';
+import { ComfyUIModel, LocTip } from './comfyui.model';
 import { isEmpty } from 'lodash-es';
 import { Field, FieldProps, Formik } from 'formik';
 
@@ -470,37 +470,53 @@ export const ComfyUIEditor = observer(
   },
 );
 
-export const LocationFormItem = (props: {
-  value?: string;
-  onChange: (value: string) => void;
-}) => {
-  return (
-    <Form.Item
-      label="Location"
-      css={css`
-        margin-bottom: 12px;
-      `}>
-      <Flex alignItems="center">
-        <Input
-          value={props.value}
-          onChange={e => {
-            props.onChange(e.target.value);
-          }}
-          placeholder="File path of extended ComfyUI json"
-        />
-        <Box ml={1}>
-          <FolderOpenIcon className="w-5 h-5 text-icon-brand" />
-        </Box>
-      </Flex>
-    </Form.Item>
-  );
-};
+export const LocationFormItem = observer(
+  (props: {
+    value?: string;
+    onChange: (value: string) => void;
+    errorMsg?: string;
+    onBlur: (value?: string) => void;
+  }) => {
+    return (
+      <Form.Item
+        tooltip={LocTip}
+        label="Location"
+        help={props.errorMsg}
+        validateStatus={props.errorMsg == null ? undefined : 'error'}
+        css={css`
+          margin-bottom: 12px;
+          // .ant-row {
+          //   flex-flow: row;
+          // }
+        `}>
+        <Flex alignItems="center">
+          <Input
+            value={props.value}
+            onChange={e => {
+              props.onChange(e.target.value);
+            }}
+            onBlur={e => props.onBlur(props.value)}
+            placeholder="File path of extended ComfyUI json"
+          />
+          <Box ml={1}>
+            <FolderOpenIcon className="w-5 h-5 text-icon-brand" />
+          </Box>
+        </Flex>
+      </Form.Item>
+    );
+  },
+);
 
 const ComfyUIEditorButton = observer(props => {
   const model = useInjection<ComfyUIModel>('ComfyUIModel');
   return (
     <>
-      <LocationFormItem onChange={model.setLocation} value={model.location} />
+      <LocationFormItem
+        onChange={model.setLocation}
+        value={model.location}
+        errorMsg={model.locErrorMsg}
+        onBlur={() => model.checkLocation2()}
+      />
       <Button size="sm" className="w-full" onClick={model.iframeDialog.open}>
         {model.buttonName}
       </Button>
@@ -531,6 +547,11 @@ export const LocationForm = observer(() => {
                   value={field.value}
                   onChange={v => {
                     formikProps.setFieldValue('location', v);
+                  }}
+                  errorMsg={formikProps.errors['location']}
+                  onBlur={() => {
+                    const e = model.checkLocation(field.value);
+                    formikProps.setFieldError('location', e);
                   }}
                 />
               )}
