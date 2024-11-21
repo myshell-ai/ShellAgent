@@ -78,6 +78,7 @@ const ComfyUIPlugin: React.FC<CommonWidgetConfigProps> = ({
     if (values?.comfy_workflow_id) {
       getComfySchema({
         comfy_workflow_id: values?.comfy_workflow_id,
+        location: values?.location,
         filename: 'workflow.shellagent.json',
       });
     }

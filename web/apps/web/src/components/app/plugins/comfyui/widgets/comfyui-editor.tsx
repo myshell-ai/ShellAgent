@@ -165,12 +165,14 @@ export const ComfyUIEditor = observer(
           if (valueUrl.origin !== event.origin) return;
 
           const comfy_workflow_id = getValues('comfy_workflow_id');
+          const location = getValues('location');
 
           switch (event.data.type) {
             case MessageType.LOADED:
               setLoaded(true);
               getComfySchema({
                 comfy_workflow_id,
+                location,
                 filename: 'workflow.json',
               });
               console.log('ComfyUI loaded');
