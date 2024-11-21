@@ -1,5 +1,4 @@
-'use client';
-
+import React from 'react';
 import { PlusIcon } from '@heroicons/react/24/outline';
 import {
   Card,
@@ -8,14 +7,45 @@ import {
   Button,
   Image,
   Description,
+  Spinner,
 } from '@shellagent/ui';
 import dayjs from 'dayjs';
 
+import { TemplateListResponse } from '@/services/home/type';
 import { Metadata } from '@/services/home/type';
 
 const relativeTime = require('dayjs/plugin/relativeTime');
 
 dayjs.extend(relativeTime);
+
+interface P {
+  loading?: boolean;
+  data?: TemplateListResponse['data'];
+  onUseTemplate: (id: string) => void;
+}
+
+export default function TemplateList({ loading, data, onUseTemplate }: P) {
+  console.log('data: ', data);
+  if (loading) {
+    return (
+      <div className="w-full h-full flex justify-center items-center">
+        <Spinner className="w-4.5 h-4.5 text-brand" />
+      </div>
+    );
+  }
+  if (!data?.length) {
+    return (
+      <Text
+        color="subtlest"
+        className="flex w-full h-full items-center justify-center">
+        No Data
+      </Text>
+    );
+  }
+  return data?.map(item => (
+    <TemplateCard {...item} onUseTemplate={onUseTemplate} />
+  ));
+}
 
 interface FlowCardProps {
   id: string;

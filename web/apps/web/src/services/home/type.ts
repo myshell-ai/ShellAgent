@@ -72,6 +72,7 @@ export interface DeleteResponse {
 
 export interface TemplateListRequest {
   type: Type; // 'app' | 'workflow', workflow 暂时不需要
+  category: string;
 }
 
 export interface TemplateListResponse {

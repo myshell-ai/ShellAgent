@@ -21,6 +21,7 @@ import {
   CreateTemplate,
   Spinner,
 } from '@shellagent/ui';
+import { Tag } from 'antd';
 import { useBoolean, useRequest } from 'ahooks';
 import { capitalize } from 'lodash-es';
 import { useRouter } from 'next/navigation';
@@ -32,7 +33,8 @@ import { Type } from '@/services/home/type';
 import { cn } from '@/utils/cn';
 
 import DetailForm from '../detail-form';
-import { TemplateCard } from '../template-card';
+import { CATEGORY_LIST } from '../save-template-dialog';
+import TemplateList from '../template-list';
 
 interface CreateDialogProps {
   size?: ButtonProps['size'];
@@ -48,6 +50,7 @@ export const CreateDialog: React.FC<CreateDialogProps> = ({
   const [open, openAction] = useBoolean();
   const [openTemplate, openTemplateAction] = useBoolean();
   const [openDrapdown, openDrapdownAction] = useBoolean();
+  const [category, setCategory] = useState('All');
   const [templateId, setTemplateId] = useState('');
   const [data, setData] = useState<{
     name: string;
@@ -126,7 +129,7 @@ export const CreateDialog: React.FC<CreateDialogProps> = ({
           <DropdownMenuItem
             onClick={() => {
               openTemplateAction.setTrue();
-              getTemplate({ type });
+              getTemplate({ type, category });
             }}
             disabled={type === 'workflow'}>
             <CreateTemplate className="w-4.5 h-4.5 text-inherit text-sm mr-1.5" />
@@ -175,20 +178,37 @@ export const CreateDialog: React.FC<CreateDialogProps> = ({
             </DialogTitle>
           </DialogHeader>
           <Separator />
-          <DialogDescription
-            className={cn(
-              'min-h-80 max-h-[70vh] overflow-scroll !px-5 !py-3 grid gap-3',
-              getTemplateLoading ? '' : 'grid-cols-2',
-            )}>
-            {getTemplateLoading ? (
-              <div className="w-full h-full flex justify-center items-center">
-                <Spinner className="w-4.5 h-4.5 text-brand" />
-              </div>
-            ) : (
-              templateList?.data?.map(item => (
-                <TemplateCard {...item} onUseTemplate={onUseTemplate} />
-              ))
-            )}
+          <DialogDescription className={cn('!px-5 !py-3')}>
+            <div className="flex pb-3 items-center">
+              <span className="mr-2">Category:</span>
+              {['All', ...CATEGORY_LIST, 'Custom'].map(item => (
+                <Tag.CheckableTag
+                  key={item}
+                  checked={category === item}
+                  className={cn(
+                    category === item ? '' : 'border border-default',
+                  )}
+                  onClick={() => {
+                    setCategory(item);
+                    getTemplate({ type, category: item });
+                  }}>
+                  {item}
+                </Tag.CheckableTag>
+              ))}
+            </div>
+            <div
+              className={cn(
+                'min-h-80 max-h-[70vh] overflow-scroll grid gap-3',
+                getTemplateLoading || !templateList?.data?.length
+                  ? ''
+                  : 'grid-cols-2',
+              )}>
+              <TemplateList
+                loading={getTemplateLoading}
+                data={templateList?.data}
+                onUseTemplate={onUseTemplate}
+              />
+            </div>
           </DialogDescription>
         </DialogContent>
       </Dialog>
