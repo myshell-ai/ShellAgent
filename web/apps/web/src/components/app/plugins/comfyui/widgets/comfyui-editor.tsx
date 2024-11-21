@@ -485,6 +485,7 @@ export const LocationFormItem = observer(
   }) => {
     return (
       <Form.Item
+        colon={false}
         tooltip={LocTip}
         label="Location"
         help={props.errorMsg}

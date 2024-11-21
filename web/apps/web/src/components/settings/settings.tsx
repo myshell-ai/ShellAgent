@@ -73,6 +73,7 @@ export const EnvForm = observer(() => {
                     if (defaultEnv) {
                       return (
                         <Form.Item
+                          colon={false}
                           label={defaultEnv.label}
                           hidden={defaultEnv.hidden}
                           tooltip={defaultEnv.tooltip}>
