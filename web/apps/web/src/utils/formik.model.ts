@@ -1,5 +1,5 @@
-import { injectable } from 'inversify';
 import { type FormikProps } from 'formik';
+import { injectable } from 'inversify';
 
 @injectable()
 export class FormikModel<T> {

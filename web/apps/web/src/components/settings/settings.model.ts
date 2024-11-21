@@ -3,6 +3,7 @@ import { inject, injectable, postConstruct } from 'inversify';
 import { action, makeObservable, observable } from 'mobx';
 
 import { EmitterModel } from '@/utils/emitter.model';
+import { FormikModel } from '@/utils/formik.model';
 import { ModalModel } from '@/utils/modal.model';
 
 import {
@@ -12,7 +13,6 @@ import {
   saveSettingEnvFormUrl,
   SettingEnvFormValue,
 } from './settings-definitions';
-import { FormikModel } from '@/utils/formik.model.ts';
 
 export type SidebarValue = 'Environment' | 'SoftwareUpdate';
 

@@ -5,6 +5,8 @@ import { ImageCanvasModel } from 'image-canvas/model';
 import { Container, interfaces } from 'inversify';
 import { toast } from 'react-toastify';
 
+import { ComfyUIModel } from '@/components/app/plugins/comfyui/widgets/comfyui.model';
+import { AssistantModel } from '@/components/assistant/model';
 import { AppBuilderChatModel } from '@/components/chat/app-builder-chat.model';
 import { DownloadModel } from '@/components/download/download.model';
 import { OpenImageCanvasModel } from '@/components/image-canvas/open-image-canvas.model';
@@ -16,13 +18,11 @@ import { WidgetsInstalledModel } from '@/components/manager/manager-content/widg
 import { WidgetsMarketplaceModel } from '@/components/manager/manager-content/widgets/widgets-marketplace.model';
 import { SettingsModel } from '@/components/settings/settings.model';
 import { EmitterModel } from '@/utils/emitter.model';
+import { FormEngineModel } from '@/utils/form-engine.model';
+import { FormikModel } from '@/utils/formik.model';
 import { ModalModel } from '@/utils/modal.model';
 import { RequestModel } from '@/utils/request.model';
-import { AssistantModel } from '@/components/assistant/model';
-import { ComfyUIModel } from '@/components/app/plugins/comfyui/widgets/comfyui.model.ts';
-import { ToggleModel } from '@/utils/toggle.model.ts';
-import { FormikModel } from '@/utils/formik.model.ts';
-import { FormEngineModel } from '@/utils/form-engine.model.ts';
+import { ToggleModel } from '@/utils/toggle.model';
 
 export const container = new Container();
 

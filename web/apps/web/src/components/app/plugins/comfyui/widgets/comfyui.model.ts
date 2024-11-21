@@ -1,12 +1,13 @@
-import { inject, injectable } from 'inversify';
-import { action, computed, makeObservable, observable } from 'mobx';
-import { isEmpty } from 'lodash-es';
-import { ModalModel } from '@/utils/modal.model.ts';
-import { ToggleModel } from '@/utils/toggle.model.ts';
-import { SettingsModel } from '@/components/settings/settings.model.ts';
-import { FormikModel } from '@/utils/formik.model.ts';
-import { FormEngineModel } from '@/utils/form-engine.model.ts';
 import axios from 'axios';
+import { inject, injectable } from 'inversify';
+import { isEmpty } from 'lodash-es';
+import { action, computed, makeObservable, observable } from 'mobx';
+
+import { SettingsModel } from '@/components/settings/settings.model';
+import { FormEngineModel } from '@/utils/form-engine.model';
+import { FormikModel } from '@/utils/formik.model';
+import { ModalModel } from '@/utils/modal.model';
+import { ToggleModel } from '@/utils/toggle.model';
 
 export const LocTip =
   'The file must be a ShellAgent-extended ComfyUI JSON file with the .shellagent.json suffix.';
@@ -43,9 +44,8 @@ export class ComfyUIModel {
   get buttonName() {
     if (isEmpty(this.location)) {
       return 'Create in ComfyUI';
-    } else {
-      return 'Edit in ComfyUI';
     }
+    return 'Edit in ComfyUI';
   }
 
   @action.bound
@@ -70,7 +70,7 @@ export class ComfyUIModel {
 
   @action.bound
   submitLocationDialog() {
-    const loc = this.locationFormFormik.formikProps.values['location'];
+    const loc = this.locationFormFormik.formikProps.values.location;
     this.setLocation(loc);
   }
 
@@ -80,9 +80,8 @@ export class ComfyUIModel {
     }
     if (loc?.endsWith('.shellagent.json') === false) {
       return LocTip;
-    } else {
-      return undefined;
     }
+    return undefined;
   }
 
   @action.bound

@@ -6,10 +6,14 @@ import {
   FullscreenOutlined,
   ReloadOutlined,
 } from '@ant-design/icons';
+import { css } from '@emotion/react';
 import { AModal, Button, Spinner, useFormContext } from '@shellagent/ui';
 import { useRequest } from 'ahooks';
 import { Form, Input, Modal, Tooltip } from 'antd';
+import { Field, FieldProps, Formik } from 'formik';
 import { useInjection } from 'inversify-react';
+import { isEmpty } from 'lodash-es';
+import { observer } from 'mobx-react-lite';
 import React, {
   useCallback,
   useEffect,
@@ -17,20 +21,16 @@ import React, {
   useRef,
   useState,
 } from 'react';
+import { Flex } from 'react-system';
 import { toast } from 'react-toastify';
 
+import { ComfyUIModel, LocTip } from './comfyui.model';
 import { CheckDialog } from '../check-dialog';
 import { COMFYUI_API, DEFAULT_COMFYUI_API, MessageType } from '../constant';
 import emitter, { EventType } from '../emitter';
 import { getFile, saveComfy, uploadComfy } from '../services';
 import type { SaveResponse } from '../services/type';
 import { checkDependency, isValidUrl } from '../utils';
-import { Flex } from 'react-system';
-import { css } from '@emotion/react';
-import { observer } from 'mobx-react-lite';
-import { ComfyUIModel, LocTip } from './comfyui.model';
-import { isEmpty } from 'lodash-es';
-import { Field, FieldProps, Formik } from 'formik';
 
 const settingsDisabled = process.env.NEXT_PUBLIC_DISABLE_SETTING === 'yes';
 
@@ -561,7 +561,7 @@ export const LocationForm = observer(() => {
                   onChange={v => {
                     formikProps.setFieldValue('location', v);
                   }}
-                  errorMsg={formikProps.errors['location']}
+                  errorMsg={formikProps.errors.location}
                   onBlur={() => {
                     const e = model.checkLocation(field.value);
                     formikProps.setFieldError('location', e);

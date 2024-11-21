@@ -1,5 +1,5 @@
-import { injectable } from 'inversify';
 import { type FormRef } from '@shellagent/ui';
+import { injectable } from 'inversify';
 
 @injectable()
 export class FormEngineModel {
