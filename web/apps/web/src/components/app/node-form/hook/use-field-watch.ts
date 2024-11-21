@@ -2,7 +2,7 @@
 import { TValues } from '@shellagent/form-engine';
 import { RefSceneEnum } from '@shellagent/shared/protocol/app-scope';
 import { reservedKeySchema } from '@shellagent/shared/protocol/pro-config';
-import { customSnakeCase, removeBrackets } from '@shellagent/shared/utils';
+import { removeBrackets } from '@shellagent/shared/utils';
 import { FormRef } from '@shellagent/ui';
 import { useInjection } from 'inversify-react';
 import { get, cloneDeep, isEqual, debounce, isNil } from 'lodash-es';
@@ -70,13 +70,15 @@ export function useFieldWatch(formRef: React.RefObject<FormRef>) {
             }
             break;
           case DiffTypeEnum.Renamed:
+            const key = getExisiedKey({
+              values: newContext,
+              name: diffNewValue?.name as string,
+            });
             appBuilder.hanldeRefScene({
               scene: RefSceneEnum.Enum.rename_ref_opt,
               params: {
                 oldPath: `${stateId}.__${reservedKeySchema.Enum.context}__${path}__`,
-                newPath: `${stateId}.__${
-                  reservedKeySchema.Enum.context
-                }__${customSnakeCase((diffNewValue?.name as string) || '')}__`,
+                newPath: `${stateId}.__${reservedKeySchema.Enum.context}__${key}__`,
               },
             });
             break;

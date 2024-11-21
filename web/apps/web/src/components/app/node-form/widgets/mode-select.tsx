@@ -82,19 +82,22 @@ export function ModeSelect({
   );
 
   const handleChange = useCallback(
-    (value: FieldMode) => {
-      setValue(value);
-      onChange?.(value);
+    (val: FieldMode) => {
+      if (val === value) {
+        return;
+      }
+      setValue(val);
+      onChange?.(val);
       appBuilder.hanldeRefScene({
         scene: RefSceneEnum.Enum.change_nodedata_mode,
         params: {
           stateName: stateId as Lowercase<string>,
-          mode: value,
+          mode: val,
           key: `${stateId}.${parent}.${name}`,
         },
       });
     },
-    [appBuilder.hanldeRefScene, name, stateId, parent],
+    [name, stateId, parent, value],
   );
 
   return (
