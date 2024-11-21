@@ -7,6 +7,7 @@ import clsx from 'clsx';
 import { useRef } from 'react';
 
 import { useAppState } from '@/stores/app/use-app-state';
+import { useReactFlowStore } from '@shellagent/flow-engine';
 
 interface VariableNodeProps {
   name: string;
@@ -60,6 +61,9 @@ const ButtonEditor = ({ name, onChange }: VariableNodeProps) => {
   const { getValues } = useFormContext();
   const value = getValues(name) as IButtonType[];
 
+  const edges = useReactFlowStore(state => state.edges);
+  const onDelEdge = useReactFlowStore(state => state.onDelEdge);
+
   const handleAddButton = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.stopPropagation();
     const content = getButtonDisplayName(value);
@@ -91,6 +95,15 @@ const ButtonEditor = ({ name, onChange }: VariableNodeProps) => {
             });
           }}
           onDelete={id => {
+            edges.forEach(edge => {
+              if (
+                edge.source === currentStateId &&
+                edge.data?.event_key === button.on_click?.event
+              ) {
+                onDelEdge({ id: edge.id });
+              }
+            });
+
             onChange(value.filter(item => item.id !== id));
           }}
         />

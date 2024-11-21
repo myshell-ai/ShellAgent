@@ -11,7 +11,6 @@ import { Button as IButtonType } from '@shellagent/shared/protocol/render-button
 import { IconButton, Button, Text } from '@shellagent/ui';
 import clsx from 'clsx';
 import { useInjection } from 'inversify-react';
-import { observer } from 'mobx-react-lite';
 import { PropsWithChildren } from 'react';
 
 import {
@@ -45,7 +44,7 @@ const InputPreview = () => {
   const onConnect = useReactFlowStore(state => state.onConnect);
   const id = useSchemaContext(state => state.id);
 
-  const handleId = `${inputSourceHandle}-${id}`;
+  const handleId = `${inputSourceHandle}_${id}`;
   const handleConnect = (connection: Connection) => {
     if (connection.source && connection.target) {
       onConnect({
@@ -126,7 +125,7 @@ const ButtonPreview = ({
   };
   const onConnect = useReactFlowStore(state => state.onConnect);
 
-  const handleId = `${buttonSourceHandle}-${id}#${index}`;
+  const handleId = `${buttonSourceHandle}_${stateId}_${index}`;
 
   const handleConnect = (connection: Connection) => {
     if (connection.source && connection.target) {
