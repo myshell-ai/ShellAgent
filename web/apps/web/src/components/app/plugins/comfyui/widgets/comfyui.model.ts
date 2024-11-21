@@ -45,6 +45,7 @@ export class ComfyUIModel {
   @action.bound
   async setLocation(location?: string) {
     this.location = location;
+    this.locationTemp = location;
     await this.formRef.isReadyPromise;
     this.formRef.formRef.setValue('location', location);
   }

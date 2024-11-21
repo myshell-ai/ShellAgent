@@ -51,7 +51,9 @@ export const ComfyUIEditor = observer(
     const { getValues, setValue } = formRef;
     useEffect(() => {
       model.formRef.setFormRef(formRef);
-    }, [formRef]);
+      const location = getValues('location');
+      model.setLocation(location);
+    }, []);
     const [messageDetailOpen, setMessageDetailOpen] = useState(false);
     const [messageDetail, setMessageDetail] = useState<string | null>(null);
 
