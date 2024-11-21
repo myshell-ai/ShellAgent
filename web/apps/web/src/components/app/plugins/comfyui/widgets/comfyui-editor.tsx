@@ -5,11 +5,10 @@ import {
   FullscreenExitOutlined,
   FullscreenOutlined,
   ReloadOutlined,
-  UploadOutlined,
 } from '@ant-design/icons';
 import { AModal, Button, Spinner, useFormContext } from '@shellagent/ui';
 import { useRequest } from 'ahooks';
-import { Form, Input, Modal, Tooltip, Upload } from 'antd';
+import { Form, Input, Modal, Tooltip } from 'antd';
 import { useInjection } from 'inversify-react';
 import React, {
   useCallback,
@@ -19,7 +18,6 @@ import React, {
   useState,
 } from 'react';
 import { toast } from 'react-toastify';
-import { FolderOpenIcon } from '@heroicons/react/24/outline';
 
 import { CheckDialog } from '../check-dialog';
 import { COMFYUI_API, DEFAULT_COMFYUI_API, MessageType } from '../constant';
@@ -27,7 +25,7 @@ import emitter, { EventType } from '../emitter';
 import { getFile, saveComfy, uploadComfy } from '../services';
 import type { SaveResponse } from '../services/type';
 import { checkDependency, isValidUrl } from '../utils';
-import { Box, Flex } from 'react-system';
+import { Flex } from 'react-system';
 import { css } from '@emotion/react';
 import { observer } from 'mobx-react-lite';
 import { ComfyUIModel, LocTip } from './comfyui.model';
@@ -526,7 +524,11 @@ const ComfyUIEditorButton = observer(props => {
         errorMsg={model.locErrorMsg}
         onBlur={() => model.checkLocation2()}
       />
-      <Button size="sm" className="w-full" onClick={model.iframeDialog.open}>
+      <Button
+        size="sm"
+        className="w-full"
+        onClick={model.iframeDialog.open}
+        disabled={model.buttonDisabled}>
         {model.buttonName}
       </Button>
     </>

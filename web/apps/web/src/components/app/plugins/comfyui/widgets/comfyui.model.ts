@@ -6,6 +6,7 @@ import { ToggleModel } from '@/utils/toggle.model.ts';
 import { SettingsModel } from '@/components/settings/settings.model.ts';
 import { FormikModel } from '@/utils/formik.model.ts';
 import { FormEngineModel } from '@/utils/form-engine.model.ts';
+import axios from 'axios';
 
 export const LocTip =
   'The file must be a ShellAgent-extended ComfyUI JSON file with the .shellagent.json suffix.';
@@ -31,6 +32,11 @@ export class ComfyUIModel {
     @inject(SettingsModel) public settings: SettingsModel,
   ) {
     makeObservable(this);
+  }
+
+  @computed
+  get buttonDisabled(): boolean {
+    return this.location != null && this.locErrorMsg != null;
   }
 
   @computed
@@ -84,6 +90,31 @@ export class ComfyUIModel {
     this.locErrorMsg = this.checkLocation(this.locationTemp);
     if (!this.locErrorMsg) {
       this.setLocation(this.locationTemp);
+      if (this.location) {
+        this.checkJsonExists(this.location);
+      }
+    }
+  }
+
+  @action.bound
+  async checkJsonExists(location: string) {
+    try {
+      const res = await axios.post(
+        `/api/comfyui/check_json_exist`,
+        {
+          location,
+        },
+        {
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        },
+      );
+      if (!res.data.success) {
+        this.locErrorMsg = `The ShellAgent-extended ComfyUI JSON file is not valid`;
+      }
+    } catch (e: any) {
+      this.locErrorMsg = e.message;
     }
   }
 }
