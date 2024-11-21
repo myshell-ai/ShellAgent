@@ -345,7 +345,7 @@ export const ComfyUIEditor = observer(
                 />
               </div>
               <div className="flex items-center gap-2">
-                <Upload
+                {/* <Upload
                   accept=".json"
                   showUploadList={false}
                   beforeUpload={file => {
@@ -356,7 +356,7 @@ export const ComfyUIEditor = observer(
                     <UploadOutlined className="mr-2" />
                     Import
                   </Button>
-                </Upload>
+                </Upload> */}
                 <Tooltip
                   title={
                     model.fullscreen.isOn ? 'Exit fullscreen' : 'Fullscreen'
