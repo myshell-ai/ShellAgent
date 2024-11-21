@@ -4,6 +4,7 @@ import enum
 import os
 from proconfig.utils.pytree import tree_map
 from proconfig.utils.misc import process_local_file_path
+from proconfig.core.exception import ShellException
 
 WIDGETS = Registry('widgets')
 
@@ -69,7 +70,13 @@ class BaseWidget:
                         elif model_path_mode == 'fname':
                             pass
                         else:
-                            raise NotImplementedError(f'Unsupported {model_path_mode=}, expected ["rel", "fname"]. \n Details: Error when deal with {field_name}: {field}')
+                            error = {
+                                'error_code': 'SHELL-1111',
+                                'error_head': 'Value Error', 
+                                'msg': f'Unsupported {model_path_mode=}, expected ["rel", "fname"]. \n Details: Error when deal with {field_name}: {field}',
+                            }
+                            raise ShellException(**error)
+                    
                         ckpt_path_lists.append(getattr(config, field_name))
         return config
     

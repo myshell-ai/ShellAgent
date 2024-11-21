@@ -22,6 +22,7 @@ from proconfig.core.variables import Variable
 from proconfig.core.constant import return_breakpoint_cache_dir
 from proconfig.core.chat import SessionState, EventItem
 from proconfig.runners.utils import empty_callback_fn, _max_input_len_helper, _get_config_by_index_helper
+from proconfig.core.exception import ShellException
 
 import psutil
 
@@ -168,12 +169,22 @@ class Runner(BaseModel):
                     block_outputs = {}
                 self.callback(event_type="task_end", outputs=block_outputs, create_time=start_time, finish_time=time.time(), task_status='succeeded', task_name=task.name)
             except Exception as e:
-                environ["BREAK"] = e
                 error_message = str(e)
                 error_message_detail = str(traceback.format_exc())
                 logging.info(error_message_detail)
                 self.callback(event_type="task_end", outputs={"error_message": error_message, "error_message_detail": error_message_detail}, create_time=start_time, finish_time=time.time(), task_status='failed', task_name=task.name)
-                raise e
+                
+                error = {
+                    'error_code': 'SHELL-1102',
+                    'error_head': 'Widget Execution Error', 
+                    'msg': f"error when executing widget {task.widget_class_name} \n" + error_message,
+                    'traceback': traceback.format_exc()
+                }
+                
+                exception = ShellException(**error)
+
+                environ["BREAK"] = exception
+                raise exception
             
         if module.exclusive_mode:
             lock_file = f"cache/{self.name}_exclusive_task.lock"
@@ -198,7 +209,14 @@ class Runner(BaseModel):
             payload = {k: calc_expression(v, local_vars) for k, v in task.inputs.items()}
             outputs = self.run_workflow(workflow, environ, payload)
         else:
-            raise NotImplementedError()
+            error = {
+                'error_code': 'SHELL-1103',
+                'error_head': 'Not Implemented Error', 
+                'msg': f"the block type of {task.block['type']} has not been implemented",
+                'traceback': traceback.format_exc()
+            }
+            raise ShellException(**error)
+        
         local_vars[task.name] = outputs
         
     def process_comfy_extra_inputs(self, task):
@@ -223,7 +241,13 @@ class Runner(BaseModel):
         elif task.mode == "block":
             return self.run_block_task(task, environ, local_vars)
         else:
-            raise NotImplementedError(f"task mode is {task.mode}, which is not supported")
+            error = {
+                'error_code': 'SHELL-1103',
+                'error_head': 'Not Implemented Error', 
+                'msg': f"task mode is {task.mode}, which is not supported",
+            }
+            raise ShellException(**error)
+
 
 
     def load_breakpoint_backup(self, workflow: Workflow):
@@ -379,12 +403,24 @@ class Runner(BaseModel):
             # add user_input_false inputs
             for k, v in workflow.inputs.items():
                 if v.user_input and k not in payload:
-                    raise NotImplementedError(f"{k} requires user_input=True but no input is provided!")
+                    error = {
+                        'error_code': 'SHELL-1104',
+                        'error_head': 'ShellAgent Execution Error: missing input', 
+                        'msg': f"{k} requires user_input=True but no input is provided!",
+                    }
+                    raise ShellException(**error)
+                
                 if not v.user_input and not k in payload:
                     if getattr(v, "default_value"):
                         local_vars[k] = calc_expression(v.default_value, local_vars)
                     else:
-                        raise NotImplementedError(f"{k} user_input=False but has neither default_value nor transition payload!")
+                        error = {
+                            'error_code': 'SHELL-1105',
+                            'error_head': 'ShellAgent Execution Error: missing default value', 
+                            'msg': f"{k} user_input=False but has neither default_value nor transition payload!",
+                        }
+                        raise ShellException(**error)
+                    
             self.callback(event_type="task_end", outputs=local_vars, create_time=inputs_start_time, finish_time=time.time(), task_status='succeeded', task_name="@@@start")
     
         if workflow.tasks_dag is None or (not self.parallel):
@@ -407,7 +443,12 @@ class Runner(BaseModel):
 
                 value = calc_expression(output_expression, local_vars)
                 if "context." in output_key:
-                    raise NotImplementedError("cannot write to context of workflow")
+                    error = {
+                        'error_code': 'SHELL-1103',
+                        'error_head': 'Not Implemented Error', 
+                        'msg': "cannot write to context of workflow",
+                    }
+                    raise ShellException(**error)
                 else:
                     outputs[output_key] = value
             self.callback(event_type="task_end", outputs=outputs, create_time=outputs_start_time, finish_time=time.time(), task_status='succeeded', task_name="@@@end")
@@ -430,7 +471,12 @@ class Runner(BaseModel):
                 continue
             
             if v.user_input and k not in payload:
-                raise NotImplementedError(f"{v.name} requires user_input=True but no input is provided!")
+                error = {
+                    'error_code': 'SHELL-1104',
+                    'error_head': 'ShellAgent Execution Error: missing input', 
+                    'msg': f"{v.name} requires user_input=True but no input is provided!",
+                }
+                raise ShellException(**error)
             
             # for user_input = True, provide the v.default_value
             # for user_input = False, provide the v.value
@@ -438,7 +484,12 @@ class Runner(BaseModel):
                 if hasattr(v, "value"):
                     local_vars[k] = calc_expression(v.value, local_vars)
                 else:
-                    raise NotImplementedError(f"{k} user_input=False but has neither default_value nor transition payload!")
+                    error = {
+                        'error_code': 'SHELL-1105',
+                        'error_head': 'ShellAgent Execution Error: missing default value', 
+                        'msg': f"{k} user_input=False but has neither default_value nor transition payload!",
+                    }
+                    raise ShellException(**error)
 
                     
         self.run_tasks_sequential(state, environ, local_vars)
@@ -534,7 +585,7 @@ class Runner(BaseModel):
             if transition is None:
                 if event_name == "CHAT":
                     continue
-                raise NotImplementedError(f"the transition {transition} is not defined, please revise your checker!")
+                    
             # evaluate the transitions
             try:
                 transition_case = automata.evaluate_conditional_transitions(event_name, transition, local_vars)

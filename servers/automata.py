@@ -32,7 +32,7 @@ from fastapi import FastAPI, HTTPException
 from fastapi.responses import JSONResponse, StreamingResponse
 
 from servers.base import app, APP_SAVE_ROOT, WORKFLOW_SAVE_ROOT, APP_RUNS_SAVE_ROOT, PROJECT_ROOT
-
+from proconfig.core.exception import ShellException
 
 # app related
 @app.post("/api/app/save")
@@ -312,16 +312,6 @@ async def init_bot(data: dict):
 
     return JSONResponse(content=return_data)
     
-    
-# def init_empty_sess_state():
-#     sess_state = {}
-#     sess_state["message_count"] = sess_state.get("message_count", 0)
-#     sess_state[EVENT_MAPPING_KEY] = sess_state.get(EVENT_MAPPING_KEY, {})
-#     sess_state["environ"] = sess_state.get("environ", {})
-#     return sess_state
-
-
-
 
 sess_states: Dict[str, SessionState] = {}
 
@@ -431,7 +421,7 @@ def build_form_schema(target_inputs):
         if v.source == "IM":
             if v.type == "audio":
                 canInputAudio = True
-            elif v.type in ["file", "text_file"]:
+            elif v.type in ["image", "video", "text_file", "file"]:
                 canUploadFile = True
             elif v.type in ["text", "string"]:
                 canInputText = True
@@ -532,7 +522,13 @@ def parse_server_message(session_id, render, event_mapping, message_count):
                 try:
                     ext = media.rsplit(".", 1)[-1]
                 except:
-                    raise ValueError(f"{media} is not a valid {media_key}. Please check the automata defination.")
+                    error = {
+                        'error_code': 'SHELL-1111',
+                        'error_head': 'Value Error', 
+                        'msg': f"{media} is not a valid {media_key}. Please check the automata defination.",
+                    }
+                    raise ShellException(**error)
+                
                 media_obj = EmbedObj(
                     id=None,
                     status=EmbedObjStatus.DONE,
@@ -614,11 +610,15 @@ def execute_automata(task_id, client_queue, automata, payload, sess_id, sess_sta
         server_message = parse_server_message(sess_id, render, sess_state.event_mapping, sess_state.message_count)
         sess_state.message_count += 1
         callback('state_exit', server_message=server_message.model_dump(), create_time=create_time, finish_time=time.time(), task_status="succeeded")
+    except ShellException as e:
+        if e.traceback is None:
+            e.traceback = traceback.format_exc()
+        callback('state_exit', outputs={"runningError": e.format_dict()}, create_time=create_time, finish_time=time.time(), task_status="failed")
     except Exception as e:
         error_message_detail = traceback.format_exc()
         error_message = str(e)
-        print(error_message_detail)
-        callback('state_exit', outputs={"error_message": str(error_message), "error_message_detail": error_message_detail}, create_time=create_time, finish_time=time.time(), task_status="failed")
+        empty_exception = ShellException("UNKNOWN-9999", "Unknown Error", error_message, error_message_detail)
+        callback('state_exit', outputs={"runningError": empty_exception.format_dict()}, create_time=create_time, finish_time=time.time(), task_status="failed")
     finally:
         assert tasks_queue[0] == task_id
         tasks_queue.pop(0)
@@ -664,7 +664,7 @@ def prepare_payload(automata: Automata, event_data: MyShellUserInput, sess_state
     return payload
     
 
-def run_automata_stateless_impl(request: MyShellRunAppRequest):
+def run_automata_stateless_impl(request: MyShellRunAppRequest, queue):
     # first version: no sse
     runner = Runner()
     automata = json.loads(request.proconfig_json)
@@ -693,13 +693,19 @@ def run_automata_stateless_impl(request: MyShellRunAppRequest):
         )
     except:
         import pdb; pdb.set_trace()
+    queue.put(result)
     return result
     
     
 @app.post('/api/app/run_stateless')
 async def run_automata_stateless(request: MyShellRunAppRequest):
     try:
-        result = run_automata_stateless_impl(request)
+        result_queue = queue.Queue()
+        thread = threading.Thread(target=run_automata_stateless_impl, args=(request, result_queue))
+        thread.start()
+        thread.join()
+        result = result_queue.get()
+        # result = run_automata_stateless_impl(request)
         return result
     except Exception as e:
         error_message = str(traceback.format_exc())

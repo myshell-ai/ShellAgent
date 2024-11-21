@@ -10,6 +10,7 @@ from proconfig.utils.misc import windows_to_linux_path
 from pathlib import Path
 import requests
 import traceback
+from proconfig.core.exception import ShellException
 
 # NON_FILE_INPUT_TYPES = ["text", "string", "number", "integer", "float"]
 
@@ -115,7 +116,7 @@ def queue_prompt(workflow, prompt, server_address, client_id):
         }
     finally:
         if error is not None:
-            raise Exception(json.dumps(error, indent=2, ensure_ascii=False))
+            raise ShellException(**error)
     return json.loads(urllib.request.urlopen(req).read())
 
 def get_history(server_address, prompt_id):
@@ -157,7 +158,13 @@ def comfyui_run(api, workflow, prompt, schemas, user_inputs):
         input_value = user_inputs[node_id]
         if "url_type" in node_schema: # file input
             if type(input_value) != str:
-                raise ValueError(f"{node_schema['title']} is {input_value}, which is invalid")
+                error = {
+                    'error_code': 'SHELL-1100',
+                    'error_head': 'Value Error', 
+                    'msg': f"{node_schema['title']} is {input_value}, which is invalid",
+                }
+                raise ShellException(**error)     
+
             if is_local:
                 input_value = os.path.join(os.getcwd(), input_value)
             elif os.path.isfile(input_value):
@@ -198,7 +205,7 @@ def comfyui_run(api, workflow, prompt, schemas, user_inputs):
                     'msg': error_msg, 
                     'traceback': error_traceback
                 }
-                raise Exception(json.dumps(error, indent=2, ensure_ascii=False))
+                raise ShellException(**error)
     else:
         try:
             outputs = {}
@@ -261,7 +268,7 @@ def comfyui_run(api, workflow, prompt, schemas, user_inputs):
                 'msg': f'Error occurs when we deal with the outputs of ComfyUI workflow with ShellAgent-Plugin nodes: {str(e)}', 
                 'traceback': traceback.format_exc()
             }
-            raise Exception(json.dumps(error, indent=2, ensure_ascii=False))
+            raise ShellException(**error)
                 
         # check outputs
         for node_id, schema in schemas["outputs"].items():
@@ -272,7 +279,7 @@ def comfyui_run(api, workflow, prompt, schemas, user_inputs):
                     'msg': f"ShellAgent outputs Node '{schema['title']}' cannot be founded in the ComfyUI results. Please check the ComfyUI workflow: {str(e)}", 
                     'traceback': f"The output schemas for your workflow are {[schema['title'] for schema in schemas['outputs']]}. However, there is at least one missing output is missing in the final outputs of ComfyUI {outputs}."
                 }
-                raise Exception(json.dumps(error, indent=2, ensure_ascii=False))
+                raise ShellException(**error)
         return outputs
 
 
@@ -299,7 +306,13 @@ def comfyui_run_myshell(workflow_id, inputs, extra_headers):
     if response.status_code == 200:
         return json.loads(response.json()['result'])
     else:
-        raise ValueError(f"workflow {workflow_id} failed to run")
+        error = {
+            'error_code': 'SHELL-1109',
+            'error_head': 'HTTP Request Error', 
+            'msg': f"workflow {workflow_id} failed to run",
+        }
+        raise ShellException(**error)
+
 
 @WIDGETS.register_module()
 class ComfyUIWidget(BaseWidget):

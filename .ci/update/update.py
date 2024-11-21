@@ -7,6 +7,7 @@ import filecmp
 import subprocess
 import requests
 import zipfile
+from proconfig.core.exception import ShellException
 
 def pull(repo, remote_name='origin', branch='main'):
     for remote in repo.remotes:
@@ -32,7 +33,12 @@ def pull(repo, remote_name='origin', branch='main'):
                 if repo.index.conflicts is not None:
                     for conflict in repo.index.conflicts:
                         print('Conflicts found in:', conflict[0].path)
-                    raise AssertionError('Conflicts, ahhhhh!!')
+                    error = {
+                        'error_code': 'SHELL-1116',
+                        'error_head': 'Auto-update Error', 
+                        'msg': f"find conflicts",
+                    }
+                    raise ShellException(**error)
 
                 user = repo.default_signature
                 tree = repo.index.write_tree()
@@ -45,7 +51,13 @@ def pull(repo, remote_name='origin', branch='main'):
                 # We need to do this or git CLI will think we are still merging.
                 repo.state_cleanup()
             else:
-                raise AssertionError('Unknown merge analysis result')
+                error = {
+                    'error_code': 'SHELL-1116',
+                    'error_head': 'Auto-update Error', 
+                    'msg':'Unknown merge analysis result',
+                }
+                raise ShellException(**error)
+
 
 pygit2.option(pygit2.GIT_OPT_SET_OWNER_VALIDATION, 0)
 repo_path = str(sys.argv[1])
