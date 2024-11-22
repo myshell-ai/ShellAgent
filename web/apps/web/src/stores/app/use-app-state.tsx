@@ -1,5 +1,4 @@
 import { Node } from '@shellagent/flow-engine';
-import { FieldValues } from '@shellagent/ui';
 import { create } from 'zustand';
 
 import { EdgeDataTypeEnum, CustomEdgeData } from '@/components/app/edges';

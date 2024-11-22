@@ -1,6 +1,5 @@
 import { ContextMenuSub, ContextMenuItem } from '@shellagent/ui';
 import { useInjection } from 'inversify-react';
-import { observer } from 'mobx-react-lite';
 import React from 'react';
 
 import { useDuplicateState } from '@/components/app/nodes/state-node/hook/use-duplicate-state';

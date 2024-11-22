@@ -5,12 +5,10 @@ import {
   ArrowRightIcon,
 } from '@heroicons/react/24/outline';
 import { useReactFlowStore, NodeTypeEnum } from '@shellagent/flow-engine';
-import { TFieldMode } from '@shellagent/form-engine';
 import { Button, Input, Select, IconButton, Drawer } from '@shellagent/ui';
 import { produce } from 'immer';
 import { useInjection } from 'inversify-react';
-import { observer } from 'mobx-react-lite';
-import { useRef, useState, useCallback } from 'react';
+import { useRef, useState } from 'react';
 
 import { ICondition } from '@/components/app/edges';
 import NodeForm from '@/components/app/node-form';

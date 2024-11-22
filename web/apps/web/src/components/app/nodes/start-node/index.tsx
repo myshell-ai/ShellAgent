@@ -5,7 +5,7 @@ import {
   SourceHandle,
   useReactFlowStore,
 } from '@shellagent/flow-engine';
-import { TValues, TFieldMode } from '@shellagent/form-engine';
+import { TValues } from '@shellagent/form-engine';
 import { useInjection } from 'inversify-react';
 import React, { useCallback, useMemo } from 'react';
 

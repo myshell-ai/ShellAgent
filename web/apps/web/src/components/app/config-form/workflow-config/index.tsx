@@ -1,14 +1,9 @@
 'use client';
 
 import { NodeIdEnum } from '@shellagent/flow-engine';
-import {
-  getDefaultValueBySchema,
-  TFieldMode,
-  TValues,
-} from '@shellagent/form-engine';
+import { getDefaultValueBySchema, TValues } from '@shellagent/form-engine';
 import { useInjection } from 'inversify-react';
 import { merge } from 'lodash-es';
-import { observer } from 'mobx-react-lite';
 import { useCallback, useEffect, useMemo } from 'react';
 
 import NodeForm from '@/components/app/node-form';
@@ -19,14 +14,12 @@ import { useWorkflowStore } from '@/stores/workflow/workflow-provider';
 interface WorkflowConfigProps {
   values: TValues | undefined;
   parent: string;
-  id: string;
   onChange: (values: TValues) => void;
 }
 
 export const WorkflowConfig: React.FC<WorkflowConfigProps> = ({
   values,
   parent,
-  id,
   onChange,
 }) => {
   const appBuilder = useInjection<AppBuilderModel>('AppBuilderModel');

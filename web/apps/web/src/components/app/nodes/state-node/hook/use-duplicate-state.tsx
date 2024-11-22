@@ -1,8 +1,9 @@
+import { useInjection } from 'inversify-react';
 import { useCallback } from 'react';
 
-import { usePasteState } from './use-paste-state';
 import { AppBuilderModel } from '@/stores/app/models/app-builder.model';
-import { useInjection } from 'inversify-react';
+
+import { usePasteState } from './use-paste-state';
 
 export const useDuplicateState = () => {
   const { pasteState } = usePasteState({ enabeKeyboard: false });

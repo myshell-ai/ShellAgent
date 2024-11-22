@@ -14,7 +14,6 @@ import { useWorkflowStore } from '@/stores/workflow/workflow-provider';
 export interface WidgetConfigProps {
   values: TValues | undefined;
   parent: string;
-  id: string;
   onChange: (values: TValues) => void;
 }
 

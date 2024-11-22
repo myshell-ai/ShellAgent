@@ -3,7 +3,7 @@ import {
   NodeIdEnum,
   StartNode as StartNodeType,
 } from '@shellagent/flow-engine';
-import { TValues, TFieldMode } from '@shellagent/form-engine';
+import { TValues } from '@shellagent/form-engine';
 import React, { useCallback, useRef, useEffect } from 'react';
 
 import NodeCard from '@/components/workflow/node-card';

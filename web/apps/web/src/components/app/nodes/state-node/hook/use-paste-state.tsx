@@ -1,10 +1,10 @@
 import { useReactFlowStore, getCanvasCenter } from '@shellagent/flow-engine';
 import { RefSceneEnum } from '@shellagent/shared/protocol/app-scope';
 import { customSnakeCase } from '@shellagent/shared/utils';
+import type { FieldValues } from '@shellagent/ui';
 import { useKeyPress } from 'ahooks';
 import { useInjection } from 'inversify-react';
 import { useCallback } from 'react';
-import type { FieldValues } from '@shellagent/ui';
 
 import { AppBuilderModel } from '@/stores/app/models/app-builder.model';
 import {

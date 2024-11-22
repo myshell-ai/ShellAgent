@@ -127,7 +127,7 @@ const StateNode: React.FC<NodeProps<StateNodeType>> = ({ selected, data }) => {
         return;
       }
       if (selected) {
-        duplicateState();
+        duplicateState(data.id, data.display_name as string);
       }
     },
     {
