@@ -14,7 +14,7 @@ import {
   COMFYUI_API,
   DEFAULT_COMFYUI_API,
   MessageType,
-} from '@/components/app/plugins/comfyui/constant.ts';
+} from '@/components/app/plugins/comfyui/constant';
 
 const settingsDisabled = process.env.NEXT_PUBLIC_DISABLE_SETTING === 'yes';
 
@@ -176,6 +176,12 @@ export class ComfyUIModel {
     if (this.locErrorMsg == null) {
       if (this.location) {
         await this.getFile(this.location, iframeRef);
+      } else {
+        const value = this.getComfyUIUrl();
+        iframeRef.current?.contentWindow?.postMessage(
+          { type: MessageType.LOAD_DEFAULT },
+          value,
+        );
       }
     }
   }

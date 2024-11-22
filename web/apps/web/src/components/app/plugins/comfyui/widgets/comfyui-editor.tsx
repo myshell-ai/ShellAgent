@@ -31,9 +31,9 @@ import emitter, { EventType } from '../emitter';
 import { getFile, saveComfy, uploadComfy } from '../services';
 import type { SaveResponse } from '../services/type';
 import { checkDependency, isValidUrl } from '../utils';
-import { useAppStore } from '@/stores/app/app-provider.tsx';
+import { useAppStore } from '@/stores/app/app-provider';
 import { useFormEngineContext } from '@shellagent/form-engine';
-import { useSchemaContext } from '@/stores/app/schema-provider.tsx';
+import { useSchemaContext } from '@/stores/app/schema-provider';
 import { useSearchParams } from 'next/navigation';
 
 const settingsDisabled = process.env.NEXT_PUBLIC_DISABLE_SETTING === 'yes';
