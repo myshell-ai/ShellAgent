@@ -134,13 +134,13 @@ async def fetch_workflow_list(params: Dict):
 
 
 @app.post('/api/template_list')
-async def fetch_workflow_list(params: Dict):
+async def template_list(params: Dict):
     SAVE_ROOT = TEMPLATES_ROOTS.get(params["type"])
 
     if not SAVE_ROOT:
         raise HTTPException(status_code=400, detail="Invalid type specified")
 
-    category = params.get("category", "")
+    category_list = params.get("categories", None)
     
     # List workflow IDs
     workflow_ids = [item for item in os.listdir(SAVE_ROOT) if not item.startswith(".")][::-1]
@@ -166,8 +166,17 @@ async def fetch_workflow_list(params: Dict):
             'timestamp': os.path.getmtime(reactflow_file)
         }
         
-        if category == "" or metadata.get("category", "") == category:
+        
+        if category_list is None:
             data.append(item)
+            
+        find = False
+        for category in metadata.get("categories", []):
+            if category in category_list:
+                find = True
+        if find:
+            data.append(item)
+            
 
     # Sort data by timestamp in descending order
     data = sorted(data, key=lambda x: x['timestamp'], reverse=True)
@@ -222,7 +231,7 @@ async def save_as_template(params: Dict):
             json_data = process_local_file_path_async(json_data)
             
         elif filename == "metadata.json":
-            json_data["category"] = params.get("category", "")
+            json_data["categories"] = params.get("categories", [])
            
         target_filepath = os.path.join(TEMPLATES_ROOTS["app"], new_app_id, "latest", filename)
         os.makedirs(os.path.dirname(target_filepath), exist_ok=True)
