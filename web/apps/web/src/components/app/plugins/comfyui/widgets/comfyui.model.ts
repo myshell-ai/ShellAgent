@@ -8,9 +8,10 @@ import { FormEngineModel } from '@/utils/form-engine.model';
 import { FormikModel } from '@/utils/formik.model';
 import { ModalModel } from '@/utils/modal.model';
 import { ToggleModel } from '@/utils/toggle.model';
+import { EmitterModel } from '@/utils/emitter.model.ts';
 
 export const LocTip =
-  'The file must be a ShellAgent-extended ComfyUI JSON file with the .shellagent.json suffix.';
+  'The file must be a ShellAgent-extended ComfyUI JSON (.shellagent.json). To import a ComfyUI JSON, use ComfyUI-Manager.';
 
 export type LocationFormType = {
   location?: string;
@@ -22,6 +23,7 @@ export class ComfyUIModel {
   @observable location?: string = undefined;
   @observable locationTemp?: string = undefined;
   @observable locErrorMsg?: string = undefined;
+  @observable defaultLocation?: string = undefined;
 
   constructor(
     @inject(ModalModel) public iframeDialog: ModalModel,
@@ -31,6 +33,7 @@ export class ComfyUIModel {
     @inject(ModalModel) public locationFormDialog: ModalModel,
     @inject(ToggleModel) public fullscreen: ToggleModel,
     @inject(SettingsModel) public settings: SettingsModel,
+    @inject(EmitterModel) public emitter: EmitterModel,
   ) {
     makeObservable(this);
   }
@@ -52,8 +55,13 @@ export class ComfyUIModel {
   async setLocation(location?: string) {
     this.location = location;
     this.locationTemp = location;
+    await this.updateFormRefForAutomataMerge(location);
+  }
+
+  async updateFormRefForAutomataMerge(location?: string) {
     await this.formRef.isReadyPromise;
     this.formRef.formRef.setValue('location', location);
+    this.formRef.formRef.setValue('comfy_workflow_id', undefined);
   }
 
   @action.bound
@@ -110,10 +118,31 @@ export class ComfyUIModel {
         },
       );
       if (!res.data.success) {
-        this.locErrorMsg = `The ShellAgent-extended ComfyUI JSON file is not valid`;
+        this.locErrorMsg = `The ShellAgent-extended ComfyUI JSON (.shellagent.json) doesn't exist`;
       }
     } catch (e: any) {
       this.locErrorMsg = e.message;
+    }
+  }
+
+  @action.bound
+  async getCwd() {
+    try {
+      const res = await axios.get(`/api/get_cwd`, {
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+      if (typeof res.data.cwd === 'string') {
+        this.defaultLocation = res.data.cwd + 'ShellAgent/data/comfy_workflow';
+      } else {
+        this.emitter.emitter.emit(
+          'message.error',
+          `/api/get_cwd response is invalid`,
+        );
+      }
+    } catch (e: any) {
+      this.emitter.emitter.emit('message.error', e.message);
     }
   }
 }
