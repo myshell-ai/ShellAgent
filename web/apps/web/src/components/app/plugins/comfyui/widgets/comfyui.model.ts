@@ -144,6 +144,21 @@ export class ComfyUIModel {
       }
     } catch (e: any) {
       this.emitter.emitter.emit('message.error', e.message);
+      throw e;
+    }
+  }
+
+  async openLocationFormDialog() {
+    this.locationFormDialog.open();
+    try {
+      await this.getCwd();
+      await this.locationFormFormik.isReadyPromise;
+      await this.locationFormFormik.formikProps.setFieldValue(
+        'location',
+        this.defaultLocation,
+      );
+    } catch (e: any) {
+      //
     }
   }
 }

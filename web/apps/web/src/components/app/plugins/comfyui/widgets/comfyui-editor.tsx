@@ -219,7 +219,7 @@ export const ComfyUIEditor = observer(
 
     const handleSave = () => {
       if (isEmpty(model.locationTemp)) {
-        model.locationFormDialog.open();
+        model.openLocationFormDialog();
         return;
       }
       iframeRef.current?.contentWindow?.postMessage(
