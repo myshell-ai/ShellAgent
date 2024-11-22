@@ -8,7 +8,7 @@ import { FormEngineModel } from '@/utils/form-engine.model';
 import { FormikModel } from '@/utils/formik.model';
 import { ModalModel } from '@/utils/modal.model';
 import { ToggleModel } from '@/utils/toggle.model';
-import { EmitterModel } from '@/utils/emitter.model.ts';
+import { EmitterModel } from '@/utils/emitter.model';
 import { pathJoin } from './comfyui.utils';
 
 export const LocTip =
@@ -62,7 +62,7 @@ export class ComfyUIModel {
   async updateFormRefForAutomataMerge(location?: string) {
     await this.formRef.isReadyPromise;
     this.formRef.formRef.setValue('location', location);
-    this.formRef.formRef.setValue('comfy_workflow_id', undefined);
+    // this.formRef.formRef.setValue('comfy_workflow_id', undefined);
   }
 
   @action.bound
@@ -148,14 +148,14 @@ export class ComfyUIModel {
     }
   }
 
-  async openLocationFormDialog() {
+  async openLocationFormDialog(appid: string, taskId: string) {
     this.locationFormDialog.open();
     try {
       await this.getCwd();
       await this.locationFormFormik.isReadyPromise;
       await this.locationFormFormik.formikProps.setFieldValue(
         'location',
-        this.defaultLocation,
+        `${this.defaultLocation}/${appid}_${taskId}.shellagent.json`,
       );
     } catch (e: any) {
       //

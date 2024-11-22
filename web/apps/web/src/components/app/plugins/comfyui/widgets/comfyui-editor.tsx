@@ -12,7 +12,7 @@ import { useRequest } from 'ahooks';
 import { Form, Input, Modal, Tooltip } from 'antd';
 import { Field, FieldProps, Formik } from 'formik';
 import { useInjection } from 'inversify-react';
-import { isEmpty } from 'lodash-es';
+import { get, isEmpty } from 'lodash-es';
 import { observer } from 'mobx-react-lite';
 import React, {
   useCallback,
@@ -31,11 +31,15 @@ import emitter, { EventType } from '../emitter';
 import { getFile, saveComfy, uploadComfy } from '../services';
 import type { SaveResponse } from '../services/type';
 import { checkDependency, isValidUrl } from '../utils';
+import { useAppStore } from '@/stores/app/app-provider.tsx';
+import { useFormEngineContext } from '@shellagent/form-engine';
+import { useSchemaContext } from '@/stores/app/schema-provider.tsx';
+import { useSearchParams } from 'next/navigation';
 
 const settingsDisabled = process.env.NEXT_PUBLIC_DISABLE_SETTING === 'yes';
 
 export const ComfyUIEditor = observer(
-  ({ onChange }: { onChange: (value: string) => void }) => {
+  ({ name, onChange }: { name: string; onChange: (value: string) => void }) => {
     const model = useInjection<ComfyUIModel>('ComfyUIModel');
     const [checkDialogOpen, setCheckDialogOpen] = useState(false);
     const [isLoading, setIsLoading] = useState(true);
@@ -217,10 +221,23 @@ export const ComfyUIEditor = observer(
       };
     }, [handleMessage]);
 
+    const { parent } = useFormEngineContext();
+    const { metadata, nodeData } = useAppStore(state => ({
+      metadata: state.metadata,
+      nodeData: state.nodeData,
+    }));
+
+    const { id: stateId } = useSchemaContext(state => ({
+      id: state.id,
+    }));
+    const sp = useSearchParams();
     const handleSave = () => {
       if (isEmpty(model.locationTemp)) {
-        model.openLocationFormDialog();
-        return;
+        if (parent) {
+          const task = get(nodeData, [stateId, parent].join('.'));
+          model.openLocationFormDialog(sp.get('id'), task.name);
+          return;
+        }
       }
       iframeRef.current?.contentWindow?.postMessage(
         { type: MessageType.SAVE },
