@@ -10,6 +10,13 @@ import { ModalModel } from '@/utils/modal.model';
 import { ToggleModel } from '@/utils/toggle.model';
 import { EmitterModel } from '@/utils/emitter.model';
 import { pathJoin } from './comfyui.utils';
+import {
+  COMFYUI_API,
+  DEFAULT_COMFYUI_API,
+  MessageType,
+} from '@/components/app/plugins/comfyui/constant.ts';
+
+const settingsDisabled = process.env.NEXT_PUBLIC_DISABLE_SETTING === 'yes';
 
 export const LocTip =
   'The file must be a ShellAgent-extended ComfyUI JSON (.shellagent.json). To import a ComfyUI JSON, use ComfyUI-Manager.';
@@ -160,5 +167,57 @@ export class ComfyUIModel {
     } catch (e: any) {
       //
     }
+  }
+
+  @action.bound
+  async openIframeDialog(iframeRef: any) {
+    this.checkLocation2();
+    this.iframeDialog.open();
+    if (this.locErrorMsg == null) {
+      if (this.location) {
+        await this.getFile(this.location, iframeRef);
+      }
+    }
+  }
+
+  @action.bound
+  async getFile(location: string, iframeRef: any) {
+    try {
+      const res = await axios.post(
+        `/api/comfyui/get_file`,
+        {
+          location,
+        },
+        {
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        },
+      );
+      const result = res.data;
+      const value = this.getComfyUIUrl();
+      if (result.success) {
+        const { data } = result;
+        iframeRef.current?.contentWindow?.postMessage(
+          { type: MessageType.LOAD, data: data.workflow },
+          value,
+        );
+      } else {
+        iframeRef.current?.contentWindow?.postMessage(
+          { type: MessageType.LOAD_DEFAULT },
+          value,
+        );
+      }
+    } catch (e: any) {
+      this.emitter.emitter.emit('message.error', e.message);
+      throw e;
+    }
+  }
+
+  getComfyUIUrl() {
+    if (settingsDisabled) {
+      return DEFAULT_COMFYUI_API;
+    }
+    return this.settings.envs.get(COMFYUI_API) || '';
   }
 }

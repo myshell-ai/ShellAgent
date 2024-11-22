@@ -235,7 +235,7 @@ export const ComfyUIEditor = observer(
       if (isEmpty(model.locationTemp)) {
         if (parent) {
           const task = get(nodeData, [stateId, parent].join('.'));
-          model.openLocationFormDialog(sp.get('id'), task.name);
+          model.openLocationFormDialog(sp.get('id') as string, task.name);
           return;
         }
       }
@@ -546,7 +546,7 @@ const ComfyUIEditorButton = observer(props => {
       <Button
         size="sm"
         className="w-full"
-        onClick={model.iframeDialog.open}
+        onClick={model.openIframeDialog}
         disabled={model.buttonDisabled}>
         {model.buttonName}
       </Button>
