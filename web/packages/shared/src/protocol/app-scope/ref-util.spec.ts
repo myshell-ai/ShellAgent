@@ -1415,46 +1415,74 @@ state#3
 
     it('duplicate state', () => {
       const refs = refsSchema.parse({
-        state_1: {
-          'outputs.output1': {
-            ref: 'state_1.inputs.input_a',
-            ui: ['state_1.inputs.input_b', 'state_2.inputs.input_a'],
-            raw: ['context.global_a', 'state_1.inputs.input_a'],
+        state1: {
+          'blocks.1.inputs.system_prompt': {
+            currentMode: 'ref',
+            ref: '__context__1_qa__',
+          },
+          'render.buttons.button1.on_click.on_click.payload.untitled_payload_1.value':
+            {
+              currentMode: 'ref',
+              ref: 'state1.blocks.gpt1.reply',
+            },
+        },
+        state1_copy2: {
+          'blocks.1.inputs.system_prompt': {
+            currentMode: 'ref',
+            ref: '__context__1_qa__',
+          },
+          'render.buttons.button1.on_click.on_click.payload.untitled_payload_1.value':
+            {
+              currentMode: 'ref',
+              ref: 'state1_copy2.blocks',
+            },
+          'render.buttons.button1.on_click.description': {
+            currentMode: 'raw',
           },
         },
       });
 
       const ret = duplicateState(refs, {
-        stateName: 'state_1',
-        duplicateStateName: 'state_1_1',
+        stateName: 'state1_copy2',
+        duplicateStateName: 'state1_copy2_copy3',
       });
 
       expect(ret).toMatchInlineSnapshot(`
         {
-          "state_1": {
-            "outputs.output1": {
-              "raw": [
-                "context.global_a",
-                "state_1.inputs.input_a",
-              ],
-              "ref": "state_1.inputs.input_a",
-              "ui": [
-                "state_1.inputs.input_b",
-                "state_2.inputs.input_a",
-              ],
+          "state1": {
+            "blocks.1.inputs.system_prompt": {
+              "currentMode": "ref",
+              "ref": "__context__1_qa__",
+            },
+            "render.buttons.button1.on_click.on_click.payload.untitled_payload_1.value": {
+              "currentMode": "ref",
+              "ref": "state1.blocks.gpt1.reply",
             },
           },
-          "state_1_1": {
-            "outputs.output1": {
-              "raw": [
-                "context.global_a",
-                "state_1_1.inputs",
-              ],
-              "ref": "state_1_1.inputs",
-              "ui": [
-                "state_1_1.inputs",
-                "state_2.inputs.input_a",
-              ],
+          "state1_copy2": {
+            "blocks.1.inputs.system_prompt": {
+              "currentMode": "ref",
+              "ref": "__context__1_qa__",
+            },
+            "render.buttons.button1.on_click.description": {
+              "currentMode": "raw",
+            },
+            "render.buttons.button1.on_click.on_click.payload.untitled_payload_1.value": {
+              "currentMode": "ref",
+              "ref": "state1_copy2.blocks",
+            },
+          },
+          "state1_copy2_copy3": {
+            "blocks.1.inputs.system_prompt": {
+              "currentMode": "ref",
+              "ref": "__context__1_qa__",
+            },
+            "render.buttons.button1.on_click.description": {
+              "currentMode": "raw",
+            },
+            "render.buttons.button1.on_click.on_click.payload.untitled_payload_1.value": {
+              "currentMode": "ref",
+              "ref": "state1_copy2_copy3.blocks",
             },
           },
         }

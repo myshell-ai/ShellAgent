@@ -46,17 +46,12 @@ const StateNode: React.FC<NodeProps<StateNodeType>> = ({ selected, data }) => {
     onConnect: state.onConnect,
   }));
 
-  const {
-    setStateConfigSheetOpen,
-    currentStateId,
-    setSelectedNode,
-    setCurrentCopyStateData,
-  } = useAppState(state => ({
-    setStateConfigSheetOpen: state.setStateConfigSheetOpen,
-    currentStateId: state.currentStateId,
-    setSelectedNode: state.setSelectedNode,
-    setCurrentCopyStateData: state.setCurrentCopyStateData,
-  }));
+  const { setStateConfigSheetOpen, currentStateId, setSelectedNode } =
+    useAppState(state => ({
+      setStateConfigSheetOpen: state.setStateConfigSheetOpen,
+      currentStateId: state.currentStateId,
+      setSelectedNode: state.setSelectedNode,
+    }));
 
   const { duplicateState } = useDuplicateState();
 
@@ -116,10 +111,7 @@ const StateNode: React.FC<NodeProps<StateNodeType>> = ({ selected, data }) => {
         return;
       }
       if (selected) {
-        setCurrentCopyStateData({
-          ...appBuilder.nodeData[data.id],
-          ...data,
-        });
+        appBuilder.setCopyData(data.id, data.display_name as string);
       }
     },
     {

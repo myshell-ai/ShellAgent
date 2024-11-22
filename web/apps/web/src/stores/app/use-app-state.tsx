@@ -19,7 +19,6 @@ export type State = {
   currentTransitionSourceHandle: string;
   currentEdegData: CustomEdgeData;
   targetInputsSheetOpen: boolean;
-  currentCopyStateData: FieldValues;
 };
 
 type Action = {
@@ -42,7 +41,6 @@ type Action = {
   setTargetInputsSheetOpen: (open: State['targetInputsSheetOpen']) => void;
   setRunDrawerWidth: (width: number) => void;
   resetState: () => void;
-  setCurrentCopyStateData: (data: FieldValues) => void;
 };
 
 const initialState: State = {
@@ -66,7 +64,6 @@ const initialState: State = {
     target: '',
     conditions: [],
   },
-  currentCopyStateData: {},
 };
 
 export const useAppState = create<State & Action>(set => ({
@@ -163,6 +160,4 @@ export const useAppState = create<State & Action>(set => ({
       ...state,
       targetInputsSheetOpen: open,
     })),
-  setCurrentCopyStateData: (data: FieldValues) =>
-    set(() => ({ currentCopyStateData: data })),
 }));

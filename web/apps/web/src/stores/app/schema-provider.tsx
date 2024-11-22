@@ -16,6 +16,7 @@ type SchemaState = {
   id: string;
   name: string;
   schema: ISchema;
+  displayName: string;
   fieldMode: Record<string, TFieldMode>;
   outputs?: Record<string, any>;
   outputSchema: JsonSchema7;
@@ -32,6 +33,7 @@ type SchemaStore = SchemaState & SchemaAction;
 export const initState: SchemaStore = {
   id: '',
   name: '',
+  displayName: '',
   schema: {},
   fieldMode: {},
   setFieldMode: () => {},
@@ -122,6 +124,7 @@ export const SchemaProvider: React.FC<SchemaProviderProps> = ({
     () => ({
       id,
       name,
+      displayName: display_name,
       schema,
       fieldMode,
       setFieldMode,
@@ -133,6 +136,7 @@ export const SchemaProvider: React.FC<SchemaProviderProps> = ({
     [
       id,
       name,
+      display_name,
       schema,
       fieldMode,
       setFieldMode,

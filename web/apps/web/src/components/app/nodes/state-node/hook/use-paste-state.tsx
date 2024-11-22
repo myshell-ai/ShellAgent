@@ -3,11 +3,10 @@ import { RefSceneEnum } from '@shellagent/shared/protocol/app-scope';
 import { customSnakeCase } from '@shellagent/shared/utils';
 import { useKeyPress } from 'ahooks';
 import { useInjection } from 'inversify-react';
-import { useObserver } from 'mobx-react-lite';
 import { useCallback } from 'react';
+import type { FieldValues } from '@shellagent/ui';
 
 import { AppBuilderModel } from '@/stores/app/models/app-builder.model';
-import { useAppState } from '@/stores/app/use-app-state';
 import {
   getKeyboardKeyCodeBySystem,
   isEventTargetInputArea,
@@ -28,55 +27,53 @@ export const usePasteState = ({
     }),
   );
 
-  const { currentCopyStateData: data } = useAppState(state => ({
-    currentCopyStateData: state.currentCopyStateData,
-  }));
+  const pasteState = useCallback(
+    (data: FieldValues) => {
+      const index = Object.values(appBuilder.nodeData).map(
+        value => value.type === 'state',
+      )?.length;
+      const displayName = `${data?.display_name} Copy${
+        index > 0 ? `#${index}` : ''
+      }`;
+      const newId = customSnakeCase(displayName) as Lowercase<string>;
 
-  const pasteState = useCallback(() => {
-    const index = Object.values(appBuilder.nodeData).map(
-      value => value.type === 'state',
-    )?.length;
-    const displayName = `${data?.display_name} Copy${
-      index > 0 ? `#${index}` : ''
-    }`;
-    const newId = customSnakeCase(displayName) as Lowercase<string>;
+      appBuilder.setNodeData({ id: newId, data });
 
-    appBuilder.setNodeData({ id: newId, data });
+      appBuilder.handleRefScene({
+        scene: RefSceneEnum.Enum.duplicate_state,
+        params: {
+          stateName: data?.id as Lowercase<string>,
+          duplicateStateName: newId,
+        },
+      });
 
-    appBuilder.handleRefScene({
-      scene: RefSceneEnum.Enum.duplicate_state,
-      params: {
-        stateName: data.id as Lowercase<string>,
-        duplicateStateName: newId,
-      },
-    });
-
-    const position = getCanvasCenter(reactFlowWrapper, viewport);
-    onAddNode({
-      type: data.type || 'state',
-      position,
-      data: {
-        id: newId,
-        name: data?.name || '',
-        display_name: displayName,
-      },
-      isCopy: true,
-    });
-  }, [
-    appBuilder.setNodeData,
-    data,
-    reactFlowWrapper,
-    viewport,
-    onAddNode,
-    appBuilder.nodeData,
-  ]);
+      const position = getCanvasCenter(reactFlowWrapper, viewport);
+      onAddNode({
+        type: data?.type || 'state',
+        position,
+        data: {
+          id: newId,
+          name: data?.name || '',
+          display_name: displayName,
+        },
+        isCopy: true,
+      });
+    },
+    [
+      appBuilder.setNodeData,
+      reactFlowWrapper,
+      viewport,
+      onAddNode,
+      appBuilder.nodeData,
+    ],
+  );
 
   useKeyPress(`${getKeyboardKeyCodeBySystem('ctrl')}.v`, e => {
     if (isEventTargetInputArea(e.target as HTMLElement)) {
       return;
     }
-    if (data && enabeKeyboard) {
-      pasteState();
+    if (appBuilder.copyNodeData && enabeKeyboard) {
+      pasteState(appBuilder.copyNodeData);
     }
   });
 

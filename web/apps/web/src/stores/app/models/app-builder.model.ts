@@ -78,6 +78,8 @@ export class AppBuilderModel {
   @observable saveLoading = false;
   @observable restoreLoading = false;
 
+  copyNodeData: FieldValues = {};
+
   get scopes(): Scopes | null {
     if (!this.flowInstance || !this.nodeData) return null;
     const edges = this.flowInstance.getEdges();
@@ -392,5 +394,14 @@ export class AppBuilderModel {
         });
       }
     }
+  }
+
+  @action.bound
+  setCopyData(id: string, display_name: string) {
+    this.copyNodeData = {
+      ...(this.nodeData[id] || {}),
+      display_name,
+      name: 'State',
+    };
   }
 }

@@ -7,24 +7,20 @@ import { useDuplicateState } from '@/components/app/nodes/state-node/hook/use-du
 
 // import ShortcutsName from '@/components/common/shortcuts-name';
 import { AppBuilderModel } from '@/stores/app/models/app-builder.model';
-import { useAppState } from '@/stores/app/use-app-state';
 
-const CopyMenu: React.FC<{ id: string; name: string }> = ({ id, name }) => {
+const CopyMenu: React.FC<{ id: string; displayName: string }> = ({
+  id,
+  displayName,
+}) => {
   const appBuilder = useInjection<AppBuilderModel>('AppBuilderModel');
-  const setCurrentCopyStateData = useAppState(
-    state => state.setCurrentCopyStateData,
-  );
   const { duplicateState } = useDuplicateState();
 
   const handleCopy = () => {
-    setCurrentCopyStateData({
-      ...appBuilder.nodeData?.[id],
-      name,
-    });
+    appBuilder.setCopyData(id, displayName);
   };
 
   const handleDuplicate = () => {
-    duplicateState();
+    duplicateState(id, displayName);
   };
 
   return (

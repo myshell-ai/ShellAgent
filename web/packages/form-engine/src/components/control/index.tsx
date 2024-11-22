@@ -77,8 +77,6 @@ const Control: React.FC<IControlProps> = props => {
   } = schema;
   const [mode, setMode] = useState(xRawDefault || FieldModeEnum.Enum.ui);
 
-  console.log('mode>>>', mode);
-
   let titleControl: React.ReactElement<
     unknown,
     string | React.JSXElementConstructor<any>

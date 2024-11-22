@@ -5,12 +5,12 @@ import {
   NodeTypeEnum,
   useReactFlowStore,
 } from '@shellagent/flow-engine';
-import { TFieldMode, TValues } from '@shellagent/form-engine';
+import { TValues } from '@shellagent/form-engine';
 import { Button as IButtonType } from '@shellagent/shared/protocol/render-button';
 import { WidgetTask, WorkflowTask } from '@shellagent/shared/protocol/task';
 import { Drawer, FormRef } from '@shellagent/ui';
 import { useInjection } from 'inversify-react';
-import { isEqual, isNumber } from 'lodash-es';
+import { isNumber } from 'lodash-es';
 import { useMemo, useRef, useCallback, useState } from 'react';
 
 import { ButtonConfig } from '@/components/app/config-form/button-config';
