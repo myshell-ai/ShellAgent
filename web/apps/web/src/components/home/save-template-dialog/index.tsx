@@ -13,16 +13,16 @@ import {
   AlertDialogCancel,
   Button,
   AlertDialogPortal,
-  Select,
   Text,
 } from '@shellagent/ui';
+import { Select } from 'antd';
 import { useRequest } from 'ahooks';
 import { toast } from 'react-toastify';
 
 import { saveAsTemplate } from '@/services/home';
 import { useState } from 'react';
 
-export const CATEGORY_LIST = ['Tutorial', 'Image Generation'];
+export const CATEGORY_LIST = ['Tutorial', 'Image Generation', 'Custom'];
 
 interface SaveTemplateDialogProps {
   id: string;
@@ -35,7 +35,7 @@ export const SaveTemplateDialog = ({
   open,
   onClose,
 }: SaveTemplateDialogProps) => {
-  const [category, setCategory] = useState('');
+  const [categories, setCategories] = useState([]);
   const { loading, run } = useRequest(saveAsTemplate, {
     manual: true,
     onSuccess: result => {
@@ -48,7 +48,7 @@ export const SaveTemplateDialog = ({
           closeButton: false,
         });
         onClose();
-        setCategory('');
+        setCategories([]);
       }
     },
     onError: error => {
@@ -59,7 +59,7 @@ export const SaveTemplateDialog = ({
   const onConfirm = () => {
     run({
       app_id: id,
-      category,
+      categories,
     });
   };
 
@@ -88,16 +88,18 @@ export const SaveTemplateDialog = ({
           <AlertDialogDescription>
             <div className="flex flex-col gap-1.5">
               <Text>
-                <span className="text-[#EC2F0D] mr-[2px]">*</span> Category
+                <span className="text-[#EC2F0D] mr-[2px]">*</span> Categories
               </Text>
               <Select
-                value={category}
-                onValueChange={value => setCategory(value)}
+                size="large"
+                mode="multiple"
+                value={categories}
+                onChange={value => setCategories(value)}
                 options={CATEGORY_LIST.map(item => ({
                   label: item,
                   value: item,
                 }))}
-                placeholder="Please select template category."
+                placeholder="Please select template categories."
               />
             </div>
             {/* Feature in beta testing, Are you sure you want to save as template? */}
@@ -113,7 +115,7 @@ export const SaveTemplateDialog = ({
               loading={loading}
               className="flex-1"
               color="warning"
-              disabled={!category}
+              disabled={!categories.length}
               onClick={onConfirm}>
               Confirm
             </Button>

@@ -10,9 +10,11 @@ import {
   Spinner,
 } from '@shellagent/ui';
 import dayjs from 'dayjs';
+import { Tag } from 'antd';
 
 import { TemplateListResponse } from '@/services/home/type';
 import { Metadata } from '@/services/home/type';
+import { cn } from '@/utils/cn';
 
 const relativeTime = require('dayjs/plugin/relativeTime');
 
@@ -59,7 +61,7 @@ export const TemplateCard = ({
   onUseTemplate,
 }: FlowCardProps) => {
   return (
-    <Card className="w-[334px] h-[152px] border border-hovered shadow-none p-3 pb-8 group/menu">
+    <Card className="w-[334px] h-[226px] border border-hovered shadow-none p-3 pb-8 group/menu">
       <CardHeader className="h-full w-full relative p-0 overflow-hidden">
         <Image
           width="36px"
@@ -75,6 +77,17 @@ export const TemplateCard = ({
         <Description size="lg" color="subtler">
           {metadata.description}
         </Description>
+        {Array.isArray(metadata?.categories) && metadata?.categories?.length ? (
+          <div className={cn('flex mt-3')}>
+            {metadata?.categories?.map(item => (
+              <Tag
+                className="bg-surface-accent-gray-subtlest rounded-lg"
+                bordered={false}>
+                {item}
+              </Tag>
+            ))}
+          </div>
+        ) : null}
         <div className="w-full absolute bottom-0 justify-center bg-light-mask hidden md:group-hover/menu:flex">
           <Button onClick={() => onUseTemplate(id)} icon={PlusIcon} size="md">
             Use this template

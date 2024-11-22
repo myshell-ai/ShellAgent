@@ -50,7 +50,7 @@ export const CreateDialog: React.FC<CreateDialogProps> = ({
   const [open, openAction] = useBoolean();
   const [openTemplate, openTemplateAction] = useBoolean();
   const [openDrapdown, openDrapdownAction] = useBoolean();
-  const [category, setCategory] = useState('All');
+  const [categories, setCategories] = useState(['All']);
   const [templateId, setTemplateId] = useState('');
   const [data, setData] = useState<{
     name: string;
@@ -68,7 +68,13 @@ export const CreateDialog: React.FC<CreateDialogProps> = ({
   } = useRequest(getTemplateList, {
     manual: true,
     onError: error => {
-      toast.error(error.message);
+      toast.error(error.message, {
+        position: 'top-center',
+        autoClose: 3000,
+        hideProgressBar: true,
+        pauseOnHover: true,
+        closeButton: false,
+      });
     },
   });
 
@@ -90,7 +96,13 @@ export const CreateDialog: React.FC<CreateDialogProps> = ({
       }
     },
     onError: error => {
-      toast.error(error.message);
+      toast.error(error.message, {
+        position: 'top-center',
+        autoClose: 3000,
+        hideProgressBar: true,
+        pauseOnHover: true,
+        closeButton: false,
+      });
     },
   });
 
@@ -129,7 +141,7 @@ export const CreateDialog: React.FC<CreateDialogProps> = ({
           <DropdownMenuItem
             onClick={() => {
               openTemplateAction.setTrue();
-              getTemplate({ type, category });
+              getTemplate({ type, categories });
             }}
             disabled={type === 'workflow'}>
             <CreateTemplate className="w-4.5 h-4.5 text-inherit text-sm mr-1.5" />
@@ -180,21 +192,24 @@ export const CreateDialog: React.FC<CreateDialogProps> = ({
           <Separator />
           <DialogDescription className={cn('!px-5 !py-3')}>
             <div className="flex pb-3 items-center">
-              <span className="mr-2">Category:</span>
-              {['All', ...CATEGORY_LIST, 'Custom'].map(item => (
-                <Tag.CheckableTag
-                  key={item}
-                  checked={category === item}
-                  className={cn(
-                    category === item ? '' : 'border border-default',
-                  )}
-                  onClick={() => {
-                    setCategory(item);
-                    getTemplate({ type, category: item });
-                  }}>
-                  {item}
-                </Tag.CheckableTag>
-              ))}
+              {['All', ...CATEGORY_LIST].map(item => {
+                const checked = categories.includes(item);
+                return (
+                  <Tag.CheckableTag
+                    key={item}
+                    checked={checked}
+                    className={cn(
+                      'rounded-lg border-none py-1 text-sm px-3',
+                      checked ? '' : 'bg-surface-accent-gray-subtlest',
+                    )}
+                    onClick={() => {
+                      setCategories([item]);
+                      getTemplate({ type, categories: [item] });
+                    }}>
+                    {item}
+                  </Tag.CheckableTag>
+                );
+              })}
             </div>
             <div
               className={cn(

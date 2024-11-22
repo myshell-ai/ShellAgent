@@ -2,6 +2,7 @@ export interface Metadata {
   name: string;
   description: string;
   avatar?: string; // 默认logo，save自动截图
+  categories?: string[];
 }
 
 export type Type = 'app' | 'workflow';
@@ -72,7 +73,7 @@ export interface DeleteResponse {
 
 export interface TemplateListRequest {
   type: Type; // 'app' | 'workflow', workflow 暂时不需要
-  category: string;
+  categories: string[];
 }
 
 export interface TemplateListResponse {
