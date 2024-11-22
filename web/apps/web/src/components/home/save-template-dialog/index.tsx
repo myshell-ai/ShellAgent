@@ -35,7 +35,7 @@ export const SaveTemplateDialog = ({
   open,
   onClose,
 }: SaveTemplateDialogProps) => {
-  const [categories, setCategories] = useState([]);
+  const [categories, setCategories] = useState<string[]>([]);
   const { loading, run } = useRequest(saveAsTemplate, {
     manual: true,
     onSuccess: result => {

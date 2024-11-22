@@ -70,7 +70,7 @@ export const saveAsTemplate = ({
   categories,
 }: {
   app_id: string;
-  categories: string;
+  categories: string[];
 }) => {
   return APIFetch.post<SaveAsTemplateResponse>('/api/save_as_template', {
     body: { app_id, categories },
