@@ -13,7 +13,7 @@ import {
   findDescendants,
   getBeforeAndAfterNodes,
   duplicateState,
-  hanldeRefScene,
+  handleRefScene,
   removeEmptyLeaves,
   removeState,
   findMissingPrevious,
@@ -1140,6 +1140,35 @@ state#3
       `);
     });
 
+    it('change nodedata key mode', () => {
+      const refs = refsSchema.parse({
+        state_1: {
+          'outputs.outputs21': {
+            ref: 'context.global_111',
+          },
+        },
+      });
+
+      const rets = changeNodedataKeyMode(refs, {
+        stateName: 'state_1',
+        key: 'render.text',
+        mode: 'raw',
+      });
+
+      expect(rets).toMatchInlineSnapshot(`
+        {
+          "state_1": {
+            "outputs.outputs21": {
+              "ref": "context.global_111",
+            },
+            "render.text": {
+              "currentMode": "raw",
+            },
+          },
+        }
+      `);
+    });
+
     it('remove ref opt', () => {
       const refs = refsSchema.parse({
         state_1: {
@@ -1444,7 +1473,7 @@ state#3
           mode: 'ref',
         } as const,
       };
-      const rets = hanldeRefScene(
+      const rets = handleRefScene(
         {},
         {
           scene: 'set_nodedata_key_val',
@@ -1473,7 +1502,7 @@ state#3
           mode: 'ref',
         } as const,
       };
-      const rets = hanldeRefScene(
+      const rets = handleRefScene(
         {
           state_1: {
             'render.text': {},
@@ -1508,7 +1537,7 @@ state#3
           mode: 'ui',
         } as const,
       };
-      const rets = hanldeRefScene(
+      const rets = handleRefScene(
         {
           state_1: {
             'render.text': {
@@ -1552,7 +1581,7 @@ state#3
           key: 'render.text',
         },
       } as const;
-      const ret = hanldeRefScene(refs, {
+      const ret = handleRefScene(refs, {
         scene: 'change_nodedata_mode',
         params: evt.params,
       });
@@ -1587,7 +1616,7 @@ state#3
           paths: ['inputs.test'],
         } as const,
       };
-      const ret = hanldeRefScene(refs, {
+      const ret = handleRefScene(refs, {
         scene: 'remove_ref_opts',
         // @ts-expect-error
         params: evt.params,

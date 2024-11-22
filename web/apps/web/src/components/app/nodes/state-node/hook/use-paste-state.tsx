@@ -43,7 +43,7 @@ export const usePasteState = ({
 
     appBuilder.setNodeData({ id: newId, data });
 
-    appBuilder.hanldeRefScene({
+    appBuilder.handleRefScene({
       scene: RefSceneEnum.Enum.duplicate_state,
       params: {
         stateName: data.id as Lowercase<string>,

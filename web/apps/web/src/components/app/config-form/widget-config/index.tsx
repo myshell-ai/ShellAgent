@@ -2,19 +2,12 @@
 
 'use client';
 
-import {
-  getDefaultValueBySchema,
-  TFieldMode,
-  TValues,
-} from '@shellagent/form-engine';
-import { useInjection } from 'inversify-react';
+import { getDefaultValueBySchema, TValues } from '@shellagent/form-engine';
 import { isEmpty, merge } from 'lodash-es';
-import { observer } from 'mobx-react-lite';
 import { useCallback, useEffect, useMemo } from 'react';
 
 import NodeForm from '@/components/app/node-form';
 import { getPlugin } from '@/components/app/plugins';
-import { AppBuilderModel } from '@/stores/app/models/app-builder.model';
 import { getSchemaByWidget } from '@/stores/app/utils/get-widget-schema';
 import { useWorkflowStore } from '@/stores/workflow/workflow-provider';
 
@@ -25,10 +18,7 @@ export interface WidgetConfigProps {
   onChange: (values: TValues) => void;
 }
 
-export interface CommonWidgetConfigProps extends WidgetConfigProps {
-  onModeChange: (name: string, mode: TFieldMode) => void;
-  modeMap: Record<string, TFieldMode>;
-}
+export interface CommonWidgetConfigProps extends WidgetConfigProps {}
 
 const CustomWidgetConfig: React.FC<CommonWidgetConfigProps> = props => {
   const { values } = props;
@@ -48,8 +38,6 @@ const StandardWidgetConfig: React.FC<CommonWidgetConfigProps> = ({
   values,
   parent,
   onChange,
-  onModeChange,
-  modeMap,
 }) => {
   const { loading, getWidgetSchema, widgetSchema } = useWorkflowStore(
     state => ({
@@ -123,40 +111,14 @@ const StandardWidgetConfig: React.FC<CommonWidgetConfigProps> = ({
       parent={parent}
       onChange={handleOnChange}
       loading={loading?.[values.widget_class_name]}
-      onModeChange={onModeChange}
-      modeMap={modeMap}
     />
   );
 };
 
 export const WidgetConfig: React.FC<WidgetConfigProps> = props => {
-  const appBuilder = useInjection<AppBuilderModel>('AppBuilderModel');
-
-  const { id, parent } = props;
-
-  const onModeChange = useCallback(
-    (name: string, mode: TFieldMode) => {
-      appBuilder.setFieldsModeMap({ id: `${id}.${parent}`, name, mode });
-    },
-    [id, appBuilder.setFieldsModeMap, parent],
-  );
-
-  const modeMap = appBuilder.config.fieldsModeMap?.[`${id}.${parent}`] || {};
   if (props.values?.custom) {
-    return (
-      <CustomWidgetConfig
-        {...props}
-        onModeChange={onModeChange}
-        modeMap={modeMap}
-      />
-    );
+    return <CustomWidgetConfig {...props} />;
   }
 
-  return (
-    <StandardWidgetConfig
-      {...props}
-      onModeChange={onModeChange}
-      modeMap={modeMap}
-    />
-  );
+  return <StandardWidgetConfig {...props} />;
 };

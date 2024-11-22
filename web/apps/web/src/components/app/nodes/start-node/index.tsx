@@ -7,7 +7,6 @@ import {
 } from '@shellagent/flow-engine';
 import { TValues, TFieldMode } from '@shellagent/form-engine';
 import { useInjection } from 'inversify-react';
-import { observer } from 'mobx-react-lite';
 import React, { useCallback, useMemo } from 'react';
 
 import NodeCard from '@/components/app/node-card';
@@ -30,13 +29,6 @@ const StartNode: React.FC<NodeProps<StartNodeType>> = ({
     [appBuilder.setNodeData],
   );
 
-  const onModeChange = useCallback(
-    (name: string, mode: TFieldMode) => {
-      appBuilder.setFieldsModeMap({ id, name, mode });
-    },
-    [id, appBuilder.setFieldsModeMap],
-  );
-
   // 只能连接一个state节点
   const isConnectable = useMemo(() => {
     return edges.some(edge => edge.source === id) === false;
@@ -49,8 +41,6 @@ const StartNode: React.FC<NodeProps<StartNodeType>> = ({
           loading={appBuilder.getAutomataLoading}
           values={appBuilder.nodeData[data.id] || {}}
           onChange={onChange}
-          onModeChange={onModeChange}
-          modeMap={appBuilder.config.fieldsModeMap?.[data.id] || {}}
         />
       </NodeCard>
       <SourceHandle isConnectable={isConnectable} id={id} />

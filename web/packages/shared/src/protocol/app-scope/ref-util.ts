@@ -260,6 +260,11 @@ export function changeNodedataKeyMode(
   if (key == undefined)
     throw new Error(`key should not be empty: ${stateName}, ${mode}`);
 
+  set(refs, [stateName, key], {
+    ...(refs?.[stateName]?.[key] || {}),
+    currentMode: mode,
+  });
+
   const ret = mapValues(refs, (v1, k1) => {
     if (k1 === stateName) {
       return mapValues(v1, (v2, k2) => {
@@ -547,7 +552,7 @@ export function removeState(
   return refsSchema.parse(removeEmptyLeaves(refs));
 }
 
-export function hanldeRefScene(refs: Refs, evt: HandleRefSceneEvent) {
+export function handleRefScene(refs: Refs, evt: HandleRefSceneEvent) {
   switch (evt.scene) {
     case 'set_nodedata_key_val':
       return setNodedataKeyVal(refs, evt.params);

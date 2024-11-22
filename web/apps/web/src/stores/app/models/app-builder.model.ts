@@ -7,7 +7,7 @@ import {
   getRefOptions,
   Scopes,
   HandleRefSceneEvent,
-  hanldeRefScene,
+  handleRefScene,
   Refs,
 } from '@shellagent/shared/protocol/app-scope';
 import type { FieldValues } from '@shellagent/ui';
@@ -85,7 +85,7 @@ export class AppBuilderModel {
   }
 
   get refs(): Refs {
-    return this.config.refs;
+    return this.config.refs || {};
   }
 
   constructor(@inject(EmitterModel) private emitter: EmitterModel) {
@@ -113,8 +113,8 @@ export class AppBuilderModel {
     return cascaderOpts;
   }
 
-  hanldeRefScene(evt: HandleRefSceneEvent) {
-    const newRefs = hanldeRefScene(this.refs, evt);
+  handleRefScene(evt: HandleRefSceneEvent) {
+    const newRefs = handleRefScene(this.refs, evt);
     this.updateNodeData(evt, this.nodeData, this.refs, newRefs);
     this.config.refs = newRefs;
 

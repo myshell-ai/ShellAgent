@@ -27,8 +27,6 @@ import { ComfyUIEditor } from './widgets/comfyui-editor';
 const ComfyUIPlugin: React.FC<CommonWidgetConfigProps> = ({
   values,
   onChange,
-  modeMap,
-  onModeChange,
   parent,
 }) => {
   const formRef = useRef<FormRef>(null);
@@ -107,9 +105,7 @@ const ComfyUIPlugin: React.FC<CommonWidgetConfigProps> = ({
         schema={schema}
         values={values}
         onChange={handleOnChange}
-        onModeChange={onModeChange}
         loading={isLoading}
-        modeMap={modeMap}
         components={{
           ComfyUIEditor,
         }}

@@ -20,7 +20,7 @@ import * as React from 'react';
 import { useState, useRef, useMemo } from 'react';
 
 import { MemoizedFormEngine } from '../..';
-import { ISchema, TValue, TValues, TFieldMode } from '../../types';
+import { ISchema, TValue, TValues } from '../../types';
 import { useFormEngineContext } from '../provider';
 
 export type InputProps = React.InputHTMLAttributes<HTMLInputElement>;
@@ -34,7 +34,7 @@ export interface IEditDialogProps {
 const EditDialog = (props: IEditDialogProps) => {
   const { name, children, schema } = props;
   const { getValues, setValue } = useFormContext();
-  const { components, onModeChange, modeMap } = useFormEngineContext();
+  const { components } = useFormEngineContext();
   const [isOpen, setIsOpen] = useState(false);
   const [formData, setFormData] = useState<TValues>({});
   const formRef = useRef<FormRef>(null);
@@ -70,25 +70,10 @@ const EditDialog = (props: IEditDialogProps) => {
     setFormData(values);
   };
 
-  const onFormModeChange = (key: string, mode: TFieldMode) => {
-    onModeChange?.(`${name}.${key}`, mode);
-  };
-
   const disabled = useMemo(() => {
     const { errors = {} } = formRef.current?.formState || {};
     return Object.keys(errors).length > 0;
   }, [formRef.current?.formState]);
-
-  const dialogModeMap: typeof modeMap = Object.keys(modeMap || {}).reduce(
-    (acc: typeof modeMap, key: string) => {
-      if (key.startsWith(name) && acc && modeMap) {
-        const newKey = key.replace(`${name}.`, '');
-        acc[newKey] = modeMap?.[key];
-      }
-      return acc;
-    },
-    {},
-  );
 
   return (
     <Dialog open={isOpen}>
@@ -124,8 +109,6 @@ const EditDialog = (props: IEditDialogProps) => {
                   parent={name}
                   components={components}
                   onChange={onFormChange}
-                  modeMap={dialogModeMap}
-                  onModeChange={onFormModeChange}
                 />
               ) : null}
               {children}

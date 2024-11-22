@@ -12,15 +12,13 @@ import {
   useDrop,
   useReactFlowStore,
 } from '@shellagent/flow-engine';
-import { TFieldMode, TValues } from '@shellagent/form-engine';
+import { TValues } from '@shellagent/form-engine';
 import { RefSceneEnum } from '@shellagent/shared/protocol/app-scope';
 import { Task, TaskSchema } from '@shellagent/shared/protocol/task';
 import { customSnakeCase, getTaskDisplayName } from '@shellagent/shared/utils';
 import { FormRef } from '@shellagent/ui';
 import { useKeyPress } from 'ahooks';
 import { useInjection } from 'inversify-react';
-import { isEqual } from 'lodash-es';
-import { observer } from 'mobx-react-lite';
 import React, { useCallback, useRef, useEffect, useState } from 'react';
 
 import { EdgeDataTypeEnum, EdgeTypeEnum } from '@/components/app/edges';
@@ -95,7 +93,7 @@ const StateNode: React.FC<NodeProps<StateNodeType>> = ({ selected, data }) => {
       if (selected && e.target === nodeRef.current) {
         appBuilder.deleteNodeData(data.id);
         onDelNode({ id: data.id });
-        appBuilder.hanldeRefScene({
+        appBuilder.handleRefScene({
           scene: RefSceneEnum.Enum.remove_state,
           params: {
             stateName: data.id as Lowercase<string>,
@@ -143,13 +141,6 @@ const StateNode: React.FC<NodeProps<StateNodeType>> = ({ selected, data }) => {
     {
       target: nodeRef,
     },
-  );
-
-  const onModeChange = useCallback(
-    (name: string, mode: TFieldMode) => {
-      appBuilder.setFieldsModeMap({ id: data.id, name, mode });
-    },
-    [data.id, appBuilder.setFieldsModeMap],
   );
 
   const onChange = useCallback(
@@ -266,8 +257,6 @@ const StateNode: React.FC<NodeProps<StateNodeType>> = ({ selected, data }) => {
           loading={appBuilder.getAutomataLoading}
           values={appBuilder.nodeData[data.id]}
           onChange={onChange}
-          onModeChange={onModeChange}
-          modeMap={appBuilder.config.fieldsModeMap?.[data.id] || {}}
         />
       </NodeCard>
       <SourceHandle onConnect={handleConnect} id={`custom_${data.id}`} />

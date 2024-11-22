@@ -39,7 +39,7 @@ export function useFieldWatch(formRef: React.RefObject<FormRef>) {
 
         switch (type) {
           case DiffTypeEnum.Deleted:
-            appBuilder.hanldeRefScene({
+            appBuilder.handleRefScene({
               scene: RefSceneEnum.Enum.remove_ref_opts,
               params: {
                 paths: [
@@ -74,7 +74,7 @@ export function useFieldWatch(formRef: React.RefObject<FormRef>) {
               values: newContext,
               name: diffNewValue?.name as string,
             });
-            appBuilder.hanldeRefScene({
+            appBuilder.handleRefScene({
               scene: RefSceneEnum.Enum.rename_ref_opt,
               params: {
                 oldPath: `${stateId}.__${reservedKeySchema.Enum.context}__${path}__`,
@@ -87,7 +87,7 @@ export function useFieldWatch(formRef: React.RefObject<FormRef>) {
         }
       });
     }, 100),
-    [appBuilder.hanldeRefScene],
+    [appBuilder.handleRefScene],
   );
 
   // 处理 inputs 变化的函数
@@ -101,7 +101,7 @@ export function useFieldWatch(formRef: React.RefObject<FormRef>) {
 
         switch (type) {
           case DiffTypeEnum.Deleted:
-            appBuilder.hanldeRefScene({
+            appBuilder.handleRefScene({
               scene: RefSceneEnum.Enum.remove_ref_opts,
               params: { paths: [`${stateId}.${path}`] },
             });
@@ -139,7 +139,7 @@ export function useFieldWatch(formRef: React.RefObject<FormRef>) {
               values: newInputs,
               name: diffNewValue?.name,
             });
-            appBuilder.hanldeRefScene({
+            appBuilder.handleRefScene({
               scene: RefSceneEnum.Enum.rename_ref_opt,
               params: {
                 oldPath: `${stateId}.${path}`,
@@ -152,7 +152,7 @@ export function useFieldWatch(formRef: React.RefObject<FormRef>) {
         }
       });
     }, 300),
-    [stateId, appBuilder.hanldeRefScene],
+    [stateId, appBuilder.handleRefScene],
   );
 
   // 处理 outputs 变化的函数
@@ -166,7 +166,7 @@ export function useFieldWatch(formRef: React.RefObject<FormRef>) {
 
         switch (type) {
           case DiffTypeEnum.Deleted:
-            appBuilder.hanldeRefScene({
+            appBuilder.handleRefScene({
               scene: RefSceneEnum.Enum.remove_ref_opts,
               params: { paths: [`${stateId}.${path}`] },
             });
@@ -204,7 +204,7 @@ export function useFieldWatch(formRef: React.RefObject<FormRef>) {
               values: newOutputs,
               name: diffNewValue?.name as string,
             });
-            appBuilder.hanldeRefScene({
+            appBuilder.handleRefScene({
               scene: RefSceneEnum.Enum.rename_ref_opt,
               params: {
                 oldPath: `${stateId}.${path}`,
@@ -217,7 +217,7 @@ export function useFieldWatch(formRef: React.RefObject<FormRef>) {
         }
       });
     }, 100),
-    [stateId, appBuilder.hanldeRefScene],
+    [stateId, appBuilder.handleRefScene],
   );
 
   // 处理 blocks 变化的函数
@@ -241,7 +241,7 @@ export function useFieldWatch(formRef: React.RefObject<FormRef>) {
 
         switch (type) {
           case DiffTypeEnum.Deleted:
-            appBuilder.hanldeRefScene({
+            appBuilder.handleRefScene({
               scene: RefSceneEnum.Enum.remove_ref_opts,
               params: { paths: [`${stateId}.${blockName}`] },
             });
@@ -264,7 +264,7 @@ export function useFieldWatch(formRef: React.RefObject<FormRef>) {
                 formRef.current?.setValue(blockDisplayName, newName);
               }
               formRef.current?.setValue(blockName, newKey);
-              appBuilder.hanldeRefScene({
+              appBuilder.handleRefScene({
                 scene: RefSceneEnum.Enum.rename_ref_opt,
                 params: {
                   oldPath: `${stateId}.${oldValue}`,
@@ -281,7 +281,7 @@ export function useFieldWatch(formRef: React.RefObject<FormRef>) {
               )
               .map((block: any) => `${stateId}.${block.name}`);
 
-            appBuilder.hanldeRefScene({
+            appBuilder.handleRefScene({
               scene: RefSceneEnum.Enum.remove_ref_opts_prefix,
               params: {
                 prefix,
@@ -293,7 +293,7 @@ export function useFieldWatch(formRef: React.RefObject<FormRef>) {
         }
       });
     }, 100),
-    [appBuilder.hanldeRefScene, stateId],
+    [appBuilder.handleRefScene, stateId],
   );
 
   // 处理 render 变化的函数
@@ -316,7 +316,7 @@ export function useFieldWatch(formRef: React.RefObject<FormRef>) {
           const { type, path } = diff;
           switch (type) {
             case DiffTypeEnum.Deleted:
-              appBuilder.hanldeRefScene({
+              appBuilder.handleRefScene({
                 scene: RefSceneEnum.Enum.remove_ref_opts,
                 params: { paths: [`${stateId}.${name}.${path}`] },
               });
@@ -365,7 +365,7 @@ export function useFieldWatch(formRef: React.RefObject<FormRef>) {
               formRef.current?.setValue(`${name}.id`, event);
               formRef.current?.setValue(`${name}.on_click.event`, event);
 
-              appBuilder.hanldeRefScene({
+              appBuilder.handleRefScene({
                 scene: RefSceneEnum.Enum.rename_ref_opt,
                 params: {
                   oldPath: `${stateId}.${oldValue}`,
@@ -382,7 +382,7 @@ export function useFieldWatch(formRef: React.RefObject<FormRef>) {
 
             switch (type) {
               case DiffTypeEnum.Deleted:
-                appBuilder.hanldeRefScene({
+                appBuilder.handleRefScene({
                   scene: RefSceneEnum.Enum.remove_ref_opts,
                   params: { paths: [`${stateId}.${path}`] },
                 });
@@ -431,7 +431,7 @@ export function useFieldWatch(formRef: React.RefObject<FormRef>) {
                   name: diffNewValue?.name,
                 });
                 // 修改payload name
-                appBuilder.hanldeRefScene({
+                appBuilder.handleRefScene({
                   scene: RefSceneEnum.Enum.rename_ref_opt,
                   params: {
                     oldPath: `${stateId}.${path}`,

@@ -48,8 +48,10 @@ const VariableSelect = (props: VariableSelectProps) => {
         parentKey === 'state'
           ? removeBrackets(val)
           : contextReg.test(val)
-            ? removeBrackets(val)
-            : `${stateId}.${parentKey ? `${parentKey}.` : ''}${removeBrackets(val)}`;
+          ? removeBrackets(val)
+          : `${stateId}.${parentKey ? `${parentKey}.` : ''}${removeBrackets(
+              val,
+            )}`;
 
       // TODO 引用state output有问题
       //   {
@@ -59,7 +61,7 @@ const VariableSelect = (props: VariableSelectProps) => {
       //     }
       // }
 
-      appBuilder.hanldeRefScene({
+      appBuilder.handleRefScene({
         scene: RefSceneEnum.Enum.set_nodedata_key_val,
         params: {
           stateName: stateId as Lowercase<string>,
@@ -69,7 +71,7 @@ const VariableSelect = (props: VariableSelectProps) => {
         },
       });
     },
-    [appBuilder.hanldeRefScene, stateId, name],
+    [appBuilder.handleRefScene, stateId, name],
   );
 
   return (

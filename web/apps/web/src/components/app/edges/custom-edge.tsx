@@ -82,7 +82,7 @@ export const CustomEdge = ({
   useKeyPress(['delete', 'backspace'], () => {
     if (selected) {
       onDelEdge({ id });
-      appBuilder.hanldeRefScene({
+      appBuilder.handleRefScene({
         scene: RefSceneEnum.Enum.remove_edge,
         params: {
           edges: edges as any,

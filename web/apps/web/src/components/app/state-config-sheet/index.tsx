@@ -90,7 +90,6 @@ const StateConfigSheet: React.FC<{}> = () => {
       return {
         children: (
           <ButtonConfig
-            id={currentStateId}
             values={values}
             onChange={newValue =>
               nodeFormRef.current?.setValue(
@@ -204,13 +203,6 @@ const StateConfigSheet: React.FC<{}> = () => {
     );
   }, [currentStateId, setStateConfigSheetOpen, setNodes, nodes]);
 
-  const onModeChange = useCallback(
-    (name: string, mode: TFieldMode) => {
-      appBuilder.setFieldsModeMap({ id: selectedNode?.id || '', name, mode });
-    },
-    [selectedNode?.id, appBuilder.setFieldsModeMap],
-  );
-
   return (
     <Drawer
       key={currentStateId}
@@ -243,9 +235,7 @@ const StateConfigSheet: React.FC<{}> = () => {
           schema={stateConfigSchema}
           values={appBuilder.nodeData[currentStateId]}
           onChange={onChange}
-          onModeChange={onModeChange}
           ref={nodeFormRef}
-          modeMap={appBuilder.config.fieldsModeMap?.[currentStateId] || {}}
         />
         <Drawer
           open={insideSheetOpen}

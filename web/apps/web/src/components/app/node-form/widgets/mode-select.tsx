@@ -4,7 +4,10 @@ import {
   RectangleStackIcon,
   Square3Stack3DIcon,
 } from '@heroicons/react/24/outline';
-import { useFormEngineContext } from '@shellagent/form-engine';
+import {
+  useFormEngineContext,
+  getDefaultValueBySchema,
+} from '@shellagent/form-engine';
 import { RefSceneEnum } from '@shellagent/shared/protocol/app-scope';
 import {
   FieldModeEnum,
@@ -19,9 +22,12 @@ import {
   IconButton,
   Text,
   HeroIcon,
+  useFormContext,
 } from '@shellagent/ui';
 import { useInjection } from 'inversify-react';
-import { useState, useMemo, useCallback } from 'react';
+import { useMemo, useCallback, useEffect } from 'react';
+import { observer } from 'mobx-react-lite';
+import { get } from 'lodash-es';
 
 import { AppBuilderModel } from '@/stores/app/models/app-builder.model';
 import { useSchemaContext } from '@/stores/app/schema-provider';
@@ -50,22 +56,54 @@ const ModeOptions: Array<{
 
 interface IModeSelectProps {
   name: string;
-  defaultValue: FieldMode;
   onChange?: (value: FieldMode) => void;
-  defaultOptions?: string[];
 }
 
-export function ModeSelect({
-  defaultValue,
-  onChange,
-  defaultOptions,
-  name,
-}: IModeSelectProps) {
-  const [value, setValue] = useState<FieldMode>(defaultValue);
+const rawReg = /{{.*}}/;
+
+const refReg = /^({{).*(}})$/;
+
+export const ModeSelect = observer(({ name, onChange }: IModeSelectProps) => {
   const appBuilder = useInjection<AppBuilderModel>('AppBuilderModel');
   const stateId = useSchemaContext(state => state.id);
+  const { parent, fields } = useFormEngineContext();
+  const { setValue, getValues } = useFormContext();
+  const { schema } = fields[name] || {};
 
-  const { parent } = useFormEngineContext();
+  const {
+    'x-raw': xRaw,
+    'x-raw-default': xRawDefault,
+    'x-raw-options': defaultOptions,
+    'x-raw-disabled': xRawDisabled,
+  } = schema;
+
+  const defaultValue = useMemo(() => {
+    if (!xRaw) {
+      return FieldModeEnum.Enum.ui;
+    }
+    const currentValue = getValues(name);
+    if (refReg.test(currentValue)) {
+      return FieldModeEnum.Enum.ref;
+    }
+    if (rawReg.test(currentValue)) {
+      return FieldModeEnum.Enum.raw;
+    }
+    return xRawDefault || FieldModeEnum.Enum.ui;
+  }, [name, xRaw, xRawDefault]);
+
+  const refPath = useMemo(
+    () => (parent ? `${parent}.${name}` : name),
+    [parent, name],
+  );
+  const currentMode =
+    get(appBuilder.refs, [stateId, refPath, 'currentMode']) || defaultValue;
+
+  // 仅作为通知外部变化
+  useEffect(() => {
+    if (onChange && currentMode) {
+      onChange(currentMode);
+    }
+  }, [currentMode]);
 
   const options = useMemo(() => {
     if (!defaultOptions) {
@@ -76,28 +114,32 @@ export function ModeSelect({
 
   const IconMode = useMemo(
     () =>
-      options.find(item => item.value === (value || FieldModeEnum.Enum.ui))
-        ?.icon!,
-    [options, value],
+      options.find(item => item.value === currentMode)?.icon ??
+      RectangleStackIcon,
+    [options, currentMode],
   );
 
   const handleChange = useCallback(
-    (val: FieldMode) => {
-      if (val === value) {
+    async (val: FieldMode) => {
+      if (val === currentMode) {
         return;
       }
-      setValue(val);
-      onChange?.(val);
-      appBuilder.hanldeRefScene({
+
+      setValue(
+        name,
+        val === FieldModeEnum.Enum.ui ? getDefaultValueBySchema(schema) : '',
+      );
+
+      appBuilder.handleRefScene({
         scene: RefSceneEnum.Enum.change_nodedata_mode,
         params: {
           stateName: stateId as Lowercase<string>,
           mode: val,
-          key: `${stateId}.${parent}.${name}`,
+          key: refPath,
         },
       });
     },
-    [name, stateId, parent, value],
+    [name, stateId, refPath, currentMode, schema],
   );
 
   return (
@@ -107,6 +149,7 @@ export function ModeSelect({
           size="sm"
           color="gray"
           variant="ghost"
+          disabled={xRawDisabled}
           icon={IconMode}
           className="border-0 hover:bg-surface-accent-gray-subtle focus-visible:ring-0"
         />
@@ -122,7 +165,7 @@ export function ModeSelect({
                 <item.icon className="w-5 h-5" />
                 <Text className="ml-1.5">{item.label}</Text>
               </div>
-              {value === item.value && (
+              {currentMode === item.value && (
                 <CheckIcon className="w-5 h-5 text-primary" />
               )}
             </DropdownMenuItem>
@@ -131,6 +174,6 @@ export function ModeSelect({
       </DropdownMenuPortal>
     </DropdownMenu>
   );
-}
+});
 
 ModeSelect.displayName = 'ModeSelect';

@@ -59,25 +59,11 @@ interface NodeFormProps {
   onChange: (values: TValues) => void;
   loading?: boolean;
   parent?: string;
-  modeMap?: Record<string, TFieldMode>;
-  onModeChange?: (name: string, mode: TFieldMode) => void;
   components?: Record<string, React.FC<any>>;
 }
 
 const NodeForm = forwardRef<FormRef, NodeFormProps>(
-  (
-    {
-      values,
-      onChange,
-      schema,
-      loading,
-      onModeChange,
-      modeMap,
-      parent,
-      components = {},
-    },
-    ref,
-  ) => {
+  ({ values, onChange, schema, loading, parent, components = {} }, ref) => {
     const innerRef = useRef<FormRef>(null);
 
     useImperativeHandle(ref, () => innerRef.current!);
@@ -112,9 +98,7 @@ const NodeForm = forwardRef<FormRef, NodeFormProps>(
         mode="onChange"
         values={values || defaultValues}
         schema={currentSchema}
-        modeMap={modeMap}
         parent={parent}
-        onModeChange={onModeChange}
         components={{
           Input,
           UnfocusInput,

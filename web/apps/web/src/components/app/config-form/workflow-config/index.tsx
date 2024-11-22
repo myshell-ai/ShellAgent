@@ -87,13 +87,6 @@ export const WorkflowConfig: React.FC<WorkflowConfigProps> = ({
     [defaultValues, onChange],
   );
 
-  const onModeChange = useCallback(
-    (name: string, mode: TFieldMode) => {
-      appBuilder.setFieldsModeMap({ id: `${id}.${parent}`, name, mode });
-    },
-    [id, appBuilder.setFieldsModeMap, parent],
-  );
-
   if (!values) {
     return null;
   }
@@ -106,8 +99,6 @@ export const WorkflowConfig: React.FC<WorkflowConfigProps> = ({
       values={values}
       onChange={handleOnChange}
       loading={loading.getProConfig}
-      onModeChange={onModeChange}
-      modeMap={appBuilder.config.fieldsModeMap?.[`${id}.${parent}`] || {}}
     />
   );
 };

@@ -40,8 +40,7 @@ interface IControlProps {
  */
 const Control: React.FC<IControlProps> = props => {
   const { name } = props;
-  const { fields, components, remove, modeMap, onModeChange, onStatusChange } =
-    useFormEngineContext();
+  const { fields, components, remove, onStatusChange } = useFormEngineContext();
   const { setValue, getValues } = useFormContext();
   const { schema, state, parent } = fields[name] || {};
   const preType = useRef('');
@@ -64,8 +63,6 @@ const Control: React.FC<IControlProps> = props => {
     'x-onchange-prop-name': xOnChangePropsName,
     'x-raw': xRaw,
     'x-raw-default': xRawDefault,
-    'x-raw-options': xRawOptions,
-    'x-raw-disabled': xRawDisabled,
     'x-suffix': xSuffix,
     'x-prefix': xPrefix,
     'x-class': xClass,
@@ -78,26 +75,9 @@ const Control: React.FC<IControlProps> = props => {
     description,
     default: defaultValue,
   } = schema;
+  const [mode, setMode] = useState(xRawDefault || FieldModeEnum.Enum.ui);
 
-  const rawReg = /{{.*}}/;
-
-  const refReg = /^({{).*(}})$/;
-
-  const mode = useMemo(() => {
-    if (!xRaw) {
-      return FieldModeEnum.Enum.ui;
-    }
-    if (modeMap?.[name]) {
-      return modeMap?.[name];
-    }
-    if (refReg.test(getValues(name))) {
-      return FieldModeEnum.Enum.ref;
-    }
-    if (rawReg.test(getValues(name))) {
-      return FieldModeEnum.Enum.raw;
-    }
-    return xRawDefault || FieldModeEnum.Enum.ui;
-  }, [modeMap, name, xRawDefault]);
+  console.log('mode>>>', mode);
 
   let titleControl: React.ReactElement<
     unknown,
@@ -107,14 +87,6 @@ const Control: React.FC<IControlProps> = props => {
   if (!schema) {
     return null;
   }
-
-  const handleModeChange = (mode: FieldMode) => {
-    setValue(
-      name,
-      mode === FieldModeEnum.Enum.ui ? getDefaultValueBySchema(schema) : '',
-    );
-    onModeChange?.(name, mode);
-  };
 
   const onDelete = () => {
     remove(xDeletable ? name : parent);
@@ -354,11 +326,8 @@ const Control: React.FC<IControlProps> = props => {
                   <div className="flex items-center gap-x-1.5 shrink-0">
                     {xRaw && components?.ModeSelect
                       ? React.createElement(components.ModeSelect, {
-                          onChange: handleModeChange,
-                          defaultValue: mode,
-                          disabled: xRawDisabled,
-                          defaultOptions: xRawOptions,
                           name,
+                          onChange: setMode,
                         })
                       : null}
                     {xParentDeletable || xDeletable ? (

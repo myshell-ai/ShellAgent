@@ -171,15 +171,6 @@ const TransitionConditionEditor = ({
       }));
   };
 
-  const modeId = `${source}.condition.${index}`;
-
-  const onModeChange = useCallback(
-    (name: string, mode: TFieldMode) => {
-      appBuilder.setFieldsModeMap({ id: modeId, name, mode });
-    },
-    [modeId, appBuilder.setFieldsModeMap],
-  );
-
   return (
     <div className="flex gap-3 flex-col justify-center">
       {value?.map?.((condition, index) => (
@@ -217,8 +208,6 @@ const TransitionConditionEditor = ({
           parent={`condition.${index}`}
           schema={schema}
           values={value?.[index]?.target_inputs}
-          onModeChange={onModeChange}
-          modeMap={appBuilder.config.fieldsModeMap?.[modeId] || {}}
           onChange={values =>
             onChange(
               produce(value, draft => {
