@@ -59,6 +59,12 @@ async def upload(file: UploadFile = File(...)):
     return JSONResponse(content=response)
 
 
+@app.get('/api/get_cwd')
+async def get_cwd():
+    return {
+        "cwd": os.getcwd()
+    }
+
        
 BASE_DIR = os.getcwd()
 @app.get('/api/files/{filename:path}')
