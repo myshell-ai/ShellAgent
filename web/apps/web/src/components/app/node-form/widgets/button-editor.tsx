@@ -1,4 +1,5 @@
 import PlusIcon from '@heroicons/react/24/outline/esm/PlusIcon';
+import { useReactFlowStore } from '@shellagent/flow-engine';
 import { Button as IButtonType } from '@shellagent/shared/protocol/render-button';
 import { getButtonDisplayName, getEventKey } from '@shellagent/shared/utils';
 import { Button, XMark, IconButton, useFormContext } from '@shellagent/ui';
@@ -7,7 +8,6 @@ import clsx from 'clsx';
 import { useRef } from 'react';
 
 import { useAppState } from '@/stores/app/use-app-state';
-import { useReactFlowStore } from '@shellagent/flow-engine';
 
 interface VariableNodeProps {
   name: string;

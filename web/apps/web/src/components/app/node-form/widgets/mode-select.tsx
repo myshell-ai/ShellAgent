@@ -25,9 +25,9 @@ import {
   useFormContext,
 } from '@shellagent/ui';
 import { useInjection } from 'inversify-react';
-import { useMemo, useCallback, useEffect } from 'react';
-import { observer } from 'mobx-react-lite';
 import { get } from 'lodash-es';
+import { observer } from 'mobx-react-lite';
+import { useMemo, useCallback, useEffect } from 'react';
 
 import { AppBuilderModel } from '@/stores/app/models/app-builder.model';
 import { useSchemaContext } from '@/stores/app/schema-provider';

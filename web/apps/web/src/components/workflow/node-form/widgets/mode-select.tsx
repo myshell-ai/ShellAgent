@@ -5,6 +5,10 @@ import {
   Square3Stack3DIcon,
 } from '@heroicons/react/24/outline';
 import {
+  useFormEngineContext,
+  getDefaultValueBySchema,
+} from '@shellagent/form-engine';
+import {
   FieldModeEnum,
   FieldMode,
 } from '@shellagent/shared/protocol/extend-config';
@@ -19,14 +23,10 @@ import {
   HeroIcon,
   useFormContext,
 } from '@shellagent/ui';
-import {
-  useFormEngineContext,
-  getDefaultValueBySchema,
-} from '@shellagent/form-engine';
-import { useWorkflowStore } from '@/stores/workflow/workflow-provider';
-import { useSchemaContext } from '@/stores/workflow/schema-provider';
-
 import { useMemo, useCallback, useEffect } from 'react';
+
+import { useSchemaContext } from '@/stores/workflow/schema-provider';
+import { useWorkflowStore } from '@/stores/workflow/workflow-provider';
 
 const ModeOptions: Array<{
   label: string;
