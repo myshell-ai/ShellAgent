@@ -9,6 +9,7 @@ import { FormikModel } from '@/utils/formik.model';
 import { ModalModel } from '@/utils/modal.model';
 import { ToggleModel } from '@/utils/toggle.model';
 import { EmitterModel } from '@/utils/emitter.model.ts';
+import { pathJoin } from './comfyui.utils';
 
 export const LocTip =
   'The file must be a ShellAgent-extended ComfyUI JSON (.shellagent.json). To import a ComfyUI JSON, use ComfyUI-Manager.';
@@ -134,7 +135,7 @@ export class ComfyUIModel {
         },
       });
       if (typeof res.data.cwd === 'string') {
-        this.defaultLocation = res.data.cwd + 'ShellAgent/data/comfy_workflow';
+        this.defaultLocation = pathJoin([res.data.cwd, 'data/comfy_workflow']);
       } else {
         this.emitter.emitter.emit(
           'message.error',
