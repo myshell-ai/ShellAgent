@@ -72,7 +72,7 @@ export const ComfyUIEditor = observer(
         if (result.success) {
           const { data } = result;
           iframeRef.current?.contentWindow?.postMessage(
-            { type: MessageType.LOAD, data },
+            { type: MessageType.LOAD, data: data.workflow },
             value,
           );
         } else {
