@@ -293,8 +293,6 @@ export class AppBuilderModel {
       isUpdated = true;
     }
 
-    console.log('updatedNodeData>>>>', updatedNodeData);
-
     if (isUpdated) {
       runInAction(() => {
         this.nodeData = updatedNodeData;

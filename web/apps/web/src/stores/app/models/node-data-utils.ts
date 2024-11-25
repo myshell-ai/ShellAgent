@@ -147,9 +147,6 @@ export const handleRenameRefOpt = (
       delete parent[oldVarName];
     }
   });
-
-  console.log('stateNode>>>>', stateNode);
-  console.log('updatedNodeData>>>', updatedNodeData[stateId]);
 };
 
 export const handleRemoveState = (
