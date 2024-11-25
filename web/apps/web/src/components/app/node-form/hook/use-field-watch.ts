@@ -279,8 +279,8 @@ export function useFieldWatch(formRef: React.RefObject<FormRef>) {
               scene: RefSceneEnum.Enum.reorder_task,
               params: {
                 stateName: stateId as Lowercase<string>,
-                previousTasks: oldBlocks.map((block: any) => block.name),
-                currentTasks: newBlocks.map((block: any) => block.name),
+                previousTasks: oldValue.map((block: any) => block.name),
+                currentTasks: diffNewValue.map((block: any) => block.name),
               },
             });
             break;
