@@ -1048,7 +1048,7 @@ state#3
       `);
     });
 
-    it.only('rename ref opt, by prefix', () => {
+    it('rename ref opt, by prefix', () => {
       const refs = refsSchema.parse({
         state1: {
           'outputs.__context__123___1.value': {
