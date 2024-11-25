@@ -1,6 +1,9 @@
+import { reservedKeySchema } from '@shellagent/shared/protocol/pro-config';
 import { reservedStateName } from '@shellagent/shared/protocol/node';
 import type { FieldValues } from '@shellagent/ui';
 import { omit } from 'lodash-es';
+
+const reservedKeys = Object.keys(reservedKeySchema.enum).join('|');
 
 export function processNestedObject(
   obj: any,
@@ -21,7 +24,12 @@ export const handleRemoveRefOpts = (
   paths: string[],
 ) => {
   paths.forEach(path => {
-    const [stateId, varName] = path.split('.');
+    const pathMatch = path.match(
+      new RegExp(`^(.+?)\\.(?:(${reservedKeys})\\.)?(.+)$`),
+    );
+    if (!pathMatch) return;
+
+    const [, stateId, prefix, varName] = pathMatch;
     let stateNode: FieldValues | undefined;
 
     if (reservedStateName.start === stateId) {
@@ -33,7 +41,10 @@ export const handleRemoveRefOpts = (
 
     processNestedObject(stateNode, (value, key, parent) => {
       if (typeof value === 'string') {
-        const refRegex = new RegExp(`{{\\s*${varName}\\s*}}`, 'g');
+        const refRegex = new RegExp(
+          `{{\\s*(${reservedKeys}\\.)?${varName}\\s*}}`,
+          'g',
+        );
         if (refRegex.test(value)) {
           parent[key] = '';
         }
@@ -46,8 +57,13 @@ export const handleRemoveRefOptsPrefix = (
   updatedNodeData: Record<string, FieldValues>,
   prefix: string[],
 ) => {
-  prefix.forEach(prefix => {
-    const [stateId, varName] = prefix.split('.');
+  prefix.forEach(path => {
+    const pathMatch = path.match(
+      new RegExp(`^(.+?)\\.(?:(${reservedKeys})\\.)?(.+)$`),
+    );
+    if (!pathMatch) return;
+
+    const [, stateId, , varName] = pathMatch;
     let stateNode: FieldValues | undefined;
 
     if (reservedStateName.start === stateId) {
@@ -59,7 +75,10 @@ export const handleRemoveRefOptsPrefix = (
 
     processNestedObject(stateNode, (value, key, parent) => {
       if (typeof value === 'string') {
-        const refRegex = new RegExp(`{{\\s*${varName}[\\w.]*\\s*}}`, 'g');
+        const refRegex = new RegExp(
+          `{{\\s*(${reservedKeys}\\.)?${varName}[\\w.]*\\s*}}`,
+          'g',
+        );
         if (refRegex.test(value)) {
           parent[key] = '';
         }
@@ -73,8 +92,16 @@ export const handleRenameRefOpt = (
   oldPath: string,
   newPath: string,
 ) => {
-  const [stateId, oldVarName] = oldPath.split('.');
-  const [, newVarName] = newPath.split('.');
+  const oldPathMatch = oldPath.match(
+    new RegExp(`^(.+?)\\.(?:(${reservedKeys})\\.)?(.+)$`),
+  );
+  const newPathMatch = newPath.match(
+    new RegExp(`^(.+?)\\.(?:(${reservedKeys})\\.)?(.+)$`),
+  );
+  if (!oldPathMatch || !newPathMatch) return;
+
+  const [, stateId, , oldVarName] = oldPathMatch;
+  const [, , , newVarName] = newPathMatch;
 
   let stateNode: FieldValues | undefined;
 
@@ -87,28 +114,27 @@ export const handleRenameRefOpt = (
 
   processNestedObject(stateNode, (value, key, parent) => {
     if (typeof value === 'string') {
-      const oldRefRegex = new RegExp(`{{\\s*${oldVarName}\\s*}}`, 'g');
+      const oldRefRegex = new RegExp(
+        `{{\\s*(${reservedKeys}\\.)?${oldVarName}\\s*}}`,
+        'g',
+      );
       if (oldRefRegex.test(value)) {
-        parent[key] = value.replace(oldRefRegex, `{{ ${newVarName} }}`);
+        parent[key] = `{{ ${newVarName} }}`;
       }
     }
   });
 };
 
 export const handleRemoveState = (
-  updatedNodeData: Record<string, FieldValues>,
-  stateName: string,
+  nodeData: Record<string, FieldValues>,
+  stateId: string,
 ) => {
-  Object.entries(updatedNodeData).forEach(([nodeId, node]: [string, any]) => {
-    if (nodeId === stateName || node.type !== 'state') return;
-
-    processNestedObject(node, (value, key, parent) => {
-      if (typeof value === 'string') {
-        const refRegex = new RegExp(`{{\\s*${stateName}\\.[\\w.]*\\s*}}`, 'g');
-        if (refRegex.test(value)) {
-          parent[key] = '';
-        }
+  processNestedObject(nodeData, (value, key, parent) => {
+    if (typeof value === 'string') {
+      const refRegex = new RegExp(`{{\\s*${stateId}\\.[^}]+\\s*}}`, 'g');
+      if (refRegex.test(value)) {
+        parent[key] = '';
       }
-    });
+    }
   });
 };

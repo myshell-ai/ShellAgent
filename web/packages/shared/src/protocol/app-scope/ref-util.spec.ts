@@ -1795,26 +1795,31 @@ state#3
   describe('task re order', () => {
     it('reorder tasks', () => {
       const refs = refsSchema.parse({
-        state_1: {
-          'block.a.inputs.system_prompt': {},
-          'block.b.inputs.system_prompt': {},
-          'block.c.inputs.system_prompt': { ref: 'state_1.block.b.outputs.o1' },
-          'block.d.inputs.system_prompt': { ref: 'state_1.block.b.outputs.o1' },
+        state1: {
+          'blocks.twitter2.inputs.query': {
+            currentMode: 'ref',
+            ref: 'state1.blocks.twitter1.data',
+          },
+          'blocks.twitter1.inputs.query': {
+            currentMode: 'ref',
+          },
         },
       });
 
       const ret = reorderTasks(refs, {
-        stateName: 'state_1',
-        previousTasks: ['a', 'b', 'c', 'd'],
-        currentTasks: ['a', 'c', 'd', 'b'],
+        stateName: 'state1',
+        previousTasks: ['twitter2', 'twitter1'],
+        currentTasks: ['twitter1', 'twitter2'],
       });
       expect(ret).toMatchInlineSnapshot(`
         {
-          "state_1": {
-            "block.a.inputs.system_prompt": {},
-            "block.b.inputs.system_prompt": {},
-            "block.c.inputs.system_prompt": {},
-            "block.d.inputs.system_prompt": {},
+          "state1": {
+            "blocks.twitter2.inputs.query": {
+                "currentMode": "ref",
+            },
+            "blocks.twitter1.inputs.query": {
+                "currentMode": "ref"
+            }
           },
         }
       `);

@@ -103,7 +103,9 @@ export function useFieldWatch(formRef: React.RefObject<FormRef>) {
           case DiffTypeEnum.Deleted:
             appBuilder.handleRefScene({
               scene: RefSceneEnum.Enum.remove_ref_opts,
-              params: { paths: [`${stateId}.${path}`] },
+              params: {
+                paths: [`${stateId}.${reservedKeySchema.Enum.inputs}.${path}`],
+              },
             });
             break;
           case DiffTypeEnum.Modified:
@@ -142,8 +144,8 @@ export function useFieldWatch(formRef: React.RefObject<FormRef>) {
             appBuilder.handleRefScene({
               scene: RefSceneEnum.Enum.rename_ref_opt,
               params: {
-                oldPath: `${stateId}.${path}`,
-                newPath: `${stateId}.${key}`,
+                oldPath: `${stateId}.${reservedKeySchema.Enum.inputs}.${path}`,
+                newPath: `${stateId}.${reservedKeySchema.Enum.inputs}.${key}`,
               },
             });
             break;
@@ -168,7 +170,9 @@ export function useFieldWatch(formRef: React.RefObject<FormRef>) {
           case DiffTypeEnum.Deleted:
             appBuilder.handleRefScene({
               scene: RefSceneEnum.Enum.remove_ref_opts,
-              params: { paths: [`${stateId}.${path}`] },
+              params: {
+                paths: [`${stateId}.${reservedKeySchema.Enum.outputs}.${path}`],
+              },
             });
             break;
           case DiffTypeEnum.Modified:
@@ -207,8 +211,8 @@ export function useFieldWatch(formRef: React.RefObject<FormRef>) {
             appBuilder.handleRefScene({
               scene: RefSceneEnum.Enum.rename_ref_opt,
               params: {
-                oldPath: `${stateId}.${path}`,
-                newPath: `${stateId}.${key}`,
+                oldPath: `${stateId}.${reservedKeySchema.Enum.outputs}.${path}`,
+                newPath: `${stateId}.${reservedKeySchema.Enum.outputs}.${key}`,
               },
             });
             break;
@@ -227,14 +231,7 @@ export function useFieldWatch(formRef: React.RefObject<FormRef>) {
       const newBlocks = get(newValue, reservedKeySchema.Enum.blocks);
 
       getDiffPath(oldBlocks, newBlocks).forEach(diff => {
-        const {
-          type,
-          path,
-          oldValue,
-          newValue: diffNewValue,
-          fromIndex,
-          toIndex,
-        } = diff;
+        const { type, path, oldValue, newValue: diffNewValue } = diff;
 
         const index = Number(path?.split('.')?.[0]);
         const blockName = oldBlocks[index]?.name;
@@ -242,8 +239,12 @@ export function useFieldWatch(formRef: React.RefObject<FormRef>) {
         switch (type) {
           case DiffTypeEnum.Deleted:
             appBuilder.handleRefScene({
-              scene: RefSceneEnum.Enum.remove_ref_opts,
-              params: { paths: [`${stateId}.${blockName}`] },
+              scene: RefSceneEnum.Enum.remove_ref_opts_prefix,
+              params: {
+                prefix: [
+                  `${stateId}.${reservedKeySchema.Enum.blocks}.${blockName}`,
+                ],
+              },
             });
             break;
 
@@ -267,24 +268,19 @@ export function useFieldWatch(formRef: React.RefObject<FormRef>) {
               appBuilder.handleRefScene({
                 scene: RefSceneEnum.Enum.rename_ref_opt,
                 params: {
-                  oldPath: `${stateId}.${oldValue}`,
-                  newPath: `${stateId}.${newKey}`,
+                  oldPath: `${stateId}.${reservedKeySchema.Enum.blocks}.${oldValue}`,
+                  newPath: `${stateId}.${reservedKeySchema.Enum.blocks}.${newKey}`,
                 },
               });
             }
             break;
           case DiffTypeEnum.Reordered:
-            const prefix = oldBlocks
-              .slice(
-                Math.min(fromIndex!, toIndex!),
-                Math.max(fromIndex!, toIndex!),
-              )
-              .map((block: any) => `${stateId}.${block.name}`);
-
             appBuilder.handleRefScene({
-              scene: RefSceneEnum.Enum.remove_ref_opts_prefix,
+              scene: RefSceneEnum.Enum.reorder_task,
               params: {
-                prefix,
+                stateName: stateId as Lowercase<string>,
+                previousTasks: oldBlocks.map((block: any) => block.name),
+                currentTasks: newBlocks.map((block: any) => block.name),
               },
             });
             break;

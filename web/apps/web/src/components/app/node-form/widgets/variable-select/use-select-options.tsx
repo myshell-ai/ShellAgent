@@ -4,6 +4,7 @@ import { RefType, refTypeSchema } from '@shellagent/shared/protocol/app-scope';
 import { reservedKeySchema } from '@shellagent/shared/protocol/pro-config';
 import { useInjection } from 'inversify-react';
 import { useMemo } from 'react';
+import { WidgetTask, WorkflowTask } from '@shellagent/shared/protocol/task';
 
 import { AppBuilderModel } from '@/stores/app/models/app-builder.model';
 import { useSchemaContext } from '@/stores/app/schema-provider';
@@ -24,7 +25,10 @@ export const useSelectOptions = (name?: string) => {
       refType = refTypeSchema.Enum.state_input;
     } else if (parent?.startsWith(`${reservedKeySchema.Enum.blocks}.`)) {
       refType = refTypeSchema.Enum.state_task;
-      taskIndex = Number(parent.split('.')?.[1]);
+      taskIndex = (appBuilder.nodeData[stateId]?.blocks || []).findIndex(
+        (block: WorkflowTask | WidgetTask) =>
+          block.name === parent.split('.')?.[1],
+      );
     } else if (name?.startsWith(`${reservedKeySchema.Enum.outputs}.`)) {
       refType = refTypeSchema.Enum.state_output;
     } else if (

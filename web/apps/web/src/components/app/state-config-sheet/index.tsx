@@ -111,7 +111,7 @@ const StateConfigSheet: React.FC<{}> = () => {
         children: (
           <WorkflowConfig
             key={`workflow-config-${currentTaskIndex}`}
-            parent={`blocks.${currentTaskIndex}`}
+            parent={`blocks.${workflow.name}`}
             values={workflow}
             onChange={commonProps.onChange}
           />
@@ -129,11 +129,12 @@ const StateConfigSheet: React.FC<{}> = () => {
       const widget: WidgetTask = isNumber(currentTaskIndex)
         ? appBuilder.nodeData[currentStateId]?.blocks?.[currentTaskIndex]
         : {};
+
       return {
         children: (
           <WidgetConfig
             key={`widget-config-${currentTaskIndex}`}
-            parent={`blocks.${currentTaskIndex}`}
+            parent={`blocks.${widget.name}`}
             values={widget}
             onChange={commonProps.onChange}
           />
@@ -162,6 +163,7 @@ const StateConfigSheet: React.FC<{}> = () => {
       nodes.find(node => node.id === currentStateId)?.data.display_name ||
       'State';
     const handleChangeTitle = (value: string) => {
+      nodeFormRef.current?.setValue(`name`, value);
       onChangeNodeData(currentStateId as NodeId, {
         ...(selectedNode?.data || {}),
         display_name: value,
