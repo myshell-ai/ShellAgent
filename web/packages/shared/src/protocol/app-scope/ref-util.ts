@@ -624,7 +624,7 @@ export function reorderTasks(
   refs: Refs,
   params: z.infer<typeof reorderTaskSchema>,
 ) {
-  const prefix = 'block';
+  const prefix = 'blocks';
   const { stateName, currentTasks, previousTasks } = params;
   const missingItems = findMissingPrevious(previousTasks, currentTasks);
   const ret = mapValues(refs, (v1, k1) => {
