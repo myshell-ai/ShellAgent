@@ -1,5 +1,5 @@
-import { reservedKeySchema } from '@shellagent/shared/protocol/pro-config';
 import { reservedStateName } from '@shellagent/shared/protocol/node';
+import { reservedKeySchema } from '@shellagent/shared/protocol/pro-config';
 import type { FieldValues } from '@shellagent/ui';
 import { omit } from 'lodash-es';
 
@@ -161,28 +161,20 @@ export const handleReorderTask = (
         const refRegex = /{{[\s]*([\w]+)(?:\.[^}]+)?[\s]*}}/g;
         const matches = Array.from(value.matchAll(refRegex));
 
-        let shouldClear = false;
-        for (const match of matches) {
+        const shouldClear = matches.some(match => {
           const referencedTask = match[1];
           const referencedTaskCurrentIndex =
             currentTasks.indexOf(referencedTask);
           const referencedTaskPreviousIndex =
             previousTasks.indexOf(referencedTask);
 
-          // 在以下情况下需要清除引用：
-          // 1. 引用的任务不存在于当前任务列表中
-          // 2. 引用了当前任务后面的任务
-          // 3. 在之前的顺序中，引用的任务在当前任务之后，且在新顺序中仍然保持这种关系
-          if (
+          return (
             referencedTaskCurrentIndex === -1 || // 任务不存在
             referencedTaskCurrentIndex > currentIndex || // 引用了后面的任务
             (referencedTaskPreviousIndex > previousIndex && // 之前在后面
               referencedTaskCurrentIndex > currentIndex) // 现在也在后面
-          ) {
-            shouldClear = true;
-            break;
-          }
-        }
+          );
+        });
 
         // 如果需要清除引用，将值设为空字符串
         if (shouldClear) {

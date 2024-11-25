@@ -2,9 +2,9 @@ import { useFormEngineContext } from '@shellagent/form-engine';
 import { CustomEventName } from '@shellagent/pro-config';
 import { RefType, refTypeSchema } from '@shellagent/shared/protocol/app-scope';
 import { reservedKeySchema } from '@shellagent/shared/protocol/pro-config';
+import { WidgetTask, WorkflowTask } from '@shellagent/shared/protocol/task';
 import { useInjection } from 'inversify-react';
 import { useMemo } from 'react';
-import { WidgetTask, WorkflowTask } from '@shellagent/shared/protocol/task';
 
 import { AppBuilderModel } from '@/stores/app/models/app-builder.model';
 import { useSchemaContext } from '@/stores/app/schema-provider';
