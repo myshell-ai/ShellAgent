@@ -299,19 +299,39 @@ export function renameRefOpt(
   refs: Refs,
   param: z.infer<typeof renameRefOptParamSchema>,
 ): Refs {
-  const { oldPath, newPath, stateName } = param;
+  const { oldPath, newPath, stateName, byPrefix } = param;
   const refs2 = refsSchema.parse(
     removeEmptyLeaves(
       mapValues(refs, (v, k) => {
         return mapValues(v, (v2, k2) => {
-          if (v2.ref && v2.ref === oldPath) {
-            v2.ref = newPath;
-          }
-          if (v2.raw != null && Array.isArray(v2.raw)) {
-            v2.raw = v2.raw.map(i => (i === oldPath ? newPath : i));
-          }
-          if (v2.ui != null && Array.isArray(v2.ui)) {
-            v2.ui = v2.ui.map(i => (i === oldPath ? newPath : i));
+          if (byPrefix) {
+            if (v2.ref && v2.ref.startsWith(oldPath)) {
+              v2.ref = newPath + v2.ref.replace(oldPath, '');
+            }
+            if (v2.raw != null && Array.isArray(v2.raw)) {
+              v2.raw = v2.raw.map(i => {
+                return i.startsWith(oldPath)
+                  ? newPath + i.replace(oldPath, '')
+                  : i;
+              });
+            }
+            if (v2.ui != null && Array.isArray(v2.ui)) {
+              v2.ui = v2.ui.map(i => {
+                return i.startsWith(oldPath)
+                  ? newPath + i.replace(oldPath, '')
+                  : i;
+              });
+            }
+          } else {
+            if (v2.ref && v2.ref === oldPath) {
+              v2.ref = newPath;
+            }
+            if (v2.raw != null && Array.isArray(v2.raw)) {
+              v2.raw = v2.raw.map(i => (i === oldPath ? newPath : i));
+            }
+            if (v2.ui != null && Array.isArray(v2.ui)) {
+              v2.ui = v2.ui.map(i => (i === oldPath ? newPath : i));
+            }
           }
           return v2;
         });

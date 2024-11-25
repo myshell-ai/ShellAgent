@@ -100,6 +100,7 @@ export const renameRefOptParamSchema = z.object({
   oldPath: z.string(),
   newPath: z.string(),
   stateName: customKeySchema.optional(),
+  byPrefix: z.boolean().optional(),
 });
 
 export const removeRefOptsSchema = z.object({

@@ -1048,6 +1048,68 @@ state#3
       `);
     });
 
+    it.only('rename ref opt, by prefix', () => {
+      const refs = refsSchema.parse({
+        state1: {
+          'outputs.__context__123___1.value': {
+            currentMode: 'ref',
+            ref: '__context__123444__',
+          },
+          'render.text': {
+            currentMode: 'ref',
+          },
+          'outputs.untitled_outputs_1.value': {
+            currentMode: 'ref',
+          },
+          'outputs.__context__ctx1__.value': {
+            currentMode: 'ref',
+          },
+          'blocks.twitter1.inputs.query': {
+            currentMode: 'ref',
+            ref: 'state1.inputs.untitled_inputs_1',
+          },
+          'outputs.234.value': {
+            currentMode: 'ref',
+            ref: 'state1.blocks.twitter1.data',
+          },
+        },
+      });
+      const ret = renameRefOpt(refs, {
+        oldPath: 'state1.blocks.twitter1',
+        newPath: 'state1.blocks.123',
+        stateName: 'state1',
+        byPrefix: true,
+      });
+      // console.log(JSON.stringify(ret))
+      expect(ret).toMatchInlineSnapshot(`
+        {
+          "state1": {
+            "blocks.123.inputs.query": {
+              "currentMode": "ref",
+              "ref": "state1.inputs.untitled_inputs_1",
+            },
+            "outputs.234.value": {
+              "currentMode": "ref",
+              "ref": "state1.blocks.123.data",
+            },
+            "outputs.__context__123___1.value": {
+              "currentMode": "ref",
+              "ref": "__context__123444__",
+            },
+            "outputs.__context__ctx1__.value": {
+              "currentMode": "ref",
+            },
+            "outputs.untitled_outputs_1.value": {
+              "currentMode": "ref",
+            },
+            "render.text": {
+              "currentMode": "ref",
+            },
+          },
+        }
+      `);
+    });
+
     it('rename state name', () => {
       const refs = refsSchema.parse({
         state_2: {
@@ -2062,7 +2124,6 @@ describe('task re order', () => {
       prefix: ['state1.blocks.twitter1'],
       stateName: 'state1',
     });
-    console.log(JSON.stringify(ret));
     expect(ret).toMatchInlineSnapshot(`
       {
         "state1": {
