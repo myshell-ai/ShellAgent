@@ -35,7 +35,6 @@ const ImportModal: React.FC<{
           if (!success) {
             throw new Error('');
           }
-          console.log('data: ', data);
           if (!data?.reactflow) {
             toast.error(
               'Import error, please upload the exported data of the latest ShellAgent version!',
