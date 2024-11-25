@@ -43,6 +43,7 @@ import {
   handleRemoveRefOptsPrefix,
   handleRenameRefOpt,
   handleRemoveState,
+  handleReorderTask,
 } from './node-data-utils';
 import { defaultFlow } from '../../../components/app/constants';
 
@@ -284,6 +285,17 @@ export class AppBuilderModel {
       isUpdated = true;
     } else if (evt.scene === RefSceneEnum.Enum.remove_state) {
       handleRemoveState(updatedNodeData, evt.params.stateName);
+      isUpdated = true;
+    } else if (evt.scene === RefSceneEnum.Enum.reorder_task) {
+      // todo
+      handleReorderTask(
+        updatedNodeData,
+        evt.params.stateName,
+        evt.params.currentTasks,
+        evt.params.previousTasks,
+      );
+
+      console.log('updatedNodeData>>>>', updatedNodeData);
       isUpdated = true;
     }
 
