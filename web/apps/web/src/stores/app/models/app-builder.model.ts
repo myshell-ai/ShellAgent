@@ -118,7 +118,7 @@ export class AppBuilderModel {
 
   handleRefScene(evt: HandleRefSceneEvent) {
     const newRefs = handleRefScene(this.refs, evt);
-    this.updateNodeData(evt, this.nodeData, this.refs, newRefs);
+    this.updateNodeData(evt, this.nodeData);
     this.config.refs = newRefs;
 
     console.log('this.refs>>', this.refs, evt);
@@ -261,12 +261,7 @@ export class AppBuilderModel {
     };
   }
 
-  updateNodeData(
-    evt: HandleRefSceneEvent,
-    nodeData: NodeDataType,
-    refs: Refs,
-    newRefs: Refs,
-  ) {
+  updateNodeData(evt: HandleRefSceneEvent, nodeData: NodeDataType) {
     const updatedNodeData = cloneDeep(nodeData);
     let isUpdated = false;
 
