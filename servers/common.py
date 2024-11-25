@@ -169,6 +169,7 @@ async def template_list(params: Dict):
         
         if category_list is None:
             data.append(item)
+            continue
             
         find = False
         for category in metadata.get("categories", []):

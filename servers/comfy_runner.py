@@ -76,8 +76,7 @@ async def save_comfyui_workflow(data: Dict):
     workflow_api = data["prompt"]
     workflow = data["workflow"]
     
-    
-    workflow_id = data["comfy_workflow_id"]
+    workflow_id = data.get("comfy_workflow_id", "")
     
     # metadata.json
     metadata = {
