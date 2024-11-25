@@ -1,10 +1,12 @@
 /** @jsxImportSource @emotion/react */
 
 import {
+  CloseOutlined,
   ExportOutlined,
   FullscreenExitOutlined,
   FullscreenOutlined,
   ReloadOutlined,
+  SaveOutlined,
 } from '@ant-design/icons';
 import { css } from '@emotion/react';
 import { AModal, Button, Spinner, useFormContext } from '@shellagent/ui';
@@ -21,7 +23,7 @@ import React, {
   useRef,
   useState,
 } from 'react';
-import { Flex } from 'react-system';
+import { Box, Flex } from 'react-system';
 import { toast } from 'react-toastify';
 
 import { ComfyUIModel, LocTip } from './comfyui.model';
@@ -339,7 +341,7 @@ export const ComfyUIEditor = observer(
             paddingBottom: 0,
           },
           content: {
-            padding: '12px 16px',
+            padding: '6px 8px',
             height: '100vh',
             width: '100vw',
             margin: 0,
@@ -347,14 +349,17 @@ export const ComfyUIEditor = observer(
             paddingBottom: 0,
           },
           body: {
-            height: 'calc(100vh - 55px - 53px)',
+            height: 'calc(100vh - 48px)',
             padding: 0,
             overflow: 'hidden',
+          },
+          footer: {
+            marginTop: 0,
           },
         }
       : {
           content: {
-            padding: '12px 16px',
+            padding: '6px 8px',
           },
         };
 
@@ -368,8 +373,8 @@ export const ComfyUIEditor = observer(
         <ComfyUIEditorButton />
         <Modal
           title={
-            <div className="flex justify-between items-center">
-              <div className="flex gap-2">
+            <Flex justifyContent="space-between" alignItems="center">
+              <Box>
                 <span className="text-lg font-medium">ComfyUI Editor</span>
                 {error && (
                   <div className="text-red-500 font-normal">{error}</div>
@@ -380,22 +385,41 @@ export const ComfyUIEditor = observer(
                     window.open(value, '_blank');
                   }}
                 />
-              </div>
-              <div className="flex items-center gap-2">
+              </Box>
+              <Flex alignItems="center" mx={-1}>
+                {model.fullscreen.isOn ? (
+                  <>
+                    <Box mx={1}>
+                      <Button onClick={model.iframeDialog.close} variant="plain">
+                        <CloseOutlined />
+                      </Button>
+                    </Box>
+                    <Box mx={1}>
+                      <Button onClick={handleSave}
+                              disabled={disabled}
+                              loading={saveLoading}
+                              variant="plain">
+                        <SaveOutlined />
+                      </Button>
+                    </Box>
+                  </>
+                ) : null}
                 <Tooltip
                   title={
                     model.fullscreen.isOn ? 'Exit fullscreen' : 'Fullscreen'
                   }>
-                  <Button onClick={model.fullscreen.toggle} variant="plain">
-                    {model.fullscreen.isOn ? (
-                      <FullscreenExitOutlined />
-                    ) : (
-                      <FullscreenOutlined />
-                    )}
-                  </Button>
+                  <Box mx={1}>
+                    <Button onClick={model.fullscreen.toggle} variant="plain">
+                      {model.fullscreen.isOn ? (
+                        <FullscreenExitOutlined />
+                      ) : (
+                        <FullscreenOutlined />
+                      )}
+                    </Button>
+                  </Box>
                 </Tooltip>
-              </div>
-            </div>
+              </Flex>
+            </Flex>
           }
           styles={modalStyles}
           forceRender
@@ -405,21 +429,25 @@ export const ComfyUIEditor = observer(
           width={model.fullscreen.isOn ? '100%' : '80%'}
           className={model.fullscreen.isOn ? 'top-0 p-0 m-0' : 'top-5'}
           footer={
-            <div className="flex justify-end gap-2">
-              <Button
-                size="sm"
-                variant="outline"
-                onClick={model.iframeDialog.close}>
-                Cancel
-              </Button>
-              <Button
-                size="sm"
-                onClick={handleSave}
-                disabled={disabled}
-                loading={saveLoading}>
-                Save
-              </Button>
-            </div>
+            model.fullscreen.isOn ? (
+              <span />
+            ) : (
+              <div className="flex justify-end gap-2">
+                <Button
+                  size="sm"
+                  variant="outline"
+                  onClick={model.iframeDialog.close}>
+                  Cancel
+                </Button>
+                <Button
+                  size="sm"
+                  onClick={handleSave}
+                  disabled={disabled}
+                  loading={saveLoading}>
+                  Save
+                </Button>
+              </div>
+            )
           }
           closeIcon={null}>
           {isLoading && !showSettingButton && (
