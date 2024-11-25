@@ -25,6 +25,8 @@ import {
   FieldMode,
 } from '@shellagent/shared/protocol/extend-config';
 import { useSchemaContext } from '@/stores/app/schema-provider';
+import { removeBrackets } from '@shellagent/shared/utils';
+import { contextTempReg } from '@/stores/app/utils/data-transformer';
 
 import { useInjection } from 'inversify-react';
 import { AppBuilderModel } from '@/stores/app/models/app-builder.model';
@@ -73,13 +75,20 @@ const VariableNameInput = (props: VariableSelectProps) => {
   );
 
   const onValueChange = (value: string) => {
+    const displayName = removeBrackets(
+      value?.replace(contextTempReg, 'Context/$1'),
+    );
     onChange?.(value);
+    setValue('display_name', displayName);
   };
 
-  const onModeChange = (mode: string) => {
-    setMode(mode);
+  const onModeChange = (value: string) => {
+    if (value === mode) {
+      return;
+    }
+    setMode(value);
     onValueChange('');
-    setValue('name_mode', mode);
+    setValue('name_mode', value);
   };
 
   return (

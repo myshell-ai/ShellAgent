@@ -990,6 +990,7 @@ const stateConfigSchema: ISchema = {
             'x-title-editable': true,
             'x-title-component-props': {
               showDialog: true,
+              defaultKey: 'display_name',
               dialogConfig: {
                 title: 'Edit Output',
                 schema: {
@@ -1047,6 +1048,10 @@ const stateConfigSchema: ISchema = {
                           message: 'Cannot exceed 50 characters',
                         },
                       ],
+                    },
+                    display_name: {
+                      type: 'string',
+                      'x-hidden': true,
                     },
                     type: {
                       type: 'string',

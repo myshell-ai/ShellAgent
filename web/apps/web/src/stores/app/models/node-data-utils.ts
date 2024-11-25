@@ -2,6 +2,8 @@ import { reservedStateName } from '@shellagent/shared/protocol/node';
 import { reservedKeySchema } from '@shellagent/shared/protocol/pro-config';
 import type { FieldValues } from '@shellagent/ui';
 import { omit } from 'lodash-es';
+import { contextTempReg } from '@/stores/app/utils/data-transformer';
+import { removeBrackets } from '@shellagent/shared/utils';
 
 const reservedKeys = Object.keys(reservedKeySchema.enum).join('|');
 
@@ -48,6 +50,10 @@ export const handleRemoveRefOpts = (
         if (refRegex.test(value)) {
           parent[key] = '';
         }
+      }
+      // 兼容context
+      if (key === varName && contextTempReg.test(varName)) {
+        delete parent[key];
       }
     });
   });
@@ -121,6 +127,14 @@ export const handleRenameRefOpt = (
       if (oldRefRegex.test(value)) {
         parent[key] = `{{ ${newVarName} }}`;
       }
+    }
+    // 兼容context
+    if (key === oldVarName && contextTempReg.test(oldVarName)) {
+      const displayName = removeBrackets(
+        newVarName?.replace(contextTempReg, 'Context/$1'),
+      );
+      parent[newVarName] = { ...parent[oldVarName], display_name: displayName };
+      delete parent[oldVarName];
     }
   });
 };

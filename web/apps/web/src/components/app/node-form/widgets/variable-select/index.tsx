@@ -7,7 +7,7 @@ import { useCallback } from 'react';
 
 import { AppBuilderModel } from '@/stores/app/models/app-builder.model';
 import { useSchemaContext } from '@/stores/app/schema-provider';
-
+import { contextTempReg } from '@/stores/app/utils/data-transformer';
 import { useSelectOptions } from './use-select-options';
 
 interface IVariableValue {
@@ -21,8 +21,6 @@ interface VariableSelectProps extends ISelectProps {
   className?: string;
   placeholder?: string;
 }
-
-const contextReg = /__context__([a-z0-9_]+)__/g;
 
 const VariableSelect = (props: VariableSelectProps) => {
   const { name, onChange, value, ...rest } = props;
@@ -47,7 +45,7 @@ const VariableSelect = (props: VariableSelectProps) => {
       let newValue = '';
       if (parentKey === 'state') {
         newValue = removeBrackets(val);
-      } else if (contextReg.test(val)) {
+      } else if (contextTempReg.test(val)) {
         newValue = removeBrackets(val);
       } else {
         newValue = `${stateId}.${

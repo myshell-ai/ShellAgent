@@ -30,6 +30,7 @@ export type InputProps = React.InputHTMLAttributes<HTMLInputElement>;
 export interface IEditTitleProps extends InputProps {
   path: string;
   showDialog?: boolean;
+  defaultKey?: string;
   dialogConfig?: {
     title: string;
     schema: ISchema;
@@ -54,11 +55,14 @@ const EditTitle = React.forwardRef<HTMLInputElement, IEditTitleProps>(
       dialogConfig,
       validates,
       autoFocus,
+      defaultKey,
     } = props;
     const title = value || defaultValue;
     const [formData, setFormData] = useState<TValues>(getValues(path));
     const [inputValue, setInputValue] = useState<InputProps['value']>(
-      (path && getValues(path)?.name) || title,
+      (path &&
+        (defaultKey ? getValues(path)?.[defaultKey] : getValues(path)?.name)) ||
+        title,
     );
 
     const handleEditMode = () => {
@@ -117,7 +121,9 @@ const EditTitle = React.forwardRef<HTMLInputElement, IEditTitleProps>(
     }, [formRef.current?.formState]);
 
     const getTitle = () => {
-      const name = path && getValues(path)?.name;
+      const name =
+        path &&
+        (defaultKey ? getValues(path)?.[defaultKey] : getValues(path)?.name);
       return name || title || 'Untitled';
     };
 

@@ -2,7 +2,6 @@
 import { TValues } from '@shellagent/form-engine';
 import { RefSceneEnum } from '@shellagent/shared/protocol/app-scope';
 import { reservedKeySchema } from '@shellagent/shared/protocol/pro-config';
-import { removeBrackets } from '@shellagent/shared/utils';
 import { FormRef } from '@shellagent/ui';
 import { useInjection } from 'inversify-react';
 import { get, cloneDeep, isEqual, debounce, isNil } from 'lodash-es';
@@ -11,7 +10,6 @@ import { produce } from 'immer';
 
 import { AppBuilderModel } from '@/stores/app/models/app-builder.model';
 import { useSchemaContext } from '@/stores/app/schema-provider';
-import { contextTempReg } from '@/stores/app/utils/data-transformer';
 import { refReg } from '@/utils/common-helper';
 
 import {
@@ -195,9 +193,7 @@ export function useFieldWatch(formRef: React.RefObject<FormRef>) {
                 value: refReg.test(diffNewValue) // outputs context
                   ? {
                       ...(get(newOutputs, name.split('.')?.[1]) || {}),
-                      name: removeBrackets(
-                        diffNewValue?.replace(contextTempReg, 'Context/$1'),
-                      ),
+                      name: diffNewValue,
                     }
                   : get(newOutputs, name.split('.')[1]),
               });
@@ -250,10 +246,10 @@ export function useFieldWatch(formRef: React.RefObject<FormRef>) {
 
           case DiffTypeEnum.Modified:
             if (path?.split('.').pop() === 'display_name') {
-              const blockDisplayName = `blocks.${
+              const displayNameField = `blocks.${
                 name?.split('.')?.[1]
               }.display_name`;
-              const blockName = `blocks.${name?.split('.')?.[1]}.name`;
+              const nameField = `blocks.${name?.split('.')?.[1]}.name`;
 
               const { key: newKey, name: newName } = getNewKey({
                 name: diffNewValue as string,
@@ -262,13 +258,13 @@ export function useFieldWatch(formRef: React.RefObject<FormRef>) {
                 prefix: 'Blocks',
               });
               if (!diffNewValue) {
-                formRef.current?.setValue(blockDisplayName, newName);
+                formRef.current?.setValue(displayNameField, newName);
               }
-              formRef.current?.setValue(blockName, newKey);
+              formRef.current?.setValue(nameField, newKey);
               appBuilder.handleRefScene({
                 scene: RefSceneEnum.Enum.rename_ref_opt,
                 params: {
-                  oldPath: `${stateId}.${reservedKeySchema.Enum.blocks}.${oldValue}`,
+                  oldPath: `${stateId}.${reservedKeySchema.Enum.blocks}.${blockName}`,
                   newPath: `${stateId}.${reservedKeySchema.Enum.blocks}.${newKey}`,
                 },
               });
