@@ -390,15 +390,18 @@ export const ComfyUIEditor = observer(
                 {model.fullscreen.isOn ? (
                   <>
                     <Box mx={1}>
-                      <Button onClick={model.iframeDialog.close} variant="plain">
+                      <Button
+                        onClick={model.iframeDialog.close}
+                        variant="plain">
                         <CloseOutlined />
                       </Button>
                     </Box>
                     <Box mx={1}>
-                      <Button onClick={handleSave}
-                              disabled={disabled}
-                              loading={saveLoading}
-                              variant="plain">
+                      <Button
+                        onClick={handleSave}
+                        disabled={disabled}
+                        loading={saveLoading}
+                        variant="plain">
                         <SaveOutlined />
                       </Button>
                     </Box>

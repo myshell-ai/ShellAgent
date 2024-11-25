@@ -101,12 +101,12 @@ export class ComfyUIModel {
   }
 
   @action.bound
-  checkLocation2() {
+  async checkLocation2() {
     this.locErrorMsg = this.checkLocation(this.locationTemp);
     if (!this.locErrorMsg) {
-      this.setLocation(this.locationTemp);
+      await this.setLocation(this.locationTemp);
       if (this.location) {
-        this.checkJsonExists(this.location);
+        await this.checkJsonExists(this.location);
       }
     }
   }
@@ -171,7 +171,7 @@ export class ComfyUIModel {
 
   @action.bound
   async openIframeDialog(iframeRef: any) {
-    this.checkLocation2();
+    await this.checkLocation2();
     this.iframeDialog.open();
     if (this.locErrorMsg == null) {
       if (this.location) {
