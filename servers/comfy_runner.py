@@ -153,6 +153,9 @@ async def update_dependency(data: Dict):
     else:
         workflow_id = data["comfy_workflow_id"]
         shellagent_json_path = os.path.join(COMFY_ROOT, workflow_id, "workflow.shellagent.json")
+        
+    shellagent_json_path_new = data.get("location_new", shellagent_json_path)
+    
     with open(shellagent_json_path, "r") as shellagent_file:
         shellagent_json = json.load(shellagent_file)
     
@@ -175,7 +178,7 @@ async def update_dependency(data: Dict):
         json.dump(custom_dependencies, deps_file, indent=2)
     
     # Save the updated shellagent JSON
-    with open(shellagent_json_path, "w") as shellagent_file:
+    with open(shellagent_json_path_new, "w") as shellagent_file:
         json.dump(shellagent_json, shellagent_file, indent=2)
     
     # Prepare the response
