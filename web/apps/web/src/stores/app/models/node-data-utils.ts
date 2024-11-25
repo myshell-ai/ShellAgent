@@ -1,9 +1,10 @@
 import { reservedStateName } from '@shellagent/shared/protocol/node';
 import { reservedKeySchema } from '@shellagent/shared/protocol/pro-config';
+import { removeBrackets } from '@shellagent/shared/utils';
 import type { FieldValues } from '@shellagent/ui';
 import { omit } from 'lodash-es';
+
 import { contextTempReg } from '@/stores/app/utils/data-transformer';
-import { removeBrackets } from '@shellagent/shared/utils';
 
 const reservedKeys = Object.keys(reservedKeySchema.enum).join('|');
 
