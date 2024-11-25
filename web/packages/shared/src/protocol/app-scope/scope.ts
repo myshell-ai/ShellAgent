@@ -99,14 +99,18 @@ export const renameStateNameParamSchema = z.object({
 export const renameRefOptParamSchema = z.object({
   oldPath: z.string(),
   newPath: z.string(),
+  stateName: customKeySchema.optional(),
+  byPrefix: z.boolean().optional(),
 });
 
 export const removeRefOptsSchema = z.object({
   paths: z.array(z.string()),
+  stateName: customKeySchema.optional(),
 });
 
 export const removeRefOptsPrefixScheam = z.object({
   prefix: z.array(z.string()),
+  stateName: customKeySchema.optional(),
 });
 
 export const removeEdgeScheam = z.object({
@@ -121,6 +125,12 @@ export const duplicateStateSchema = z.object({
 
 export const removeStateParamSchema = z.object({
   stateName: customKeySchema,
+});
+
+export const renameKeyParamSchema = z.object({
+  stateName: customKeySchema,
+  oldKey: z.string(),
+  newKey: z.string(),
 });
 
 export const reorderTaskSchema = z.object({

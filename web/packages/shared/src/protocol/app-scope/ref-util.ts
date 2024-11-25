@@ -15,6 +15,7 @@ import {
   removeRefOptsPrefixScheam,
   removeRefOptsSchema,
   removeStateParamSchema,
+  renameKeyParamSchema,
   renameRefOptParamSchema,
   renameStateNameParamSchema,
   reorderTaskSchema,
@@ -28,6 +29,7 @@ import {
   isEmpty,
   isNumber,
   isObject,
+  mapKeys,
   mapValues,
   omitBy,
   pickBy,
@@ -297,25 +299,54 @@ export function renameRefOpt(
   refs: Refs,
   param: z.infer<typeof renameRefOptParamSchema>,
 ): Refs {
-  const { oldPath, newPath } = param;
-  return refsSchema.parse(
+  const { oldPath, newPath, stateName, byPrefix } = param;
+  const refs2 = refsSchema.parse(
     removeEmptyLeaves(
       mapValues(refs, (v, k) => {
         return mapValues(v, (v2, k2) => {
-          if (v2.ref && v2.ref === oldPath) {
-            v2.ref = newPath;
-          }
-          if (v2.raw != null && Array.isArray(v2.raw)) {
-            v2.raw = v2.raw.map(i => (i === oldPath ? newPath : i));
-          }
-          if (v2.ui != null && Array.isArray(v2.ui)) {
-            v2.ui = v2.ui.map(i => (i === oldPath ? newPath : i));
+          if (byPrefix) {
+            if (v2.ref && v2.ref.startsWith(oldPath)) {
+              v2.ref = newPath + v2.ref.replace(oldPath, '');
+            }
+            if (v2.raw != null && Array.isArray(v2.raw)) {
+              v2.raw = v2.raw.map(i => {
+                return i.startsWith(oldPath)
+                  ? newPath + i.replace(oldPath, '')
+                  : i;
+              });
+            }
+            if (v2.ui != null && Array.isArray(v2.ui)) {
+              v2.ui = v2.ui.map(i => {
+                return i.startsWith(oldPath)
+                  ? newPath + i.replace(oldPath, '')
+                  : i;
+              });
+            }
+          } else {
+            if (v2.ref && v2.ref === oldPath) {
+              v2.ref = newPath;
+            }
+            if (v2.raw != null && Array.isArray(v2.raw)) {
+              v2.raw = v2.raw.map(i => (i === oldPath ? newPath : i));
+            }
+            if (v2.ui != null && Array.isArray(v2.ui)) {
+              v2.ui = v2.ui.map(i => (i === oldPath ? newPath : i));
+            }
           }
           return v2;
         });
       }),
     ),
   );
+  if (stateName) {
+    return renameKeyPrefix(refs2, {
+      stateName,
+      oldKey: oldPath.replace(`${stateName}.`, ''),
+      newKey: newPath.replace(`${stateName}.`, ''),
+    });
+  }
+
+  return refs2;
 }
 
 export function renameStateName(
@@ -359,8 +390,8 @@ export function removeRefOpts(
   refs: Refs,
   param: z.infer<typeof removeRefOptsSchema>,
 ) {
-  const { paths } = param;
-  return refsSchema.parse(
+  const { paths, stateName } = param;
+  const refs2 = refsSchema.parse(
     removeEmptyLeaves(
       mapValues(refs, (v1, k1) => {
         let v = mapValues(v1, (v2, k2) => {
@@ -391,14 +422,35 @@ export function removeRefOpts(
       }),
     ),
   );
+  if (stateName) {
+    return refsSchema.parse(
+      removeEmptyLeaves(
+        mapValues(refs2, (v1, k1) => {
+          if (k1 === stateName && v1) {
+            Object.keys(v1).forEach(k2 => {
+              if (
+                paths.some(p => k2.startsWith(p.replace(`${stateName}.`, '')))
+              ) {
+                delete v1[k2];
+              }
+            });
+            return v1;
+          } else {
+            return v1;
+          }
+        }),
+      ),
+    );
+  }
+  return refs2;
 }
 
 export function removeRefOptsPrefix(
   refs: Refs,
   param: z.infer<typeof removeRefOptsPrefixScheam>,
 ) {
-  const { prefix } = param;
-  return refsSchema.parse(
+  const { prefix, stateName } = param;
+  const refs2 = refsSchema.parse(
     removeEmptyLeaves(
       mapValues(refs, (v, k) => {
         let v2ret = mapValues(v, (v2, k2) => {
@@ -431,6 +483,29 @@ export function removeRefOptsPrefix(
       }),
     ),
   );
+
+  if (stateName) {
+    return refsSchema.parse(
+      removeEmptyLeaves(
+        mapValues(refs2, (v1, k1) => {
+          if (k1 === stateName && v1) {
+            Object.keys(v1).forEach(k2 => {
+              if (
+                prefix.some(p => k2.startsWith(p.replace(`${stateName}.`, '')))
+              ) {
+                delete v1[k2];
+              }
+            });
+            return v1;
+          } else {
+            return v1;
+          }
+        }),
+      ),
+    );
+  }
+
+  return refs2;
 }
 
 export function getBeforeAndAfterNodes(
@@ -669,4 +744,28 @@ export function reorderTasks(
     }
   });
   return ret;
+}
+
+export function renameKeyPrefix(
+  refs: Refs,
+  params: z.infer<typeof renameKeyParamSchema>,
+) {
+  const { stateName, newKey, oldKey } = params;
+  const refs2 = refsSchema.parse(
+    removeEmptyLeaves(
+      mapValues(refs, (v1, k1) => {
+        if (k1 === stateName) {
+          return mapKeys(v1, (v2, k2) => {
+            if (k2.startsWith(oldKey)) {
+              return `${newKey}${k2.replace(oldKey, '')}`;
+            }
+            return k2;
+          });
+        } else {
+          return v1;
+        }
+      }),
+    ),
+  );
+  return refs2;
 }
