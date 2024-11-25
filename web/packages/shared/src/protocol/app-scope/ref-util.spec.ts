@@ -2025,4 +2025,70 @@ describe('task re order', () => {
         ]
       `);
   });
+
+  it('case remove task', () => {
+    const refs = refsSchema.parse({
+      state1: {
+        'blocks.twitter1.inputs.query': {
+          currentMode: 'ref',
+          ref: 'state1.inputs.untitled_inputs_1',
+        },
+        'outputs.__context__123___1.value': {
+          currentMode: 'ref',
+          ref: '__context__123444__',
+        },
+        'outputs.__context__123444__.value': {
+          currentMode: 'ref',
+          ref: 'state1.',
+        },
+        'outputs.__context__ctx1__.value': {
+          currentMode: 'ref',
+        },
+        'outputs.untitled_outputs_1.value': {
+          currentMode: 'ref',
+        },
+        'outputs.untitled_outputs_2.value': {
+          currentMode: 'ref',
+          ref: 'state1.',
+        },
+        'render.text': {
+          currentMode: 'ref',
+          ref: 'state1.blocks.twitter1.data',
+        },
+      },
+    });
+
+    const ret = removeRefOptsPrefix(refs, {
+      prefix: ['state1.blocks.twitter1'],
+      stateName: 'state1',
+    });
+    console.log(JSON.stringify(ret));
+    expect(ret).toMatchInlineSnapshot(`
+      {
+        "state1": {
+          "outputs.__context__123444__.value": {
+            "currentMode": "ref",
+            "ref": "state1.",
+          },
+          "outputs.__context__123___1.value": {
+            "currentMode": "ref",
+            "ref": "__context__123444__",
+          },
+          "outputs.__context__ctx1__.value": {
+            "currentMode": "ref",
+          },
+          "outputs.untitled_outputs_1.value": {
+            "currentMode": "ref",
+          },
+          "outputs.untitled_outputs_2.value": {
+            "currentMode": "ref",
+            "ref": "state1.",
+          },
+          "render.text": {
+            "currentMode": "ref",
+          },
+        },
+      }
+    `);
+  });
 });

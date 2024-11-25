@@ -109,6 +109,7 @@ export const removeRefOptsSchema = z.object({
 
 export const removeRefOptsPrefixScheam = z.object({
   prefix: z.array(z.string()),
+  stateName: customKeySchema.optional(),
 });
 
 export const removeEdgeScheam = z.object({

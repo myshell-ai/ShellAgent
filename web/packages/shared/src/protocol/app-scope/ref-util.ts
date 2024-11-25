@@ -411,7 +411,6 @@ export function removeRefOpts(
               if (
                 paths.some(p => k2.startsWith(p.replace(`${stateName}.`, '')))
               ) {
-                console.log(k2);
                 delete v1[k2];
               }
             });
@@ -430,8 +429,8 @@ export function removeRefOptsPrefix(
   refs: Refs,
   param: z.infer<typeof removeRefOptsPrefixScheam>,
 ) {
-  const { prefix } = param;
-  return refsSchema.parse(
+  const { prefix, stateName } = param;
+  const refs2 = refsSchema.parse(
     removeEmptyLeaves(
       mapValues(refs, (v, k) => {
         let v2ret = mapValues(v, (v2, k2) => {
@@ -464,6 +463,29 @@ export function removeRefOptsPrefix(
       }),
     ),
   );
+
+  if (stateName) {
+    return refsSchema.parse(
+      removeEmptyLeaves(
+        mapValues(refs2, (v1, k1) => {
+          if (k1 === stateName && v1) {
+            Object.keys(v1).forEach(k2 => {
+              if (
+                prefix.some(p => k2.startsWith(p.replace(`${stateName}.`, '')))
+              ) {
+                delete v1[k2];
+              }
+            });
+            return v1;
+          } else {
+            return v1;
+          }
+        }),
+      ),
+    );
+  }
+
+  return refs2;
 }
 
 export function getBeforeAndAfterNodes(
