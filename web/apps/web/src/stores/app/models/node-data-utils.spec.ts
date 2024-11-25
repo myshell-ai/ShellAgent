@@ -4,6 +4,7 @@ import {
   handleRemoveRefOptsPrefix,
   handleRenameRefOpt,
   handleRemoveState,
+  handleReorderTask,
 } from './node-data-utils';
 
 describe('node-data-utils', () => {
@@ -162,6 +163,210 @@ describe('node-data-utils', () => {
 
       expect(nodeData.state1.field1).toBe('');
       expect(nodeData.state2.field2).toBe('');
+    });
+  });
+
+  describe('handleReorderTask', () => {
+    it('当任务顺序改变时应该正确处理引用', () => {
+      const nodeData = {
+        state1: {
+          blocks: [
+            {
+              name: 'twitter1',
+              inputs: {
+                query: '{{ gpt1.reply }}',
+                action: 'scrape_tweets',
+              },
+              outputs: {
+                display: {
+                  data: 'string|array',
+                },
+              },
+            },
+            {
+              name: 'gpt1',
+              inputs: {
+                user_prompt: '{{ twitter1.data }}',
+              },
+              outputs: {
+                display: {
+                  reply: 'string|object',
+                },
+              },
+            },
+          ],
+        },
+      };
+
+      handleReorderTask(
+        nodeData,
+        'state1',
+        ['twitter1', 'gpt1'], // 新顺序
+        ['gpt1', 'twitter1'], // 原顺序
+      );
+
+      // twitter1 引用了 gpt1，但 gpt1 现在在后面，所以应该被清除
+      expect(nodeData.state1.blocks[0].inputs.query).toBe('');
+      // gpt1 引用了 twitter1，twitter1 现在在前面，所以应该保留
+      expect(nodeData.state1.blocks[1].inputs.user_prompt).toBe(
+        '{{ twitter1.data }}',
+      );
+    });
+
+    it('应该处理复杂的嵌套路径引用', () => {
+      const nodeData = {
+        state1: {
+          blocks: [
+            {
+              name: 'task1',
+              inputs: {
+                nested: {
+                  field: '{{ task2.outputs.data.nested.field }}',
+                },
+              },
+            },
+            {
+              name: 'task2',
+              inputs: {
+                nested: {
+                  field: '{{ task1.outputs.data.nested.field }}',
+                },
+              },
+            },
+          ],
+        },
+      };
+
+      handleReorderTask(
+        nodeData,
+        'state1',
+        ['task1', 'task2'],
+        ['task2', 'task1'],
+      );
+
+      expect(nodeData.state1.blocks[0].inputs.nested.field).toBe('');
+      expect(nodeData.state1.blocks[1].inputs.nested.field).toBe(
+        '{{ task1.outputs.data.nested.field }}',
+      );
+    });
+
+    it('应该处理多个引用的情况', () => {
+      const nodeData = {
+        state1: {
+          blocks: [
+            {
+              name: 'task1',
+              inputs: {
+                query: '{{ task2.data.field1 }} and {{ task2.data.field2 }}',
+              },
+            },
+            {
+              name: 'task2',
+              inputs: {
+                query: '{{ task1.data.field1 }} and {{ task1.data.field2 }}',
+              },
+            },
+          ],
+        },
+      };
+
+      handleReorderTask(
+        nodeData,
+        'state1',
+        ['task1', 'task2'],
+        ['task2', 'task1'],
+      );
+
+      expect(nodeData.state1.blocks[0].inputs.query).toBe('');
+      expect(nodeData.state1.blocks[1].inputs.query).toBe(
+        '{{ task1.data.field1 }} and {{ task1.data.field2 }}',
+      );
+    });
+
+    it('应该处理不存在的任务引用', () => {
+      const nodeData = {
+        state1: {
+          blocks: [
+            {
+              name: 'task1',
+              inputs: {
+                query: '{{ nonexistent.data }}',
+              },
+            },
+            {
+              name: 'task2',
+              inputs: {
+                query: '{{ task1.data }}',
+              },
+            },
+          ],
+        },
+      };
+
+      handleReorderTask(
+        nodeData,
+        'state1',
+        ['task1', 'task2'],
+        ['task1', 'task2'],
+      );
+
+      expect(nodeData.state1.blocks[0].inputs.query).toBe('');
+      expect(nodeData.state1.blocks[1].inputs.query).toBe('{{ task1.data }}');
+    });
+
+    it('应该保留之前合法的引用关系', () => {
+      const nodeData = {
+        state1_copy2: {
+          blocks: [
+            {
+              type: 'task',
+              display_name: 'Twitter#1',
+              name: 'twitter1',
+              mode: 'widget',
+              inputs: {
+                action: 'scrape_tweets',
+                query: '{{ gpt1.reply }}',
+                sort_order: 'relevancy',
+                twitter_handle: '',
+              },
+              outputs: {
+                display: {
+                  data: 'string|array',
+                },
+              },
+            },
+            {
+              type: 'task',
+              display_name: 'GPT#1',
+              name: 'gpt1',
+              mode: 'widget',
+              inputs: {
+                model: 'gpt-4',
+                user_prompt: '{{ twitter1.data }}',
+              },
+              outputs: {
+                display: {
+                  reply: 'string|object',
+                },
+              },
+            },
+          ],
+        },
+      };
+
+      handleReorderTask(
+        nodeData,
+        'state1_copy2',
+        ['twitter1', 'gpt1'], // 新顺序
+        ['gpt1', 'twitter1'], // 原顺序
+      );
+
+      // twitter1 引用了 gpt1，但 gpt1 现在在后面，所以应该被清除
+      expect(nodeData.state1_copy2.blocks[0].inputs.query).toBe('');
+      // gpt1 引用了 twitter1，twitter1 现在在前面，所以应该保留
+      expect(nodeData.state1_copy2.blocks[1].inputs.user_prompt).toBe(
+        '{{ twitter1.data }}',
+      );
     });
   });
 });

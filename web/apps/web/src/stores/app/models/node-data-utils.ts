@@ -1,5 +1,5 @@
-import { reservedKeySchema } from '@shellagent/shared/protocol/pro-config';
 import { reservedStateName } from '@shellagent/shared/protocol/node';
+import { reservedKeySchema } from '@shellagent/shared/protocol/pro-config';
 import type { FieldValues } from '@shellagent/ui';
 import { omit } from 'lodash-es';
 
@@ -136,5 +136,51 @@ export const handleRemoveState = (
         parent[key] = '';
       }
     }
+  });
+};
+
+export const handleReorderTask = (
+  nodeData: Record<string, FieldValues>,
+  stateId: string,
+  currentTasks: string[],
+  previousTasks: string[],
+) => {
+  const blocks = nodeData?.[stateId]?.blocks;
+  if (!blocks || !Array.isArray(blocks)) return;
+
+  // 遍历所有任务块
+  currentTasks.forEach((taskName, currentIndex) => {
+    const previousIndex = previousTasks.indexOf(taskName);
+    const taskBlock = blocks.find(block => block.name === taskName);
+    if (!taskBlock) return;
+
+    // 检查并清理不合法的引用
+    processNestedObject(taskBlock, (value, key, parent) => {
+      if (typeof value === 'string') {
+        // 匹配形如 {{ taskName.any.nested.path }}
+        const refRegex = /{{[\s]*([\w]+)(?:\.[^}]+)?[\s]*}}/g;
+        const matches = Array.from(value.matchAll(refRegex));
+
+        const shouldClear = matches.some(match => {
+          const referencedTask = match[1];
+          const referencedTaskCurrentIndex =
+            currentTasks.indexOf(referencedTask);
+          const referencedTaskPreviousIndex =
+            previousTasks.indexOf(referencedTask);
+
+          return (
+            referencedTaskCurrentIndex === -1 || // 任务不存在
+            referencedTaskCurrentIndex > currentIndex || // 引用了后面的任务
+            (referencedTaskPreviousIndex > previousIndex && // 之前在后面
+              referencedTaskCurrentIndex > currentIndex) // 现在也在后面
+          );
+        });
+
+        // 如果需要清除引用，将值设为空字符串
+        if (shouldClear) {
+          parent[key] = '';
+        }
+      }
+    });
   });
 };

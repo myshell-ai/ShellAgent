@@ -43,6 +43,7 @@ import {
   handleRemoveRefOptsPrefix,
   handleRenameRefOpt,
   handleRemoveState,
+  handleReorderTask,
 } from './node-data-utils';
 import { defaultFlow } from '../../../components/app/constants';
 
@@ -117,7 +118,7 @@ export class AppBuilderModel {
 
   handleRefScene(evt: HandleRefSceneEvent) {
     const newRefs = handleRefScene(this.refs, evt);
-    this.updateNodeData(evt, this.nodeData, this.refs, newRefs);
+    this.updateNodeData(evt, this.nodeData);
     this.config.refs = newRefs;
 
     console.log('this.refs>>', this.refs, evt);
@@ -260,12 +261,7 @@ export class AppBuilderModel {
     };
   }
 
-  updateNodeData(
-    evt: HandleRefSceneEvent,
-    nodeData: NodeDataType,
-    refs: Refs,
-    newRefs: Refs,
-  ) {
+  updateNodeData(evt: HandleRefSceneEvent, nodeData: NodeDataType) {
     const updatedNodeData = cloneDeep(nodeData);
     let isUpdated = false;
 
@@ -284,6 +280,17 @@ export class AppBuilderModel {
       isUpdated = true;
     } else if (evt.scene === RefSceneEnum.Enum.remove_state) {
       handleRemoveState(updatedNodeData, evt.params.stateName);
+      isUpdated = true;
+    } else if (evt.scene === RefSceneEnum.Enum.reorder_task) {
+      // todo
+      handleReorderTask(
+        updatedNodeData,
+        evt.params.stateName,
+        evt.params.currentTasks,
+        evt.params.previousTasks,
+      );
+
+      console.log('updatedNodeData>>>>', updatedNodeData);
       isUpdated = true;
     }
 
