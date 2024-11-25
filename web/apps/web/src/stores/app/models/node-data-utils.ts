@@ -4,7 +4,7 @@ import { removeBrackets } from '@shellagent/shared/utils';
 import type { FieldValues } from '@shellagent/ui';
 import { omit } from 'lodash-es';
 
-import { contextTempReg } from '@/stores/app/utils/data-transformer';
+const contextTempReg = /__context__([a-z0-9_]+)__/g;
 
 const reservedKeys = Object.keys(reservedKeySchema.enum).join('|');
 
@@ -98,12 +98,13 @@ export const handleRenameRefOpt = (
   updatedNodeData: Record<string, FieldValues>,
   oldPath: string,
   newPath: string,
+  byPrefix?: boolean,
 ) => {
   const oldPathMatch = oldPath.match(
-    new RegExp(`^(.+?)\\.(?:(${reservedKeys})\\.)?(.+)$`),
+    new RegExp(`^(.+?)\\.(?:(${reservedKeys}|blocks)\\.)?(.+)$`),
   );
   const newPathMatch = newPath.match(
-    new RegExp(`^(.+?)\\.(?:(${reservedKeys})\\.)?(.+)$`),
+    new RegExp(`^(.+?)\\.(?:(${reservedKeys}|blocks)\\.)?(.+)$`),
   );
   if (!oldPathMatch || !newPathMatch) return;
 
@@ -121,12 +122,20 @@ export const handleRenameRefOpt = (
 
   processNestedObject(stateNode, (value, key, parent) => {
     if (typeof value === 'string') {
-      const oldRefRegex = new RegExp(
-        `{{\\s*(${reservedKeys}\\.)?${oldVarName}\\s*}}`,
+      const refRegex = new RegExp(
+        byPrefix
+          ? `{{\\s*(${reservedKeys}\\.)?${oldVarName}[\\w.]*\\s*}}`
+          : `{{\\s*(${reservedKeys}\\.)?${oldVarName}\\s*}}`,
         'g',
       );
-      if (oldRefRegex.test(value)) {
-        parent[key] = `{{ ${newVarName} }}`;
+      if (refRegex.test(value)) {
+        if (byPrefix) {
+          const suffix =
+            value.match(new RegExp(`${oldVarName}([\\w.]*)\\s*}}`))?.[1] || '';
+          parent[key] = `{{ ${newVarName}${suffix} }}`;
+        } else {
+          parent[key] = `{{ ${newVarName} }}`;
+        }
       }
     }
     // 兼容context
@@ -138,6 +147,9 @@ export const handleRenameRefOpt = (
       delete parent[oldVarName];
     }
   });
+
+  console.log('stateNode>>>>', stateNode);
+  console.log('updatedNodeData>>>', updatedNodeData[stateId]);
 };
 
 export const handleRemoveState = (

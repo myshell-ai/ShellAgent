@@ -91,6 +91,140 @@ describe('node-data-utils', () => {
       expect(nodeData.state1.outputs).toBe('{{ newVar }}');
       expect(nodeData.state1.nested.field3).toBe('{{ newVar }}');
     });
+
+    it('应该正确处理带有前缀的重命名', () => {
+      const nodeData = {
+        '@@@start': {
+          id: '@@@start',
+          type: 'start',
+          context: {
+            untitled_context_1: {
+              type: 'text',
+              value: '',
+              name: 'Untitled',
+            },
+          },
+        },
+        state1: {
+          id: 'state1',
+          type: 'state',
+          name: 'State#1',
+          render: {},
+          inputs: {},
+          outputs: {
+            untitled_outputs_1: {
+              type: 'text',
+              value: '{{ gpt1.reply }}',
+              name: 'Untitled',
+            },
+          },
+          blocks: [
+            {
+              type: 'task',
+              display_name: 'GPT#1',
+              name: '123',
+              mode: 'widget',
+              inputs: {
+                model: 'gpt-4o',
+                system_prompt: '',
+                user_prompt: '',
+                input_image: null,
+                memory: [],
+                function_parameters: [],
+                memory_mode: 'auto',
+                temperature: 0.7,
+                top_p: 1,
+                max_tokens: null,
+                stream: false,
+                presence_penalty: 0,
+                frequency_penalty: 0,
+                callback: null,
+                widget_run_id: null,
+                function_name: 'any_function_name',
+                function_description: 'any_function_description',
+              },
+              outputs: {
+                display: {
+                  reply: 'string|object',
+                },
+              },
+              widget_class_name: 'GPTWidget',
+              render: null,
+            },
+          ],
+        },
+      };
+
+      handleRenameRefOpt(
+        nodeData,
+        'state1.blocks.gpt1',
+        'state1.blocks.123',
+        true,
+      );
+
+      expect(nodeData).toStrictEqual({
+        '@@@start': {
+          id: '@@@start',
+          type: 'start',
+          context: {
+            untitled_context_1: {
+              type: 'text',
+              value: '',
+              name: 'Untitled',
+            },
+          },
+        },
+        state1: {
+          id: 'state1',
+          type: 'state',
+          name: 'State#1',
+          render: {},
+          inputs: {},
+          outputs: {
+            untitled_outputs_1: {
+              type: 'text',
+              value: '{{ 123.reply }}',
+              name: 'Untitled',
+            },
+          },
+          blocks: [
+            {
+              type: 'task',
+              display_name: 'GPT#1',
+              name: '123',
+              mode: 'widget',
+              inputs: {
+                model: 'gpt-4o',
+                system_prompt: '',
+                user_prompt: '',
+                input_image: null,
+                memory: [],
+                function_parameters: [],
+                memory_mode: 'auto',
+                temperature: 0.7,
+                top_p: 1,
+                max_tokens: null,
+                stream: false,
+                presence_penalty: 0,
+                frequency_penalty: 0,
+                callback: null,
+                widget_run_id: null,
+                function_name: 'any_function_name',
+                function_description: 'any_function_description',
+              },
+              outputs: {
+                display: {
+                  reply: 'string|object',
+                },
+              },
+              widget_class_name: 'GPTWidget',
+              render: null,
+            },
+          ],
+        },
+      });
+      // expect(nodeData.state1.blocks[0].name).toBe('xxx');
+    });
   });
 
   describe('rename context', () => {

@@ -40,6 +40,7 @@ export function useFieldWatch(formRef: React.RefObject<FormRef>) {
             appBuilder.handleRefScene({
               scene: RefSceneEnum.Enum.remove_ref_opts,
               params: {
+                stateName: stateId as Lowercase<string>,
                 paths: [
                   `${stateId}.__${reservedKeySchema.Enum.context}__${path}__`,
                 ],
@@ -75,6 +76,7 @@ export function useFieldWatch(formRef: React.RefObject<FormRef>) {
             appBuilder.handleRefScene({
               scene: RefSceneEnum.Enum.rename_ref_opt,
               params: {
+                stateName: stateId as Lowercase<string>,
                 oldPath: `${stateId}.__${reservedKeySchema.Enum.context}__${path}__`,
                 newPath: `${stateId}.__${reservedKeySchema.Enum.context}__${key}__`,
               },
@@ -85,7 +87,7 @@ export function useFieldWatch(formRef: React.RefObject<FormRef>) {
         }
       });
     }, 100),
-    [appBuilder.handleRefScene],
+    [stateId],
   );
 
   // 处理 inputs 变化的函数
@@ -102,6 +104,7 @@ export function useFieldWatch(formRef: React.RefObject<FormRef>) {
             appBuilder.handleRefScene({
               scene: RefSceneEnum.Enum.remove_ref_opts,
               params: {
+                stateName: stateId as Lowercase<string>,
                 paths: [`${stateId}.${reservedKeySchema.Enum.inputs}.${path}`],
               },
             });
@@ -142,6 +145,7 @@ export function useFieldWatch(formRef: React.RefObject<FormRef>) {
             appBuilder.handleRefScene({
               scene: RefSceneEnum.Enum.rename_ref_opt,
               params: {
+                stateName: stateId as Lowercase<string>,
                 oldPath: `${stateId}.${reservedKeySchema.Enum.inputs}.${path}`,
                 newPath: `${stateId}.${reservedKeySchema.Enum.inputs}.${key}`,
               },
@@ -152,7 +156,7 @@ export function useFieldWatch(formRef: React.RefObject<FormRef>) {
         }
       });
     }, 300),
-    [stateId, appBuilder.handleRefScene],
+    [stateId],
   );
 
   // 处理 outputs 变化的函数
@@ -169,6 +173,7 @@ export function useFieldWatch(formRef: React.RefObject<FormRef>) {
             appBuilder.handleRefScene({
               scene: RefSceneEnum.Enum.remove_ref_opts,
               params: {
+                stateName: stateId as Lowercase<string>,
                 paths: [`${stateId}.${reservedKeySchema.Enum.outputs}.${path}`],
               },
             });
@@ -207,6 +212,7 @@ export function useFieldWatch(formRef: React.RefObject<FormRef>) {
             appBuilder.handleRefScene({
               scene: RefSceneEnum.Enum.rename_ref_opt,
               params: {
+                stateName: stateId as Lowercase<string>,
                 oldPath: `${stateId}.${reservedKeySchema.Enum.outputs}.${path}`,
                 newPath: `${stateId}.${reservedKeySchema.Enum.outputs}.${key}`,
               },
@@ -217,7 +223,7 @@ export function useFieldWatch(formRef: React.RefObject<FormRef>) {
         }
       });
     }, 100),
-    [stateId, appBuilder.handleRefScene],
+    [stateId],
   );
 
   // 处理 blocks 变化的函数
@@ -237,6 +243,7 @@ export function useFieldWatch(formRef: React.RefObject<FormRef>) {
             appBuilder.handleRefScene({
               scene: RefSceneEnum.Enum.remove_ref_opts_prefix,
               params: {
+                stateName: stateId as Lowercase<string>,
                 prefix: [
                   `${stateId}.${reservedKeySchema.Enum.blocks}.${blockName}`,
                 ],
@@ -264,8 +271,10 @@ export function useFieldWatch(formRef: React.RefObject<FormRef>) {
               appBuilder.handleRefScene({
                 scene: RefSceneEnum.Enum.rename_ref_opt,
                 params: {
+                  stateName: stateId as Lowercase<string>,
                   oldPath: `${stateId}.${reservedKeySchema.Enum.blocks}.${blockName}`,
                   newPath: `${stateId}.${reservedKeySchema.Enum.blocks}.${newKey}`,
+                  byPrefix: true,
                 },
               });
             }
@@ -285,7 +294,7 @@ export function useFieldWatch(formRef: React.RefObject<FormRef>) {
         }
       });
     }, 100),
-    [appBuilder.handleRefScene, stateId],
+    [stateId],
   );
 
   // 处理 render 变化的函数
@@ -310,7 +319,10 @@ export function useFieldWatch(formRef: React.RefObject<FormRef>) {
             case DiffTypeEnum.Deleted:
               appBuilder.handleRefScene({
                 scene: RefSceneEnum.Enum.remove_ref_opts,
-                params: { paths: [`${stateId}.${name}.${path}`] },
+                params: {
+                  stateName: stateId as Lowercase<string>,
+                  paths: [`${stateId}.${name}.${path}`],
+                },
               });
               break;
             default:
@@ -360,6 +372,7 @@ export function useFieldWatch(formRef: React.RefObject<FormRef>) {
               appBuilder.handleRefScene({
                 scene: RefSceneEnum.Enum.rename_ref_opt,
                 params: {
+                  stateName: stateId as Lowercase<string>,
                   oldPath: `${stateId}.${oldValue}`,
                   newPath: `${stateId}.${newKey}`,
                 },
@@ -376,7 +389,10 @@ export function useFieldWatch(formRef: React.RefObject<FormRef>) {
               case DiffTypeEnum.Deleted:
                 appBuilder.handleRefScene({
                   scene: RefSceneEnum.Enum.remove_ref_opts,
-                  params: { paths: [`${stateId}.${path}`] },
+                  params: {
+                    stateName: stateId as Lowercase<string>,
+                    paths: [`${stateId}.${path}`],
+                  },
                 });
                 break;
               case DiffTypeEnum.Modified:
@@ -426,6 +442,7 @@ export function useFieldWatch(formRef: React.RefObject<FormRef>) {
                 appBuilder.handleRefScene({
                   scene: RefSceneEnum.Enum.rename_ref_opt,
                   params: {
+                    stateName: stateId as Lowercase<string>,
                     oldPath: `${stateId}.${path}`,
                     newPath: `${stateId}.${key}`,
                   },
@@ -438,7 +455,7 @@ export function useFieldWatch(formRef: React.RefObject<FormRef>) {
         );
       }
     }, 300),
-    [],
+    [stateId],
   );
 
   const handleChange = (

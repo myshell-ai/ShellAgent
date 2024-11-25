@@ -276,6 +276,7 @@ export class AppBuilderModel {
         updatedNodeData,
         evt.params.oldPath,
         evt.params.newPath,
+        evt.params.byPrefix,
       );
       isUpdated = true;
     } else if (evt.scene === RefSceneEnum.Enum.remove_state) {
@@ -289,10 +290,10 @@ export class AppBuilderModel {
         evt.params.currentTasks,
         evt.params.previousTasks,
       );
-
-      console.log('updatedNodeData>>>>', updatedNodeData);
       isUpdated = true;
     }
+
+    console.log('updatedNodeData>>>>', updatedNodeData);
 
     if (isUpdated) {
       runInAction(() => {
