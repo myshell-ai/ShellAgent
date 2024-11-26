@@ -942,7 +942,6 @@ state#3
                 "ref": "context.global_a",
               },
               "outputs.outputs21": {
-                "currentMode": "ref",
                 "ref": "context.global_111",
               },
             },
@@ -994,7 +993,7 @@ state#3
                 ],
               },
               "outputs.outputs21": {
-                "currentMode": "ui",
+                "ref": "context.global_111",
               },
             },
             "state_2": {
@@ -1005,6 +1004,35 @@ state#3
           }
         `);
       });
+    });
+
+    it('ui ref change', () => {
+      const refs = refsSchema.parse({
+        state1: {
+          'outputs.1234xxx.value': {
+            currentMode: 'ui',
+          },
+        },
+      });
+      const ret = setNodedataKeyVal(refs, {
+        stateName: 'state1',
+        key: 'outputs.untitled_outputs_1.value',
+        newValue: 'state1.blocks.aaavvv.reply',
+        mode: 'ref',
+      });
+      expect(ret).toMatchInlineSnapshot(`
+        {
+          "state1": {
+            "outputs.1234xxx.value": {
+              "currentMode": "ui",
+            },
+            "outputs.untitled_outputs_1.value": {
+              "currentMode": "ref",
+              "ref": "state1.blocks.aaavvv.reply",
+            },
+          },
+        }
+      `);
     });
 
     it('rename ref opt', () => {

@@ -225,33 +225,41 @@ export function findAncestors(edges: Edges, stateName: CustomKey): CustomKey[] {
 
 export function setNodedataKeyVal(
   refs: Refs,
-  params: z.infer<typeof setNodedataKeyValParamSchema>,
+  param: z.infer<typeof setNodedataKeyValParamSchema>,
 ): Refs {
-  const { mode, stateName, key, newValue } = params;
+  const { stateName, key, newValue, mode } = param;
+  const newRefs = { ...refs };
 
-  set(refs, [stateName, key, mode], newValue);
+  if (!newRefs[stateName]) {
+    newRefs[stateName] = {} as Record<
+      string,
+      {
+        currentMode: 'ref' | 'ui' | 'raw';
+        ref?: string;
+        ui?: string[];
+        raw?: string[];
+      }
+    >;
+  }
 
-  return refsSchema.parse(
-    removeEmptyLeaves(
-      mapValues(refs, (v1, k1) => {
-        if (k1 === stateName) {
-          return mapValues(v1, (v2, k2) => {
-            if (mode === 'ref') {
-              delete v2.ui;
-              delete v2.raw;
-            } else if (mode === 'ui') {
-              delete v2.ref;
-              delete v2.raw;
-            }
-            v2.currentMode = mode;
-            return v2;
-          });
-        } else {
-          return v1;
-        }
-      }),
-    ),
-  );
+  if (mode === 'ref') {
+    newRefs[stateName]![key] = {
+      currentMode: 'ref',
+      ref: newValue as string,
+    };
+  } else if (mode === 'ui') {
+    newRefs[stateName]![key] = {
+      currentMode: 'ui',
+      ui: newValue as string[],
+    };
+  } else if (mode === 'raw') {
+    newRefs[stateName]![key] = {
+      currentMode: 'raw',
+      raw: newValue as string[],
+    };
+  }
+
+  return refsSchema.parse(newRefs);
 }
 
 export function changeNodedataKeyMode(

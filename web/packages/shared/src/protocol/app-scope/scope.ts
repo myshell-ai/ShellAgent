@@ -83,6 +83,12 @@ export const setNodedataKeyValParamSchema = z.union([
     key: z.string(),
     newValue: z.array(z.string()),
   }),
+  z.object({
+    mode: z.literal('raw'),
+    stateName: customKeySchema,
+    key: z.string(),
+    newValue: z.array(z.string()),
+  }),
 ]);
 
 export const changNodedataModeParamSchema = z.object({
