@@ -1,7 +1,6 @@
 import { ButtonFnParams } from 'myshell-bundled-chat';
 
 import {
-  patchImageUpload,
   patchImageUrl,
   patchMessageActionPopupForm,
   popupFormAction,
@@ -257,7 +256,7 @@ describe('app-builder-chat-utils', () => {
             "componentsInput": [
               {
                 "booleanDefault": false,
-                "description": "",
+                "description": null,
                 "fieldName": "key_1731664091698",
                 "fileDefaultParam": "",
                 "fileDefaultParamType": "MESSAGE_METADATA_TYPE_UNSPECIFIED",
@@ -271,7 +270,7 @@ describe('app-builder-chat-utils', () => {
                 "numberSelectorAllOf": [],
                 "numberSelectorDefault": 0,
                 "stringCharLengthLimitation": 0,
-                "stringDefault": "",
+                "stringDefault": null,
                 "supportedFileTypes": [],
                 "textSelectorAllOf": [],
                 "textSelectorDefault": "",
@@ -474,7 +473,7 @@ describe('app-builder-chat-utils', () => {
                           "componentsInput": [
                             {
                               "booleanDefault": false,
-                              "description": "",
+                              "description": null,
                               "fieldName": "key_1731713716445",
                               "fileDefaultParam": "",
                               "fileDefaultParamType": "MESSAGE_METADATA_TYPE_UNSPECIFIED",
@@ -488,7 +487,7 @@ describe('app-builder-chat-utils', () => {
                               "numberSelectorAllOf": [],
                               "numberSelectorDefault": 0,
                               "stringCharLengthLimitation": 0,
-                              "stringDefault": "",
+                              "stringDefault": null,
                               "supportedFileTypes": [],
                               "textSelectorAllOf": [],
                               "textSelectorDefault": "",
@@ -496,7 +495,7 @@ describe('app-builder-chat-utils', () => {
                             },
                             {
                               "booleanDefault": false,
-                              "description": "",
+                              "description": null,
                               "fieldName": "key_1731713725339",
                               "fileDefaultParam": "",
                               "fileDefaultParamType": "MESSAGE_METADATA_TYPE_UNSPECIFIED",
@@ -510,7 +509,7 @@ describe('app-builder-chat-utils', () => {
                               "numberSelectorAllOf": [],
                               "numberSelectorDefault": 0,
                               "stringCharLengthLimitation": 0,
-                              "stringDefault": "",
+                              "stringDefault": null,
                               "supportedFileTypes": [],
                               "textSelectorAllOf": [],
                               "textSelectorDefault": "",
@@ -829,7 +828,7 @@ describe('app-builder-chat-utils', () => {
                           "componentsInput": [
                             {
                               "booleanDefault": false,
-                              "description": "",
+                              "description": null,
                               "fieldName": "key_1731713716445",
                               "fileDefaultParam": "",
                               "fileDefaultParamType": "MESSAGE_METADATA_TYPE_UNSPECIFIED",
@@ -843,7 +842,7 @@ describe('app-builder-chat-utils', () => {
                               "numberSelectorAllOf": [],
                               "numberSelectorDefault": 0,
                               "stringCharLengthLimitation": 0,
-                              "stringDefault": "",
+                              "stringDefault": null,
                               "supportedFileTypes": [],
                               "textSelectorAllOf": [],
                               "textSelectorDefault": "",
@@ -1008,5 +1007,83 @@ describe('app-builder-chat-utils', () => {
     expect(ret).toMatchInlineSnapshot(
       `"input/v2-02b0a4b75023d456044fac01de6132ce_b.jpg"`,
     );
+  });
+
+  it('patch choices', () => {
+    const actions = [
+      {
+        action: 'MESSAGE_COMPONENTS_BUTTON_ACTION_TYPE_POP_UP_FORM',
+        actionLink: null,
+        formSchema: {
+          properties: {
+            key_1732094178596: {
+              name: 'template',
+              type: 'string',
+              description: null,
+              default: 'Template 1',
+              enum: ['Template 1', 'Template 2', 'Template 3'],
+            },
+          },
+          required: ['key_1731450994215', 'key_1732094178596'],
+        },
+        interactionInput: null,
+      },
+    ];
+    const ret = popupFormAction(actions);
+    expect(ret).toMatchInlineSnapshot(`
+      [
+        {
+          "action": "MESSAGE_COMPONENTS_BUTTON_ACTION_TYPE_POP_UP_FORM",
+          "componentInput": {
+            "componentsFunction": [],
+            "componentsInput": [
+              {
+                "booleanDefault": false,
+                "description": null,
+                "fieldName": "key_1732094178596",
+                "fileDefaultParam": "",
+                "fileDefaultParamType": "MESSAGE_METADATA_TYPE_UNSPECIFIED",
+                "fileUploadSizeMaximum": 0,
+                "hasIntegerLimitation": false,
+                "hasNumberLimitation": false,
+                "integerDefault": 0,
+                "isRequired": true,
+                "name": "template",
+                "numberDefault": 0,
+                "numberSelectorAllOf": [],
+                "numberSelectorDefault": 0,
+                "stringCharLengthLimitation": 0,
+                "stringDefault": "Template 1",
+                "supportedFileTypes": [],
+                "textSelectorAllOf": [
+                  {
+                    "iconUrl": "",
+                    "label": "Template 1",
+                    "value": "Template 1",
+                  },
+                  {
+                    "iconUrl": "",
+                    "label": "Template 2",
+                    "value": "Template 2",
+                  },
+                  {
+                    "iconUrl": "",
+                    "label": "Template 3",
+                    "value": "Template 3",
+                  },
+                ],
+                "textSelectorDefault": "Template 1",
+                "type": "BOT_IM_COMPONENT_INPUT_TYPE_TEXT_SELECTOR",
+              },
+            ],
+            "description": "Enter to run",
+            "energyConsumePerUse": 0,
+            "githubUrl": "",
+            "name": "Information",
+            "saveButtonContent": "Run",
+          },
+        },
+      ]
+    `);
   });
 });
