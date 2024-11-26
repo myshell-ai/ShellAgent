@@ -176,7 +176,7 @@ const StateConfigSheet: React.FC<{}> = () => {
     (values: TValues) => {
       const newData = { id: currentStateId as NodeId, data: values };
       appBuilder.setNodeData(newData);
-      emitter.emit(EventType.STATE_FORM_CHANGE, {
+      emitter.emit(EventType.FORM_CHANGE, {
         id: currentStateId as NodeId,
         data: `${new Date().valueOf()}`,
         type: 'StateConfigSheet',
@@ -185,7 +185,7 @@ const StateConfigSheet: React.FC<{}> = () => {
     [currentStateId, appBuilder.setNodeData],
   );
 
-  useEventEmitter(EventType.STATE_FORM_CHANGE, eventData => {
+  useEventEmitter(EventType.FORM_CHANGE, eventData => {
     if (eventData.id === currentStateId && eventData.type === 'StateCard') {
       setFormKey(eventData.data);
     }

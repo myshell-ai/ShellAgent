@@ -146,7 +146,7 @@ const StateNode: React.FC<NodeProps<StateNodeType>> = ({ selected, data }) => {
       const newData = { id: data.id as NodeId, data: newValues };
 
       appBuilder.setNodeData(newData);
-      emitter.emit(EventType.STATE_FORM_CHANGE, {
+      emitter.emit(EventType.FORM_CHANGE, {
         id: data.id as NodeId,
         data: `${new Date().valueOf()}`,
         type: 'StateCard',
@@ -155,10 +155,14 @@ const StateNode: React.FC<NodeProps<StateNodeType>> = ({ selected, data }) => {
     [data.id],
   );
 
-  useEventEmitter(EventType.STATE_FORM_CHANGE, eventData => {
+  useEventEmitter(EventType.FORM_CHANGE, eventData => {
     if (eventData.id === data.id && eventData.type === 'StateConfigSheet') {
       setFormKey(eventData.data);
     }
+  });
+
+  useEventEmitter(EventType.RESET_FORM, eventData => {
+    setFormKey(eventData.data);
   });
 
   const handleConnect = (connection: Connection) => {
@@ -223,7 +227,7 @@ const StateNode: React.FC<NodeProps<StateNodeType>> = ({ selected, data }) => {
             });
             const key = `${new Date().valueOf()}`;
             setFormKey(key);
-            emitter.emit(EventType.STATE_FORM_CHANGE, {
+            emitter.emit(EventType.FORM_CHANGE, {
               id: data.id as NodeId,
               data: key,
               type: 'StateCard',

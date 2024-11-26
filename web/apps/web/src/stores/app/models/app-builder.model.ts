@@ -56,8 +56,6 @@ export class AppBuilderModel {
   };
   flowInstance: ReactFlowInstance | null = null;
 
-  nodeDataMode: Map<string, string> = new Map();
-
   config: Config = {
     fieldsModeMap: {},
     refs: {},
@@ -152,25 +150,36 @@ export class AppBuilderModel {
     metadata: any;
     automata: Automata;
   }) {
-    if (this.flowInstance) {
-      this.flowInstance.setNodes(
-        reactflow?.nodes.length ? reactflow.nodes : defaultFlow.nodes,
-      );
-      this.flowInstance.setEdges(
-        reactflow?.edges.length ? reactflow.edges : defaultFlow.edges,
-      );
-      this.flowInstance.setViewport(
-        reactflow?.viewport || defaultFlow.viewport,
-      );
-    }
+    this.resetData();
 
-    runInAction(() => {
-      this.config = config || {
-        fieldsModeMap: {},
-        refs: {},
-      };
-      this.metadata = metadata;
-      this.nodeData = genNodeData(automata);
+    setTimeout(() => {
+      if (this.flowInstance) {
+        const nodes = reactflow?.nodes || defaultFlow.nodes;
+        const edges = Array.isArray(reactflow?.edges)
+          ? reactflow.edges
+          : defaultFlow.edges;
+        const viewport = reactflow?.viewport || defaultFlow.viewport;
+
+        this.flowInstance.setNodes(nodes);
+        this.flowInstance.setEdges(edges);
+        this.flowInstance.setViewport(viewport);
+      }
+
+      runInAction(() => {
+        this.config = config || {
+          fieldsModeMap: {},
+          refs: {},
+        };
+        this.metadata = metadata;
+        this.nodeData = genNodeData(automata);
+
+        emitter.emit(EventType.FORM_CHANGE, {
+          id: this.selectedStateId as any,
+          data: `${new Date().valueOf()}`,
+          type: 'StateCard',
+        });
+      });
+      this.emitter.emitter.emit('message.success', 'import success!');
     });
   }
 
@@ -300,9 +309,8 @@ export class AppBuilderModel {
 
     if (isUpdated) {
       runInAction(() => {
-        console.log('updatedNodeData>>>>', updatedNodeData);
         this.nodeData = updatedNodeData;
-        emitter.emit(EventType.STATE_FORM_CHANGE, {
+        emitter.emit(EventType.FORM_CHANGE, {
           id: this.selectedStateId as any,
           data: `${new Date().valueOf()}`,
           type: 'StateCard',
@@ -414,5 +422,29 @@ export class AppBuilderModel {
       display_name,
       name: 'State',
     };
+  }
+
+  @action.bound
+  resetData() {
+    // 重置 reactflow 画布
+    if (this.flowInstance) {
+      this.flowInstance.setNodes(defaultFlow.nodes);
+      this.flowInstance.setEdges(defaultFlow.edges);
+      this.flowInstance.setViewport(defaultFlow.viewport);
+    }
+
+    this.nodeData = {};
+    this.metadata = {
+      name: '',
+      description: '',
+    };
+    this.config = {
+      fieldsModeMap: {},
+      refs: {},
+    };
+
+    emitter.emit(EventType.RESET_FORM, {
+      data: `${new Date().valueOf()}`,
+    });
   }
 }

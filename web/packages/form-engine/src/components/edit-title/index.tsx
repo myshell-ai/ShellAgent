@@ -134,7 +134,6 @@ const EditTitle = React.forwardRef<HTMLInputElement, IEditTitleProps>(
     };
 
     const onFormChange = (values: TValue) => {
-      console.log('values>>>', values);
       setFormData(values);
     };
 
