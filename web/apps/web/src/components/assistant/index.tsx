@@ -28,11 +28,10 @@ const Assistant = observer(() => {
     <>
       <div className="fixed right-6 bottom-8">
         <IconButton
-          icon={Bot}
+          icon={() => <Bot className="w-9 h-9" />}
           variant="outline"
           className="w-9 h-9 text-brand bg-white shadow-button-basic"
           color="default"
-          size="md"
           onClick={model.drawer.open}
           autoFocus={false}
         />

@@ -5,7 +5,6 @@ const Bot = React.forwardRef<SVGSVGElement, IconProps>((props, ref) => {
   return (
     <Icon {...props}>
       <svg viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
-        {/* <rect width="200" height="200" fill="white" /> */}
         <g clip-path="url(#clip0_3282_3903)">
           <path
             fill-rule="evenodd"
