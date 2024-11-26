@@ -11,14 +11,8 @@ import { produce } from 'immer';
 import { AppBuilderModel } from '@/stores/app/models/app-builder.model';
 import { useSchemaContext } from '@/stores/app/schema-provider';
 import { refReg } from '@/utils/common-helper';
-
-import {
-  replaceKey,
-  getDiffPath,
-  DiffTypeEnum,
-  getNewKey,
-  getExisiedKey,
-} from './form-utils';
+import { replaceKey, getDiffPath, DiffTypeEnum } from './form-utils';
+import { getNewKey, getExisiedKey } from '@shellagent/shared/utils';
 
 export function useFieldWatch(formRef: React.RefObject<FormRef>) {
   const prevValuesRef = useRef<Record<string, TValues | undefined>>({});

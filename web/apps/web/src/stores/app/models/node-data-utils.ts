@@ -2,7 +2,7 @@ import { reservedStateName } from '@shellagent/shared/protocol/node';
 import { reservedKeySchema } from '@shellagent/shared/protocol/pro-config';
 import { removeBrackets } from '@shellagent/shared/utils';
 import type { FieldValues } from '@shellagent/ui';
-import { omit } from 'lodash-es';
+import { omit, cloneDeep } from 'lodash-es';
 
 const contextTempReg = /__context__([a-z0-9_]+)__/g;
 
@@ -23,9 +23,11 @@ export function processNestedObject(
 }
 
 export const handleRemoveRefOpts = (
-  updatedNodeData: Record<string, FieldValues>,
+  nodeData: Record<string, FieldValues>,
   paths: string[],
-) => {
+): Record<string, FieldValues> => {
+  const updatedNodeData = cloneDeep(nodeData);
+
   paths.forEach(path => {
     const pathMatch = path.match(
       new RegExp(`^(.+?)\\.(?:(${reservedKeys})\\.)?(.+)$`),
@@ -58,12 +60,16 @@ export const handleRemoveRefOpts = (
       }
     });
   });
+
+  return updatedNodeData;
 };
 
 export const handleRemoveRefOptsPrefix = (
-  updatedNodeData: Record<string, FieldValues>,
+  nodeData: Record<string, FieldValues>,
   prefix: string[],
-) => {
+): Record<string, FieldValues> => {
+  const updatedNodeData = cloneDeep(nodeData);
+
   prefix.forEach(path => {
     const pathMatch = path.match(
       new RegExp(`^(.+?)\\.(?:(${reservedKeys})\\.)?(.+)$`),
@@ -92,21 +98,25 @@ export const handleRemoveRefOptsPrefix = (
       }
     });
   });
+
+  return updatedNodeData;
 };
 
 export const handleRenameRefOpt = (
-  updatedNodeData: Record<string, FieldValues>,
+  nodeData: Record<string, FieldValues>,
   oldPath: string,
   newPath: string,
   byPrefix?: boolean,
-) => {
+): Record<string, FieldValues> => {
+  const updatedNodeData = cloneDeep(nodeData);
+
   const oldPathMatch = oldPath.match(
     new RegExp(`^(.+?)\\.(?:(${reservedKeys}|blocks)\\.)?(.+)$`),
   );
   const newPathMatch = newPath.match(
     new RegExp(`^(.+?)\\.(?:(${reservedKeys}|blocks)\\.)?(.+)$`),
   );
-  if (!oldPathMatch || !newPathMatch) return;
+  if (!oldPathMatch || !newPathMatch) return updatedNodeData;
 
   const [, stateId, , oldVarName] = oldPathMatch;
   const [, , , newVarName] = newPathMatch;
@@ -118,7 +128,7 @@ export const handleRenameRefOpt = (
   } else {
     stateNode = updatedNodeData[stateId];
   }
-  if (!stateNode) return;
+  if (!stateNode) return updatedNodeData;
 
   processNestedObject(stateNode, (value, key, parent) => {
     if (typeof value === 'string') {
@@ -147,13 +157,17 @@ export const handleRenameRefOpt = (
       delete parent[oldVarName];
     }
   });
+
+  return updatedNodeData;
 };
 
 export const handleRemoveState = (
   nodeData: Record<string, FieldValues>,
   stateId: string,
-) => {
-  processNestedObject(nodeData, (value, key, parent) => {
+): Record<string, FieldValues> => {
+  const updatedNodeData = cloneDeep(nodeData);
+
+  processNestedObject(updatedNodeData, (value, key, parent) => {
     if (typeof value === 'string') {
       const refRegex = new RegExp(`{{\\s*${stateId}\\.[^}]+\\s*}}`, 'g');
       if (refRegex.test(value)) {
@@ -161,6 +175,8 @@ export const handleRemoveState = (
       }
     }
   });
+
+  return updatedNodeData;
 };
 
 export const handleReorderTask = (
@@ -168,9 +184,11 @@ export const handleReorderTask = (
   stateId: string,
   currentTasks: string[],
   previousTasks: string[],
-) => {
-  const blocks = nodeData?.[stateId]?.blocks;
-  if (!blocks || !Array.isArray(blocks)) return;
+): Record<string, FieldValues> => {
+  const updatedNodeData = cloneDeep(nodeData);
+
+  const blocks = updatedNodeData?.[stateId]?.blocks;
+  if (!blocks || !Array.isArray(blocks)) return updatedNodeData;
 
   // 遍历所有任务块
   currentTasks.forEach((taskName, currentIndex) => {
@@ -207,4 +225,6 @@ export const handleReorderTask = (
       }
     });
   });
+
+  return updatedNodeData;
 };

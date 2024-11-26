@@ -9,7 +9,7 @@ import {
 
 describe('node-data-utils', () => {
   describe('processNestedObject', () => {
-    it('应该正确处理嵌套对象', () => {
+    it('should correctly process nested objects', () => {
       const testObj = {
         a: 1,
         b: {
@@ -36,7 +36,7 @@ describe('node-data-utils', () => {
   });
 
   describe('handleRemoveRefOpts', () => {
-    it('应该移除指定的引用选项', () => {
+    it('should remove specified reference options', () => {
       const nodeData = {
         state1: {
           outputs: '{{ var2 }}',
@@ -46,15 +46,20 @@ describe('node-data-utils', () => {
         },
       };
 
-      handleRemoveRefOpts(nodeData, ['state1.inputs.var1']);
+      const result = handleRemoveRefOpts(nodeData, ['state1.inputs.var1']);
 
+      // 验证原对象未被修改
       expect(nodeData.state1.outputs).toBe('{{ var2 }}');
-      expect(nodeData.state1.nested.field3).toBe('');
+      expect(nodeData.state1.nested.field3).toBe('{{ var1 }}');
+
+      // 验证返回的新对象
+      expect(result.state1.outputs).toBe('{{ var2 }}');
+      expect(result.state1.nested.field3).toBe('');
     });
   });
 
   describe('handleRemoveRefOptsPrefix', () => {
-    it('应该移除带有指定前缀的引用选项', () => {
+    it('should remove reference options with specified prefix', () => {
       const nodeData = {
         state1: {
           field1: '{{ user.name }}',
@@ -63,16 +68,22 @@ describe('node-data-utils', () => {
         },
       };
 
-      handleRemoveRefOptsPrefix(nodeData, ['state1.user']);
+      const result = handleRemoveRefOptsPrefix(nodeData, ['state1.user']);
 
-      expect(nodeData.state1.field1).toBe('');
-      expect(nodeData.state1.field2).toBe('');
+      // 验证原对象未被修改
+      expect(nodeData.state1.field1).toBe('{{ user.name }}');
+      expect(nodeData.state1.field2).toBe('{{ user.age }}');
       expect(nodeData.state1.field3).toBe('{{ other }}');
+
+      // 验证返回的新对象
+      expect(result.state1.field1).toBe('');
+      expect(result.state1.field2).toBe('');
+      expect(result.state1.field3).toBe('{{ other }}');
     });
   });
 
   describe('handleRenameRefOpt', () => {
-    it('应该正确重命名引用选项', () => {
+    it('should correctly rename reference options', () => {
       const nodeData = {
         state1: {
           outputs: '{{ oldVar }}',
@@ -82,17 +93,17 @@ describe('node-data-utils', () => {
         },
       };
 
-      handleRenameRefOpt(
+      const result = handleRenameRefOpt(
         nodeData,
         'state1.inputs.oldVar',
         'state1.inputs.newVar',
       );
 
-      expect(nodeData.state1.outputs).toBe('{{ newVar }}');
-      expect(nodeData.state1.nested.field3).toBe('{{ newVar }}');
+      expect(result.state1.outputs).toBe('{{ newVar }}');
+      expect(result.state1.nested.field3).toBe('{{ newVar }}');
     });
 
-    it('应该正确处理带有前缀的重命名', () => {
+    it('should correctly handle prefix renaming', () => {
       const nodeData = {
         '@@@start': {
           id: '@@@start',
@@ -155,14 +166,14 @@ describe('node-data-utils', () => {
         },
       };
 
-      handleRenameRefOpt(
+      const result = handleRenameRefOpt(
         nodeData,
         'state1.blocks.gpt1',
         'state1.blocks.123',
         true,
       );
 
-      expect(nodeData).toStrictEqual({
+      expect(result).toStrictEqual({
         '@@@start': {
           id: '@@@start',
           type: 'start',
@@ -228,7 +239,7 @@ describe('node-data-utils', () => {
   });
 
   describe('rename context', () => {
-    it('应该正确重命名引用选项', () => {
+    it('should correctly rename reference options', () => {
       const nodeData = {
         '@@@start': {
           id: '@@@start',
@@ -264,20 +275,20 @@ describe('node-data-utils', () => {
         },
       };
 
-      handleRenameRefOpt(
+      const result = handleRenameRefOpt(
         nodeData,
         '@@@start.__context__untitled1__',
         '@@@start.__context__image__',
       );
 
-      expect(nodeData.state1.outputs['12345'].value).toBe(
+      expect(result.state1.outputs['12345'].value).toBe(
         '{{ __context__image__ }}',
       );
     });
   });
 
   describe('handleRemoveState', () => {
-    it('应该移除指定状态的所有引用', () => {
+    it('should remove all references to specified state', () => {
       const nodeData = {
         state1: {
           field1: '{{ removedState.field }}',
@@ -293,15 +304,20 @@ describe('node-data-utils', () => {
         },
       };
 
-      handleRemoveState(nodeData, 'removedState');
+      const result = handleRemoveState(nodeData, 'removedState');
 
-      expect(nodeData.state1.field1).toBe('');
-      expect(nodeData.state2.field2).toBe('');
+      // 验证原对象未被修改
+      expect(nodeData.state1.field1).toBe('{{ removedState.field }}');
+      expect(nodeData.state2.field2).toBe('{{ removedState.nested.field }}');
+
+      // 验证返回的新对象
+      expect(result.state1.field1).toBe('');
+      expect(result.state2.field2).toBe('');
     });
   });
 
   describe('handleReorderTask', () => {
-    it('当任务顺序改变时应该正确处理引用', () => {
+    it('should correctly handle references when task order changes', () => {
       const nodeData = {
         state1: {
           blocks: [
@@ -332,22 +348,27 @@ describe('node-data-utils', () => {
         },
       };
 
-      handleReorderTask(
+      const result = handleReorderTask(
         nodeData,
         'state1',
-        ['twitter1', 'gpt1'], // 新顺序
-        ['gpt1', 'twitter1'], // 原顺序
+        ['twitter1', 'gpt1'],
+        ['gpt1', 'twitter1'],
       );
 
-      // twitter1 引用了 gpt1，但 gpt1 现在在后面，所以应该被清除
-      expect(nodeData.state1.blocks[0].inputs.query).toBe('');
-      // gpt1 引用了 twitter1，twitter1 现在在前面，所以应该保留
+      // 验证原对象未被修改
+      expect(nodeData.state1.blocks[0].inputs.query).toBe('{{ gpt1.reply }}');
       expect(nodeData.state1.blocks[1].inputs.user_prompt).toBe(
+        '{{ twitter1.data }}',
+      );
+
+      // 验证返回的新对象
+      expect(result.state1.blocks[0].inputs.query).toBe('');
+      expect(result.state1.blocks[1].inputs.user_prompt).toBe(
         '{{ twitter1.data }}',
       );
     });
 
-    it('应该处理复杂的嵌套路径引用', () => {
+    it('should handle complex nested path references', () => {
       const nodeData = {
         state1: {
           blocks: [
@@ -371,20 +392,20 @@ describe('node-data-utils', () => {
         },
       };
 
-      handleReorderTask(
+      const result = handleReorderTask(
         nodeData,
         'state1',
         ['task1', 'task2'],
         ['task2', 'task1'],
       );
 
-      expect(nodeData.state1.blocks[0].inputs.nested.field).toBe('');
-      expect(nodeData.state1.blocks[1].inputs.nested.field).toBe(
+      expect(result.state1.blocks[0].inputs.nested.field).toBe('');
+      expect(result.state1.blocks[1].inputs.nested.field).toBe(
         '{{ task1.outputs.data.nested.field }}',
       );
     });
 
-    it('应该处理多个引用的情况', () => {
+    it('should handle multiple references', () => {
       const nodeData = {
         state1: {
           blocks: [
@@ -404,20 +425,20 @@ describe('node-data-utils', () => {
         },
       };
 
-      handleReorderTask(
+      const result = handleReorderTask(
         nodeData,
         'state1',
         ['task1', 'task2'],
         ['task2', 'task1'],
       );
 
-      expect(nodeData.state1.blocks[0].inputs.query).toBe('');
-      expect(nodeData.state1.blocks[1].inputs.query).toBe(
+      expect(result.state1.blocks[0].inputs.query).toBe('');
+      expect(result.state1.blocks[1].inputs.query).toBe(
         '{{ task1.data.field1 }} and {{ task1.data.field2 }}',
       );
     });
 
-    it('应该处理不存在的任务引用', () => {
+    it('should handle non-existent task references', () => {
       const nodeData = {
         state1: {
           blocks: [
@@ -437,18 +458,18 @@ describe('node-data-utils', () => {
         },
       };
 
-      handleReorderTask(
+      const result = handleReorderTask(
         nodeData,
         'state1',
         ['task1', 'task2'],
         ['task1', 'task2'],
       );
 
-      expect(nodeData.state1.blocks[0].inputs.query).toBe('');
-      expect(nodeData.state1.blocks[1].inputs.query).toBe('{{ task1.data }}');
+      expect(result.state1.blocks[0].inputs.query).toBe('');
+      expect(result.state1.blocks[1].inputs.query).toBe('{{ task1.data }}');
     });
 
-    it('应该保留之前合法的引用关系', () => {
+    it('should preserve previously valid references', () => {
       const nodeData = {
         state1_copy2: {
           blocks: [
@@ -488,17 +509,17 @@ describe('node-data-utils', () => {
         },
       };
 
-      handleReorderTask(
+      const result = handleReorderTask(
         nodeData,
         'state1_copy2',
-        ['twitter1', 'gpt1'], // 新顺序
-        ['gpt1', 'twitter1'], // 原顺序
+        ['twitter1', 'gpt1'], // new order
+        ['gpt1', 'twitter1'], // original order
       );
 
-      // twitter1 引用了 gpt1，但 gpt1 现在在后面，所以应该被清除
-      expect(nodeData.state1_copy2.blocks[0].inputs.query).toBe('');
-      // gpt1 引用了 twitter1，twitter1 现在在前面，所以应该保留
-      expect(nodeData.state1_copy2.blocks[1].inputs.user_prompt).toBe(
+      // twitter1 references gpt1, but gpt1 is now after, so it should be cleared
+      expect(result.state1_copy2.blocks[0].inputs.query).toBe('');
+      // gpt1 references twitter1, and twitter1 is now before, so it should be preserved
+      expect(result.state1_copy2.blocks[1].inputs.user_prompt).toBe(
         '{{ twitter1.data }}',
       );
     });

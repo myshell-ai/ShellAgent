@@ -262,41 +262,46 @@ export class AppBuilderModel {
   }
 
   updateNodeData(evt: HandleRefSceneEvent, nodeData: NodeDataType) {
-    const updatedNodeData = cloneDeep(nodeData);
-    let isUpdated = false;
+    let updatedNodeData: Record<string, FieldValues> = {};
+    let isUpdated = true;
 
-    if (evt.scene === RefSceneEnum.Enum.remove_ref_opts) {
-      handleRemoveRefOpts(updatedNodeData, evt.params.paths);
-      isUpdated = true;
-    } else if (evt.scene === RefSceneEnum.Enum.remove_ref_opts_prefix) {
-      handleRemoveRefOptsPrefix(updatedNodeData, evt.params.prefix);
-      isUpdated = true;
-    } else if (evt.scene === RefSceneEnum.Enum.rename_ref_opt) {
-      handleRenameRefOpt(
-        updatedNodeData,
-        evt.params.oldPath,
-        evt.params.newPath,
-        evt.params.byPrefix,
-      );
-      isUpdated = true;
-    } else if (evt.scene === RefSceneEnum.Enum.remove_state) {
-      handleRemoveState(updatedNodeData, evt.params.stateName);
-      isUpdated = true;
-    } else if (evt.scene === RefSceneEnum.Enum.reorder_task) {
-      // todo
-      handleReorderTask(
-        updatedNodeData,
-        evt.params.stateName,
-        evt.params.currentTasks,
-        evt.params.previousTasks,
-      );
-      isUpdated = true;
+    switch (evt.scene) {
+      case RefSceneEnum.Enum.remove_ref_opts:
+        updatedNodeData = handleRemoveRefOpts(nodeData, evt.params.paths);
+        break;
+      case RefSceneEnum.Enum.remove_ref_opts_prefix:
+        updatedNodeData = handleRemoveRefOptsPrefix(
+          nodeData,
+          evt.params.prefix,
+        );
+        break;
+      case RefSceneEnum.Enum.rename_ref_opt:
+        updatedNodeData = handleRenameRefOpt(
+          nodeData,
+          evt.params.oldPath,
+          evt.params.newPath,
+          evt.params.byPrefix,
+        );
+        break;
+      case RefSceneEnum.Enum.remove_state:
+        updatedNodeData = handleRemoveState(nodeData, evt.params.stateName);
+        break;
+      case RefSceneEnum.Enum.reorder_task:
+        updatedNodeData = handleReorderTask(
+          nodeData,
+          evt.params.stateName,
+          evt.params.currentTasks,
+          evt.params.previousTasks,
+        );
+        break;
+      default:
+        isUpdated = false;
     }
 
     if (isUpdated) {
       runInAction(() => {
+        console.log('updatedNodeData>>>>', updatedNodeData);
         this.nodeData = updatedNodeData;
-
         emitter.emit(EventType.STATE_FORM_CHANGE, {
           id: this.selectedStateId as any,
           data: `${new Date().valueOf()}`,
