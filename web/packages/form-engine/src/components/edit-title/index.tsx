@@ -18,7 +18,7 @@ import {
   FormRef,
 } from '@shellagent/ui';
 import * as React from 'react';
-import { useState, useRef, useMemo } from 'react';
+import { useState, useRef, useMemo, useEffect } from 'react';
 
 import { MemoizedFormEngine } from '../..';
 import { ISchema, TValue, TValues } from '../../types';
@@ -58,12 +58,18 @@ const EditTitle = React.forwardRef<HTMLInputElement, IEditTitleProps>(
       defaultKey,
     } = props;
     const title = value || defaultValue;
-    const [formData, setFormData] = useState<TValues>(getValues(path));
+    const [formData, setFormData] = useState<TValues>({});
     const [inputValue, setInputValue] = useState<InputProps['value']>(
       (path &&
         (defaultKey ? getValues(path)?.[defaultKey] : getValues(path)?.name)) ||
         title,
     );
+
+    useEffect(() => {
+      if (isOpenDialog) {
+        setFormData(getValues(path));
+      }
+    }, [isOpenDialog]);
 
     const handleEditMode = () => {
       setIsOpenDialog(true);
@@ -128,6 +134,7 @@ const EditTitle = React.forwardRef<HTMLInputElement, IEditTitleProps>(
     };
 
     const onFormChange = (values: TValue) => {
+      console.log('values>>>', values);
       setFormData(values);
     };
 
