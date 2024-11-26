@@ -72,14 +72,11 @@ export function formatFormData2Dependency(
 ) {
   return {
     ...data,
-    missing_models: data?.missing_models?.reduce(
-      (acc, curr) => {
-        const { id, ...rest } = curr;
-        acc[id] = rest;
-        return acc;
-      },
-      {} as Record<string, UpdateDependencyRequest['missing_models'][string]>,
-    ),
+    missing_models: data?.missing_models?.reduce((acc, curr) => {
+      const { id, ...rest } = curr;
+      acc[id] = rest;
+      return acc;
+    }, {} as Record<string, UpdateDependencyRequest['missing_models'][string]>),
   };
 }
 
