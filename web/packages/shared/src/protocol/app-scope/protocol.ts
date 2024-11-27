@@ -7,7 +7,6 @@ import {
 import { customSnakeCase } from '../../utils/utils';
 import { z } from 'zod';
 import { reservedStateNameSchema } from '../node';
-
 /**
  * only process Space, not continous Uppercase letters
  * examples see test cases
@@ -93,6 +92,12 @@ export const reservedKeySchema = z.enum([
 export const customKeySchema = z
   .custom<Lowercase<SnakeCaseName>>()
   .superRefine((arg, ctx) => {
+    if (
+      arg === reservedStateNameSchema.enum.start ||
+      arg === reservedStateNameSchema.enum.end
+    ) {
+      return;
+    }
     if (typeof arg !== 'string') {
       ctx.addIssue({
         code: z.ZodIssueCode.custom,
