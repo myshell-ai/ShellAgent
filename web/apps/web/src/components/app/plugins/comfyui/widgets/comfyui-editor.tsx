@@ -33,7 +33,7 @@ import emitter, { EventType } from '../emitter';
 import { getFile, saveComfy, uploadComfy } from '../services';
 import type { SaveResponse } from '../services/type';
 import { checkDependency, isValidUrl } from '../utils';
-import { useAppStore } from '@/stores/app/app-provider';
+// import { useAppStore } from '@/stores/app/app-provider';
 import { useFormEngineContext } from '@shellagent/form-engine';
 import { useSchemaContext } from '@/stores/app/schema-provider';
 import { useSearchParams } from 'next/navigation';
@@ -224,11 +224,6 @@ export const ComfyUIEditor = observer(
     }, [handleMessage]);
 
     const { parent } = useFormEngineContext();
-    const { metadata, nodeData } = useAppStore(state => ({
-      metadata: state.metadata,
-      nodeData: state.nodeData,
-    }));
-
     const { id: stateId } = useSchemaContext(state => ({
       id: state.id,
     }));
@@ -236,8 +231,11 @@ export const ComfyUIEditor = observer(
     const handleSave = () => {
       if (isEmpty(model.locationTemp)) {
         if (parent) {
-          const task = get(nodeData, [stateId, parent].join('.'));
-          model.openLocationFormDialog(sp.get('id') as string, task.name);
+          model.openLocationFormDialog(
+            model.appBuilderModel.metadata.name,
+            stateId,
+            getValues('name'),
+          );
           return;
         }
       }

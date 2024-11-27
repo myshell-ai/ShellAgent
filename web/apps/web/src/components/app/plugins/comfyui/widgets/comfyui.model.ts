@@ -15,6 +15,8 @@ import {
   DEFAULT_COMFYUI_API,
   MessageType,
 } from '@/components/app/plugins/comfyui/constant';
+import { AppBuilderModel } from '@/stores/app/models/app-builder.model.ts';
+import { customSnakeCase } from '@shellagent/shared/utils';
 
 const settingsDisabled = process.env.NEXT_PUBLIC_DISABLE_SETTING === 'yes';
 
@@ -35,6 +37,7 @@ export class ComfyUIModel {
 
   constructor(
     @inject(ModalModel) public iframeDialog: ModalModel,
+    @inject('AppBuilderModel') public appBuilderModel: AppBuilderModel,
     @inject(FormikModel)
     public locationFormFormik: FormikModel<LocationFormType>,
     @inject(FormEngineModel) public formRef: FormEngineModel,
@@ -155,14 +158,19 @@ export class ComfyUIModel {
     }
   }
 
-  async openLocationFormDialog(appid: string, taskId: string) {
+  async openLocationFormDialog(
+    appName: string,
+    stateName: string,
+    taskName: string,
+  ) {
     this.locationFormDialog.open();
+    const defaultName = customSnakeCase(`${appName}_${stateName}_${taskName}`);
     try {
       await this.getCwd();
       await this.locationFormFormik.isReadyPromise;
       await this.locationFormFormik.formikProps.setFieldValue(
         'location',
-        `${this.defaultLocation}/${appid}_${taskId}.shellagent.json`,
+        `${this.defaultLocation}/${defaultName}.shellagent.json`,
       );
     } catch (e: any) {
       //
