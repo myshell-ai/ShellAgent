@@ -262,6 +262,8 @@ export function convertRefOptsToCascaderOpts(
   return cascaderOptions;
 }
 
+// 以下为兼容逻辑
+
 export function fieldsModeMap2Refs(map: Record<string, any>) {
   const result: Record<string, any> = {};
 
