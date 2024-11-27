@@ -12,7 +12,7 @@ import {
 } from '@shellagent/shared/protocol/app-scope';
 import type { FieldValues } from '@shellagent/ui';
 import { injectable, inject } from 'inversify';
-import { cloneDeep, isEmpty } from 'lodash-es';
+import { isEmpty } from 'lodash-es';
 import { action, makeObservable, observable, runInAction } from 'mobx';
 
 import {
@@ -37,6 +37,7 @@ import {
   CascaderOption,
   convertRefOptsToCascaderOpts,
   convetNodeDataToScopes,
+  fieldsModeMap2Refs,
 } from './app-builder-utils';
 import {
   handleRemoveRefOpts,
@@ -146,7 +147,7 @@ export class AppBuilderModel {
     automata,
   }: {
     reactflow: IFlow;
-    config: any;
+    config: Config;
     metadata: any;
     automata: Automata;
   }) {
@@ -166,9 +167,9 @@ export class AppBuilderModel {
       }
 
       runInAction(() => {
-        this.config = config || {
-          fieldsModeMap: {},
-          refs: {},
+        this.config = {
+          fieldsModeMap: config.fieldsModeMap,
+          refs: config.refs || fieldsModeMap2Refs(config.fieldsModeMap),
         };
         this.metadata = metadata;
         this.nodeData = genNodeData(automata);
@@ -181,22 +182,6 @@ export class AppBuilderModel {
       });
       this.emitter.emitter.emit('message.success', 'import success!');
     });
-  }
-
-  @action.bound
-  setFieldsModeMap({
-    id,
-    name,
-    mode,
-  }: {
-    id: string;
-    name: string;
-    mode: TFieldMode;
-  }) {
-    if (!this.config.fieldsModeMap[id]) {
-      this.config.fieldsModeMap[id] = {};
-    }
-    this.config.fieldsModeMap[id][name] = mode;
   }
 
   @action.bound
@@ -236,7 +221,11 @@ export class AppBuilderModel {
         this.getReactFlowLoading = true;
       });
 
-      const { reactflow, config, metadata } = await fetchFlow(params);
+      const {
+        reactflow,
+        config = {} as Config,
+        metadata,
+      } = await fetchFlow(params);
 
       if (instance) {
         instance.setNodes(
@@ -249,9 +238,9 @@ export class AppBuilderModel {
       }
 
       runInAction(() => {
-        this.config = (config as Config) || {
-          fieldsModeMap: {},
-          refs: {},
+        this.config = {
+          fieldsModeMap: config.fieldsModeMap,
+          refs: config.refs || fieldsModeMap2Refs(config.fieldsModeMap),
         };
         this.metadata = metadata;
       });

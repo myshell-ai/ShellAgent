@@ -4,6 +4,7 @@ import { customKeySchema, refsSchema } from '../app-scope';
 export const FieldModeEnum = z.enum(['ui', 'ref', 'raw']);
 
 export const ExtendConfigSchema = z.object({
+  // 弃用
   fieldsModeMap: z.record(customKeySchema, z.record(z.string(), FieldModeEnum)),
   refs: refsSchema,
 

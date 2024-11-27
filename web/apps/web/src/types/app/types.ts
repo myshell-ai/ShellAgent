@@ -6,6 +6,7 @@ import { Refs } from '@shellagent/shared/protocol/app-scope';
 import { Metadata } from '@/services/home/type';
 
 export type Config = {
+  // 弃用
   fieldsModeMap: Record<string, Record<string, TFieldMode>>;
   refs: Refs;
 };
