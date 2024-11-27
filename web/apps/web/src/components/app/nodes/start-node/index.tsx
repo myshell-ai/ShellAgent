@@ -16,6 +16,7 @@ import emitter, {
   EventType,
   useEventEmitter,
 } from '@/stores/app/models/emitter';
+
 const StartNode: React.FC<NodeProps<StartNodeType>> = ({
   id,
   selected,

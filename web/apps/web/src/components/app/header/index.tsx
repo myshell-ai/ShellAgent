@@ -73,7 +73,7 @@ export const Header: React.FC = observer(() => {
 
     try {
       // 数据校验
-      await validateAutomata(automata, reactflow);
+      // await validateAutomata(automata, reactflow);
       appBuilderChatModel.initBot(automata);
     } catch (e) {
       toast.error(e, {
