@@ -360,7 +360,6 @@ export function useFieldWatch(formRef: React.RefObject<FormRef>) {
               if (!diffNewValue) {
                 formRef.current?.setValue(`${name}.content`, newName);
               }
-              formRef.current?.setValue(`${name}.id`, event);
               formRef.current?.setValue(`${name}.on_click.event`, event);
 
               appBuilder.handleRefScene({

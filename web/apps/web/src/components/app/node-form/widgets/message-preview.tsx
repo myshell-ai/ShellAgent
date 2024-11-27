@@ -44,7 +44,7 @@ const InputPreview = () => {
   const onConnect = useReactFlowStore(state => state.onConnect);
   const id = useSchemaContext(state => state.id);
 
-  const handleId = `${inputSourceHandle}_${id}`;
+  const handleId = `${inputSourceHandle}-${id}`;
   const handleConnect = (connection: Connection) => {
     if (connection.source && connection.target) {
       onConnect({
@@ -125,7 +125,7 @@ const ButtonPreview = ({
   };
   const onConnect = useReactFlowStore(state => state.onConnect);
 
-  const handleId = `${buttonSourceHandle}_${stateId}_${index}`;
+  const handleId = `${buttonSourceHandle}-${id}#${index}`;
 
   const handleConnect = (connection: Connection) => {
     if (connection.source && connection.target) {
