@@ -7,10 +7,7 @@ import {
 } from '@shellagent/shared/protocol/app-scope';
 import { reservedStateNameSchema } from '@shellagent/shared/protocol/node';
 import { mapValues, isEmpty } from 'lodash-es';
-import {
-  FieldModeEnum,
-  FieldMode,
-} from '@shellagent/shared/protocol/extend-config';
+
 export interface CascaderOption {
   label: string;
   value?: string;
@@ -139,7 +136,6 @@ export function convertRefOptsToCascaderOpts(
           value = `{{ __context__${variableKey}__ }}`;
           parent = 'context';
         } else {
-          // TODO state也需要按context value来改造
           value = `{{ ${key}.${variableKey} }}`;
           parent = 'state';
         }
@@ -267,28 +263,22 @@ export function convertRefOptsToCascaderOpts(
 export function fieldsModeMap2Refs(map: Record<string, any>) {
   const result: Record<string, any> = {};
 
-  // 处理每个顶层键
-  for (const [key, value] of Object.entries(map)) {
+  Object.entries(map).forEach(([key, value]) => {
     // 处理包含UUID的特殊情况
     if (key.includes('.')) {
       const [baseKey, ...rest] = key.split('.');
-      if (!result[baseKey]) {
-        result[baseKey] = {};
-      }
+      result[baseKey] = result[baseKey] || {};
 
       // 如果是blocks相关的字段
       if (rest.join('.').startsWith('blocks.')) {
         const blockPath = rest.join('.');
-        const blockValue = value;
-
-        // 处理blocks下的字段
-        for (const [blockKey, blockMode] of Object.entries(blockValue)) {
+        Object.entries(value).forEach(([blockKey, blockMode]) => {
           result[baseKey][`${blockPath}.${blockKey}`] = {
             currentMode: blockMode,
           };
-        }
+        });
       }
-      // 如果包含UUID(类似7a3ae4a4-0e6f-42db-bba7-94d0ce244feb的格式)
+      // 如果包含UUID
       else if (
         rest.some(part =>
           /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/.test(
@@ -309,17 +299,15 @@ export function fieldsModeMap2Refs(map: Record<string, any>) {
           });
         }
       }
-      continue;
+      return;
     }
 
     // 处理普通字段
     result[key] = {};
-    for (const [fieldKey, mode] of Object.entries(value)) {
-      result[key][fieldKey] = {
-        currentMode: mode,
-      };
-    }
-  }
+    Object.entries(value).forEach(([fieldKey, mode]) => {
+      result[key][fieldKey] = { currentMode: mode };
+    });
+  });
 
   return result;
 }

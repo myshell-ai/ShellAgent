@@ -12,10 +12,7 @@ import React, { useCallback, useMemo, useState } from 'react';
 import NodeCard from '@/components/app/node-card';
 import NodeForm from '@/components/app/node-form';
 import { AppBuilderModel } from '@/stores/app/models/app-builder.model';
-import emitter, {
-  EventType,
-  useEventEmitter,
-} from '@/stores/app/models/emitter';
+import { EventType, useEventEmitter } from '@/stores/app/models/emitter';
 
 const StartNode: React.FC<NodeProps<StartNodeType>> = ({
   id,

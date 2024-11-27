@@ -1,7 +1,6 @@
 'use client';
 
 import { EllipsisVerticalIcon } from '@heroicons/react/24/outline';
-import { Automata } from '@shellagent/pro-config';
 import {
   DropdownMenu,
   DropdownMenuTrigger,

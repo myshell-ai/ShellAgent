@@ -34,7 +34,7 @@ export const handleRemoveRefOpts = (
     );
     if (!pathMatch) return;
 
-    const [, stateId, prefix, varName] = pathMatch;
+    const [, stateId, , varName] = pathMatch;
     let stateNode: FieldValues | undefined;
 
     if (reservedStateName.start === stateId) {
