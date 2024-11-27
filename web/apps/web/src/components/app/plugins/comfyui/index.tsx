@@ -5,7 +5,7 @@ import {
 } from '@shellagent/form-engine';
 import { FormRef } from '@shellagent/ui';
 import { useRequest } from 'ahooks';
-import { merge } from 'lodash-es';
+import { isEmpty, merge } from 'lodash-es';
 import { observer } from 'mobx-react-lite';
 import React, {
   useRef,
@@ -27,8 +27,6 @@ import { ComfyUIEditor } from './widgets/comfyui-editor';
 const ComfyUIPlugin: React.FC<CommonWidgetConfigProps> = ({
   values,
   onChange,
-  modeMap,
-  onModeChange,
   parent,
 }) => {
   const formRef = useRef<FormRef>(null);
@@ -46,15 +44,31 @@ const ComfyUIPlugin: React.FC<CommonWidgetConfigProps> = ({
     [schema],
   );
 
+  const mergeValues = (formValues: TValues, newValues?: TValues) => {
+    const result = {
+      ...merge({}, formValues, newValues),
+      inputs: isEmpty(formValues?.inputs)
+        ? newValues?.inputs
+        : Object.keys(formValues?.inputs || {})?.reduce((prev, key) => {
+            prev[key] = newValues?.inputs?.[key] || formValues?.inputs?.[key];
+            return prev;
+          }, {} as any),
+      outputs: !isEmpty(formValues?.outputs?.display)
+        ? formValues?.outputs
+        : newValues?.outputs,
+    };
+    return result;
+  };
+
   const handleOnChange = useCallback(
     (newValues: TValues) => {
-      onChange(merge({}, defaultValues, newValues));
+      onChange(mergeValues(defaultValues, newValues));
     },
     [defaultValues, onChange],
   );
 
   useEffect(() => {
-    onChange(merge({}, defaultValues, values));
+    onChange(mergeValues(defaultValues, values));
   }, [schema]);
 
   const { run: getComfySchema, loading: isLoading } = useRequest(getFile, {
@@ -108,9 +122,7 @@ const ComfyUIPlugin: React.FC<CommonWidgetConfigProps> = ({
         schema={schema}
         values={values}
         onChange={handleOnChange}
-        onModeChange={onModeChange}
         loading={isLoading}
-        modeMap={modeMap}
         components={{
           ComfyUIEditor,
         }}

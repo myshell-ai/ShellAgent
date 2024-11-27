@@ -1,8 +1,11 @@
+'use client';
+
 import './reflect-metadata-client-side';
 
 import { ChatNewModel } from '@shellagent/ui';
 import { ImageCanvasModel } from 'image-canvas/model';
 import { Container, interfaces } from 'inversify';
+import { toJS } from 'mobx';
 import { toast } from 'react-toastify';
 
 import { ComfyUIModel } from '@/components/app/plugins/comfyui/widgets/comfyui.model';
@@ -17,12 +20,18 @@ import { WidgetsCommonModel } from '@/components/manager/manager-content/widgets
 import { WidgetsInstalledModel } from '@/components/manager/manager-content/widgets/widgets-installed.model';
 import { WidgetsMarketplaceModel } from '@/components/manager/manager-content/widgets/widgets-marketplace.model';
 import { SettingsModel } from '@/components/settings/settings.model';
+import { AppBuilderModel } from '@/stores/app/models/app-builder.model';
 import { EmitterModel } from '@/utils/emitter.model';
 import { FormEngineModel } from '@/utils/form-engine.model';
 import { FormikModel } from '@/utils/formik.model';
 import { ModalModel } from '@/utils/modal.model';
 import { RequestModel } from '@/utils/request.model';
 import { ToggleModel } from '@/utils/toggle.model';
+
+if (typeof window !== 'undefined') {
+  // Client-side-only code
+  (window as any).toJS = toJS;
+}
 
 export const container = new Container();
 
@@ -87,5 +96,27 @@ container
   .to(ComfyUIModel)
   .inSingletonScope();
 
+// refactor app builder
+container
+  .bind<AppBuilderModel>('AppBuilderModel')
+  .to(AppBuilderModel)
+  .inSingletonScope()
+  .onActivation((_ctx: interfaces.Context, model: AppBuilderModel) => {
+    if (typeof window !== 'undefined') {
+      /* eslint-disable no-underscore-dangle, func-names */
+      (window as any)._get_app_builder_refs = function () {
+        return model.refs;
+      };
+      /* eslint-disable no-underscore-dangle, func-names */
+      (window as any)._get_app_builder_node_data = function () {
+        return model.nodeData;
+      };
+      /* eslint-disable no-underscore-dangle, func-names */
+      (window as any)._get_app_builder_scopes = function () {
+        return model.scopes;
+      };
+    }
+    return model;
+  });
 // assistant
 container.bind(AssistantModel).toSelf().inSingletonScope();

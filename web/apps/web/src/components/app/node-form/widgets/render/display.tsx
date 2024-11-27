@@ -149,14 +149,14 @@ const TextLayout = ({ field, value }: TextLayoutProps) => {
 };
 
 interface DisplayProps {
-  output: object;
+  outputs: object;
   className?: string;
 }
 
-const Display = ({ output, className }: DisplayProps) => {
+const Display = ({ outputs, className }: DisplayProps) => {
   return (
     <div className={className}>
-      {Object.entries(output).map(([key, value]) => {
+      {Object.entries(outputs).map(([key, value]) => {
         if (typeof value === 'string' && ImageRex.test(value)) {
           return <ImageLayout images={[value]} field={key} />;
         }

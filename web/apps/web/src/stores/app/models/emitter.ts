@@ -3,14 +3,18 @@ import mitt from 'mitt';
 import { useEffect } from 'react';
 
 export enum EventType {
-  STATE_FORM_CHANGE = 'STATE_FORM_CHANGE',
+  FORM_CHANGE = 'FORM_CHANGE',
+  RESET_FORM = 'RESET_FORM',
 }
 
 type Events = {
-  [EventType.STATE_FORM_CHANGE]: {
-    id: NodeId;
+  [EventType.FORM_CHANGE]: {
+    id?: NodeId;
     data: string;
     type: 'StateCard' | 'StateConfigSheet';
+  };
+  [EventType.RESET_FORM]: {
+    data: string;
   };
 };
 

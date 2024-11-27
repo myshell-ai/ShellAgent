@@ -5,11 +5,11 @@ import { useSchemaContext } from '@/stores/workflow/schema-provider';
 import { Display, Collapse } from './display';
 
 export const Render = () => {
-  const { output } = useSchemaContext(state => ({
-    output: state.output,
+  const { outputs } = useSchemaContext(state => ({
+    outputs: state.outputs,
   }));
 
-  if (!output) {
+  if (!outputs) {
     return null;
   }
 
@@ -22,7 +22,7 @@ export const Render = () => {
           Render
         </Heading>
       }
-      content={<Display output={output} />}
+      content={<Display outputs={outputs} />}
     />
   );
 };

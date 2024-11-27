@@ -1,27 +1,25 @@
 import { ContextMenuSub, ContextMenuItem } from '@shellagent/ui';
+import { useInjection } from 'inversify-react';
 import React from 'react';
 
 import { useDuplicateState } from '@/components/app/nodes/state-node/hook/use-duplicate-state';
-// import ShortcutsName from '@/components/common/shortcuts-name';
-import { useAppStore } from '@/stores/app/app-provider';
-import { useAppState } from '@/stores/app/use-app-state';
 
-const CopyMenu: React.FC<{ id: string; name: string }> = ({ id, name }) => {
-  const setCurrentCopyStateData = useAppState(
-    state => state.setCurrentCopyStateData,
-  );
-  const nodeData = useAppStore(state => state.nodeData);
+// import ShortcutsName from '@/components/common/shortcuts-name';
+import { AppBuilderModel } from '@/stores/app/models/app-builder.model';
+
+const CopyMenu: React.FC<{ id: string; displayName: string }> = ({
+  id,
+  displayName,
+}) => {
+  const appBuilder = useInjection<AppBuilderModel>('AppBuilderModel');
   const { duplicateState } = useDuplicateState();
 
   const handleCopy = () => {
-    setCurrentCopyStateData({
-      ...nodeData[id],
-      name,
-    });
+    appBuilder.setCopyData(id, displayName);
   };
 
   const handleDuplicate = () => {
-    duplicateState();
+    duplicateState(id, displayName);
   };
 
   return (

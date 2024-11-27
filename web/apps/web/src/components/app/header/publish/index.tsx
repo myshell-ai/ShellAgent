@@ -4,7 +4,6 @@ import {
   ChevronDownIcon,
   XMarkIcon,
 } from '@heroicons/react/24/outline';
-import { IFlow } from '@shellagent/flow-engine';
 import {
   Button,
   Heading,
@@ -19,20 +18,15 @@ import {
   SaveIcon,
 } from '@shellagent/ui';
 import { Dropdown } from 'antd';
-import { useRequest } from 'ahooks';
 import dayjs from 'dayjs';
+import { useInjection } from 'inversify-react';
 import { isEmpty } from 'lodash-es';
-import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import React, { useCallback, useState } from 'react';
-import { toast } from 'react-toastify';
 
-import { AppState } from '@/stores/app/app-store';
-import { saveApp, releaseApp, fetchAppVersionList } from '@/services/app';
-import { genAutomata } from '@/stores/app/utils/data-transformer';
-import { cn } from '@/utils/cn';
-import { Metadata } from '@/services/home/type';
 import { GetAppVersionListResponse } from '@/services/app/type';
+import { AppBuilderModel } from '@/stores/app/models/app-builder.model';
+import { cn } from '@/utils/cn';
 
 import VersionSkeleton from '../skeleton';
 
@@ -40,10 +34,6 @@ interface PublishProps {
   app_id: string;
   version_name: string;
   loading: boolean;
-  config: AppState['config'];
-  nodeData: AppState['nodeData'];
-  flowInstance: AppState['flowInstance'];
-  metadata: Metadata;
 }
 
 const DropdownRender = ({
@@ -160,163 +150,54 @@ export default function Publish({
   app_id,
   version_name,
   loading,
-  config,
-  nodeData,
-  metadata,
-  flowInstance,
 }: PublishProps) {
-  const router = useRouter();
-  // const [autoSavedTime, setAutoSavedTime] = useState('');
   const [versionName, setVersionName] = useState('');
   const hiddenOperation = !!version_name;
-
-  const {
-    run: getVersionList,
-    data: versionData,
-    loading: getVersionLoading,
-  } = useRequest(fetchAppVersionList, {
-    manual: true,
-    onError: error => {
-      toast.error(error.message, {
-        position: 'top-center',
-        autoClose: 1000,
-        hideProgressBar: true,
-        pauseOnHover: true,
-        closeButton: false,
-      });
-    },
-  });
-
-  const { run: release, loading: releaseLoading } = useRequest(releaseApp, {
-    manual: true,
-    onSuccess: result => {
-      if (result.success) {
-        toast.success('publish success', {
-          position: 'top-center',
-          autoClose: 1000,
-          hideProgressBar: true,
-          pauseOnHover: true,
-          closeButton: false,
-        });
-        getVersionList({ app_id });
-        setVersionName('');
-      } else {
-        toast.error('publish error', {
-          position: 'top-center',
-          autoClose: 1000,
-          hideProgressBar: true,
-          pauseOnHover: true,
-          closeButton: false,
-        });
-      }
-    },
-    onError: () => {
-      toast.error('publish error', {
-        position: 'top-center',
-        autoClose: 1000,
-        hideProgressBar: true,
-        pauseOnHover: true,
-        closeButton: false,
-      });
-    },
-  });
-
-  const { run: restoreApp, loading: restoreLoading } = useRequest(saveApp, {
-    manual: true,
-    onSuccess: result => {
-      if (result.success) {
-        toast.success('restore success', {
-          position: 'top-center',
-          autoClose: 1000,
-          hideProgressBar: true,
-          pauseOnHover: true,
-          closeButton: false,
-        });
-        router.push(`/app/detail?id=${app_id}`);
-      } else {
-        toast.error('restore error', {
-          position: 'top-center',
-          autoClose: 1000,
-          hideProgressBar: true,
-          pauseOnHover: true,
-          closeButton: false,
-        });
-      }
-    },
-    onError: () => {
-      toast.error('restore error', {
-        position: 'top-center',
-        autoClose: 1000,
-        hideProgressBar: true,
-        pauseOnHover: true,
-        closeButton: false,
-      });
-    },
-  });
-
-  const { run: saveData, loading: saveLoading } = useRequest(saveApp, {
-    manual: true,
-    onSuccess: result => {
-      if (result.success) {
-        toast.success('App Saved', {
-          position: 'top-center',
-          autoClose: 1000,
-          hideProgressBar: true,
-          pauseOnHover: true,
-          closeButton: false,
-        });
-      }
-    },
-    onError: error => {
-      toast.error(error.message);
-    },
-  });
+  const appBuilder = useInjection<AppBuilderModel>('AppBuilderModel');
 
   const handleSave = useCallback(() => {
-    const reactflow = flowInstance?.toObject() as IFlow;
-    if (!isEmpty(reactflow)) {
-      saveData({
-        app_id,
-        reactflow,
-        automata: genAutomata(reactflow, nodeData),
-        config,
-      });
-    }
-  }, [flowInstance, nodeData, app_id, saveData, config]);
+    appBuilder.saveApp(app_id);
+  }, [app_id]);
 
   const handleRelease = useCallback(async () => {
-    const reactflow = flowInstance?.toObject() as IFlow;
-    if (!isEmpty(reactflow)) {
-      release({
-        app_id,
-        reactflow,
-        automata: genAutomata(reactflow, nodeData),
-        config,
-        version_name: versionName,
-        metadata,
-      });
-    }
-  }, [flowInstance, nodeData, config, app_id, versionName, metadata]);
+    appBuilder.releaseApp(app_id);
+  }, [app_id]);
 
-  const handleRestore = () => {
-    const reactflow = flowInstance?.toObject() as IFlow;
-    if (!isEmpty(reactflow) && app_id) {
-      restoreApp({
-        app_id,
-        reactflow,
-        automata: genAutomata(reactflow, nodeData),
-        config,
-      });
-    }
-  };
+  const handleRestore = useCallback(() => {
+    appBuilder.restoreApp(app_id);
+  }, [app_id]);
 
-  const onOpenChange = (open: boolean) => {
-    if (open && app_id && !versionData?.data) {
-      getVersionList({
-        app_id,
-      });
-    }
-  };
+  const onOpenChange = useCallback(
+    (open: boolean) => {
+      if (open && app_id && !appBuilder.versionData?.data) {
+        appBuilder.getVersionList(app_id);
+      }
+    },
+    [app_id, appBuilder.versionData?.data],
+  );
+
+  const dropdownRender = useCallback(
+    () => (
+      <DropdownRender
+        versionData={appBuilder.versionData}
+        getVersionLoading={appBuilder.getVersionLoading}
+        app_id={app_id}
+        versionName={versionName}
+        setVersionName={setVersionName}
+        handleRelease={handleRelease}
+        releaseLoading={appBuilder.releaseLoading}
+        handleSave={handleSave}
+        saveLoading={appBuilder.saveLoading}
+      />
+    ),
+    [
+      appBuilder.versionData,
+      appBuilder.getVersionLoading,
+      app_id,
+      versionName,
+      setVersionName,
+    ],
+  );
 
   return (
     <div>
@@ -333,7 +214,7 @@ export default function Publish({
           </Link>
           <Button
             disabled={loading}
-            loading={restoreLoading}
+            loading={appBuilder.restoreLoading}
             onClick={handleRestore}
             className="w-28 px-8 ml-3"
             size="md"
@@ -344,26 +225,13 @@ export default function Publish({
       ) : (
         <Dropdown.Button
           onOpenChange={onOpenChange}
-          // eslint-disable-next-line react/no-unstable-nested-components
-          dropdownRender={() => (
-            <DropdownRender
-              versionData={versionData}
-              getVersionLoading={getVersionLoading}
-              app_id={app_id}
-              versionName={versionName}
-              setVersionName={setVersionName}
-              handleRelease={handleRelease}
-              releaseLoading={releaseLoading}
-              handleSave={handleSave}
-              saveLoading={saveLoading}
-            />
-          )}
+          dropdownRender={dropdownRender}
           buttonsRender={() => {
             return [
               <Button
                 size="md"
                 className="w-20 !rounded-r-none ml-3"
-                loading={saveLoading}
+                loading={appBuilder.saveLoading}
                 onClick={handleSave}
                 icon={SaveIcon}>
                 Save

@@ -2,9 +2,9 @@
  * @example
  * "variable_name"
  */
-type SnakeCaseName = string;
+export type SnakeCaseName = string;
 
-type ReservedKey =
+export type ReservedKey =
   | 'type'
   | 'id'
   | 'properties'

@@ -1,7 +1,6 @@
 import { useFormContext } from '@shellagent/ui';
 import { omit, set, merge } from 'lodash-es';
-import React, { createContext, useContext, useCallback } from 'react';
-import { useImmer } from 'use-immer';
+import React, { createContext, useContext } from 'react';
 
 import {
   SchemaReactComponents,
@@ -9,11 +8,10 @@ import {
   TPath,
   TValues,
   TValue,
-  TFieldMode,
 } from '../../types';
 import { getDefaultValueBySchema } from '../../utils/generate-schema';
 import { reorder as order } from '../../utils/reorder';
-import { uuid } from '../../utils/uuid';
+import { uuid, getVariableKey } from '../../utils/uuid';
 
 const FormEngineContext = createContext<{
   components: SchemaReactComponents;
@@ -24,8 +22,6 @@ const FormEngineContext = createContext<{
   append: (path: TPath, key?: string, obj?: TValues) => void;
   replaceKey: (path: TPath, key: string, value?: TValue) => void;
   reorder: (path: TPath, startIndex: number, endIndex: number) => void;
-  modeMap?: Record<string, TFieldMode>;
-  onModeChange?: (name: string, mode: TFieldMode) => void;
   onStatusChange?: (obj: { [key: string]: string }) => void;
 }>({
   components: {},
@@ -41,8 +37,6 @@ export interface IFormEngineProviderProps {
   components: SchemaReactComponents;
   parent?: string;
   layout?: 'Horizontal' | 'Vertical';
-  modeMap?: Record<string, TFieldMode>;
-  onModeChange?: (name: string, mode: TFieldMode) => void;
   onStatusChange?: (obj: { [key: string]: string }) => void;
   children: React.ReactNode | React.ReactNode[];
 }
@@ -51,24 +45,10 @@ export const useFormEngineContext = () => {
   return useContext(FormEngineContext);
 };
 
-const Counter: { [path: string]: number } = {};
-
 export const FormEngineProvider: React.FC<IFormEngineProviderProps> = props => {
   const { children, fields, components, parent, layout, onStatusChange } =
     props;
   const { getValues, setValue } = useFormContext();
-
-  const [modeMap, setModeMap] = useImmer(props.modeMap || {});
-
-  const onModeChange = useCallback(
-    (name: string, mode: TFieldMode) => {
-      setModeMap(draft => {
-        draft[name] = mode;
-      });
-      props.onModeChange?.(name, mode);
-    },
-    [props.onModeChange],
-  );
 
   const remove = (path: TPath) => {
     const { parent: parentName } = fields[path] || {};
@@ -122,13 +102,8 @@ export const FormEngineProvider: React.FC<IFormEngineProviderProps> = props => {
 
       if (key) {
         newKey = key;
-      } else if (xKey && /{{counter}}/.test(xKey)) {
-        if (isNaN(Counter[path])) {
-          Counter[path] = 0;
-        } else {
-          Counter[path]++;
-        }
-        newKey = xKey.replace('{{counter}}', String(Counter[path]));
+      } else if (xKey) {
+        newKey = getVariableKey(xKey, value, newItem);
       } else {
         newKey = uuid();
       }
@@ -179,8 +154,6 @@ export const FormEngineProvider: React.FC<IFormEngineProviderProps> = props => {
         append,
         replaceKey,
         reorder,
-        modeMap,
-        onModeChange,
         onStatusChange,
       }}>
       {children}

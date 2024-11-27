@@ -118,6 +118,7 @@
   --foreground-rgb: 0, 0, 0;
   --background-start-rgb: 214, 219, 220;
   --background-end-rgb: 255, 255, 255;
+  --sky-blue-500: #2e90fa;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -180,6 +181,10 @@ body {
     z-index: 11 !important;
     .chakra-modal__content {
       z-index: 12 !important;
+    }
+
+    .flex {
+      display: flex !important;
     }
   }
 }

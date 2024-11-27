@@ -1,10 +1,17 @@
+import {
+  BaseEdge,
+  EdgeProps,
+  getBezierPath,
+  useReactFlowStore,
+} from '@shellagent/flow-engine';
+import { RefSceneEnum } from '@shellagent/shared/protocol/app-scope';
 import { useKeyPress } from 'ahooks';
+import { useInjection } from 'inversify-react';
 import React from 'react';
-import { BaseEdge, EdgeProps, getBezierPath } from 'reactflow';
 
-import { useReactFlowStore } from '../../../store/flow/provider';
+import { AppBuilderModel } from '@/stores/app/models/app-builder.model';
 
-const DefaultEdge = ({
+export const DefaultEdge = ({
   id,
   sourceX,
   sourceY,
@@ -14,9 +21,13 @@ const DefaultEdge = ({
   targetPosition,
   markerEnd,
   selected,
+  target,
+  source,
 }: EdgeProps<{
   onDelete: (id: string) => void;
 }>) => {
+  const appBuilder = useInjection<AppBuilderModel>('AppBuilderModel');
+
   const [edgePath] = getBezierPath({
     sourceX: sourceX - 8,
     sourceY,
@@ -27,10 +38,21 @@ const DefaultEdge = ({
   });
 
   const onDelEdge = useReactFlowStore(state => state.onDelEdge);
+  const edges = useReactFlowStore(state => state.edges);
 
   useKeyPress(['delete', 'backspace'], () => {
     if (selected) {
       onDelEdge({ id });
+      appBuilder.handleRefScene({
+        scene: RefSceneEnum.Enum.remove_edge,
+        params: {
+          edges: edges as any,
+          removeEdge: {
+            target: target as Lowercase<string>,
+            source: source as Lowercase<string>,
+          },
+        },
+      });
     }
   });
   return (
@@ -45,5 +67,3 @@ const DefaultEdge = ({
     />
   );
 };
-
-export default React.memo(DefaultEdge);

@@ -1,7 +1,7 @@
 import type { Fetcher } from 'swr';
 
-import { APIFetch } from '../base';
 import { QueryRequest, QueryResponse } from './type';
+import { APIFetch } from '../base';
 
 export const query: Fetcher<QueryResponse, QueryRequest> = params => {
   return APIFetch.post<QueryResponse>('/api/helper/query', {

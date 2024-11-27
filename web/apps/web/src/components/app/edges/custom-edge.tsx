@@ -6,9 +6,12 @@ import {
   BaseEdge,
   Position,
 } from '@shellagent/flow-engine';
+import { RefSceneEnum } from '@shellagent/shared/protocol/app-scope';
 import { useKeyPress } from 'ahooks';
+import { useInjection } from 'inversify-react';
 import React, { useState, useRef, useEffect } from 'react';
 
+import { AppBuilderModel } from '@/stores/app/models/app-builder.model';
 import { useAppState } from '@/stores/app/use-app-state';
 
 import { EventButton } from './event-button';
@@ -31,6 +34,7 @@ export const CustomEdge = ({
 }: EdgeProps<CustomEdgeData>) => {
   const buttonRef = useRef<HTMLDivElement>(null);
   const [buttonWidth, setButtonWidth] = useState(0);
+  const appBuilder = useInjection<AppBuilderModel>('AppBuilderModel');
 
   const setTransitionSheetOpen = useAppState(
     state => state.setTransitionSheetOpen,
@@ -66,6 +70,7 @@ export const CustomEdge = ({
   });
 
   const onDelEdge = useReactFlowStore(state => state.onDelEdge);
+  const edges = useReactFlowStore(state => state.edges);
 
   // const edges = useReactFlowStore(state => state.edges);
 
@@ -77,6 +82,16 @@ export const CustomEdge = ({
   useKeyPress(['delete', 'backspace'], () => {
     if (selected) {
       onDelEdge({ id });
+      appBuilder.handleRefScene({
+        scene: RefSceneEnum.Enum.remove_edge,
+        params: {
+          edges: edges as any,
+          removeEdge: {
+            target: target as Lowercase<string>,
+            source: source as Lowercase<string>,
+          },
+        },
+      });
     }
   });
 
@@ -121,7 +136,9 @@ export const CustomEdge = ({
         <EventButton
           ref={buttonRef}
           style={{
-            transform: `translate(${sourceX + 24}px,${sourceY}px) translateY(-50%)`,
+            transform: `translate(${
+              sourceX + 24
+            }px,${sourceY}px) translateY(-50%)`,
           }}
           onClick={handleEditEvent}
         />

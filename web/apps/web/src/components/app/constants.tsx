@@ -6,7 +6,7 @@ import {
 } from '@shellagent/flow-engine';
 import { Workflow } from '@shellagent/pro-config';
 
-import { CustomEdge, EdgeTypeEnum } from '@/components/app/edges';
+import { DefaultEdge, CustomEdge, EdgeTypeEnum } from '@/components/app/edges';
 import { StartNode, StateNode } from '@/components/app/nodes';
 
 export const nodeTypes = {
@@ -15,6 +15,7 @@ export const nodeTypes = {
 };
 
 export const edgeTypes = {
+  [EdgeTypeEnum.default]: DefaultEdge,
   [EdgeTypeEnum.custom]: CustomEdge,
 };
 
