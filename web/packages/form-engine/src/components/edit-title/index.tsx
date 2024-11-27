@@ -61,7 +61,8 @@ const EditTitle = React.forwardRef<HTMLInputElement, IEditTitleProps>(
     const [formData, setFormData] = useState<TValues>({});
     const [inputValue, setInputValue] = useState<InputProps['value']>(
       (path &&
-        (defaultKey ? getValues(path)?.[defaultKey] : getValues(path)?.name)) ||
+        ((defaultKey && getValues(path)?.[defaultKey]) ||
+          getValues(path)?.name)) ||
         title,
     );
 
@@ -127,10 +128,18 @@ const EditTitle = React.forwardRef<HTMLInputElement, IEditTitleProps>(
     }, [formRef.current?.formState]);
 
     const getTitle = () => {
-      const name =
-        path &&
-        (defaultKey ? getValues(path)?.[defaultKey] : getValues(path)?.name);
-      return name || title || 'Untitled';
+      if (!path) return title || 'Untitled';
+
+      const values = getValues(path);
+      if (defaultKey && values?.[defaultKey]) {
+        return values[defaultKey];
+      }
+
+      if (values?.name) {
+        return values.name;
+      }
+
+      return title || 'Untitled';
     };
 
     const onFormChange = (values: TValue) => {
