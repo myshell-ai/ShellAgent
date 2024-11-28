@@ -457,17 +457,12 @@ const getSchemaByWidget = ({
       },
     };
   }
+
   return {
     type: 'object',
     'x-type': 'Section',
     'x-title-size': 'h4',
-    properties: {
-      ...properties,
-      render: {
-        'x-type': 'Render',
-        'x-component': 'Render',
-      },
-    },
+    properties,
   };
 };
 export { getSchemaByWidget };
