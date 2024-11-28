@@ -103,7 +103,7 @@ class GPTWidget(BaseWidget):
         else:
             config.user_prompt = config.user_prompt
 
-        if "OPENAI_API_KEY" not in os.environ:
+        if "OPENAI_API_KEY" not in os.environ or not os.environ["OPENAI_API_KEY"]:
             # API endpoint URL
             url = "https://openapi.myshell.ai/public/v1/widget/run"
             

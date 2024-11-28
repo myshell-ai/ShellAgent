@@ -27,6 +27,7 @@ setuptools = "^75.1.0"
 fastapi = "^0.115.4"
 uvicorn = "^0.32.0"
 python-multipart = "^0.0.16"
+cryptography = "^42.0.5"
 
 
 [build-system]
