@@ -93,7 +93,7 @@ export const getDiffPath = (
       oldItem => !newObj.find(newItem => newItem.name === oldItem.name),
     );
 
-    const isDeleted = deletedTasks.length > 0;
+    const isDeleted = deletedTasks.length > 0 && prevObj.length > newObj.length;
 
     if (isDeleted) {
       return deletedTasks.map(deletedTask => ({
