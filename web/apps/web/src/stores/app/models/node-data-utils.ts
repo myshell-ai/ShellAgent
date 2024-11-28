@@ -50,9 +50,7 @@ export const handleRemoveRefOpts = (
           `{{\\s*(${reservedKeys}\\.)?${varName}\\s*}}`,
           'g',
         );
-        if (refRegex.test(value)) {
-          parent[key] = '';
-        }
+        parent[key] = value.replace(refRegex, '');
       }
       // 兼容context
       if (key === varName && contextTempReg.test(varName)) {
@@ -92,9 +90,7 @@ export const handleRemoveRefOptsPrefix = (
           `{{\\s*(${reservedKeys}\\.)?${varName}[\\w.]*\\s*}}`,
           'g',
         );
-        if (refRegex.test(value)) {
-          parent[key] = '';
-        }
+        parent[key] = value.replace(refRegex, '');
       }
     });
   });
@@ -170,9 +166,7 @@ export const handleRemoveState = (
   processNestedObject(updatedNodeData, (value, key, parent) => {
     if (typeof value === 'string') {
       const refRegex = new RegExp(`{{\\s*${stateId}\\.[^}]+\\s*}}`, 'g');
-      if (refRegex.test(value)) {
-        parent[key] = '';
-      }
+      parent[key] = value.replace(refRegex, '');
     }
   });
 

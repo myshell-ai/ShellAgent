@@ -56,6 +56,29 @@ describe('node-data-utils', () => {
       expect(result.state1.outputs).toBe('{{ var2 }}');
       expect(result.state1.nested.field3).toBe('');
     });
+
+    it('should only remove matched references and keep other content', () => {
+      const nodeData = {
+        state1: {
+          outputs: 'prefix {{ var1 }} middle {{ var2 }} suffix',
+          nested: {
+            field: 'text {{ var1 }} more text',
+          },
+        },
+      };
+
+      const result = handleRemoveRefOpts(nodeData, ['state1.inputs.var1']);
+
+      // 验证原对象未被修改
+      expect(nodeData.state1.outputs).toBe(
+        'prefix {{ var1 }} middle {{ var2 }} suffix',
+      );
+      expect(nodeData.state1.nested.field).toBe('text {{ var1 }} more text');
+
+      // 验证返回的新对象只移除了匹配的引用
+      expect(result.state1.outputs).toBe('prefix  middle {{ var2 }} suffix');
+      expect(result.state1.nested.field).toBe('text  more text');
+    });
   });
 
   describe('handleRemoveRefOptsPrefix', () => {
@@ -79,6 +102,30 @@ describe('node-data-utils', () => {
       expect(result.state1.field1).toBe('');
       expect(result.state1.field2).toBe('');
       expect(result.state1.field3).toBe('{{ other }}');
+    });
+
+    it('should only remove references with matching prefix and keep other content', () => {
+      const nodeData = {
+        state1: {
+          field1:
+            'start {{ user.name }} middle {{ other.name }} end {{ user.age }}',
+          field2: 'text {{ user.info.email }} more {{ different }} text',
+        },
+      };
+
+      const result = handleRemoveRefOptsPrefix(nodeData, ['state1.user']);
+
+      // 验证原对象未被修改
+      expect(nodeData.state1.field1).toBe(
+        'start {{ user.name }} middle {{ other.name }} end {{ user.age }}',
+      );
+      expect(nodeData.state1.field2).toBe(
+        'text {{ user.info.email }} more {{ different }} text',
+      );
+
+      // 验证返回的新对象只移除了匹配前缀的引用
+      expect(result.state1.field1).toBe('start  middle {{ other.name }} end ');
+      expect(result.state1.field2).toBe('text  more {{ different }} text');
     });
   });
 
@@ -314,6 +361,30 @@ describe('node-data-utils', () => {
       expect(result.state1.field1).toBe('');
       expect(result.state2.field2).toBe('');
     });
+
+    it('should only remove references to specified state and keep other content', () => {
+      const nodeData = {
+        state1: {
+          field1: 'before {{ removedState.field }} after {{ keptState.field }}',
+          field2:
+            'text {{ removedState.nested.field }} {{ otherState.field }} more',
+        },
+      };
+
+      const result = handleRemoveState(nodeData, 'removedState');
+
+      // 验证原对象未被修改
+      expect(nodeData.state1.field1).toBe(
+        'before {{ removedState.field }} after {{ keptState.field }}',
+      );
+      expect(nodeData.state1.field2).toBe(
+        'text {{ removedState.nested.field }} {{ otherState.field }} more',
+      );
+
+      // 验证返回的新对象只移除了匹配的引用
+      expect(result.state1.field1).toBe('before  after {{ keptState.field }}');
+      expect(result.state1.field2).toBe('text  {{ otherState.field }} more');
+    });
   });
 
   describe('handleReorderTask', () => {
@@ -407,19 +478,123 @@ describe('node-data-utils', () => {
 
     it('should handle multiple references', () => {
       const nodeData = {
+        '@@@start': {
+          id: '@@@start',
+          type: 'start',
+          context: {},
+        },
         state1: {
+          id: 'state1',
+          type: 'state',
+          name: 'State',
+          render: {},
+          inputs: {},
+          outputs: {
+            untitled_outputs_1: {
+              type: 'text',
+              value: '',
+              name: 'Untitled',
+            },
+            untitled_outputs_2: {
+              type: 'text',
+              value: '',
+              name: 'Untitled',
+            },
+          },
           blocks: [
             {
-              name: 'task1',
+              type: 'task',
+              display_name: 'GPT#1',
+              name: 'gpt1',
+              mode: 'widget',
               inputs: {
-                query: '{{ task2.data.field1 }} and {{ task2.data.field2 }}',
+                model: 'gpt-4o',
+                system_prompt: '',
+                user_prompt: '',
+                input_image: null,
+                memory: [],
+                function_parameters: [],
+                memory_mode: 'auto',
+                temperature: 0.7,
+                top_p: 1,
+                max_tokens: null,
+                stream: false,
+                presence_penalty: 0,
+                frequency_penalty: 0,
+                callback: null,
+                widget_run_id: null,
+                function_name: 'any_function_name',
+                function_description: 'any_function_description',
               },
+              outputs: {
+                display: {
+                  reply: 'string|object',
+                },
+              },
+              widget_class_name: 'GPTWidget',
             },
             {
-              name: 'task2',
               inputs: {
-                query: '{{ task1.data.field1 }} and {{ task1.data.field2 }}',
+                model: 'gpt-4o',
+                system_prompt:
+                  '1 {{         gpt1.reply         }} 2 {{  gpt2.reply  }}',
+                user_prompt: '',
+                input_image: null,
+                memory: [],
+                function_parameters: [],
+                memory_mode: 'auto',
+                temperature: 0.7,
+                top_p: 1,
+                max_tokens: null,
+                stream: false,
+                presence_penalty: 0,
+                frequency_penalty: 0,
+                callback: null,
+                widget_run_id: null,
+                function_name: 'any_function_name',
+                function_description: 'any_function_description',
               },
+              outputs: {
+                display: {
+                  reply: 'string|object',
+                },
+              },
+              type: 'task',
+              display_name: 'GPT#3',
+              name: 'gpt3',
+              mode: 'widget',
+              widget_class_name: 'GPTWidget',
+            },
+            {
+              type: 'task',
+              display_name: 'GPT#2',
+              name: 'gpt2',
+              mode: 'widget',
+              inputs: {
+                model: 'gpt-4o',
+                system_prompt: '',
+                user_prompt: '',
+                input_image: null,
+                memory: [],
+                function_parameters: [],
+                memory_mode: 'auto',
+                temperature: 0.7,
+                top_p: 1,
+                max_tokens: null,
+                stream: false,
+                presence_penalty: 0,
+                frequency_penalty: 0,
+                callback: null,
+                widget_run_id: null,
+                function_name: 'any_function_name',
+                function_description: 'any_function_description',
+              },
+              outputs: {
+                display: {
+                  reply: 'string|object',
+                },
+              },
+              widget_class_name: 'GPTWidget',
             },
           ],
         },
@@ -428,13 +603,12 @@ describe('node-data-utils', () => {
       const result = handleReorderTask(
         nodeData,
         'state1',
-        ['task1', 'task2'],
-        ['task2', 'task1'],
+        ['gpt1', 'gpt2', 'gpt3'],
+        ['gpt1', 'gpt3', 'gpt2'],
       );
 
-      expect(result.state1.blocks[0].inputs.query).toBe('');
-      expect(result.state1.blocks[1].inputs.query).toBe(
-        '{{ task1.data.field1 }} and {{ task1.data.field2 }}',
+      expect(result.state1.blocks[1].inputs.system_prompt).toBe(
+        '1 {{         gpt1.reply         }} 2 {{  gpt2.reply  }}',
       );
     });
 
@@ -517,11 +691,44 @@ describe('node-data-utils', () => {
       );
 
       // twitter1 references gpt1, but gpt1 is now after, so it should be cleared
-      expect(result.state1_copy2.blocks[0].inputs.query).toBe('');
-      // gpt1 references twitter1, and twitter1 is now before, so it should be preserved
-      expect(result.state1_copy2.blocks[1].inputs.user_prompt).toBe(
-        '{{ twitter1.data }}',
-      );
+      expect(result).toStrictEqual({
+        state1_copy2: {
+          blocks: [
+            {
+              type: 'task',
+              display_name: 'Twitter#1',
+              name: 'twitter1',
+              mode: 'widget',
+              inputs: {
+                action: 'scrape_tweets',
+                query: '',
+                sort_order: 'relevancy',
+                twitter_handle: '',
+              },
+              outputs: {
+                display: {
+                  data: 'string|array',
+                },
+              },
+            },
+            {
+              type: 'task',
+              display_name: 'GPT#1',
+              name: 'gpt1',
+              mode: 'widget',
+              inputs: {
+                model: 'gpt-4',
+                user_prompt: '{{ twitter1.data }}',
+              },
+              outputs: {
+                display: {
+                  reply: 'string|object',
+                },
+              },
+            },
+          ],
+        },
+      });
     });
   });
 });
