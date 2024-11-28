@@ -622,12 +622,20 @@ def execute_automata(task_id, client_queue, automata, payload, sess_id, sess_sta
     except ShellException as e:
         if e.traceback is None:
             e.traceback = traceback.format_exc()
-        callback('state_exit', outputs={"runningError": e.format_dict()}, create_time=create_time, finish_time=time.time(), task_status="failed")
+        error_messages = {
+            "error_message": e.error_head,
+            "error_message_detail": e.traceback
+        }
+        callback('state_exit', outputs={"runningError": e.format_dict(), **error_messages}, create_time=create_time, finish_time=time.time(), task_status="failed")
     except Exception as e:
         error_message_detail = traceback.format_exc()
         error_message = str(e)
         empty_exception = ShellException("UNKNOWN-9999", "Unknown Error", error_message, error_message_detail)
-        callback('state_exit', outputs={"runningError": empty_exception.format_dict()}, create_time=create_time, finish_time=time.time(), task_status="failed")
+        error_messages = {
+            "error_message": error_message,
+            "error_message_detail": error_message_detail
+        }
+        callback('state_exit', outputs={"runningError": empty_exception.format_dict(), **error_messages}, create_time=create_time, finish_time=time.time(), task_status="failed")
     finally:
         assert tasks_queue[0] == task_id
         tasks_queue.pop(0)
