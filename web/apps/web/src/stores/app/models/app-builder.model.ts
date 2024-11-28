@@ -349,10 +349,12 @@ export class AppBuilderModel {
         if (result.success) {
           await this.getVersionList(app_id);
           this.versionName = '';
-          this.emitter.emitter.emit('message.success', 'publish success');
+          this.emitter.emitter.emit('message.success', 'Publish Success');
+        } else {
+          this.emitter.emitter.emit('message.error', 'Publish Error');
         }
       } catch (error) {
-        this.emitter.emitter.emit('message.error', 'publish error');
+        this.emitter.emitter.emit('message.error', 'Publish Error');
       } finally {
         runInAction(() => {
           this.releaseLoading = false;
@@ -362,7 +364,7 @@ export class AppBuilderModel {
   }
 
   @action.bound
-  async saveApp(app_id: string) {
+  async saveApp(app_id: string, showMessage = true) {
     const reactflow = this.flowInstance?.toObject() as IFlow;
     if (!isEmpty(reactflow) && app_id) {
       try {
@@ -374,7 +376,14 @@ export class AppBuilderModel {
           app_id,
         });
         if (result.success) {
-          this.emitter.emitter.emit('message.success', 'App Saved');
+          if (showMessage) {
+            this.emitter.emitter.emit('message.success', 'App Saved');
+          }
+        } else {
+          this.emitter.emitter.emit(
+            'message.error',
+            result.message || 'Save Error',
+          );
         }
       } catch (error: any) {
         this.emitter.emitter.emit('message.error', error.message);
@@ -399,10 +408,15 @@ export class AppBuilderModel {
           config: this.config,
         });
         if (result.success) {
-          this.emitter.emitter.emit('message.success', 'restore success');
+          this.emitter.emitter.emit('message.success', 'Restore Success');
+        } else {
+          this.emitter.emitter.emit(
+            'message.error',
+            result.message || 'Restore Error',
+          );
         }
       } catch (error: any) {
-        this.emitter.emitter.emit('message.error', 'restore error');
+        this.emitter.emitter.emit('message.error', 'Restore Error');
       } finally {
         runInAction(() => {
           this.restoreLoading = false;

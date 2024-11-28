@@ -17,10 +17,12 @@ import {
   Text,
   Separator,
 } from '@shellagent/ui';
+import { useInjection } from 'inversify-react';
 import { useBoolean, useRequest } from 'ahooks';
 import { isEmpty, set } from 'lodash-es';
 import React, { useState, cloneElement, ReactElement } from 'react';
 import { toast } from 'react-toastify';
+import { AppBuilderModel } from '@/stores/app/models/app-builder.model';
 
 import { exportApp } from '@/services/app';
 import { ExportBotResponse } from '@/services/app/type';
@@ -46,6 +48,8 @@ export const ExportDialog = ({ id, name, children }: ExportDialogProps) => {
   const [isExpand, isExpandAction] = useBoolean(false);
   const [lackDependency, setLackDependency] = useState<LackDependency>();
   const [exportData, setExportData] = useState('');
+  const [loading, setLoading] = useState(false);
+  const appBuilder = useInjection<AppBuilderModel>('AppBuilderModel');
 
   const onDownload = (data: string) => {
     const blob = new Blob([data], { type: 'application/json' });
@@ -79,7 +83,7 @@ export const ExportDialog = ({ id, name, children }: ExportDialogProps) => {
     return deps;
   };
 
-  const { run: runExportApp, loading } = useRequest(exportApp, {
+  const { run: runExportApp } = useRequest(exportApp, {
     manual: true,
     onSuccess: result => {
       if (result.success) {
@@ -116,6 +120,19 @@ export const ExportDialog = ({ id, name, children }: ExportDialogProps) => {
     onClose();
   };
 
+  const onExport = async () => {
+    setLoading(true);
+    appBuilder.saveApp(id, false).then(() => {
+      setTimeout(() => {
+        runExportApp({
+          app_id: id,
+          version_name: 'latest',
+        });
+        setLoading(false);
+      }, 500);
+    });
+  };
+
   return (
     <>
       {children ? (
@@ -131,12 +148,7 @@ export const ExportDialog = ({ id, name, children }: ExportDialogProps) => {
       ) : (
         <Button
           loading={loading}
-          onClick={() =>
-            runExportApp({
-              app_id: id,
-              version_name: 'latest',
-            })
-          }
+          onClick={onExport}
           className="w-28 px-8 border border-default shadow-button-primary1 ml-3"
           size="md"
           icon={ExportIcon}
