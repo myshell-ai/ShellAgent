@@ -34,6 +34,29 @@ from fastapi.responses import JSONResponse, StreamingResponse
 from servers.base import app, APP_SAVE_ROOT, WORKFLOW_SAVE_ROOT, APP_RUNS_SAVE_ROOT, PROJECT_ROOT
 from proconfig.core.exception import ShellException
 
+from cryptography.hazmat.primitives import serialization
+from cryptography.hazmat.primitives.asymmetric import padding
+from cryptography.hazmat.primitives import hashes
+from cryptography.hazmat.backends import default_backend
+
+with open("assets/public_key.pem", "rb") as key_file:
+    public_key = serialization.load_pem_public_key(key_file.read(), backend=default_backend())
+
+def encrypt_message(public_key, message):
+    encrypted_message = public_key.encrypt(
+        message.encode(),
+        padding.OAEP(
+            mgf=padding.MGF1(algorithm=hashes.SHA256()),
+            algorithm=hashes.SHA256(),
+            label=None
+        )
+    )
+    return encrypted_message
+
+def export_env_variables(public_key, env_vars):
+    encrypted_vars = {k: encrypt_message(public_key, v).hex() for k, v in env_vars.items()}
+    return encrypted_vars
+
 # app related
 @app.post("/api/app/save")
 async def save_app(data: Dict):
@@ -180,7 +203,10 @@ async def export_app(data: dict):
         automata_path = os.path.join(APP_SAVE_ROOT, data["app_id"], data["version_name"], "automata.json")
         metadata_path = os.path.join(APP_SAVE_ROOT, data["app_id"], data["version_name"], "metadata.json")
         reactflow_path = os.path.join(APP_SAVE_ROOT, data["app_id"], data["version_name"], "reactflow.json")
-        
+
+        with open("settings.json") as f:
+            settings = json.load(f)
+            
         with open(metadata_path) as f:
             metadata = json.load(f)
         
@@ -243,6 +269,11 @@ async def export_app(data: dict):
         logging.info("ready to upload")
         exported_data = process_local_file_path_async(exported_data, data.get("max_workers", 20))
         
+        envs = settings["envs"]
+        sensitive_keys = ["MYSHELL_API_KEY", "OPENAI_API_KEY", "COMFYUI_API", "HTTP_PROXY", "HTTPS_PROXY"]
+        for key in sensitive_keys:
+            envs.pop(key, None)
+
         results = {
             "data": {
                 **exported_data,
@@ -253,7 +284,8 @@ async def export_app(data: dict):
                 "dependency": {
                     "models": dependency_results["models"],
                     "widgets": dependency_results["widgets"]
-                }
+                },
+                "envs": export_env_variables(public_key, envs)
             },
             "success": True,
             "message": ""

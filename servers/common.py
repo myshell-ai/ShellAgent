@@ -461,6 +461,10 @@ async def check_repo_status():
 
         # Check if the latest stable version is newer than the current commit
         has_new_stable = repo.merge_base(latest_tag_commit.id, latest_commit.id) == latest_commit.id and latest_tag_commit.id != latest_commit.id
+        if "SHELLAGENT_BRANCH" in os.environ and os.environ['SHELLAGENT_BRANCH'] == 'main':
+            # Update if current_tag not equals latest_tag
+            if current_tag != latest_tag:
+                has_new_stable = True
         latest_tag_name = latest_tag.split('/')[-1]
 
         changelog = ""
