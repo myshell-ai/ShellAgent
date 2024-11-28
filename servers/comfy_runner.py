@@ -75,7 +75,8 @@ async def save_comfyui_workflow(data: Dict):
     api = data["comfyui_api"]
     workflow_api = data["prompt"]
     workflow = data["workflow"]
-    workflow_id = data["comfy_workflow_id"]
+    
+    workflow_id = data.get("comfy_workflow_id", "")
     
     # metadata.json
     metadata = {
@@ -111,18 +112,22 @@ async def save_comfyui_workflow(data: Dict):
         }
         
         # Save the data to the filesystem
-        save_root = os.path.join(COMFY_ROOT, workflow_id)
-        os.makedirs(save_root, exist_ok=True)
-        
-        fname_mapping = {
-            "workflow.json": workflow,
-            "workflow.shellagent.json": shellagent_json,
-            "metadata.json": metadata,
-        }
-        
-        for fname, dict_to_save in fname_mapping.items():
-            with open(os.path.join(save_root, fname), "w") as f:
-                json.dump(dict_to_save, f, indent=2)
+        if "location" not in data:
+            save_root = os.path.join(COMFY_ROOT, workflow_id)
+            os.makedirs(save_root, exist_ok=True)
+            
+            fname_mapping = {
+                "workflow.json": workflow,
+                "workflow.shellagent.json": shellagent_json,
+                "metadata.json": metadata,
+            }
+            
+            for fname, dict_to_save in fname_mapping.items():
+                with open(os.path.join(save_root, fname), "w") as f:
+                    json.dump(dict_to_save, f, indent=2)
+        else:
+            with open(data["location"], "w") as f:
+                json.dump(shellagent_json, f, indent=2)
     else:
         return_dict = {
             "success": False,
@@ -135,7 +140,6 @@ async def save_comfyui_workflow(data: Dict):
 
 @app.post("/api/comfyui/update_dependency")
 async def update_dependency(data: Dict):
-    workflow_id = data["comfy_workflow_id"]
     missing_repos = {item["name"]: item for item in data.get("missing_custom_nodes", [])}
     missing_models = data.get("missing_models", {})
     
@@ -144,7 +148,14 @@ async def update_dependency(data: Dict):
         custom_dependencies = json.load(deps_file)
     
     # Read the shellagent JSON
-    shellagent_json_path = os.path.join(COMFY_ROOT, workflow_id, "workflow.shellagent.json")
+    if "location" in data:
+        shellagent_json_path = data["location"]
+    else:
+        workflow_id = data["comfy_workflow_id"]
+        shellagent_json_path = os.path.join(COMFY_ROOT, workflow_id, "workflow.shellagent.json")
+        
+    shellagent_json_path_new = data.get("location_new", shellagent_json_path)
+    
     with open(shellagent_json_path, "r") as shellagent_file:
         shellagent_json = json.load(shellagent_file)
     
@@ -167,7 +178,7 @@ async def update_dependency(data: Dict):
         json.dump(custom_dependencies, deps_file, indent=2)
     
     # Save the updated shellagent JSON
-    with open(shellagent_json_path, "w") as shellagent_file:
+    with open(shellagent_json_path_new, "w") as shellagent_file:
         json.dump(shellagent_json, shellagent_file, indent=2)
     
     # Prepare the response
@@ -182,9 +193,12 @@ async def update_dependency(data: Dict):
 
 @app.post(f'/api/comfyui/get_file')
 async def comfyui_get_file(data: Dict):
-    filename = data["filename"]
-    workflow_id = data["comfy_workflow_id"]
-    json_path = os.path.join(COMFY_ROOT, workflow_id, filename)
+    if "location" in data:
+        json_path = data["location"] # get .shellagent.json content, where we can obtain the workflow inside it
+    else:
+        filename = data["filename"]
+        workflow_id = data["comfy_workflow_id"]
+        json_path = os.path.join(COMFY_ROOT, workflow_id, filename)
     
     return_dict = {}
     if os.path.isfile(json_path):
@@ -197,3 +211,11 @@ async def comfyui_get_file(data: Dict):
         return_dict["message"] = f"{json_path} does not exists"
     
     return return_dict
+
+
+@app.post(f'/api/comfyui/check_json_exist')
+async def check_json_exist(data: Dict):
+    filename = data["location"]
+    return {
+        "success": filename.endswith(".shellagent.json") and os.path.isfile(filename)
+    }

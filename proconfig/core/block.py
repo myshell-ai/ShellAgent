@@ -88,8 +88,9 @@ class WorkflowTask(TaskBase):
     
 class ComfyWorkflowTask(WidgetTask):
     mode: Literal["widget", "comfy_workflow"] = "widget"
-    api: str
-    comfy_workflow_id: str
+    api: str # must be provided
+    comfy_workflow_id: str | None = None # might be depreacated later
+    location: str | None = None
 
 Task = Union[ComfyWorkflowTask, BlockTask, WidgetTask, WorkflowTask]
 
