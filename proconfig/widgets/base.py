@@ -110,7 +110,7 @@ class BaseWidget:
                 config = schema.model_validate(inputs)
                 
             if hasattr(config, "callback"):
-                config.callback = inputs["callback"]
+                config.callback = inputs.get("callback")
                         
             config = self.process_ckpt_paths(config, [])
         else:
