@@ -96,26 +96,11 @@ export const getDiffPath = (
     const isDeleted = deletedTasks.length > 0;
 
     if (isDeleted) {
-      for (const deletedTask of deletedTasks) {
-        const isReferenced = newObj.some(item => {
-          const inputs = item.inputs || {};
-          return Object.values(inputs).some(
-            value =>
-              typeof value === 'string' &&
-              value.includes(`{{${deletedTask.name}.`),
-          );
-        });
-
-        if (isReferenced) {
-          return [
-            {
-              path: String(prevObj.indexOf(deletedTask)),
-              type: DiffTypeEnum.Deleted,
-              oldValue: deletedTask,
-            },
-          ];
-        }
-      }
+      return deletedTasks.map(deletedTask => ({
+        path: String(prevObj.indexOf(deletedTask)),
+        type: DiffTypeEnum.Deleted,
+        oldValue: deletedTask,
+      }));
     }
 
     // 检查是否是重排序

@@ -563,7 +563,7 @@ describe('form-utils', () => {
       ]);
     });
 
-    it('tasks delete from non-empty', () => {
+    it('tasks delete from non-empty with referenced', () => {
       const oldValue = [
         {
           type: 'task',
@@ -669,6 +669,178 @@ describe('form-utils', () => {
           path: '0',
           type: DiffTypeEnum.Deleted,
           oldValue: oldValue[0],
+        },
+      ]);
+    });
+
+    it('tasks delete from non-empty without referenced', () => {
+      const oldValue = [
+        {
+          type: 'task',
+          display_name: 'GPT#1',
+          name: 'gpt1',
+          mode: 'widget',
+          inputs: {
+            model: 'gpt-4o',
+            system_prompt: '',
+            user_prompt: '',
+            input_image: null,
+            memory: [],
+            function_parameters: [],
+            memory_mode: 'auto',
+            temperature: 0.7,
+            top_p: 1,
+            max_tokens: null,
+            stream: false,
+            presence_penalty: 0,
+            frequency_penalty: 0,
+            callback: null,
+            widget_run_id: null,
+            function_name: 'any_function_name',
+            function_description: 'any_function_description',
+          },
+          outputs: {
+            display: {
+              reply: 'string|object',
+            },
+          },
+          widget_class_name: 'GPTWidget',
+        },
+        {
+          inputs: {
+            model: 'gpt-4o',
+            system_prompt: '',
+            user_prompt: '',
+            input_image: null,
+            memory: [],
+            function_parameters: [],
+            memory_mode: 'auto',
+            temperature: 0.7,
+            top_p: 1,
+            max_tokens: null,
+            stream: false,
+            presence_penalty: 0,
+            frequency_penalty: 0,
+            callback: null,
+            widget_run_id: null,
+            function_name: 'any_function_name',
+            function_description: 'any_function_description',
+          },
+          outputs: {
+            display: {
+              reply: 'string|object',
+            },
+          },
+          type: 'task',
+          display_name: 'GPT#2',
+          name: 'gpt2',
+          mode: 'widget',
+          widget_class_name: 'GPTWidget',
+        },
+        {
+          inputs: {
+            model: 'gpt-4o',
+            system_prompt: '',
+            user_prompt: '',
+            input_image: null,
+            memory: [],
+            function_parameters: [],
+            memory_mode: 'auto',
+            temperature: 0.7,
+            top_p: 1,
+            max_tokens: null,
+            stream: false,
+            presence_penalty: 0,
+            frequency_penalty: 0,
+            callback: null,
+            widget_run_id: null,
+            function_name: 'any_function_name',
+            function_description: 'any_function_description',
+          },
+          outputs: {
+            display: {
+              reply: 'string|object',
+            },
+          },
+          type: 'task',
+          display_name: 'GPT#3',
+          name: 'gpt3',
+          mode: 'widget',
+          widget_class_name: 'GPTWidget',
+        },
+      ];
+      const newValue = [
+        {
+          type: 'task',
+          display_name: 'GPT#1',
+          name: 'gpt1',
+          mode: 'widget',
+          inputs: {
+            model: 'gpt-4o',
+            system_prompt: '',
+            user_prompt: '',
+            input_image: null,
+            memory: [],
+            function_parameters: [],
+            memory_mode: 'auto',
+            temperature: 0.7,
+            top_p: 1,
+            max_tokens: null,
+            stream: false,
+            presence_penalty: 0,
+            frequency_penalty: 0,
+            callback: null,
+            widget_run_id: null,
+            function_name: 'any_function_name',
+            function_description: 'any_function_description',
+          },
+          outputs: {
+            display: {
+              reply: 'string|object',
+            },
+          },
+          widget_class_name: 'GPTWidget',
+        },
+        {
+          inputs: {
+            model: 'gpt-4o',
+            system_prompt: '',
+            user_prompt: '',
+            input_image: null,
+            memory: [],
+            function_parameters: [],
+            memory_mode: 'auto',
+            temperature: 0.7,
+            top_p: 1,
+            max_tokens: null,
+            stream: false,
+            presence_penalty: 0,
+            frequency_penalty: 0,
+            callback: null,
+            widget_run_id: null,
+            function_name: 'any_function_name',
+            function_description: 'any_function_description',
+          },
+          outputs: {
+            display: {
+              reply: 'string|object',
+            },
+          },
+          type: 'task',
+          display_name: 'GPT#3',
+          name: 'gpt3',
+          mode: 'widget',
+          widget_class_name: 'GPTWidget',
+        },
+      ];
+
+      const result = getDiffPath(oldValue, newValue);
+
+      expect(result).toEqual([
+        {
+          path: '1',
+          type: DiffTypeEnum.Deleted,
+          oldValue: oldValue[1],
         },
       ]);
     });
