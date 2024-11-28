@@ -58,7 +58,10 @@
     },
     "./assets/react-colors-beauty.css": {
       "default": "./assets/react-colors-beauty.css"
+    },
+    "./fabric.js": {
+      "default": "./public/fabric.js"
     }
   },
-  "yalcSig": "d6d65885ab636e962897b652948eb01a"
+  "yalcSig": "48b52bd336da5286846ca2abfe077ed1"
 }
