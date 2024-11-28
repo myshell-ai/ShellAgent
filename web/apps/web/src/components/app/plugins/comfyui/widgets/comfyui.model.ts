@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { inject, injectable } from 'inversify';
+import { inject, injectable, type interfaces } from 'inversify';
 import { isEmpty } from 'lodash-es';
 import { action, computed, makeObservable, observable } from 'mobx';
 
@@ -17,6 +17,7 @@ import {
 } from '@/components/app/plugins/comfyui/constant';
 import { AppBuilderModel } from '@/stores/app/models/app-builder.model.ts';
 import { customSnakeCase } from '@shellagent/shared/utils';
+import { duplicateComfyUI } from '@/stores/app/models/app-builder-utils';
 
 const settingsDisabled = process.env.NEXT_PUBLIC_DISABLE_SETTING === 'yes';
 
@@ -37,7 +38,8 @@ export class ComfyUIModel {
 
   constructor(
     @inject(ModalModel) public iframeDialog: ModalModel,
-    @inject('AppBuilderModel') public appBuilderModel: AppBuilderModel,
+    @inject('Factory<AppBuilderModel>')
+    public appBuilderModelFactory: () => AppBuilderModel,
     @inject(FormikModel)
     public locationFormFormik: FormikModel<LocationFormType>,
     @inject(FormEngineModel) public formRef: FormEngineModel,
@@ -158,11 +160,21 @@ export class ComfyUIModel {
     }
   }
 
-  async openLocationFormDialog(
-    appName: string,
-    stateName: string,
-    taskName: string,
-  ) {
+  async handleDuplicateState(newId: string, nodeData: any) {
+    await this.getCwd();
+    if (this.defaultLocation) {
+      return duplicateComfyUI(
+        this.defaultLocation,
+        this.appBuilderModelFactory().metadata.name,
+        newId,
+        nodeData,
+      );
+    }
+    return nodeData;
+  }
+
+  async openLocationFormDialog(stateName: string, taskName: string) {
+    const appName = this.appBuilderModelFactory().metadata.name;
     this.locationFormDialog.open();
     const defaultName = customSnakeCase(`${appName}_${stateName}_${taskName}`);
     try {

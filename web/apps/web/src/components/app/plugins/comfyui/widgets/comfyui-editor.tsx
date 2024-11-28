@@ -231,11 +231,7 @@ export const ComfyUIEditor = observer(
     const handleSave = () => {
       if (isEmpty(model.locationTemp)) {
         if (parent) {
-          model.openLocationFormDialog(
-            model.appBuilderModel.metadata.name,
-            stateId,
-            getValues('name'),
-          );
+          model.openLocationFormDialog(stateId, getValues('name'));
           return;
         }
       }

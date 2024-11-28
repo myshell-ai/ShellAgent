@@ -1,4 +1,5 @@
 import {
+  customSnakeCase,
   RefOptionsOutput,
   refOptOutputGlobalSchema,
   scopesSchema,
@@ -6,6 +7,7 @@ import {
   stateSchema,
 } from '@shellagent/shared/protocol/app-scope';
 import { reservedStateNameSchema } from '@shellagent/shared/protocol/node';
+import { FieldValues } from '@shellagent/ui';
 import { mapValues, isEmpty } from 'lodash-es';
 
 export interface CascaderOption {
@@ -310,4 +312,24 @@ export function fieldsModeMap2Refs(map: Record<string, any>) {
   });
 
   return result;
+}
+
+export function duplicateComfyUI(
+  defaultLocation: string,
+  appName: string,
+  stateName: string,
+  nodeData: FieldValues,
+) {
+  if (Array.isArray(nodeData.blocks)) {
+    nodeData.blocks = nodeData.blocks.map(b => {
+      if (b.widget_class_name === 'ComfyUIWidget') {
+        const defaultName = customSnakeCase(
+          `${appName}_${stateName}_${b.name}`,
+        );
+        b.location = `${defaultLocation}/${defaultName}.shellagent.json`;
+      }
+      return b;
+    });
+  }
+  return nodeData;
 }

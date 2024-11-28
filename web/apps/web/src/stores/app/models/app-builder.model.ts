@@ -48,6 +48,7 @@ import {
   handleReorderTask,
 } from './node-data-utils';
 import { defaultFlow } from '../../../components/app/constants';
+import { ComfyUIModel } from '@/components/app/plugins/comfyui/widgets/comfyui.model';
 
 @injectable()
 export class AppBuilderModel {
@@ -91,7 +92,10 @@ export class AppBuilderModel {
     return this.config.refs || {};
   }
 
-  constructor(@inject(EmitterModel) private emitter: EmitterModel) {
+  constructor(
+    @inject(EmitterModel) private emitter: EmitterModel,
+    @inject('ComfyUIModel') private comfyui: ComfyUIModel,
+  ) {
     makeObservable(this);
   }
 
@@ -438,7 +442,7 @@ export class AppBuilderModel {
     });
   }
 
-  duplicateState(data: FieldValues) {
+  async duplicateState(data: FieldValues) {
     const index = Object.values(this.nodeData).map(
       value => value.type === 'state',
     )?.length;
@@ -446,6 +450,7 @@ export class AppBuilderModel {
       index > 0 ? `#${index}` : ''
     }`;
     const newId = customSnakeCase(displayName);
+    data = await this.comfyui.handleDuplicateState(newId, data);
     this.setNodeData({ id: newId, data });
     this.handleRefScene({
       scene: RefSceneEnum.Enum.duplicate_state,

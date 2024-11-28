@@ -118,5 +118,12 @@ container
     }
     return model;
   });
+
+container
+  .bind<interfaces.Factory<AppBuilderModel>>('Factory<AppBuilderModel>')
+  .toFactory<AppBuilderModel>(context => {
+    return () => context.container.get<AppBuilderModel>('AppBuilderModel');
+  });
+
 // assistant
 container.bind(AssistantModel).toSelf().inSingletonScope();

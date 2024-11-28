@@ -26,8 +26,8 @@ export const usePasteState = ({
   );
 
   const pasteState = useCallback(
-    (data: FieldValues) => {
-      const { newId, displayName } = appBuilder.duplicateState(data);
+    async (data: FieldValues) => {
+      const { newId, displayName } = await appBuilder.duplicateState(data);
       const position = getCanvasCenter(reactFlowWrapper, viewport);
       onAddNode({
         type: data?.type || 'state',
