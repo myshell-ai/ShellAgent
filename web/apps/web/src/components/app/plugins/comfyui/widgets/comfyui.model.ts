@@ -15,7 +15,7 @@ import {
   DEFAULT_COMFYUI_API,
   MessageType,
 } from '@/components/app/plugins/comfyui/constant';
-import { AppBuilderModel } from '@/stores/app/models/app-builder.model.ts';
+import { AppBuilderModel } from '@/stores/app/models/app-builder.model';
 import { customSnakeCase } from '@shellagent/shared/utils';
 import { duplicateComfyUI } from '@/stores/app/models/app-builder-utils';
 

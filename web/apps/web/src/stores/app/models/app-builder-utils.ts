@@ -326,7 +326,7 @@ export function duplicateComfyUI(
     to: string;
   }>;
 } {
-  let locations: Array<{
+  const locations: Array<{
     from: string;
     to: string;
   }> = [];
