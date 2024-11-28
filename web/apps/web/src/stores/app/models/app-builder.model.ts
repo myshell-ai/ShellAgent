@@ -32,6 +32,7 @@ import emitter, { EventType } from '@/stores/app/models/emitter';
 import { genNodeData, genAutomata } from '@/stores/app/utils/data-transformer';
 import type { NodeDataType, Config, Metadata } from '@/types/app/types';
 import { EmitterModel } from '@/utils/emitter.model';
+import { AppBuilderChatModel } from '@/components/chat/app-builder-chat.model';
 
 import {
   CascaderOption,
@@ -90,7 +91,10 @@ export class AppBuilderModel {
     return this.config.refs || {};
   }
 
-  constructor(@inject(EmitterModel) private emitter: EmitterModel) {
+  constructor(
+    @inject(EmitterModel) private emitter: EmitterModel,
+    @inject(AppBuilderChatModel) public chatModel: AppBuilderChatModel,
+  ) {
     makeObservable(this);
   }
 
@@ -434,6 +438,8 @@ export class AppBuilderModel {
       fieldsModeMap: {},
       refs: {},
     };
+
+    this.chatModel.closeRunDrawer();
 
     emitter.emit(EventType.RESET_FORM, {
       data: `${new Date().valueOf()}`,
