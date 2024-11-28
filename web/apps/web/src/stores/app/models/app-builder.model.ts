@@ -9,6 +9,7 @@ import {
   HandleRefSceneEvent,
   handleRefScene,
   Refs,
+  customSnakeCase,
 } from '@shellagent/shared/protocol/app-scope';
 import type { FieldValues } from '@shellagent/ui';
 import { injectable, inject } from 'inversify';
@@ -435,5 +436,27 @@ export class AppBuilderModel {
     emitter.emit(EventType.RESET_FORM, {
       data: `${new Date().valueOf()}`,
     });
+  }
+
+  duplicateState(data: FieldValues) {
+    const index = Object.values(this.nodeData).map(
+      value => value.type === 'state',
+    )?.length;
+    const displayName = `${data?.display_name} Copy${
+      index > 0 ? `#${index}` : ''
+    }`;
+    const newId = customSnakeCase(displayName);
+    this.setNodeData({ id: newId, data });
+    this.handleRefScene({
+      scene: RefSceneEnum.Enum.duplicate_state,
+      params: {
+        stateName: data?.id as Lowercase<string>,
+        duplicateStateName: newId,
+      },
+    });
+    return {
+      newId,
+      displayName,
+    };
   }
 }
