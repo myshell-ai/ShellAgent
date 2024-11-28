@@ -72,7 +72,7 @@ export class AppBuilderModel {
   @observable getAutomataLoading = false;
   @observable chatRunningLoading = false;
   @observable fetchFlowListLoading = false;
-  @observable versionData: GetAppVersionListResponse | undefined;
+  @observable versionData: GetAppVersionListResponse = { data: [] };
   @observable getVersionLoading = false;
   @observable releaseLoading = false;
   @observable saveLoading = false;
@@ -314,7 +314,10 @@ export class AppBuilderModel {
       this.getVersionLoading = true;
       const result = await fetchAppVersionList({ app_id });
       runInAction(() => {
-        this.versionData = result;
+        this.versionData = {
+          ...result,
+          data: [...(result.data || [])],
+        };
       });
     } catch (error: any) {
       this.emitter.emitter.emit('message.error', error.message);
@@ -434,6 +437,13 @@ export class AppBuilderModel {
 
     emitter.emit(EventType.RESET_FORM, {
       data: `${new Date().valueOf()}`,
+    });
+  }
+
+  @action.bound
+  setVersionName(versionName: string) {
+    runInAction(() => {
+      this.versionName = versionName;
     });
   }
 }
