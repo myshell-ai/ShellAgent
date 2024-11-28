@@ -106,15 +106,14 @@ export const handleRenameRefOpt = (
 ): Record<string, FieldValues> => {
   const updatedNodeData = cloneDeep(nodeData);
 
-  const oldPathMatch = oldPath.match(
-    new RegExp(`^(.+?)\\.(?:(${reservedKeys}|blocks)\\.)?(.+)$`),
+  const pathRegex = new RegExp(
+    `^(.+?)\\.(?:(${reservedKeys}|blocks)\\.)?(.+)$`,
   );
-  const newPathMatch = newPath.match(
-    new RegExp(`^(.+?)\\.(?:(${reservedKeys}|blocks)\\.)?(.+)$`),
-  );
+  const oldPathMatch = oldPath.match(pathRegex);
+  const newPathMatch = newPath.match(pathRegex);
   if (!oldPathMatch || !newPathMatch) return updatedNodeData;
 
-  const [, stateId, , oldVarName] = oldPathMatch;
+  const [, stateId, pathType, oldVarName] = oldPathMatch;
   const [, , , newVarName] = newPathMatch;
 
   let stateNode: FieldValues | undefined;
@@ -138,9 +137,9 @@ export const handleRenameRefOpt = (
         if (byPrefix) {
           const suffix =
             value.match(new RegExp(`${oldVarName}([\\w.]*)\\s*}}`))?.[1] || '';
-          parent[key] = `{{ ${newVarName}${suffix} }}`;
+          parent[key] = value.replace(refRegex, `{{${newVarName}${suffix}}}`);
         } else {
-          parent[key] = `{{ ${newVarName} }}`;
+          parent[key] = value.replace(refRegex, `{{${newVarName}}}`);
         }
       }
     }

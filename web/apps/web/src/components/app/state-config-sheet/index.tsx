@@ -8,6 +8,7 @@ import {
 import { TValues } from '@shellagent/form-engine';
 import { Button as IButtonType } from '@shellagent/shared/protocol/render-button';
 import { WidgetTask, WorkflowTask } from '@shellagent/shared/protocol/task';
+import { getNewKey } from '@shellagent/shared/utils';
 import { Drawer, FormRef } from '@shellagent/ui';
 import { useInjection } from 'inversify-react';
 import { isNumber } from 'lodash-es';
@@ -69,15 +70,25 @@ const StateConfigSheet: React.FC<{}> = () => {
     if (!insideSheetOpen) {
       return {};
     }
+    const path = `blocks.${currentTaskIndex}`;
+
     const commonProps = {
       onChange: (value: TValues) => {
-        nodeFormRef.current?.setValue(`blocks.${currentTaskIndex}`, value);
+        nodeFormRef.current?.setValue(path, value);
       },
       onTitleChange: (value: string) => {
-        nodeFormRef.current?.setValue(
-          `blocks.${currentTaskIndex}.display_name`,
-          value,
-        );
+        const { key: newKey, name: newName } = getNewKey({
+          name: value,
+          nameKey: 'name',
+          values: appBuilder.nodeData[currentStateId]?.blocks,
+          prefix: 'Blocks',
+        });
+        const values = nodeFormRef.current?.getValues(path);
+        nodeFormRef.current?.setValue(path, {
+          ...values,
+          display_name: newName,
+          name: newKey,
+        });
       },
     };
 
@@ -182,7 +193,7 @@ const StateConfigSheet: React.FC<{}> = () => {
         type: 'StateConfigSheet',
       });
     },
-    [currentStateId, appBuilder.setNodeData],
+    [currentStateId],
   );
 
   useEventEmitter(EventType.FORM_CHANGE, eventData => {

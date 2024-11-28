@@ -15,6 +15,7 @@ import { injectable, inject } from 'inversify';
 import { isEmpty } from 'lodash-es';
 import { action, makeObservable, observable, runInAction } from 'mobx';
 
+import { AppBuilderChatModel } from '@/components/chat/app-builder-chat.model';
 import {
   fetchAutomata,
   fetchFlow,
@@ -32,7 +33,6 @@ import emitter, { EventType } from '@/stores/app/models/emitter';
 import { genNodeData, genAutomata } from '@/stores/app/utils/data-transformer';
 import type { NodeDataType, Config, Metadata } from '@/types/app/types';
 import { EmitterModel } from '@/utils/emitter.model';
-import { AppBuilderChatModel } from '@/components/chat/app-builder-chat.model';
 
 import {
   CascaderOption,
@@ -123,9 +123,6 @@ export class AppBuilderModel {
     const newRefs = handleRefScene(this.refs, evt);
     this.updateNodeData(evt, this.nodeData);
     this.config.refs = newRefs;
-
-    console.log('this.refs>>', this.refs, evt);
-    console.log('this.nodeData>>', this.nodeData);
   }
 
   @action.bound

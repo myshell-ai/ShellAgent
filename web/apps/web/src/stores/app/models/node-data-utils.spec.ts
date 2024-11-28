@@ -39,9 +39,9 @@ describe('node-data-utils', () => {
     it('should remove specified reference options', () => {
       const nodeData = {
         state1: {
-          outputs: '{{ var2 }}',
+          outputs: '{{var2}}',
           nested: {
-            field3: '{{ var1 }}',
+            field3: '{{var1}}',
           },
         },
       };
@@ -49,20 +49,20 @@ describe('node-data-utils', () => {
       const result = handleRemoveRefOpts(nodeData, ['state1.inputs.var1']);
 
       // 验证原对象未被修改
-      expect(nodeData.state1.outputs).toBe('{{ var2 }}');
-      expect(nodeData.state1.nested.field3).toBe('{{ var1 }}');
+      expect(nodeData.state1.outputs).toBe('{{var2}}');
+      expect(nodeData.state1.nested.field3).toBe('{{var1}}');
 
       // 验证返回的新对象
-      expect(result.state1.outputs).toBe('{{ var2 }}');
+      expect(result.state1.outputs).toBe('{{var2}}');
       expect(result.state1.nested.field3).toBe('');
     });
 
     it('should only remove matched references and keep other content', () => {
       const nodeData = {
         state1: {
-          outputs: 'prefix {{ var1 }} middle {{ var2 }} suffix',
+          outputs: 'prefix {{var1}} middle {{var2}} suffix',
           nested: {
-            field: 'text {{ var1 }} more text',
+            field: 'text {{var1}} more text',
           },
         },
       };
@@ -71,12 +71,12 @@ describe('node-data-utils', () => {
 
       // 验证原对象未被修改
       expect(nodeData.state1.outputs).toBe(
-        'prefix {{ var1 }} middle {{ var2 }} suffix',
+        'prefix {{var1}} middle {{var2}} suffix',
       );
-      expect(nodeData.state1.nested.field).toBe('text {{ var1 }} more text');
+      expect(nodeData.state1.nested.field).toBe('text {{var1}} more text');
 
       // 验证返回的新对象只移除了匹配的引用
-      expect(result.state1.outputs).toBe('prefix  middle {{ var2 }} suffix');
+      expect(result.state1.outputs).toBe('prefix  middle {{var2}} suffix');
       expect(result.state1.nested.field).toBe('text  more text');
     });
   });
@@ -85,31 +85,30 @@ describe('node-data-utils', () => {
     it('should remove reference options with specified prefix', () => {
       const nodeData = {
         state1: {
-          field1: '{{ user.name }}',
-          field2: '{{ user.age }}',
-          field3: '{{ other }}',
+          field1: '{{user.name}}',
+          field2: '{{user.age}}',
+          field3: '{{other}}',
         },
       };
 
       const result = handleRemoveRefOptsPrefix(nodeData, ['state1.user']);
 
       // 验证原对象未被修改
-      expect(nodeData.state1.field1).toBe('{{ user.name }}');
-      expect(nodeData.state1.field2).toBe('{{ user.age }}');
-      expect(nodeData.state1.field3).toBe('{{ other }}');
+      expect(nodeData.state1.field1).toBe('{{user.name}}');
+      expect(nodeData.state1.field2).toBe('{{user.age}}');
+      expect(nodeData.state1.field3).toBe('{{other}}');
 
       // 验证返回的新对象
       expect(result.state1.field1).toBe('');
       expect(result.state1.field2).toBe('');
-      expect(result.state1.field3).toBe('{{ other }}');
+      expect(result.state1.field3).toBe('{{other}}');
     });
 
     it('should only remove references with matching prefix and keep other content', () => {
       const nodeData = {
         state1: {
-          field1:
-            'start {{ user.name }} middle {{ other.name }} end {{ user.age }}',
-          field2: 'text {{ user.info.email }} more {{ different }} text',
+          field1: 'start {{user.name}} middle {{other.name}} end {{user.age}}',
+          field2: 'text {{user.info.email}} more {{different}} text',
         },
       };
 
@@ -117,15 +116,15 @@ describe('node-data-utils', () => {
 
       // 验证原对象未被修改
       expect(nodeData.state1.field1).toBe(
-        'start {{ user.name }} middle {{ other.name }} end {{ user.age }}',
+        'start {{user.name}} middle {{other.name}} end {{user.age}}',
       );
       expect(nodeData.state1.field2).toBe(
-        'text {{ user.info.email }} more {{ different }} text',
+        'text {{user.info.email}} more {{different}} text',
       );
 
       // 验证返回的新对象只移除了匹配前缀的引用
-      expect(result.state1.field1).toBe('start  middle {{ other.name }} end ');
-      expect(result.state1.field2).toBe('text  more {{ different }} text');
+      expect(result.state1.field1).toBe('start  middle {{other.name}} end ');
+      expect(result.state1.field2).toBe('text  more {{different}} text');
     });
   });
 
@@ -133,9 +132,9 @@ describe('node-data-utils', () => {
     it('should correctly rename reference options', () => {
       const nodeData = {
         state1: {
-          outputs: '{{ oldVar }}',
+          outputs: '{{oldVar}}',
           nested: {
-            field3: '{{ oldVar }}',
+            field3: '{{oldVar}}',
           },
         },
       };
@@ -146,8 +145,8 @@ describe('node-data-utils', () => {
         'state1.inputs.newVar',
       );
 
-      expect(result.state1.outputs).toBe('{{ newVar }}');
-      expect(result.state1.nested.field3).toBe('{{ newVar }}');
+      expect(result.state1.outputs).toBe('{{newVar}}');
+      expect(result.state1.nested.field3).toBe('{{newVar}}');
     });
 
     it('should correctly handle prefix renaming', () => {
@@ -172,7 +171,7 @@ describe('node-data-utils', () => {
           outputs: {
             untitled_outputs_1: {
               type: 'text',
-              value: '{{ gpt1.reply }}',
+              value: '{{gpt1.reply}}',
               name: 'Untitled',
             },
           },
@@ -241,7 +240,7 @@ describe('node-data-utils', () => {
           outputs: {
             untitled_outputs_1: {
               type: 'text',
-              value: '{{ 123.reply }}',
+              value: '{{123.reply}}',
               name: 'Untitled',
             },
           },
@@ -283,6 +282,127 @@ describe('node-data-utils', () => {
       });
       // expect(nodeData.state1.blocks[0].name).toBe('xxx');
     });
+
+    it('should handle context variables with special characters', () => {
+      const nodeData = {
+        '@@@start': {
+          id: '@@@start',
+          type: 'start',
+          context: {},
+        },
+        state1: {
+          blocks: [
+            {
+              type: 'task',
+              display_name: 'cccc',
+              name: 'cccc',
+              mode: 'widget',
+              inputs: {
+                model: 'gpt-4o',
+                system_prompt: '',
+                user_prompt: '',
+                input_image: null,
+                memory: [],
+                function_parameters: [],
+                memory_mode: 'auto',
+                temperature: 0.7,
+                top_p: 1,
+                max_tokens: null,
+                stream: false,
+                presence_penalty: 0,
+                frequency_penalty: 0,
+                callback: null,
+                widget_run_id: null,
+                function_name: 'any_function_name',
+                function_description: 'any_function_description',
+              },
+              outputs: {
+                display: {
+                  reply: 'string|object',
+                },
+              },
+              widget_class_name: 'GPTWidget',
+            },
+          ],
+          transition: {},
+          id: 'state1',
+          name: 'State#1',
+          type: 'state',
+          inputs: {},
+          outputs: {
+            untitled_outputs_1: {
+              type: 'text',
+              value: '{{gpt1.reply}}',
+              name: 'Untitled',
+            },
+          },
+          render: {},
+        },
+      };
+
+      const result = handleRenameRefOpt(
+        nodeData,
+        'state1.blocks.gpt1',
+        'state1.blocks.cccc',
+        true,
+      );
+
+      expect(result).toStrictEqual({
+        '@@@start': {
+          id: '@@@start',
+          type: 'start',
+          context: {},
+        },
+        state1: {
+          blocks: [
+            {
+              type: 'task',
+              display_name: 'cccc',
+              name: 'cccc',
+              mode: 'widget',
+              inputs: {
+                model: 'gpt-4o',
+                system_prompt: '',
+                user_prompt: '',
+                input_image: null,
+                memory: [],
+                function_parameters: [],
+                memory_mode: 'auto',
+                temperature: 0.7,
+                top_p: 1,
+                max_tokens: null,
+                stream: false,
+                presence_penalty: 0,
+                frequency_penalty: 0,
+                callback: null,
+                widget_run_id: null,
+                function_name: 'any_function_name',
+                function_description: 'any_function_description',
+              },
+              outputs: {
+                display: {
+                  reply: 'string|object',
+                },
+              },
+              widget_class_name: 'GPTWidget',
+            },
+          ],
+          transition: {},
+          id: 'state1',
+          name: 'State#1',
+          type: 'state',
+          inputs: {},
+          outputs: {
+            untitled_outputs_1: {
+              type: 'text',
+              value: '{{cccc.reply}}',
+              name: 'Untitled',
+            },
+          },
+          render: {},
+        },
+      });
+    });
   });
 
   describe('rename context', () => {
@@ -314,7 +434,7 @@ describe('node-data-utils', () => {
           outputs: {
             '12345': {
               type: 'image',
-              value: '{{ __context__untitled1__ }}',
+              value: '{{__context__untitled1__}}',
               name: '12345',
             },
           },
@@ -329,7 +449,7 @@ describe('node-data-utils', () => {
       );
 
       expect(result.state1.outputs['12345'].value).toBe(
-        '{{ __context__image__ }}',
+        '{{__context__image__}}',
       );
     });
   });
@@ -338,11 +458,11 @@ describe('node-data-utils', () => {
     it('should remove all references to specified state', () => {
       const nodeData = {
         state1: {
-          field1: '{{ removedState.field }}',
+          field1: '{{removedState.field}}',
           type: 'normal',
         },
         state2: {
-          field2: '{{ removedState.nested.field }}',
+          field2: '{{removedState.nested.field}}',
           type: 'state',
         },
         removedState: {
@@ -354,8 +474,8 @@ describe('node-data-utils', () => {
       const result = handleRemoveState(nodeData, 'removedState');
 
       // 验证原对象未被修改
-      expect(nodeData.state1.field1).toBe('{{ removedState.field }}');
-      expect(nodeData.state2.field2).toBe('{{ removedState.nested.field }}');
+      expect(nodeData.state1.field1).toBe('{{removedState.field}}');
+      expect(nodeData.state2.field2).toBe('{{removedState.nested.field}}');
 
       // 验证返回的新对象
       expect(result.state1.field1).toBe('');
@@ -365,9 +485,9 @@ describe('node-data-utils', () => {
     it('should only remove references to specified state and keep other content', () => {
       const nodeData = {
         state1: {
-          field1: 'before {{ removedState.field }} after {{ keptState.field }}',
+          field1: 'before {{removedState.field}} after {{keptState.field}}',
           field2:
-            'text {{ removedState.nested.field }} {{ otherState.field }} more',
+            'text {{removedState.nested.field}} {{otherState.field}} more',
         },
       };
 
@@ -375,15 +495,15 @@ describe('node-data-utils', () => {
 
       // 验证原对象未被修改
       expect(nodeData.state1.field1).toBe(
-        'before {{ removedState.field }} after {{ keptState.field }}',
+        'before {{removedState.field}} after {{keptState.field}}',
       );
       expect(nodeData.state1.field2).toBe(
-        'text {{ removedState.nested.field }} {{ otherState.field }} more',
+        'text {{removedState.nested.field}} {{otherState.field}} more',
       );
 
       // 验证返回的新对象只移除了匹配的引用
-      expect(result.state1.field1).toBe('before  after {{ keptState.field }}');
-      expect(result.state1.field2).toBe('text  {{ otherState.field }} more');
+      expect(result.state1.field1).toBe('before  after {{keptState.field}}');
+      expect(result.state1.field2).toBe('text  {{otherState.field}} more');
     });
   });
 
@@ -395,7 +515,7 @@ describe('node-data-utils', () => {
             {
               name: 'twitter1',
               inputs: {
-                query: '{{ gpt1.reply }}',
+                query: '{{gpt1.reply}}',
                 action: 'scrape_tweets',
               },
               outputs: {
@@ -407,7 +527,7 @@ describe('node-data-utils', () => {
             {
               name: 'gpt1',
               inputs: {
-                user_prompt: '{{ twitter1.data }}',
+                user_prompt: '{{twitter1.data}}',
               },
               outputs: {
                 display: {
@@ -427,15 +547,15 @@ describe('node-data-utils', () => {
       );
 
       // 验证原对象未被修改
-      expect(nodeData.state1.blocks[0].inputs.query).toBe('{{ gpt1.reply }}');
+      expect(nodeData.state1.blocks[0].inputs.query).toBe('{{gpt1.reply}}');
       expect(nodeData.state1.blocks[1].inputs.user_prompt).toBe(
-        '{{ twitter1.data }}',
+        '{{twitter1.data}}',
       );
 
       // 验证返回的新对象
       expect(result.state1.blocks[0].inputs.query).toBe('');
       expect(result.state1.blocks[1].inputs.user_prompt).toBe(
-        '{{ twitter1.data }}',
+        '{{twitter1.data}}',
       );
     });
 
@@ -447,7 +567,7 @@ describe('node-data-utils', () => {
               name: 'task1',
               inputs: {
                 nested: {
-                  field: '{{ task2.outputs.data.nested.field }}',
+                  field: '{{task2.outputs.data.nested.field}}',
                 },
               },
             },
@@ -455,7 +575,7 @@ describe('node-data-utils', () => {
               name: 'task2',
               inputs: {
                 nested: {
-                  field: '{{ task1.outputs.data.nested.field }}',
+                  field: '{{task1.outputs.data.nested.field}}',
                 },
               },
             },
@@ -472,7 +592,7 @@ describe('node-data-utils', () => {
 
       expect(result.state1.blocks[0].inputs.nested.field).toBe('');
       expect(result.state1.blocks[1].inputs.nested.field).toBe(
-        '{{ task1.outputs.data.nested.field }}',
+        '{{task1.outputs.data.nested.field}}',
       );
     });
 
@@ -537,7 +657,7 @@ describe('node-data-utils', () => {
               inputs: {
                 model: 'gpt-4o',
                 system_prompt:
-                  '1 {{         gpt1.reply         }} 2 {{  gpt2.reply  }}',
+                  '1 {{        gpt1.reply        }} 2 {{ gpt2.reply }}',
                 user_prompt: '',
                 input_image: null,
                 memory: [],
@@ -608,7 +728,7 @@ describe('node-data-utils', () => {
       );
 
       expect(result.state1.blocks[1].inputs.system_prompt).toBe(
-        '1 {{         gpt1.reply         }} 2 {{  gpt2.reply  }}',
+        '1 {{        gpt1.reply        }} 2 {{ gpt2.reply }}',
       );
     });
 
@@ -619,13 +739,13 @@ describe('node-data-utils', () => {
             {
               name: 'task1',
               inputs: {
-                query: '{{ nonexistent.data }}',
+                query: '{{nonexistent.data}}',
               },
             },
             {
               name: 'task2',
               inputs: {
-                query: '{{ task1.data }}',
+                query: '{{task1.data}}',
               },
             },
           ],
@@ -640,7 +760,7 @@ describe('node-data-utils', () => {
       );
 
       expect(result.state1.blocks[0].inputs.query).toBe('');
-      expect(result.state1.blocks[1].inputs.query).toBe('{{ task1.data }}');
+      expect(result.state1.blocks[1].inputs.query).toBe('{{task1.data}}');
     });
 
     it('should preserve previously valid references', () => {
@@ -654,7 +774,7 @@ describe('node-data-utils', () => {
               mode: 'widget',
               inputs: {
                 action: 'scrape_tweets',
-                query: '{{ gpt1.reply }}',
+                query: '{{gpt1.reply}}',
                 sort_order: 'relevancy',
                 twitter_handle: '',
               },
@@ -671,7 +791,7 @@ describe('node-data-utils', () => {
               mode: 'widget',
               inputs: {
                 model: 'gpt-4',
-                user_prompt: '{{ twitter1.data }}',
+                user_prompt: '{{twitter1.data}}',
               },
               outputs: {
                 display: {
@@ -718,7 +838,7 @@ describe('node-data-utils', () => {
               mode: 'widget',
               inputs: {
                 model: 'gpt-4',
-                user_prompt: '{{ twitter1.data }}',
+                user_prompt: '{{twitter1.data}}',
               },
               outputs: {
                 display: {

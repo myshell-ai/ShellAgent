@@ -21,6 +21,7 @@ import { Dropdown } from 'antd';
 import dayjs from 'dayjs';
 import { useInjection } from 'inversify-react';
 import { isEmpty } from 'lodash-es';
+import { observer } from 'mobx-react-lite';
 import Link from 'next/link';
 import React, { useCallback } from 'react';
 
@@ -28,7 +29,6 @@ import { AppBuilderModel } from '@/stores/app/models/app-builder.model';
 import { cn } from '@/utils/cn';
 
 import VersionSkeleton from '../skeleton';
-import { observer } from 'mobx-react-lite';
 
 interface PublishProps {
   app_id: string;
