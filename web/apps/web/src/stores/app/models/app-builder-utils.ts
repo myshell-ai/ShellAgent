@@ -7,7 +7,6 @@ import {
 } from '@shellagent/shared/protocol/app-scope';
 import { reservedStateNameSchema } from '@shellagent/shared/protocol/node';
 import { mapValues, isEmpty } from 'lodash-es';
-
 export interface CascaderOption {
   label: string;
   value?: string;
@@ -39,14 +38,17 @@ export function convertNodeDataToState(nodeData: any): State {
             type: v,
             display_name: k,
           };
-        }), // Assuming inputs are the variables
+        }),
       })),
       outputs: {
         variables: Object.fromEntries(
           Object.entries(nodeData.outputs || {}).map(
             ([key, value]: [string, any]) => [
               key,
-              { type: value.type, display_name: value.name },
+              {
+                type: value.type,
+                display_name: value.display_name || value.name,
+              },
             ],
           ),
         ),
@@ -74,7 +76,7 @@ export function convertNodeDataToState(nodeData: any): State {
     return stateSchema.parse(ret);
   } catch (error) {
     console.warn('StateSchema Zod Validate Error', error);
-    return ret;
+    return ret as State;
   }
 }
 
@@ -136,7 +138,11 @@ export function convertRefOptsToCascaderOpts(
           value = `{{__context__${variableKey}__}}`;
           parent = 'context';
         } else {
-          value = `{{${key}.${variableKey}}}`;
+          if (/__context__([a-z0-9_]+)__/g.test(variableKey)) {
+            value = `{{${variableKey}}}`;
+          } else {
+            value = `{{${key}.${variableKey}}}`;
+          }
           parent = 'state';
         }
         return {

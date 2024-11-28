@@ -17,6 +17,7 @@ import {
   DropdownMenuSubTrigger,
   DropdownMenuTrigger,
 } from './dropdown-menu';
+import { Tooltip, TooltipContent, TooltipTrigger } from './tooltip';
 
 interface CascaderOption {
   label: string;
@@ -160,15 +161,24 @@ function Cascader(props: P) {
           )}
           aria-expanded={open}>
           <div className="flex items-center justify-between !w-full">
-            <Text
-              size="sm"
-              className="flex-1 text-default text-ellipsis overflow-hidden whitespace-nowrap">
-              {value ? (
-                renderLabel(options, value, showParentLabel)
-              ) : (
-                <span className="text-subtler">{placeholder}</span>
-              )}
-            </Text>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Text
+                  size="sm"
+                  className="flex-1 text-default text-ellipsis overflow-hidden whitespace-nowrap">
+                  {value ? (
+                    renderLabel(options, value, showParentLabel)
+                  ) : (
+                    <span className="text-subtler">{placeholder}</span>
+                  )}
+                </Text>
+              </TooltipTrigger>
+              <TooltipContent>
+                {value
+                  ? renderLabel(options, value, showParentLabel)
+                  : placeholder}
+              </TooltipContent>
+            </Tooltip>
             <div className="flex items-center ml-2">
               {value ? (
                 <div className="relative">

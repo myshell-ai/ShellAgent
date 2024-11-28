@@ -574,6 +574,153 @@ describe('app builder utils', () => {
     `);
   });
 
+  it('should handle context variables in state outputs', () => {
+    const input = refOptionsOutputSchema.parse({
+      global: {
+        context: {
+          display_name: 'Context',
+          variables: {
+            output_image: {
+              type: 'image',
+              display_name: 'output_image',
+            },
+          },
+        },
+        state2: {
+          display_name: 'State#2',
+          variables: {
+            output_data: {
+              type: 'text',
+              display_name: 'output_data',
+            },
+          },
+        },
+        state4: {
+          display_name: 'State#4',
+          variables: {
+            __context__output_image__: {
+              type: 'text',
+              display_name: 'Context/output_image',
+            },
+          },
+        },
+        state5: {
+          display_name: 'State#5',
+          variables: {},
+        },
+      },
+      local: {
+        inputs: {
+          variables: {
+            input_text: {
+              type: 'text',
+              display_name: 'input_text',
+            },
+          },
+        },
+        tasks: [
+          {
+            name: 'comfy_ui1',
+            display_name: 'ComfyUI#1',
+            variables: {
+              output_image: {
+                type: 'string',
+                display_name: 'output_image',
+              },
+            },
+          },
+        ],
+        outputs: {
+          variables: {},
+        },
+        buttons: {},
+      },
+    });
+
+    const ret = convertRefOptsToCascaderOpts(input as any);
+    expect(ret).toMatchInlineSnapshot(`
+        [
+          {
+            "children": [
+              {
+                "children": [
+                  {
+                    "field_type": "image",
+                    "label": "output_image",
+                    "parent": "context",
+                    "value": "{{__context__output_image__}}",
+                  },
+                ],
+                "label": "Context",
+                "value": "Context",
+              },
+              {
+                "children": [
+                  {
+                    "field_type": "text",
+                    "label": "output_data",
+                    "parent": "state",
+                    "value": "{{state2.output_data}}",
+                  },
+                ],
+                "label": "State#2",
+                "value": "State#2",
+              },
+              {
+                "children": [
+                  {
+                    "field_type": "text",
+                    "label": "Context/output_image",
+                    "parent": "state",
+                    "value": "{{__context__output_image__}}",
+                  },
+                ],
+                "label": "State#4",
+                "value": "State#4",
+              },
+            ],
+            "label": "global",
+          },
+          {
+            "children": [
+              {
+                "children": [
+                  {
+                    "field_type": "text",
+                    "label": "input_text",
+                    "parent": "inputs",
+                    "value": "{{input_text}}",
+                  },
+                ],
+                "label": "Input",
+                "value": "Input",
+              },
+              {
+                "children": [
+                  {
+                    "children": [
+                      {
+                        "field_type": "string",
+                        "label": "output_image",
+                        "parent": "blocks",
+                        "value": "{{comfy_ui1.output_image}}",
+                      },
+                    ],
+                    "label": "ComfyUI#1",
+                    "parent": "blocks",
+                    "value": "ComfyUI#1",
+                  },
+                ],
+                "label": "Task",
+                "value": "Task",
+              },
+            ],
+            "label": "current",
+          },
+        ]
+      `);
+  });
+
   describe('cases', () => {
     it('case#1', () => {
       const input = {
