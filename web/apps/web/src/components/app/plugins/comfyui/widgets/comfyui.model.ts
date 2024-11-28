@@ -160,17 +160,23 @@ export class ComfyUIModel {
     }
   }
 
-  async handleDuplicateState(newId: string, nodeData: any) {
+  async handleDuplicateState(newId: string, data: any) {
     await this.getCwd();
     if (this.defaultLocation) {
-      return duplicateComfyUI(
+      const { nodeData, locations } = duplicateComfyUI(
         this.defaultLocation,
         this.appBuilderModelFactory().metadata.name,
         newId,
-        nodeData,
+        data,
       );
+      await Promise.all(
+        locations.map(loc => {
+          return this.duplicateComfyUIExtendedJson(loc.from, loc.to);
+        }),
+      );
+      return nodeData;
     }
-    return nodeData;
+    return data;
   }
 
   async openLocationFormDialog(stateName: string, taskName: string) {
@@ -234,6 +240,29 @@ export class ComfyUIModel {
           value,
         );
       }
+    } catch (e: any) {
+      this.emitter.emitter.emit('message.error', e.message);
+      throw e;
+    }
+  }
+
+  @action.bound
+  async duplicateComfyUIExtendedJson(location: string, location_new: string) {
+    try {
+      await axios.post(
+        `/api/comfyui/update_dependency`,
+        {
+          location,
+          location_new, // this param will duplicate a json from location
+          missing_custom_nodes: [],
+          missing_models: {},
+        },
+        {
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        },
+      );
     } catch (e: any) {
       this.emitter.emitter.emit('message.error', e.message);
       throw e;

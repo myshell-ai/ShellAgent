@@ -626,42 +626,50 @@ describe('app builder utils', () => {
     const ret = duplicateComfyUI(defaultLocation, appName, newId, nodeData);
     expect(ret).toMatchInlineSnapshot(`
       {
-        "blocks": [
+        "locations": [
           {
-            "api": "http://127.0.0.1:8188/",
-            "comfy_workflow_id": "7feb1c1361c14cf796d2d42fd87946a3",
-            "custom": true,
-            "display_name": "ComfyUI#1",
-            "inputs": {},
-            "location": "/Users/shane/Downloads/ShellAgent_MacOS_release/ShellAgent/data/comfy_workflow//app_1_state_6_comfy_ui1.shellagent.json",
-            "mode": "widget",
-            "name": "comfy_ui1",
-            "outputs": {
-              "display": {
-                "output_image": "string",
-              },
-            },
-            "type": "task",
-            "widget_class_name": "ComfyUIWidget",
+            "from": "/Users/shane/Downloads/ShellAgent_MacOS_release/ShellAgent/data/comfy_workflow/case_simple_comfy_ui_state5_comfy_ui1.shellagent.json",
+            "to": "/Users/shane/Downloads/ShellAgent_MacOS_release/ShellAgent/data/comfy_workflow/app_1_state_6_comfy_ui1.shellagent.json",
           },
         ],
-        "display_name": "State#5",
-        "id": "state5",
-        "inputs": {
-          "untitled_inputs_1": {
-            "name": "Untitled",
-            "source": "IM",
-            "type": "text",
-            "user_input": true,
+        "nodeData": {
+          "blocks": [
+            {
+              "api": "http://127.0.0.1:8188/",
+              "comfy_workflow_id": "7feb1c1361c14cf796d2d42fd87946a3",
+              "custom": true,
+              "display_name": "ComfyUI#1",
+              "inputs": {},
+              "location": "/Users/shane/Downloads/ShellAgent_MacOS_release/ShellAgent/data/comfy_workflow/app_1_state_6_comfy_ui1.shellagent.json",
+              "mode": "widget",
+              "name": "comfy_ui1",
+              "outputs": {
+                "display": {
+                  "output_image": "string",
+                },
+              },
+              "type": "task",
+              "widget_class_name": "ComfyUIWidget",
+            },
+          ],
+          "display_name": "State#5",
+          "id": "state5",
+          "inputs": {
+            "untitled_inputs_1": {
+              "name": "Untitled",
+              "source": "IM",
+              "type": "text",
+              "user_input": true,
+            },
           },
+          "name": "State",
+          "outputs": {},
+          "render": {
+            "image": "{{ comfy_ui1.output_image }}",
+            "text": "{{ untitled_inputs_1 }}",
+          },
+          "type": "state",
         },
-        "name": "State",
-        "outputs": {},
-        "render": {
-          "image": "{{ comfy_ui1.output_image }}",
-          "text": "{{ untitled_inputs_1 }}",
-        },
-        "type": "state",
       }
     `);
   });

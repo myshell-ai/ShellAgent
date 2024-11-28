@@ -319,17 +319,35 @@ export function duplicateComfyUI(
   appName: string,
   stateName: string,
   nodeData: FieldValues,
-) {
+): {
+  nodeData: FieldValues;
+  locations: Array<{
+    from: string;
+    to: string;
+  }>;
+} {
+  let locations: Array<{
+    from: string;
+    to: string;
+  }> = [];
   if (Array.isArray(nodeData.blocks)) {
     nodeData.blocks = nodeData.blocks.map(b => {
       if (b.widget_class_name === 'ComfyUIWidget') {
         const defaultName = customSnakeCase(
           `${appName}_${stateName}_${b.name}`,
         );
-        b.location = `${defaultLocation}/${defaultName}.shellagent.json`;
+        const locationNew = `${defaultLocation}${defaultName}.shellagent.json`;
+        locations.push({
+          from: b.location,
+          to: locationNew,
+        });
+        b.location = locationNew;
       }
       return b;
     });
   }
-  return nodeData;
+  return {
+    nodeData,
+    locations,
+  };
 }
