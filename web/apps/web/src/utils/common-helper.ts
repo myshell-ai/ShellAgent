@@ -14,7 +14,9 @@ export function secondsConverter(seconds: number): string {
   const minutes = Math.floor(seconds / 60);
   const remainingSeconds = seconds % 60;
 
-  return `${(minutes < 10 && minutes > 0 ? '0' : '') + minutes}:${remainingSeconds < 10 ? '0' : ''}${remainingSeconds}`;
+  return `${(minutes < 10 && minutes > 0 ? '0' : '') + minutes}:${
+    remainingSeconds < 10 ? '0' : ''
+  }${remainingSeconds}`;
 }
 
 export function durationFormatter(seconds: number): string {
@@ -134,7 +136,7 @@ export const isEventTargetInputArea = (target: HTMLElement) => {
   return false;
 };
 
-const refReg = /{{.*}}/;
+export const refReg = /{{.*}}/;
 
 export const filterVariable = (data: Record<string, any>) => {
   return reduce(

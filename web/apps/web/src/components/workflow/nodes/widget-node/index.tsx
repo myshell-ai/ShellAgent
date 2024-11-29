@@ -3,10 +3,10 @@ import {
   WidgetNode as WidgetNodeType,
   useReactFlowStore,
 } from '@shellagent/flow-engine';
-import { TValues, TFieldMode } from '@shellagent/form-engine';
+import { TValues } from '@shellagent/form-engine';
 import { FormRef } from '@shellagent/ui';
 import { useKeyPress } from 'ahooks';
-import React, { useCallback, useRef, useEffect } from 'react';
+import React, { useRef, useEffect } from 'react';
 
 import { getDelPathInfo } from '@/stores/workflow/utils/data-transformer';
 import { useWorkflowStore } from '@/stores/workflow/workflow-provider';
@@ -29,8 +29,6 @@ const WidgetNode: React.FC<NodeProps<WidgetNodeType>> = ({
     setNodeData,
     nodeData,
     loading,
-    fieldsModeMap,
-    setFieldsModeMap,
     resetData,
     setResetData,
     clearResetData,
@@ -40,8 +38,6 @@ const WidgetNode: React.FC<NodeProps<WidgetNodeType>> = ({
     setNodeData: state.setNodeData,
     nodeData: state.nodeData,
     loading: state.loading,
-    fieldsModeMap: state.config?.fieldsModeMap || {},
-    setFieldsModeMap: state.setFieldsModeMap,
     resetData: state.resetData,
     setResetData: state.setResetData,
     clearResetData: state.clearResetData,
@@ -82,13 +78,6 @@ const WidgetNode: React.FC<NodeProps<WidgetNodeType>> = ({
     });
   }, [resetData]);
 
-  const onModeChange = useCallback(
-    (name: string, mode: TFieldMode) => {
-      setFieldsModeMap({ id, name, mode });
-    },
-    [id, setFieldsModeMap],
-  );
-
   const onChange = (values: TValues) => {
     setNodeData({ id: data.id, data: values });
   };
@@ -100,8 +89,6 @@ const WidgetNode: React.FC<NodeProps<WidgetNodeType>> = ({
         loading={loading.getReactFlow}
         values={nodeData[data.id]}
         onChange={onChange}
-        onModeChange={onModeChange}
-        modeMap={fieldsModeMap?.[data.id] || {}}
       />
     </NodeCard>
   );

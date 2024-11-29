@@ -2,13 +2,13 @@ import { IFlow, useReactFlowStore } from '@shellagent/flow-engine';
 import { Text } from '@shellagent/ui';
 import { useDebounce, useRequest } from 'ahooks';
 import dayjs from 'dayjs';
+import { useInjection } from 'inversify-react';
 import { isEmpty, pick } from 'lodash-es';
 import React, { useCallback, useMemo, useState, useEffect, memo } from 'react';
-import { useShallow } from 'zustand/react/shallow';
 
 import { usePasteState } from '@/components/app/nodes/state-node/hook/use-paste-state';
 import { saveApp } from '@/services/app';
-import { useAppStore } from '@/stores/app/app-provider';
+import { AppBuilderModel } from '@/stores/app/models/app-builder.model';
 import { genAutomata } from '@/stores/app/utils/data-transformer';
 import { isDeepEmpty } from '@/utils/common-helper';
 
@@ -16,20 +16,17 @@ const relativeTime = require('dayjs/plugin/relativeTime');
 
 dayjs.extend(relativeTime);
 
-const FlowHeader: React.FC<{ appId: string; version_name: string }> = ({
+const FlowHeader = ({
   appId,
-  version_name,
+  versionName,
+}: {
+  appId: string;
+  versionName: string;
 }) => {
   const [autoSavedTime, setAutoSavedTime] = useState('');
   const [autoSavedSuccess, setAutoSavedSuccess] = useState(true);
-  const { config, nodeData, flowInstance, loading } = useAppStore(
-    useShallow(state => ({
-      config: state.config,
-      nodeData: state.nodeData,
-      flowInstance: state.flowInstance,
-      loading: state.loading,
-    })),
-  );
+
+  const appBuilder = useInjection<AppBuilderModel>('AppBuilderModel');
 
   const { nodes, edges, viewport } = useReactFlowStore(state => ({
     nodes: state.nodes,
@@ -40,13 +37,13 @@ const FlowHeader: React.FC<{ appId: string; version_name: string }> = ({
   const values = useMemo(() => {
     return {
       appId,
-      config,
-      nodeData,
+      config: appBuilder.config,
+      nodeData: appBuilder.nodeData,
       nodes,
       edges,
       viewport,
     };
-  }, [appId, nodeData, config, nodes, edges, viewport]);
+  }, [appId, appBuilder.nodeData, appBuilder.config, nodes, edges, viewport]);
 
   usePasteState({ enabeKeyboard: true });
   const isDev = process.env.NEXT_PUBLIC_DEVELOPMENT === 'yes';
@@ -70,31 +67,35 @@ const FlowHeader: React.FC<{ appId: string; version_name: string }> = ({
   });
 
   const handleAutoSave = useCallback(async () => {
-    const reactflow: IFlow = flowInstance?.toObject() as IFlow;
+    const reactflow: IFlow = appBuilder.flowInstance?.toObject() as IFlow;
 
     if ((!isEmpty(reactflow?.edges) || !isEmpty(reactflow?.nodes)) && appId) {
-      const automata = genAutomata(reactflow, nodeData);
+      const automata = genAutomata(reactflow, appBuilder.nodeData);
       if (!isDeepEmpty(pick(automata, ['blocks', 'context']))) {
         saveData({
           app_id: appId,
           reactflow,
-          automata: genAutomata(reactflow, nodeData),
-          config,
+          automata: genAutomata(reactflow, appBuilder.nodeData),
+          config: appBuilder.config,
         });
       }
     }
-  }, [appId, flowInstance, nodeData, config]);
+  }, [appId, appBuilder.flowInstance, appBuilder.nodeData, appBuilder.config]);
 
   useEffect(() => {
-    if (!version_name && !loading.getAutomata && !loading.getReactFlow) {
+    if (
+      !versionName &&
+      !appBuilder.getAutomataLoading &&
+      !appBuilder.fetchFlowListLoading
+    ) {
       handleAutoSave();
     }
-  }, [debouncedValues, version_name]);
+  }, [debouncedValues, versionName]);
 
   return (
     <div className="absolute right-3 w-full text-right z-10">
       <div className="h-5">
-        {autoSavedTime && !version_name && autoSavedSuccess ? (
+        {autoSavedTime && !versionName && autoSavedSuccess ? (
           <Text size="sm" color="subtlest">
             Auto Saved {dayjs(autoSavedTime).format('HH:mm:ss')}
           </Text>
@@ -104,9 +105,9 @@ const FlowHeader: React.FC<{ appId: string; version_name: string }> = ({
             Auto Saved Error
           </Text>
         ) : null}
-        {version_name ? (
+        {versionName ? (
           <Text size="sm" color="subtlest">
-            Current preview version: {version_name}
+            Current preview version: {versionName}
           </Text>
         ) : null}
       </div>

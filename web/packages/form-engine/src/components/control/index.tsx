@@ -18,6 +18,10 @@ import {
 } from '@shellagent/ui';
 import { isEmpty, omit } from 'lodash-es';
 import React, { useMemo, useRef, useState } from 'react';
+import {
+  FieldMode,
+  FieldModeEnum,
+} from '@shellagent/shared/protocol/extend-config';
 
 import { ISchema } from '../../types';
 import { cn } from '../../utils/cn';
@@ -30,16 +34,13 @@ interface IControlProps {
   name: string;
 }
 
-type Mode = 'raw' | 'ui' | 'ref';
-
 /**
  * @param props
  * @returns
  */
 const Control: React.FC<IControlProps> = props => {
   const { name } = props;
-  const { fields, components, remove, modeMap, onModeChange, onStatusChange } =
-    useFormEngineContext();
+  const { fields, components, remove, onStatusChange } = useFormEngineContext();
   const { setValue, getValues } = useFormContext();
   const { schema, state, parent } = fields[name] || {};
   const preType = useRef('');
@@ -62,8 +63,6 @@ const Control: React.FC<IControlProps> = props => {
     'x-onchange-prop-name': xOnChangePropsName,
     'x-raw': xRaw,
     'x-raw-default': xRawDefault,
-    'x-raw-options': xRawOptions,
-    'x-raw-disabled': xRawDisabled,
     'x-suffix': xSuffix,
     'x-prefix': xPrefix,
     'x-class': xClass,
@@ -76,26 +75,7 @@ const Control: React.FC<IControlProps> = props => {
     description,
     default: defaultValue,
   } = schema;
-
-  const rawReg = /{{.*}}/;
-
-  const refReg = /^({{).*(}})$/;
-
-  const mode = useMemo(() => {
-    if (!xRaw) {
-      return 'ui';
-    }
-    if (modeMap?.[name]) {
-      return modeMap?.[name];
-    }
-    if (refReg.test(getValues(name))) {
-      return 'ref';
-    }
-    if (rawReg.test(getValues(name))) {
-      return 'raw';
-    }
-    return xRawDefault || 'ui';
-  }, [modeMap, name, xRawDefault]);
+  const [mode, setMode] = useState(xRawDefault || FieldModeEnum.Enum.ui);
 
   let titleControl: React.ReactElement<
     unknown,
@@ -105,11 +85,6 @@ const Control: React.FC<IControlProps> = props => {
   if (!schema) {
     return null;
   }
-
-  const handleModeChange = (mode: Mode) => {
-    setValue(name, mode === 'ui' ? getDefaultValueBySchema(schema) : '');
-    onModeChange?.(name, mode);
-  };
 
   const onDelete = () => {
     remove(xDeletable ? name : parent);
@@ -149,17 +124,17 @@ const Control: React.FC<IControlProps> = props => {
     schemaTypes: anyOf
       ? (anyOf as ISchema[]).map(item => item['x-field-type'])
       : xFieldType
-        ? [xFieldType]
-        : null,
+      ? [xFieldType]
+      : null,
     ...xComponentProps,
   };
 
   const layout =
-    mode === 'raw'
+    mode === FieldModeEnum.Enum.raw
       ? 'Vertical'
-      : xLayout === 'Horizontal' || mode === 'ref'
-        ? 'Horizontal'
-        : undefined;
+      : xLayout === 'Horizontal' || mode === FieldModeEnum.Enum.ref
+      ? 'Horizontal'
+      : undefined;
 
   if (title) {
     titleControl = (
@@ -220,7 +195,7 @@ const Control: React.FC<IControlProps> = props => {
           const newField: { [key: string]: FieldValues } = {};
           const valuePropsName = xValuePropsName || 'value';
           const renderFormItem = () => {
-            if (mode === 'ref') {
+            if (mode === FieldModeEnum.Enum.ref) {
               return React.createElement(components.VariableSelect, {
                 triggerClassName: 'h-6',
                 ...passProps,
@@ -228,7 +203,7 @@ const Control: React.FC<IControlProps> = props => {
                 ...newField,
               });
             }
-            if (mode === 'raw') {
+            if (mode === FieldModeEnum.Enum.raw) {
               return React.createElement(components.ExpressionInput, {
                 ...passProps,
                 ...field,
@@ -298,7 +273,7 @@ const Control: React.FC<IControlProps> = props => {
           }
           const FormItemWithDesc =
             (!checked && xSwithable) || xHiddenControl ? null : (
-              <div className="grow">
+              <div className="flex-1">
                 <FormControl>{renderFormItem()}</FormControl>
                 {fieldState.error ? <FormMessage /> : null}
                 {missOption ? (
@@ -313,13 +288,13 @@ const Control: React.FC<IControlProps> = props => {
           return (
             <FormItem layout={layout}>
               {xRaw || titleControl ? (
-                <div className={cn('flex items-center w-full justify-between')}>
+                <div className={cn('flex items-center w-full gap-x-2')}>
                   <div
                     className={cn(
-                      'flex items-center',
+                      'flex items-center shrink-0',
                       (titleControl && xType === 'Control') ||
                         (xRaw && xType === 'Block')
-                        ? 'w-36 mr-2'
+                        ? 'w-28 mr-2'
                         : '',
                     )}>
                     {!xHiddenTitle && titleControl && xType === 'Control'
@@ -341,16 +316,16 @@ const Control: React.FC<IControlProps> = props => {
                       </TooltipProvider>
                     ) : null}
                   </div>
-                  {layout === 'Horizontal' || (xRaw && !titleControl)
-                    ? FormItemWithDesc
-                    : null}
-                  <div className="flex gap-x-1.5 ml-2 items-center">
+                  <div className="flex-1 min-w-0">
+                    {layout === 'Horizontal' || (xRaw && !titleControl)
+                      ? FormItemWithDesc
+                      : null}
+                  </div>
+                  <div className="flex items-center gap-x-1.5 shrink-0">
                     {xRaw && components?.ModeSelect
                       ? React.createElement(components.ModeSelect, {
-                          onChange: handleModeChange,
-                          defaultValue: mode,
-                          disabled: xRawDisabled,
-                          defaultOptions: xRawOptions,
+                          name,
+                          onChange: setMode,
                         })
                       : null}
                     {xParentDeletable || xDeletable ? (

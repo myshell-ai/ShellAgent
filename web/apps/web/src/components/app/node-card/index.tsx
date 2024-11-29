@@ -8,7 +8,6 @@ import React, { useRef } from 'react';
 import { ErrorBoundary, FallbackProps } from 'react-error-boundary';
 
 import { SchemaProvider } from '@/stores/app/schema-provider';
-import { VariableProvider } from '@/stores/app/variable-provider';
 
 import { ContextMenu } from '../context-menu';
 
@@ -68,10 +67,8 @@ const NodeCard: React.FC<
             display_name={display_name}
             name={name}
             id={id}
-            output={runtime_data?.output}>
-            <VariableProvider id={id}>
-              <ContextMenu>{children}</ContextMenu>
-            </VariableProvider>
+            outputs={runtime_data?.output}>
+            <ContextMenu>{children}</ContextMenu>
           </SchemaProvider>
           {runtime_data?.node_status ? (
             <div className="absolute top-4 right-3 z-50 w-4 h-4">

@@ -7,7 +7,6 @@ import React, {
   memo,
   useImperativeHandle,
   useRef,
-  useMemo,
 } from 'react';
 import { useDrop } from 'react-dnd';
 import ReactFlow, { Background, OnConnect, ReactFlowInstance } from 'reactflow';
@@ -18,10 +17,8 @@ import {
   defaultViewport,
   DRAGGABLE_NODE_ID,
 } from '../../constants';
-import { DefaultEdge } from '../../material/edges';
 import { useReactFlowStore } from '../../store/flow/provider';
 import {
-  EdgeTypeEnum,
   DraggableNodeType,
   IFlowDagProps,
   FlowRef,
@@ -31,19 +28,8 @@ import {
 import { isCustomEdge } from '../../utils';
 import OptBar from '../opt-bar';
 
-const defaultEdgeTypes = {
-  [EdgeTypeEnum.default]: DefaultEdge,
-};
-
 const FlowDag = forwardRef<FlowRef, IFlowDagProps>(
   ({ nodeTypes = {}, edgeTypes = {}, loading, header }, ref) => {
-    const memoizedEdgeTypes = useMemo(
-      () => ({
-        ...defaultEdgeTypes,
-        ...edgeTypes,
-      }),
-      [edgeTypes],
-    );
     const flowInstance = useRef<ReactFlowInstance<NodeData, EdgeData> | null>(
       null,
     );
@@ -161,7 +147,7 @@ const FlowDag = forwardRef<FlowRef, IFlowDagProps>(
           defaultEdgeOptions={edgeOptions}
           connectionLineStyle={connectionLineStyle}
           nodeTypes={nodeTypes}
-          edgeTypes={memoizedEdgeTypes}
+          edgeTypes={edgeTypes}
           onNodesChange={onNodesChange}
           onEdgesChange={onEdgesChange}
           onConnect={handleEdgeConnect}

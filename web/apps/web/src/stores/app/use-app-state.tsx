@@ -1,10 +1,9 @@
 import { Node } from '@shellagent/flow-engine';
-import { FieldValues } from '@shellagent/ui';
 import { create } from 'zustand';
 
 import { EdgeDataTypeEnum, CustomEdgeData } from '@/components/app/edges';
 
-type State = {
+export type State = {
   editing: boolean;
   currentStateId: string;
   stateConfigSheetOpen: boolean;
@@ -19,7 +18,6 @@ type State = {
   currentTransitionSourceHandle: string;
   currentEdegData: CustomEdgeData;
   targetInputsSheetOpen: boolean;
-  currentCopyStateData: FieldValues;
 };
 
 type Action = {
@@ -42,7 +40,6 @@ type Action = {
   setTargetInputsSheetOpen: (open: State['targetInputsSheetOpen']) => void;
   setRunDrawerWidth: (width: number) => void;
   resetState: () => void;
-  setCurrentCopyStateData: (data: FieldValues) => void;
 };
 
 const initialState: State = {
@@ -66,7 +63,6 @@ const initialState: State = {
     target: '',
     conditions: [],
   },
-  currentCopyStateData: {},
 };
 
 export const useAppState = create<State & Action>(set => ({
@@ -163,6 +159,4 @@ export const useAppState = create<State & Action>(set => ({
       ...state,
       targetInputsSheetOpen: open,
     })),
-  setCurrentCopyStateData: (data: FieldValues) =>
-    set(() => ({ currentCopyStateData: data })),
 }));

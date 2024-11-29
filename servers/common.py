@@ -59,6 +59,12 @@ async def upload(file: UploadFile = File(...)):
     return JSONResponse(content=response)
 
 
+@app.get('/api/get_cwd')
+async def get_cwd():
+    return {
+        "cwd": os.getcwd()
+    }
+
        
 BASE_DIR = os.getcwd()
 @app.get('/api/files/{filename:path}')
@@ -128,12 +134,14 @@ async def fetch_workflow_list(params: Dict):
 
 
 @app.post('/api/template_list')
-async def fetch_workflow_list(params: Dict):
+async def template_list(params: Dict):
     SAVE_ROOT = TEMPLATES_ROOTS.get(params["type"])
 
     if not SAVE_ROOT:
         raise HTTPException(status_code=400, detail="Invalid type specified")
 
+    category_list = params.get("categories", None)
+    
     # List workflow IDs
     workflow_ids = [item for item in os.listdir(SAVE_ROOT) if not item.startswith(".")][::-1]
     data = []
@@ -157,7 +165,19 @@ async def fetch_workflow_list(params: Dict):
             'metadata': metadata,
             'timestamp': os.path.getmtime(reactflow_file)
         }
-        data.append(item)
+        
+        
+        if category_list is None:
+            data.append(item)
+            continue
+            
+        find = False
+        for category in metadata.get("categories", []):
+            if category in category_list:
+                find = True
+        if find:
+            data.append(item)
+            
 
     # Sort data by timestamp in descending order
     data = sorted(data, key=lambda x: x['timestamp'], reverse=True)
@@ -210,6 +230,9 @@ async def save_as_template(params: Dict):
             # handle the comfy_workflow_id
             duplicate_comfy_workflow(json_data, os.path.join(PROJECT_ROOT, "comfy_workflow"), TEMPLATES_ROOTS["comfy_workflow"])
             json_data = process_local_file_path_async(json_data)
+            
+        elif filename == "metadata.json":
+            json_data["categories"] = params.get("categories", [])
            
         target_filepath = os.path.join(TEMPLATES_ROOTS["app"], new_app_id, "latest", filename)
         os.makedirs(os.path.dirname(target_filepath), exist_ok=True)
@@ -438,6 +461,10 @@ async def check_repo_status():
 
         # Check if the latest stable version is newer than the current commit
         has_new_stable = repo.merge_base(latest_tag_commit.id, latest_commit.id) == latest_commit.id and latest_tag_commit.id != latest_commit.id
+        if "SHELLAGENT_BRANCH" in os.environ and os.environ['SHELLAGENT_BRANCH'] == 'main':
+            # Update if current_tag not equals latest_tag
+            if current_tag != latest_tag:
+                has_new_stable = True
         latest_tag_name = latest_tag.split('/')[-1]
 
         changelog = ""

@@ -10,6 +10,7 @@ import requests
 from openai import OpenAI
 from pydantic import BaseModel, Field
 import base64
+from proconfig.core.exception import ShellException
 
 TypeMap = {
     "str": str,
@@ -86,7 +87,7 @@ class GPTWidget(BaseWidget):
         if config.memory_mode == "auto":
             if GPT_MEMORY_KEY not in environ:
                 environ[GPT_MEMORY_KEY] = {}
-            config.memory = environ[GPT_MEMORY_KEY].get(config.widget_run_id, [])
+            config.memory = [MemoryItem.model_validate(item) for item in environ[GPT_MEMORY_KEY].get(config.widget_run_id, [])]
         
         """
         Execute the LLM function.
@@ -103,7 +104,7 @@ class GPTWidget(BaseWidget):
         else:
             config.user_prompt = config.user_prompt
 
-        if "OPENAI_API_KEY" not in os.environ:
+        if "OPENAI_API_KEY" not in os.environ or not os.environ["OPENAI_API_KEY"]:
             # API endpoint URL
             url = "https://openapi.myshell.ai/public/v1/widget/run"
             
@@ -113,7 +114,7 @@ class GPTWidget(BaseWidget):
                 "Content-Type": "application/json",
                 **environ.get("MYSHELL_HEADERS", {})
             }
-
+            
             # Request payload
             if config.function_parameters:
                 data = {
@@ -176,7 +177,13 @@ class GPTWidget(BaseWidget):
             try:
                 client = OpenAI(api_key=os.environ["OPENAI_API_KEY"])
             except Exception as e:
-                raise ValueError(f'[Warning] Initiate OpenAI error: {e}')
+                error = {
+                    'error_code': 'SHELL-1113',
+                    'error_head': 'OpenAI Client Initialization Error', 
+                    'msg': f'[Warning] Initiate OpenAI error: {e}. Please check your `OPENAI_API_KEY`',
+                }
+                raise ShellException(**error)
+
                 
             messages = [{"role": "system", "content": config.system_prompt},]
             

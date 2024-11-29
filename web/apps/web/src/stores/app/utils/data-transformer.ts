@@ -1,34 +1,23 @@
-import {
-  IFlow,
-  NodeIdEnum,
-  NodeTypeEnum,
-  Edge,
-  EdgeData,
-  Node,
-  NodeData,
-} from '@shellagent/flow-engine';
-import { TValues } from '@shellagent/form-engine';
+import { IFlow, NodeIdEnum, NodeTypeEnum } from '@shellagent/flow-engine';
 import { Automata, State } from '@shellagent/pro-config';
-import { uniq } from 'lodash-es';
 
 import {
   EdgeDataTypeEnum,
   ICustomEdge,
   CustomEdgeData,
 } from '@/components/app/edges';
+import { NodeDataType } from '@/types/app/types';
 import {
   transformChoicesToValues,
   transformValuesToChoices,
 } from '@/utils/data-transformer';
 
-import { AppStore } from '../app-store';
+export const contextTempReg = /__context__([a-z0-9_]+)__/g;
+export const contextReg = /context\.([a-z0-9_]+)/g;
 
 function replaceContext2Form(data: any) {
   const jsonString = JSON.stringify(data);
-  const replacedString = jsonString.replace(
-    /context.([a-z0-9_]+)/g,
-    '__context__$1__',
-  );
+  const replacedString = jsonString.replace(contextReg, '__context__$1__');
   const replacedData = JSON.parse(replacedString);
 
   return replacedData;
@@ -36,18 +25,30 @@ function replaceContext2Form(data: any) {
 
 function replaceContext2Api(data: any) {
   const jsonString = JSON.stringify(data);
-  const replacedString = jsonString.replace(
-    /__context__([a-z0-9_]+)__/g,
-    'context.$1',
-  );
+  const replacedString = jsonString.replace(contextTempReg, 'context.$1');
   const replacedData = JSON.parse(replacedString);
 
   return replacedData;
 }
 
+// 处理模板语法中的空格
+function formatTemplateString(data: any): any {
+  try {
+    const jsonString = JSON.stringify(data);
+    const formattedString = jsonString.replace(
+      /\{\{([^{}]*?)\}\}/g,
+      (match, content) => `{{${content.trim()}}}`,
+    );
+
+    return JSON.parse(formattedString);
+  } catch (error) {
+    return data;
+  }
+}
+
 // 根据automata生成nodeData
-export const genNodeData = (automata: Automata): AppStore['nodeData'] => {
-  const nodeData: AppStore['nodeData'] = {
+export const genNodeData = (automata: Automata): NodeDataType => {
+  const nodeData: NodeDataType = {
     [NodeIdEnum.start]: {
       id: NodeIdEnum.start,
       type: NodeTypeEnum.start,
@@ -64,8 +65,8 @@ export const genNodeData = (automata: Automata): AppStore['nodeData'] => {
           type: NodeTypeEnum.state,
           name: state.name,
           render: state.render,
-          input: transformValuesToChoices(state.inputs),
-          output: state.outputs,
+          inputs: transformValuesToChoices(state.inputs),
+          outputs: state.outputs,
           blocks: Array.isArray(state.blocks)
             ? state.blocks?.map((item: any) => ({
                 ...item,
@@ -76,13 +77,16 @@ export const genNodeData = (automata: Automata): AppStore['nodeData'] => {
       }
     });
   }
-  return replaceContext2Form(nodeData);
+
+  const result = replaceContext2Form(formatTemplateString(nodeData));
+
+  return result;
 };
 
 // 根据生成automata
 export const genAutomata: (
   flow: IFlow,
-  nodeData: AppStore['nodeData'],
+  nodeData: NodeDataType,
   comfyui_api?: string,
 ) => Automata = (flow, nodeData, comfyui_api) => {
   const initial =
@@ -121,8 +125,8 @@ export const genAutomata: (
       });
 
       blocks[node.id as Lowercase<string>] = {
-        type: 'state',
-        name: node.data.name,
+        type: nodeData[node.id]?.type || 'state',
+        name: nodeData[node.id]?.name,
         render: nodeData[node.id]?.render,
         blocks: nodeData[node.id]?.blocks?.map((item: any) => ({
           ...item,
@@ -130,8 +134,8 @@ export const genAutomata: (
             ? { api: comfyui_api || item.api }
             : {}),
         })),
-        inputs: transformChoicesToValues(nodeData[node.id]?.input || {}),
-        outputs: nodeData[node.id]?.output,
+        inputs: transformChoicesToValues(nodeData[node.id]?.inputs || {}),
+        outputs: nodeData[node.id]?.outputs,
         transitions,
       } as State;
     });
@@ -146,102 +150,4 @@ export const genAutomata: (
     blocks,
     transitions: {},
   });
-};
-
-export const getDelPathInfo = (
-  input: TValues,
-  id: string,
-  basePath = '',
-): Record<string, string | undefined> => {
-  if (typeof input !== 'object' || input === null) return {};
-
-  const refReg = new RegExp(`{{.*(${id})(\\.)(.*)}}`, 'g');
-  const rawReg = new RegExp(`{{.*(${id})(.*)}}`, 'g');
-
-  const paths: Record<string, string | undefined> = {};
-
-  Object.entries(input).forEach(([key, value]) => {
-    const currentPath = basePath ? `${basePath}.${key}` : key;
-
-    if (typeof value === 'string' && rawReg.test(value)) {
-      paths[currentPath] = value.replaceAll(rawReg, '');
-    } else if (typeof value === 'string' && refReg.test(value)) {
-      paths[currentPath] = undefined;
-    } else if (typeof value === 'object') {
-      const nestedFirstLevelPaths = getDelPathInfo(value, id, currentPath);
-      Object.assign(paths, nestedFirstLevelPaths);
-    }
-  });
-
-  return paths;
-};
-
-interface TVariable {
-  label: string;
-  value: string;
-  children?: TVariable[];
-}
-
-type IGetInputNodesProps = (data: {
-  edges: Edge<EdgeData>[];
-  nodes: Node<NodeData>[];
-  id: string;
-  nodeData: AppStore['nodeData'];
-}) => TVariable[];
-
-function getPrevPrevNodes(
-  id: string,
-  edges: Edge<EdgeData>[],
-  targetNodes: string[],
-  visited: Set<string> = new Set(),
-) {
-  // 如果当前节点已经访问过，直接返回
-  if (visited.has(id)) {
-    return;
-  }
-
-  // 将当前节点标记为已访问
-  visited.add(id);
-
-  const currentEdges = edges.filter(edge => edge.target === id);
-  if (currentEdges.length) {
-    currentEdges.forEach(currentEdge => {
-      const prevPrevNodeId = currentEdge.source;
-      if (prevPrevNodeId && prevPrevNodeId !== NodeIdEnum.start) {
-        targetNodes.push(prevPrevNodeId);
-        // 递归调用时传入visited集合
-        getPrevPrevNodes(prevPrevNodeId, edges, targetNodes, visited);
-      }
-    });
-  }
-}
-
-export const getRefNodes: IGetInputNodesProps = ({
-  edges = [],
-  id,
-  nodes,
-  nodeData,
-}) => {
-  const targetNodes: string[] = [];
-  getPrevPrevNodes(id, edges, targetNodes);
-
-  // 其余代码保持不变
-  return uniq(targetNodes)
-    .map(id => {
-      const { display_name: label = '' } =
-        nodes.find(node => node.id === id)?.data || {};
-      return {
-        value: id,
-        label,
-        children: Object.entries(
-          (nodeData?.[id]?.output as Record<string, any>) || {},
-        )?.map(([key, { name }]) => {
-          return {
-            label: name,
-            value: key.startsWith('__context__') ? key : `${id}.${key}`,
-          };
-        }),
-      };
-    })
-    .filter(state => state.children?.length > 0);
 };

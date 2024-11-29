@@ -72,7 +72,7 @@ class ClaudeWidget(BaseWidget):
         if config.memory_mode == "auto":
             if CLAUDE_MEMORY_KEY not in environ:
                 environ[CLAUDE_MEMORY_KEY] = {}
-            config.memory = environ[CLAUDE_MEMORY_KEY].get(config.widget_run_id, [])
+            config.memory = [MemoryItem.model_validate(item) for item in environ[CLAUDE_MEMORY_KEY].get(config.widget_run_id, [])]
 
         config.system_prompt = config.system_prompt or ""
         config.user_prompt = config.user_prompt or ""

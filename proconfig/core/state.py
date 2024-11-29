@@ -6,6 +6,7 @@ from typing import Literal, Union
 from proconfig.core.block import BaseProp, Block, BlockChildren, Task
 from proconfig.core.workflow import Workflow
 from proconfig.core.render import RenderConfig
+from proconfig.core.exception import ShellException
 
 class StateProp(BaseProp):
     is_final: bool = False 
@@ -40,4 +41,9 @@ class State(Block):
             if v.type in ["text", "string"] and v.source == "IM":
                 IM_count += 1
         if IM_count > 1:
-            raise ValueError(f"state {self.name} contains more than 1 inputs with of source `IM`")
+            error = {
+                'error_code': 'SHELL-1100',
+                'error_head': 'Automata Initialization Error', 
+                'msg': f"state {self.name} contains more than 1 inputs with of source `IM`",
+            }
+            raise ShellException(**error)

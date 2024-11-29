@@ -5,11 +5,13 @@ import {
   NodeTypeEnum,
   useReactFlowStore,
 } from '@shellagent/flow-engine';
-import { TFieldMode, TValues } from '@shellagent/form-engine';
+import { TValues } from '@shellagent/form-engine';
+import { Button as IButtonType } from '@shellagent/shared/protocol/render-button';
+import { WidgetTask, WorkflowTask } from '@shellagent/shared/protocol/task';
+import { getNewKey } from '@shellagent/shared/utils';
 import { Drawer, FormRef } from '@shellagent/ui';
 import { useInjection } from 'inversify-react';
-import { isEqual, isNumber } from 'lodash-es';
-import { observer } from 'mobx-react-lite';
+import { isNumber } from 'lodash-es';
 import { useMemo, useRef, useCallback, useState } from 'react';
 
 import { ButtonConfig } from '@/components/app/config-form/button-config';
@@ -17,22 +19,19 @@ import { WidgetConfig } from '@/components/app/config-form/widget-config';
 import { WorkflowConfig } from '@/components/app/config-form/workflow-config';
 import { EditableTitle } from '@/components/app/editable-title';
 import NodeForm from '@/components/app/node-form';
-import {
-  IWidgetTask,
-  IWorkflowTask,
-} from '@/components/app/node-form/widgets/tasks-config';
 import { AppBuilderChatModel } from '@/components/chat/app-builder-chat.model';
-import { useAppStore } from '@/stores/app/app-provider';
+import { AppBuilderModel } from '@/stores/app/models/app-builder.model';
+import emitter, {
+  EventType,
+  useEventEmitter,
+} from '@/stores/app/models/emitter';
 import { SchemaProvider } from '@/stores/app/schema-provider';
 import { useAppState } from '@/stores/app/use-app-state';
 import { stateConfigSchema } from '@/stores/app/utils/schema';
-import { VariableProvider } from '@/stores/app/variable-provider';
-
-import emitter, { EventType, useEventEmitter } from '../emitter';
-import { IButtonType } from '../node-form/widgets';
 
 const StateConfigSheet: React.FC<{}> = () => {
   const appBuilderChatModel = useInjection(AppBuilderChatModel);
+  const appBuilder = useInjection<AppBuilderModel>('AppBuilderModel');
 
   const {
     stateConfigSheetOpen,
@@ -58,14 +57,6 @@ const StateConfigSheet: React.FC<{}> = () => {
     selectedNode: state.selectedNode,
   }));
 
-  const { loading, nodeData, setNodeData, setFieldsModeMap, fieldsModeMap } =
-    useAppStore(state => ({
-      loading: state.loading,
-      nodeData: state.nodeData,
-      setNodeData: state.setNodeData,
-      setFieldsModeMap: state.setFieldsModeMap,
-      fieldsModeMap: state.config?.fieldsModeMap,
-    }));
   const { onChangeNodeData, nodes, setNodes } = useReactFlowStore(state => ({
     onChangeNodeData: state.onChangeNodeData,
     nodes: state.nodes,
@@ -79,27 +70,37 @@ const StateConfigSheet: React.FC<{}> = () => {
     if (!insideSheetOpen) {
       return {};
     }
+    const path = `blocks.${currentTaskIndex}`;
+
     const commonProps = {
       onChange: (value: TValues) => {
-        nodeFormRef.current?.setValue(`blocks.${currentTaskIndex}`, value);
+        nodeFormRef.current?.setValue(path, value);
       },
       onTitleChange: (value: string) => {
-        nodeFormRef.current?.setValue(
-          `blocks.${currentTaskIndex}.display_name`,
-          value,
-        );
+        const { key: newKey, name: newName } = getNewKey({
+          name: value,
+          nameKey: 'name',
+          values: appBuilder.nodeData[currentStateId]?.blocks,
+          prefix: 'Blocks',
+        });
+        const values = nodeFormRef.current?.getValues(path);
+        nodeFormRef.current?.setValue(path, {
+          ...values,
+          display_name: newName,
+          name: newKey,
+        });
       },
     };
 
     if (insideSheetMode === 'button') {
       const buttonIdx = (
-        nodeData[currentStateId]?.render?.buttons || []
+        appBuilder.nodeData[currentStateId]?.render?.buttons || []
       ).findIndex((button: IButtonType) => button.id === currentButtonId);
-      const values = nodeData[currentStateId]?.render?.buttons?.[buttonIdx];
+      const values =
+        appBuilder.nodeData[currentStateId]?.render?.buttons?.[buttonIdx];
       return {
         children: (
           <ButtonConfig
-            id={currentStateId}
             values={values}
             onChange={newValue =>
               nodeFormRef.current?.setValue(
@@ -113,16 +114,15 @@ const StateConfigSheet: React.FC<{}> = () => {
       };
     }
     if (insideSheetMode === 'workflow') {
-      const workflow: IWorkflowTask = isNumber(currentTaskIndex)
-        ? nodeData[currentStateId]?.blocks?.[currentTaskIndex]
+      const workflow: WorkflowTask = isNumber(currentTaskIndex)
+        ? appBuilder.nodeData[currentStateId]?.blocks?.[currentTaskIndex]
         : {};
 
       return {
         children: (
           <WorkflowConfig
-            id={currentStateId}
             key={`workflow-config-${currentTaskIndex}`}
-            parent={`blocks.${currentTaskIndex}`}
+            parent={`blocks.${workflow.name}`}
             values={workflow}
             onChange={commonProps.onChange}
           />
@@ -137,15 +137,15 @@ const StateConfigSheet: React.FC<{}> = () => {
       };
     }
     if (insideSheetMode === 'widget') {
-      const widget: IWidgetTask = isNumber(currentTaskIndex)
-        ? nodeData[currentStateId]?.blocks?.[currentTaskIndex]
+      const widget: WidgetTask = isNumber(currentTaskIndex)
+        ? appBuilder.nodeData[currentStateId]?.blocks?.[currentTaskIndex]
         : {};
+
       return {
         children: (
           <WidgetConfig
-            id={currentStateId}
             key={`widget-config-${currentTaskIndex}`}
-            parent={`blocks.${currentTaskIndex}`}
+            parent={`blocks.${widget.name}`}
             values={widget}
             onChange={commonProps.onChange}
           />
@@ -163,7 +163,7 @@ const StateConfigSheet: React.FC<{}> = () => {
   }, [
     insideSheetMode,
     currentButtonId,
-    nodeData,
+    appBuilder.nodeData,
     currentStateId,
     currentTaskIndex,
     insideSheetOpen,
@@ -174,6 +174,7 @@ const StateConfigSheet: React.FC<{}> = () => {
       nodes.find(node => node.id === currentStateId)?.data.display_name ||
       'State';
     const handleChangeTitle = (value: string) => {
+      nodeFormRef.current?.setValue(`name`, value);
       onChangeNodeData(currentStateId as NodeId, {
         ...(selectedNode?.data || {}),
         display_name: value,
@@ -185,23 +186,18 @@ const StateConfigSheet: React.FC<{}> = () => {
   const onChange = useCallback(
     (values: TValues) => {
       const newData = { id: currentStateId as NodeId, data: values };
-      setNodeData(newData);
-      emitter.emit(EventType.STATE_FORM_CHANGE, {
+      appBuilder.setNodeData(newData);
+      emitter.emit(EventType.FORM_CHANGE, {
         id: currentStateId as NodeId,
         data: `${new Date().valueOf()}`,
         type: 'StateConfigSheet',
       });
     },
-    [currentStateId, setNodeData],
+    [currentStateId],
   );
 
-  useEventEmitter(EventType.STATE_FORM_CHANGE, eventData => {
-    const currentFormData = nodeFormRef.current?.getValues();
-    if (
-      eventData.id === currentStateId &&
-      eventData.type === 'StateCard' &&
-      !isEqual(currentFormData, eventData.data)
-    ) {
+  useEventEmitter(EventType.FORM_CHANGE, eventData => {
+    if (eventData.id === currentStateId && eventData.type === 'StateCard') {
       setFormKey(eventData.data);
     }
   });
@@ -218,20 +214,15 @@ const StateConfigSheet: React.FC<{}> = () => {
     );
   }, [currentStateId, setStateConfigSheetOpen, setNodes, nodes]);
 
-  const onModeChange = useCallback(
-    (name: string, mode: TFieldMode) => {
-      setFieldsModeMap({ id: selectedNode?.id || '', name, mode });
-    },
-    [selectedNode?.id, setFieldsModeMap],
-  );
-
   return (
     <Drawer
       key={currentStateId}
       placement="right"
       width={375}
       style={{
-        transform: `translateX(${appBuilderChatModel.runOpen ? `-${runDrawerWidth + 24}px` : '-12px'}) translateY(12px)`,
+        transform: `translateX(${
+          appBuilderChatModel.runOpen ? `-${runDrawerWidth + 24}px` : '-12px'
+        }) translateY(12px)`,
         height: 'calc(100% - 24px)',
       }}
       className="rounded-lg translate-x-[-12px] translate-y-3"
@@ -242,40 +233,38 @@ const StateConfigSheet: React.FC<{}> = () => {
       open={stateConfigSheetOpen}
       autoFocus={false}
       push={false}>
-      <VariableProvider id={currentStateId}>
-        <SchemaProvider
-          type={NodeTypeEnum.state}
-          display_name={selectedNode?.data.display_name}
-          name={selectedNode?.data.name}
-          id={currentStateId}>
-          <NodeForm
-            key={formKey}
-            loading={loading.getAutomata || loading.getReactFlow}
-            schema={stateConfigSchema}
-            values={nodeData[currentStateId]}
-            onChange={onChange}
-            onModeChange={onModeChange}
-            ref={nodeFormRef}
-            modeMap={fieldsModeMap?.[currentStateId] || {}}
-          />
-          <Drawer
-            open={insideSheetOpen}
-            height="95%"
-            placement="bottom"
-            className="rounded-lg"
-            closable
-            getContainer={false}
-            onClose={() =>
-              setInsideSheetOpen({ stateId: currentStateId, open: false })
-            }
-            autoFocus={false}
-            {...drawerProps}>
-            {drawerProps.children}
-          </Drawer>
-        </SchemaProvider>
-      </VariableProvider>
+      <SchemaProvider
+        type={NodeTypeEnum.state}
+        display_name={selectedNode?.data.display_name}
+        name={selectedNode?.data.name}
+        id={currentStateId}>
+        <NodeForm
+          key={formKey}
+          loading={
+            appBuilder.getAutomataLoading || appBuilder.getReactFlowLoading
+          }
+          schema={stateConfigSchema}
+          values={appBuilder.nodeData[currentStateId]}
+          onChange={onChange}
+          ref={nodeFormRef}
+        />
+        <Drawer
+          open={insideSheetOpen}
+          height="95%"
+          placement="bottom"
+          className="rounded-lg"
+          closable
+          getContainer={false}
+          onClose={() =>
+            setInsideSheetOpen({ stateId: currentStateId, open: false })
+          }
+          autoFocus={false}
+          {...drawerProps}>
+          {drawerProps.children}
+        </Drawer>
+      </SchemaProvider>
     </Drawer>
   );
 };
 
-export default observer(StateConfigSheet);
+export default StateConfigSheet;

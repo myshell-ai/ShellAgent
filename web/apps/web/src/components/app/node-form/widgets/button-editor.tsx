@@ -1,16 +1,14 @@
 import PlusIcon from '@heroicons/react/24/outline/esm/PlusIcon';
-import { Button as ButtonType } from '@shellagent/pro-config';
+import { useReactFlowStore } from '@shellagent/flow-engine';
+import { Button as IButtonType } from '@shellagent/shared/protocol/render-button';
+import { getButtonDisplayName, getEventKey } from '@shellagent/shared/utils';
 import { Button, XMark, IconButton, useFormContext } from '@shellagent/ui';
 import { useHover } from 'ahooks';
 import clsx from 'clsx';
 import { useRef } from 'react';
 
 import { useAppState } from '@/stores/app/use-app-state';
-import { generateUUID } from '@/utils/common-helper';
 
-export interface IButtonType extends ButtonType {
-  id: string;
-}
 interface VariableNodeProps {
   name: string;
   onChange: (value: IButtonType[]) => void;
@@ -63,15 +61,19 @@ const ButtonEditor = ({ name, onChange }: VariableNodeProps) => {
   const { getValues } = useFormContext();
   const value = getValues(name) as IButtonType[];
 
+  const edges = useReactFlowStore(state => state.edges);
+  const onDelEdge = useReactFlowStore(state => state.onDelEdge);
+
   const handleAddButton = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.stopPropagation();
-    const id = generateUUID() as Lowercase<string>;
+    const content = getButtonDisplayName(value);
+    const event = getEventKey(content);
     onChange([
       ...(value || []),
       {
-        content: 'Untitled',
-        on_click: { event: id, payload: {} },
-        id,
+        content,
+        on_click: { event, payload: {} },
+        id: event,
         description: '',
       },
     ]);
@@ -93,6 +95,15 @@ const ButtonEditor = ({ name, onChange }: VariableNodeProps) => {
             });
           }}
           onDelete={id => {
+            edges.forEach(edge => {
+              if (
+                edge.source === currentStateId &&
+                edge.data?.event_key === button.on_click?.event
+              ) {
+                onDelEdge({ id: edge.id });
+              }
+            });
+
             onChange(value.filter(item => item.id !== id));
           }}
         />

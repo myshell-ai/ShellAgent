@@ -6,6 +6,7 @@ import os
 import subprocess
 import pkg_resources
 import sys
+from proconfig.core.exception import ShellException
 
 logging.basicConfig(level=logging.INFO)
 
@@ -21,7 +22,13 @@ def parse_github_url(url):
         repo = parts[1].replace('.git', '')
         return owner, repo
     else:
-        raise ValueError("Invalid GitHub URL")
+        error = {
+            'error_code': 'SHELL-1111',
+            'error_head': 'Value Error', 
+            'msg': "Invalid GitHub URL",
+        }
+        raise ShellException(**error)
+
     
 def get_github_repo_tags(url):
     owner, repo = parse_github_url(url)
@@ -192,7 +199,13 @@ def install_missing_widgets(workflow: Workflow, custom_widgets: dict):
     for block_name, block in workflow.blocks.items():
         if block.type == "task" and block.mode == "widget" and block.package_name is not None:
             if block.package_name not in custom_widgets:
-                raise NotImplementedError(f"{block.package_name} should be either registered to custom_widget_info.json or to the dependency")
+                error = {
+                    'error_code': 'SHELL-1112',
+                    'error_head': 'Package Not Registered Error', 
+                    'msg': f"{block.package_name} should be either registered to custom_widget_info.json or to the dependency",
+                }
+                raise ShellException(**error)
+
             widget_info = custom_widgets[block.package_name]
             # step 0: if folder does not exist, directly clone and install
             folder_name = block.package_name

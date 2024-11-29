@@ -2,7 +2,7 @@ import { FieldValue, FieldValues } from '@shellagent/ui';
 
 import { ISchema } from './schema';
 import { IValidatorRules } from './validator';
-
+import { FieldMode } from '@shellagent/shared/protocol/extend-config';
 export type XTypes =
   | 'Section'
   | 'Block'
@@ -79,8 +79,8 @@ export interface IUISchema {
   // Raw 模式
   'x-raw'?: boolean;
   'x-raw-disabled'?: boolean;
-  'x-raw-default'?: 'raw' | 'ui' | 'ref';
-  'x-raw-options'?: Array<'raw' | 'ui' | 'ref'>;
+  'x-raw-default'?: FieldMode;
+  'x-raw-options'?: Array<FieldMode>;
   // key 支持 counter 等能力
   'x-key'?: string;
   'x-title-editable'?: boolean;

@@ -9,7 +9,6 @@ import { getStateSchema } from '@/stores/app/utils/get-state-schema';
 import { getSchemaByWidget } from '@/stores/app/utils/get-widget-schema';
 import { useWorkflowStore } from '@/stores/workflow/workflow-provider';
 import { generateUUID } from '@/utils/common-helper';
-// import { useVariableContext } from './variable-provider';
 
 import { startSchema } from './utils/schema';
 
@@ -17,17 +16,15 @@ type SchemaState = {
   id: string;
   name: string;
   schema: ISchema;
-  schemaMode: string;
+  displayName: string;
   fieldMode: Record<string, TFieldMode>;
-  multiSchema: boolean;
-  output?: Record<string, any>;
+  outputs?: Record<string, any>;
   outputSchema: JsonSchema7;
   formKey: string;
   type?: NodeType;
 };
 
 type SchemaAction = {
-  setSchemaMode: (mode: string) => void;
   setFieldMode: (field: string, mode: TFieldMode) => void;
 };
 
@@ -36,12 +33,10 @@ type SchemaStore = SchemaState & SchemaAction;
 export const initState: SchemaStore = {
   id: '',
   name: '',
+  displayName: '',
   schema: {},
-  schemaMode: 'basic',
-  setSchemaMode: () => {},
   fieldMode: {},
   setFieldMode: () => {},
-  multiSchema: true,
   outputSchema: {},
   formKey: generateUUID(),
   type: NodeTypeEnum.state,
@@ -60,7 +55,7 @@ export interface SchemaProviderProps {
   name: string | undefined;
   display_name: string | undefined;
   children: React.ReactNode | React.ReactNode[];
-  output?: Record<string, any>;
+  outputs?: Record<string, any>;
   type?: NodeType;
 }
 
@@ -69,7 +64,7 @@ export const SchemaProvider: React.FC<SchemaProviderProps> = ({
   display_name = '',
   id,
   children,
-  output,
+  outputs,
   type,
 }) => {
   // const context = useVariableContext(state => state.context);
@@ -84,29 +79,10 @@ export const SchemaProvider: React.FC<SchemaProviderProps> = ({
     }));
   };
 
-  const { widgetSchema, getWidgetSchema, schemaModeMap, setSchemaModeMap } =
-    useWorkflowStore(state => ({
-      widgetSchema: state.widgetSchema,
-      getWidgetSchema: state.getWidgetSchema,
-      schemaModeMap: state.config?.schemaModeMap || {},
-      setSchemaModeMap: state.setSchemaModeMap,
-    }));
-
-  const schemaMode = useMemo(
-    () => schemaModeMap[id] || initState.schemaMode,
-    [schemaModeMap, id],
-  );
-
-  const setSchemaMode = (mode: string) => {
-    setSchemaModeMap({ id, mode });
-  };
-
-  const multiSchema = useMemo(() => {
-    if (!name || !widgetSchema) {
-      return false;
-    }
-    return widgetSchema[name]?.multi_input_schema;
-  }, [widgetSchema, name]);
+  const { widgetSchema, getWidgetSchema } = useWorkflowStore(state => ({
+    widgetSchema: state.widgetSchema,
+    getWidgetSchema: state.getWidgetSchema,
+  }));
 
   useEffect(() => {
     if (name && !widgetSchema[name] && type === NodeTypeEnum.widget) {
@@ -134,12 +110,10 @@ export const SchemaProvider: React.FC<SchemaProviderProps> = ({
     }
 
     return getSchemaByWidget({
-      mode: schemaMode,
       input_schema: widgetSchema?.[name]?.input_schema,
       output_schema: widgetSchema?.[name]?.output_schema,
-      multi_input_schema: widgetSchema?.[name]?.multi_input_schema,
     });
-  }, [id, name, display_name, widgetSchema, schemaMode, type]);
+  }, [id, name, display_name, widgetSchema, type]);
 
   const outputSchema = useMemo(
     () => widgetSchema?.[name]?.output_schema,
@@ -150,13 +124,11 @@ export const SchemaProvider: React.FC<SchemaProviderProps> = ({
     () => ({
       id,
       name,
+      displayName: display_name,
       schema,
-      schemaMode,
-      setSchemaMode,
       fieldMode,
       setFieldMode,
-      multiSchema,
-      output,
+      outputs,
       outputSchema,
       formKey,
       type,
@@ -164,13 +136,11 @@ export const SchemaProvider: React.FC<SchemaProviderProps> = ({
     [
       id,
       name,
+      display_name,
       schema,
-      schemaMode,
-      setSchemaMode,
       fieldMode,
       setFieldMode,
-      multiSchema,
-      output,
+      outputs,
       outputSchema,
       formKey,
       type,

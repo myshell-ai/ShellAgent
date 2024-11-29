@@ -2,7 +2,6 @@ import {
   MemoizedFormEngine,
   ISchema,
   TValues,
-  TFieldMode,
   getDefaultValueBySchema,
 } from '@shellagent/form-engine';
 import {
@@ -38,12 +37,10 @@ interface NodeFormProps {
   schema?: ISchema;
   onChange: (values: TValues) => void;
   loading?: boolean;
-  modeMap?: Record<string, TFieldMode>;
-  onModeChange?: (name: string, mode: TFieldMode) => void;
 }
 
 const NodeForm = forwardRef<FormRef, NodeFormProps>(
-  ({ values, onChange, schema, loading, onModeChange, modeMap }, ref) => {
+  ({ values, onChange, schema, loading }, ref) => {
     const { schemaMode, schema: formSchema } = useSchemaContext(state => ({
       schemaMode: state.schemaMode,
       schema: state.schema,
@@ -72,8 +69,6 @@ const NodeForm = forwardRef<FormRef, NodeFormProps>(
         mode="onChange"
         values={values || defaultValues}
         schema={currentSchema}
-        modeMap={modeMap}
-        onModeChange={onModeChange}
         components={{
           Input,
           Select,

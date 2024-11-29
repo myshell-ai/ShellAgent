@@ -8,6 +8,7 @@ import tempfile
 from playwright.sync_api import sync_playwright
 import json
 import os
+from proconfig.core.exception import ShellException
 
 def export_as_png(page, output_png_path, max_retries=3):
     hover_success = False
@@ -33,7 +34,13 @@ def export_as_png(page, output_png_path, max_retries=3):
                         }
                     """)
                 else:
-                    raise Exception("Export fail")
+                    error = {
+                        'error_code': 'SHELL-1114',
+                        'error_head': 'Image Canvas Error', 
+                        'msg': "Export fail",
+                    }
+                    raise ShellException(**error)
+                
                 hover_success = True
 
             png_button = page.locator('text="Export as PNG"')
@@ -47,8 +54,12 @@ def export_as_png(page, output_png_path, max_retries=3):
                 download.save_as(output_png_path)
                 print(f"Operation completed, image saved as {output_png_path}")
             else:
-                # print("'Export as PNG' menu item not found")
-                raise Exception("'Export as PNG' menu item not found")
+                error = {
+                    'error_code': 'SHELL-1114',
+                    'error_head': 'Image Canvas Error', 
+                    'msg': "'Export as PNG' menu item not found",
+                }
+                raise ShellException(**error)
 
             return True
         
@@ -86,7 +97,12 @@ def automate_fabritor(json_file_path, output_png_path):
                     timeout=10000
                 )
         except Exception as e:
-            print(f"Error clicking Import button: {e}")
+            error = {
+                'error_code': 'SHELL-1114',
+                'error_head': 'Image Canvas Error', 
+                'msg': f"Error clicking Import button: {e}",
+            }
+            raise ShellException(**error)
         
         export_as_png(page, output_png_path)
         

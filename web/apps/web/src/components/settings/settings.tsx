@@ -224,7 +224,9 @@ export const Update = observer(() => {
                     <Text size="lg">New updates are available</Text>
                   </div>
                   <Text size="sm" color="subtler">
-                    {`${model.checkRet.latest_tag_name} (${dayjs(model.checkRet.target_release_date).format('DD.MM YYYY')})`}
+                    {`${model.checkRet.latest_tag_name} (${dayjs(
+                      model.checkRet.target_release_date,
+                    ).format('DD.MM YYYY')})`}
                   </Text>
                 </Box>
                 {model.isToRestart ? (

@@ -2,8 +2,8 @@ import {
   fetchEventSource,
   FetchEventSourceInit,
 } from '@microsoft/fetch-event-source';
-import type { Fetcher } from 'swr';
 import { isNil, omitBy } from 'lodash-es';
+import type { Fetcher } from 'swr';
 
 import {
   GetAutomataRequest,

@@ -1,4 +1,5 @@
 import { ISchema } from '@shellagent/form-engine';
+import { FieldModeEnum } from '@shellagent/shared/protocol/extend-config';
 
 import { ENABLE_MIME } from '@/utils/file-types';
 
@@ -599,7 +600,7 @@ const endSchema: ISchema = {
             'x-component': 'Input',
             'x-type': 'Control',
             'x-raw': true,
-            'x-raw-default': 'ref',
+            'x-raw-default': FieldModeEnum.Enum.ref,
             'x-parent-deletable': true,
             'x-title-editable': true,
             'x-title-component-props': {

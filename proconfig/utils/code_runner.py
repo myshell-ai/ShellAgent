@@ -2,7 +2,8 @@ import re
 import numpy as np
 import json
 import execjs
-
+import traceback
+from proconfig.core.exception import ShellException
 
 def evaluate_js_code(code_string, params):
     context = execjs.compile(
@@ -35,8 +36,13 @@ function_dict['code'] = main
         result = function_dict['code'](params)
         return result
     except Exception as e:
-        print(e)
-        raise(e)
+        error = {
+            'error_code': 'SHELL-1106',
+            'error_head': 'Code Execution Error', 
+            'msg': str(e),
+            "traceback": traceback.format_exc()
+        }
+        raise ShellException(**error)
         
     
 if __name__ == '__main__':
