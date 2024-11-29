@@ -1,5 +1,6 @@
 from typing import Optional, Dict, Any, Union, List
 from pydantic import Field, BaseModel
+from proconfig.core.exception import ShellException
 
 CustomKey = str
 ContextCustomKey = str
@@ -39,7 +40,12 @@ Transition = Union[TargetName, TransitionCase, List[TransitionCase]]
 def check_reserved_name(keys, reserved_names):
     for key in keys:
         if key in reserved_names:
-            raise ValueError(f'{key} is a reserved name.')
+            error = {
+                'error_code': 'SHELL-1100',
+                'error_head': 'Automata Initialization Error', 
+                'msg': f'{key} is a reserved name.',
+            }
+            raise ShellException(**error)
         
 def check_and_convert_transitions(transitions):
     for name, transition in transitions.items():
@@ -56,7 +62,12 @@ def check_and_convert_transitions(transitions):
             for i, case in enumerate(transition):
                 transition[i] = TransitionCase.model_validate(case).model_dump()
         else:
-            raise ValueError(f'The transition {name} are not defined properly')
+            error = {
+                'error_code': 'SHELL-1100',
+                'error_head': 'Automata Initialization Error', 
+                'msg': f'The transition {name} are not defined properly',
+            }
+            raise ShellException(**error)
         transitions[name] = transition
     return transitions
         

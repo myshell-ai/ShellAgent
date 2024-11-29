@@ -3,6 +3,8 @@ from typing import Dict
 import requests
 import json
 import time
+import os
+from proconfig.utils.misc import is_valid_url, upload_file_to_myshell
 
 history = []
 
@@ -15,13 +17,33 @@ async def clear_memory():
         "success": True
     }
 
-    
+def upload_to_myshell_if_local(path):
+    if is_valid_url(path):
+        return path
+    assert os.path.isfile(path), f"`{path}` is not a valid path"
+    return upload_file_to_myshell(path)
+
 @app.post("/api/helper/query")
 async def helper_query(data: Dict):
     # data: {"question": "xx"}
     question = data["question"]
+    images = data.get("images", [])
+    
+    if len(images) > 0:
+        from proconfig.widgets.language_models.gpt_widgets import GPTWidget
+        widget = GPTWidget()
+        inputs = dict(
+            model="gpt-4o",
+            system_prompt="You are a OCR detector, you will always faithfully extract the text in the input image",
+            user_prompt="Please extract the text in the provided image:"
+        )
+        for image in images:
+            result = widget({}, {**inputs, "input_image": image})
+            question += f"\n{result['reply']}\n"
+    print(question)
     payload = {
         "question": question,
+        "images": images
     }
     if len(history) > 0:
         payload["history"] = json.dumps(history)

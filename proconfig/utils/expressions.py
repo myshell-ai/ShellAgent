@@ -9,6 +9,7 @@ from proconfig.utils.misc import is_serializable_type
 from easydict import EasyDict as edict
 import time
 from typing import Any
+from proconfig.core.exception import ShellException
 
 package_ctx = {
     'np': np,
@@ -26,9 +27,14 @@ def evaluate_expression_python(expression, context, check_valid=True):
             evaluated_expression = {**evaluated_expression}
         return evaluated_expression
     except Exception as e:
-        logging.warn(f"Error evaluating expression '{expression}': {e}")
+        logging.warning(f"Error evaluating expression '{expression}': {e}")
         if check_valid:
-            raise ValueError(f"Error evaluating expression '{expression}'. context keys: [{context.keys()}]")
+            error = {
+                'error_code': 'SHELL-1107',
+                'error_head': 'Expression Evaluation Error', 
+                'msg': f"Error evaluating expression '{expression}'. context keys: [{context.keys()}]",
+            }
+            raise ShellException(**error)
         else:
             return None
 
@@ -68,9 +74,12 @@ def evaluate_expression_js(expression, ctx, **kwargs):
         return result
     except Exception as e:
         print("expression:", expression)
-        # import pdb; pdb.set_trace()
-        # return None
-        raise ValueError(f"Error evaluating expression '{expression}': {e}")
+        error = {
+            'error_code': 'SHELL-1107',
+            'error_head': 'Expression Evaluation Error', 
+            'msg': f"Error evaluating expression '{expression}'. context keys: [{context.keys()}]",
+        }
+        raise ShellException(**error)
         
     
     

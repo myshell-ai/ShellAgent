@@ -8,7 +8,7 @@ from proconfig.core.common import CustomEventName, CustomKey, Transition, Reserv
 from proconfig.core.common import check_and_convert_transitions, check_reserved_name
 from proconfig.core.block import BlockWithTransitions, BaseProp, BlockChildren, ContainerBlock
 from proconfig.core.state import State
-
+from proconfig.core.exception import ShellException
 
 class StateWithTransitions(State, BlockWithTransitions[CustomEventName]):
     pass
@@ -40,8 +40,12 @@ class Automata(ContainerBlock):
                 target_state = transition_case.target
                 break
         if target_state is None:
-            import pdb; pdb.set_trace()
-            raise NotImplementedError(f"conditional transition failed: no target state found for {event_name}")
+            error = {
+                'error_code': 'SHELL-1101',
+                'error_head': 'ShellAgent Running Error: cannot find available target state in conditional transition', 
+                'msg': f"conditional transition failed: no target state found for {event_name}",
+            }
+            raise ShellException(**error)
         return transition_case
     
     
@@ -49,14 +53,33 @@ class Automata(ContainerBlock):
         super().sanity_check()
         
         if self.initial == "":
-            raise ValueError("the initial of automata cannot be empty")
+            error = {
+                'error_code': 'SHELL-1100',
+                'error_head': 'Automata Initialization Error', 
+                'msg': "the initial of automata cannot be empty",
+            }
+            raise ShellException(**error)
         if len(self.blocks) == 0:
-            raise ValueError("the states cannot be empty")
+            error = {
+                'error_code': 'SHELL-1100',
+                'error_head': 'Automata Initialization Error', 
+                'msg': "the states cannot be empty",
+            }
+            raise ShellException(**error)
         if self.type not in ["", "automata"]:
-            raise ValueError("the type must be automata")
+            error = {
+                'error_code': 'SHELL-1100',
+                'error_head': 'Automata Initialization Error', 
+                'msg': "the type must be automata",
+            }
+            raise ShellException(**error)
         if self.initial not in self.blocks:
-            import pdb; pdb.set_trace()
-            raise ValueError("the initial must be in the states")
+            error = {
+                'error_code': 'SHELL-1100',
+                'error_head': 'Automata Initialization Error', 
+                'msg': "the initial must be in the states",
+            }
+            raise ShellException(**error)
         
         check_reserved_name(self.blocks.keys(), ReservedKeys)
         check_reserved_name(self.context.keys(), ReservedKeys)
@@ -69,9 +92,19 @@ class Automata(ContainerBlock):
         if event_name in ["CHAT", "DONE", "ALWAYS"]:
             return
         if event_name.startswith("."):
-            raise NotImplementedError("event_name cannot start with `.`")
+            error = {
+                'error_code': 'SHELL-1100',
+                'error_head': 'Automata Initialization Error', 
+                'msg': "event_name cannot start with `.`",
+            }
+            raise ShellException(**error)
         if " " in event_name:
-            raise NotImplementedError("event_name cannot include empty space")
+            error = {
+                'error_code': 'SHELL-1100',
+                'error_head': 'Automata Initialization Error', 
+                'msg': "event_name cannot include empty space",
+            }
+            raise ShellException(**error)
         
 
     def check_transition_targets(self):
@@ -80,7 +113,12 @@ class Automata(ContainerBlock):
             self.check_event_name_valid(event_name)
             for transition_case in transition:
                 if transition_case.target not in self.blocks:
-                    raise ValueError(f"target of {event_name} is {transition_case['target']}, which is not a valid state name")
+                    error = {
+                        'error_code': 'SHELL-1100',
+                        'error_head': 'Automata Initialization Error', 
+                        'msg': f"target of {event_name} is {transition_case['target']}, which is not a valid state name",
+                    }
+                    raise ShellException(**error)
                 
         for state_name, state in self.blocks.items():
             local_transitions = state.transitions or {}
@@ -88,11 +126,22 @@ class Automata(ContainerBlock):
                 self.check_event_name_valid(event_name)
                 for transition_case in transition:
                     if transition_case.target not in self.blocks:
-                        raise ValueError(f"target of {event_name} is {transition_case['target']}, which is not a valid state name")
+                        error = {
+                            'error_code': 'SHELL-1100',
+                            'error_head': 'Automata Initialization Error', 
+                            'msg': f"target of {event_name} is {transition_case['target']}, which is not a valid state name",
+                        }
+                        raise ShellException(**error)
+
                     
             for button in state.render.buttons:
                 if button.content == "":
-                    raise ValueError("content of button cannot be empty")
+                    error = {
+                        'error_code': 'SHELL-1100',
+                        'error_head': 'Automata Initialization Error', 
+                        'msg': "content of button cannot be empty",
+                    }
+                    raise ShellException(**error)
                 
                 event = button.on_click
                 if type(event) == str:
@@ -102,7 +151,12 @@ class Automata(ContainerBlock):
                 else:
                     event = event.event
                 if event not in local_transitions and event not in global_transitions:
-                    raise ValueError(f"transition of event {event} is not defined")
+                    error = {
+                        'error_code': 'SHELL-1100',
+                        'error_head': 'Automata Initialization Error', 
+                        'msg': f"transition of event {event} is not defined",
+                    }
+                    raise ShellException(**error)
 
         
     def check_infinite_loop(self):
@@ -115,7 +169,12 @@ class Automata(ContainerBlock):
                 if len(transitions) == 1 and "ALWAYS" in transitions and len(transitions["ALWAYS"]) == 1:
                     transition_case = transitions["ALWAYS"][0]
                     if transition_case.target in visited:
-                        raise ValueError(f"inifinite loop found. visited state {transition_case.target}")
+                        error = {
+                            'error_code': 'SHELL-1100',
+                            'error_head': 'Automata Initialization Error', 
+                            'msg': f"inifinite loop found. visited state {transition_case.target}",
+                        }
+                        raise ShellException(**error)
                     else:
                         start_state_name = transition_case.target
                         visited.append(start_state_name)

@@ -1,4 +1,8 @@
 /** @type {import('next').NextConfig} */
+
+const { copyFileSync } = require('fs');
+const path = require('path');
+
 module.exports = {
   output: 'export',
   distDir: 'dist',
@@ -12,6 +16,14 @@ module.exports = {
     config,
     { buildId, dev, isServer, defaultLoaders, nextRuntime, webpack },
   ) => {
+    const srcFile = path.join(
+      __dirname,
+      'node_modules/image-canvas/public/fabric.js',
+    );
+    const destFile = path.join(__dirname, 'public/fabric.js');
+    copyFileSync(srcFile, destFile);
+    console.log('copied fabric.js');
+
     // Important: return the modified config
     config.resolve.alias = {
       ...config.resolve.alias,

@@ -4,6 +4,7 @@
 
 import 'image-canvas/index.css';
 import 'image-canvas/assets/react-colors-beauty.css';
+// import 'image-canvas/fabric.js';
 import { css } from '@emotion/react';
 import { PhotoIcon } from '@heroicons/react/24/outline';
 import { AButton, Button, useFormContext } from '@shellagent/ui';

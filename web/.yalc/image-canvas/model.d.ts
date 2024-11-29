@@ -1,6 +1,6 @@
 import * as mitt from 'mitt';
 import { MenuProps } from 'antd';
-import { fabric } from 'fabric';
+import * as fabric_fabric_impl from 'fabric/fabric-impl';
 
 declare class Editor {
     canvas: fabric.Canvas;
@@ -31,7 +31,7 @@ declare class Editor {
     export2Svg(): string;
     canvas2Json(): {
         version: string;
-        objects: fabric.Object[];
+        objects: fabric_fabric_impl.Object[];
     };
     loadFromJSON(json: any, errorToast?: boolean): Promise<unknown>;
     clearCanvas(): Promise<void>;

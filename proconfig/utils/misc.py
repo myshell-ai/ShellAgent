@@ -10,8 +10,9 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 from urllib.parse import urlparse
 from typing import Any, IO
 import tempfile
+import uuid
 from pathlib import PurePosixPath, Path, PureWindowsPath
-
+from proconfig.core.exception import ShellException
 
 def is_valid_url(candidate_str: Any) -> bool:
     if not isinstance(candidate_str, str):
@@ -212,9 +213,12 @@ def upload_file_to_myshell(local_file: str) -> str:
     '''
     MYSHELL_KEY = os.environ.get('MYSHELL_KEY')
     if MYSHELL_KEY is None:
-        raise Exception(
-            f"MYSHELL_KEY not found in ENV. Please set MYSHELL_KEY in settings for CDN uploading."
-        )
+        error = {
+            'error_code': 'SHELL-1108',
+            'error_head': 'Missing MYSHELL_KEY', 
+            'msg': f"MYSHELL_KEY not found in ENV. Please set MYSHELL_KEY in settings for CDN uploading.",
+        }
+        raise ShellException(**error)
 
     server_url = "https://openapi.myshell.ai/public/v1/store"
     headers = {
@@ -233,7 +237,13 @@ def upload_file_to_myshell(local_file: str) -> str:
         logging.info(f"{local_file} uploaded, time elapsed: {end_time - start_time}")
         return response.json()['url']
     else:
-        raise Exception(
-            f"[HTTP ERROR] {response.status_code} - {response.text} \n"
-        )
+        error = {
+            'error_code': 'SHELL-1109',
+            'error_head': 'HTTP Request Error', 
+            'msg': f"[HTTP ERROR] {response.status_code} - {response.text} \n",
+        }
+        raise ShellException(**error)
     
+    
+def generate_comfyui_workflow_id():
+    str(uuid.uuid4()).replace('-', '')

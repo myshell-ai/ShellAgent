@@ -2,7 +2,7 @@
   "version": "v1",
   "packages": {
     "image-canvas": {
-      "signature": "d6d65885ab636e962897b652948eb01a",
+      "signature": "48b52bd336da5286846ca2abfe077ed1",
       "pure": true
     },
     "myshell-bundled-chat": {
