@@ -246,28 +246,13 @@ export function useFieldWatch(formRef: React.RefObject<FormRef>) {
             break;
 
           case DiffTypeEnum.Modified:
-            if (path?.split('.').pop() === 'display_name') {
-              const displayNameField = `blocks.${
-                name?.split('.')?.[1]
-              }.display_name`;
-              const nameField = `blocks.${name?.split('.')?.[1]}.name`;
-
-              const { key: newKey, name: newName } = getNewKey({
-                name: diffNewValue as string,
-                nameKey: 'name',
-                values: newBlocks,
-                prefix: 'Blocks',
-              });
-              if (!diffNewValue) {
-                formRef.current?.setValue(displayNameField, newName);
-              }
-              formRef.current?.setValue(nameField, newKey);
+            if (path?.split('.').pop() === 'name') {
               appBuilder.handleRefScene({
                 scene: RefSceneEnum.Enum.rename_ref_opt,
                 params: {
                   stateName: stateId as Lowercase<string>,
                   oldPath: `${stateId}.${reservedKeySchema.Enum.blocks}.${blockName}`,
-                  newPath: `${stateId}.${reservedKeySchema.Enum.blocks}.${newKey}`,
+                  newPath: `${stateId}.${reservedKeySchema.Enum.blocks}.${diffNewValue}`,
                   byPrefix: true,
                 },
               });
@@ -291,7 +276,7 @@ export function useFieldWatch(formRef: React.RefObject<FormRef>) {
     [stateId],
   );
 
-  // 处理 render 变化的函数
+  // 处理 render 变化的函数  todo 待修改
   const handleRenderChange = useCallback(
     debounce((newValue: TValues, prevValue: TValues, name: string) => {
       if (

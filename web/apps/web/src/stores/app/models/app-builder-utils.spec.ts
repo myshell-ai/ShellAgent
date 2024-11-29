@@ -473,7 +473,7 @@ describe('app builder utils', () => {
                   "field_type": "text",
                   "label": "Global A",
                   "parent": "context",
-                  "value": "{{ __context__global_a__ }}",
+                  "value": "{{__context__global_a__}}",
                 },
               ],
               "label": "Context",
@@ -485,7 +485,7 @@ describe('app builder utils', () => {
                   "field_type": "text",
                   "label": "Output A",
                   "parent": "state",
-                  "value": "{{ state_1.output_a }}",
+                  "value": "{{state_1.output_a}}",
                 },
               ],
               "label": "State#1",
@@ -504,7 +504,7 @@ describe('app builder utils', () => {
                       "field_type": "text",
                       "label": "Input B",
                       "parent": "buttons",
-                      "value": "{{ payload.input_b }}",
+                      "value": "{{payload.input_b}}",
                     },
                   ],
                   "label": "button_a",
@@ -521,7 +521,7 @@ describe('app builder utils', () => {
                   "field_type": "text",
                   "label": "Input B",
                   "parent": "inputs",
-                  "value": "{{ input_b }}",
+                  "value": "{{input_b}}",
                 },
               ],
               "label": "Input",
@@ -533,7 +533,7 @@ describe('app builder utils', () => {
                   "field_type": "text",
                   "label": "Output B",
                   "parent": "outputs",
-                  "value": "{{ output_b }}",
+                  "value": "{{output_b}}",
                 },
               ],
               "label": "Output",
@@ -547,7 +547,7 @@ describe('app builder utils', () => {
                       "field_type": "text",
                       "label": "output_a",
                       "parent": "blocks",
-                      "value": "{{ task1.output_a }}",
+                      "value": "{{task1.output_a}}",
                     },
                   ],
                   "label": "Task 1",
@@ -560,7 +560,7 @@ describe('app builder utils', () => {
                       "field_type": "text",
                       "label": "output_a",
                       "parent": "blocks",
-                      "value": "{{ task2.output_a }}",
+                      "value": "{{task2.output_a}}",
                     },
                   ],
                   "label": "Task 2",
@@ -674,6 +674,153 @@ describe('app builder utils', () => {
     `);
   });
 
+  it('should handle context variables in state outputs', () => {
+    const input = refOptionsOutputSchema.parse({
+      global: {
+        context: {
+          display_name: 'Context',
+          variables: {
+            output_image: {
+              type: 'image',
+              display_name: 'output_image',
+            },
+          },
+        },
+        state2: {
+          display_name: 'State#2',
+          variables: {
+            output_data: {
+              type: 'text',
+              display_name: 'output_data',
+            },
+          },
+        },
+        state4: {
+          display_name: 'State#4',
+          variables: {
+            __context__output_image__: {
+              type: 'text',
+              display_name: 'Context/output_image',
+            },
+          },
+        },
+        state5: {
+          display_name: 'State#5',
+          variables: {},
+        },
+      },
+      local: {
+        inputs: {
+          variables: {
+            input_text: {
+              type: 'text',
+              display_name: 'input_text',
+            },
+          },
+        },
+        tasks: [
+          {
+            name: 'comfy_ui1',
+            display_name: 'ComfyUI#1',
+            variables: {
+              output_image: {
+                type: 'string',
+                display_name: 'output_image',
+              },
+            },
+          },
+        ],
+        outputs: {
+          variables: {},
+        },
+        buttons: {},
+      },
+    });
+
+    const ret = convertRefOptsToCascaderOpts(input as any);
+    expect(ret).toMatchInlineSnapshot(`
+      [
+        {
+          "children": [
+            {
+              "children": [
+                {
+                  "field_type": "image",
+                  "label": "output_image",
+                  "parent": "context",
+                  "value": "{{__context__output_image__}}",
+                },
+              ],
+              "label": "Context",
+              "value": "Context",
+            },
+            {
+              "children": [
+                {
+                  "field_type": "text",
+                  "label": "output_data",
+                  "parent": "state",
+                  "value": "{{state2.output_data}}",
+                },
+              ],
+              "label": "State#2",
+              "value": "State#2",
+            },
+            {
+              "children": [
+                {
+                  "field_type": "text",
+                  "label": "Context/output_image",
+                  "parent": "state",
+                  "value": "{{__context__output_image__}}",
+                },
+              ],
+              "label": "State#4",
+              "value": "State#4",
+            },
+          ],
+          "label": "global",
+        },
+        {
+          "children": [
+            {
+              "children": [
+                {
+                  "field_type": "text",
+                  "label": "input_text",
+                  "parent": "inputs",
+                  "value": "{{input_text}}",
+                },
+              ],
+              "label": "Input",
+              "value": "Input",
+            },
+            {
+              "children": [
+                {
+                  "children": [
+                    {
+                      "field_type": "string",
+                      "label": "output_image",
+                      "parent": "blocks",
+                      "value": "{{comfy_ui1.output_image}}",
+                    },
+                  ],
+                  "label": "ComfyUI#1",
+                  "parent": "blocks",
+                  "value": "ComfyUI#1",
+                },
+              ],
+              "label": "Task",
+              "value": "Task",
+            },
+          ],
+          "label": "current",
+        },
+      ]
+    `);
+  });
+
   describe('cases', () => {
     it('case#1', () => {
       const input = {
@@ -725,39 +872,39 @@ describe('app builder utils', () => {
       };
       const ret = convertNodeDataToState(input);
       expect(ret).toMatchInlineSnapshot(`
-        {
-          "children": {
-            "inputs": {
-              "variables": {
-                "untitled_input_1": {
-                  "display_name": "input_1",
-                  "type": "text",
-                },
+      {
+        "children": {
+          "inputs": {
+            "variables": {
+              "untitled_input_1": {
+                "display_name": "input_1",
+                "type": "text",
               },
             },
-            "outputs": {
-              "render": {
-                "buttons": {},
-              },
-              "variables": {},
-            },
-            "tasks": [
-              {
-                "display_name": "GPT#1",
-                "name": "gpt_1",
-                "variables": {
-                  "reply": {
-                    "display_name": "reply",
-                    "type": "string|object",
-                  },
-                },
-              },
-            ],
           },
-          "display_name": "State",
-          "name": "state_2",
-        }
-      `);
+          "outputs": {
+            "render": {
+              "buttons": {},
+            },
+            "variables": {},
+          },
+          "tasks": [
+            {
+              "display_name": "GPT#1",
+              "name": "gpt_1",
+              "variables": {
+                "reply": {
+                  "display_name": "reply",
+                  "type": "string|object",
+                },
+              },
+            },
+          ],
+        },
+        "display_name": "State",
+        "name": "state_2",
+      }
+    `);
     });
 
     it('case#2', () => {
@@ -905,114 +1052,114 @@ describe('app builder utils', () => {
 
       const ret = convetNodeDataToScopes(nodeDatas, []);
       expect(ret).toMatchInlineSnapshot(`
-        {
-          "scopes": {
-            "context": {
-              "variables": {
-                "7b_7b_name_7d_7d__1": {
-                  "display_name": "2222",
-                  "type": "text",
-                },
-                "7b_7b_name_7d_7d__2": {
-                  "display_name": "1111",
-                  "type": "text",
-                },
+      {
+        "scopes": {
+          "context": {
+            "variables": {
+              "7b_7b_name_7d_7d__1": {
+                "display_name": "2222",
+                "type": "text",
               },
-            },
-            "edges": [],
-            "states": {
-              "state_1": {
-                "children": {
-                  "inputs": {
-                    "variables": {
-                      "untitled_input_2": {
-                        "display_name": "Untitled Input",
-                        "type": "text",
-                      },
-                    },
-                  },
-                  "outputs": {
-                    "render": {
-                      "buttons": {
-                        "button_1": {
-                          "event": "button_1.on_click",
-                          "payload": {
-                            "key_1730724703385": {
-                              "display_name": "Untitled",
-                              "type": "text",
-                            },
-                          },
-                        },
-                      },
-                    },
-                    "variables": {
-                      "untitled_output_2": {
-                        "display_name": "Untitled Output",
-                        "type": "text",
-                      },
-                    },
-                  },
-                  "tasks": [],
-                },
-                "display_name": "State",
-                "name": "state_1",
-              },
-              "state_2": {
-                "children": {
-                  "inputs": {
-                    "variables": {
-                      "untitled_input_1": {
-                        "display_name": "Untitled Input",
-                        "type": "text",
-                      },
-                    },
-                  },
-                  "outputs": {
-                    "render": {
-                      "buttons": {
-                        "button_1": {
-                          "event": "button_1.on_click",
-                          "payload": {
-                            "untitled_payload_1": {
-                              "display_name": "hhhh",
-                              "type": "text",
-                            },
-                          },
-                        },
-                      },
-                    },
-                    "variables": {
-                      "untitled_output_1": {
-                        "display_name": "Untitled Output",
-                        "type": "text",
-                      },
-                    },
-                  },
-                  "tasks": [
-                    {
-                      "display_name": "GPT#1",
-                      "name": "gpt_1",
-                      "variables": {
-                        "reply": {
-                          "display_name": "reply",
-                          "type": "string|object",
-                        },
-                      },
-                    },
-                    {
-                      "display_name": "GPT",
-                      "name": "key_1730724856858",
-                      "variables": {},
-                    },
-                  ],
-                },
-                "display_name": "State",
-                "name": "state_2",
+              "7b_7b_name_7d_7d__2": {
+                "display_name": "1111",
+                "type": "text",
               },
             },
           },
-        }
-      `);
+          "edges": [],
+          "states": {
+            "state_1": {
+              "children": {
+                "inputs": {
+                  "variables": {
+                    "untitled_input_2": {
+                      "display_name": "Untitled Input",
+                      "type": "text",
+                    },
+                  },
+                },
+                "outputs": {
+                  "render": {
+                    "buttons": {
+                      "button_1": {
+                        "event": "button_1.on_click",
+                        "payload": {
+                          "key_1730724703385": {
+                            "display_name": "Untitled",
+                            "type": "text",
+                          },
+                        },
+                      },
+                    },
+                  },
+                  "variables": {
+                    "untitled_output_2": {
+                      "display_name": "Untitled Output",
+                      "type": "text",
+                    },
+                  },
+                },
+                "tasks": [],
+              },
+              "display_name": "State",
+              "name": "state_1",
+            },
+            "state_2": {
+              "children": {
+                "inputs": {
+                  "variables": {
+                    "untitled_input_1": {
+                      "display_name": "Untitled Input",
+                      "type": "text",
+                    },
+                  },
+                },
+                "outputs": {
+                  "render": {
+                    "buttons": {
+                      "button_1": {
+                        "event": "button_1.on_click",
+                        "payload": {
+                          "untitled_payload_1": {
+                            "display_name": "hhhh",
+                            "type": "text",
+                          },
+                        },
+                      },
+                    },
+                  },
+                  "variables": {
+                    "untitled_output_1": {
+                      "display_name": "Untitled Output",
+                      "type": "text",
+                    },
+                  },
+                },
+                "tasks": [
+                  {
+                    "display_name": "GPT#1",
+                    "name": "gpt_1",
+                    "variables": {
+                      "reply": {
+                        "display_name": "reply",
+                        "type": "string|object",
+                      },
+                    },
+                  },
+                  {
+                    "display_name": "GPT",
+                    "name": "key_1730724856858",
+                    "variables": {},
+                  },
+                ],
+              },
+              "display_name": "State",
+              "name": "state_2",
+            },
+          },
+        },
+      }
+    `);
     });
 
     // it('case#3', () => {
@@ -1086,114 +1233,114 @@ describe('app builder utils', () => {
     //   `);
     // });
   });
-});
 
-describe('fieldsModeMap2Refs', () => {
-  it('should convert simple field mode map', () => {
-    const input = {
-      '@@@start': {
-        'context.key_1732680761763.value': 'ref',
-      },
-      key_1732680760262: {
-        'output.key_1732680806536.value': 'raw',
-        'output.key_1732680825193.value': 'raw',
-        'render.audio': 'ref',
-        'render.image': 'raw',
-        'input.key_1732680981496.default_value': 'ref',
-      },
-      'key_1732680760262.7a3ae4a4-0e6f-42db-bba7-94d0ce244feb': {
-        description: 'ref',
-        payload: 'ref',
-      },
-      'key_1732680760262.blocks.0': {
-        'inputs.system_prompt': 'ref',
-      },
-    };
+  describe('fieldsModeMap2Refs', () => {
+    it('should convert simple field mode map', () => {
+      const input = {
+        '@@@start': {
+          'context.key_1732680761763.value': 'ref',
+        },
+        key_1732680760262: {
+          'output.key_1732680806536.value': 'raw',
+          'output.key_1732680825193.value': 'raw',
+          'render.audio': 'ref',
+          'render.image': 'raw',
+          'input.key_1732680981496.default_value': 'ref',
+        },
+        'key_1732680760262.7a3ae4a4-0e6f-42db-bba7-94d0ce244feb': {
+          description: 'ref',
+          payload: 'ref',
+        },
+        'key_1732680760262.blocks.0': {
+          'inputs.system_prompt': 'ref',
+        },
+      };
 
-    const result = fieldsModeMap2Refs(input);
+      const result = fieldsModeMap2Refs(input);
 
-    expect(result).toEqual({
-      '@@@start': {
-        'context.key_1732680761763.value': {
-          currentMode: 'ref',
+      expect(result).toEqual({
+        '@@@start': {
+          'context.key_1732680761763.value': {
+            currentMode: 'ref',
+          },
         },
-      },
-      key_1732680760262: {
-        'output.key_1732680806536.value': {
-          currentMode: 'raw',
+        key_1732680760262: {
+          'output.key_1732680806536.value': {
+            currentMode: 'raw',
+          },
+          'output.key_1732680825193.value': {
+            currentMode: 'raw',
+          },
+          'render.audio': {
+            currentMode: 'ref',
+          },
+          'render.image': {
+            currentMode: 'raw',
+          },
+          'input.key_1732680981496.default_value': {
+            currentMode: 'ref',
+          },
+          'blocks.0.inputs.system_prompt': {
+            currentMode: 'ref',
+          },
+          'render.buttons.7a3ae4a4-0e6f-42db-bba7-94d0ce244feb.description': {
+            currentMode: 'ref',
+          },
+          'render.buttons.7a3ae4a4-0e6f-42db-bba7-94d0ce244feb.payload': {
+            currentMode: 'ref',
+          },
         },
-        'output.key_1732680825193.value': {
-          currentMode: 'raw',
-        },
-        'render.audio': {
-          currentMode: 'ref',
-        },
-        'render.image': {
-          currentMode: 'raw',
-        },
-        'input.key_1732680981496.default_value': {
-          currentMode: 'ref',
-        },
-        'blocks.0.inputs.system_prompt': {
-          currentMode: 'ref',
-        },
-        'render.buttons.7a3ae4a4-0e6f-42db-bba7-94d0ce244feb.description': {
-          currentMode: 'ref',
-        },
-        'render.buttons.7a3ae4a4-0e6f-42db-bba7-94d0ce244feb.payload': {
-          currentMode: 'ref',
-        },
-      },
+      });
     });
+
+    // it('should handle UUID fields correctly', () => {
+    //   const input = {
+    //     'key_1732680760262': {
+    //       'key_1732680760262.7a3ae4a4-0e6f-42db-bba7-94d0ce244feb.description': 'ref',
+    //       'normal.field': 'raw'
+    //     }
+    //   };
+
+    //   const result = fieldsModeMap2Refs(input);
+
+    //   expect(result).toEqual({
+    //     'key_1732680760262': {
+    //       'render.buttons.7a3ae4a4-0e6f-42db-bba7-94d0ce244feb.payload': {
+    //         currentMode: 'ref'
+    //       },
+    //       'normal.field': {
+    //         currentMode: 'raw'
+    //       }
+    //     }
+    //   });
+    // });
+
+    // it('should handle mixed fields with blocks', () => {
+    //   const input = {
+    //     'key_1732680760262': {
+    //       'key_1732680760262.blocks.0': {
+    //         'inputs.system_prompt': 'ref'
+    //       },
+    //       'normal.field': 'raw',
+    //       'key_1732680760262.7a3ae4a4-0e6f-42db-bba7-94d0ce244feb.description': 'ref'
+    //     }
+    //   };
+
+    //   const result = fieldsModeMap2Refs(input);
+
+    //   expect(result).toEqual({
+    //     'key_1732680760262': {
+    //       'blocks.0.inputs.system_prompt': {
+    //         currentMode: 'ref'
+    //       },
+    //       'normal.field': {
+    //         currentMode: 'raw'
+    //       },
+    //       'render.buttons.7a3ae4a4-0e6f-42db-bba7-94d0ce244feb.payload': {
+    //         currentMode: 'ref'
+    //       }
+    //     }
+    //   });
+    // });
   });
-
-  // it('should handle UUID fields correctly', () => {
-  //   const input = {
-  //     'key_1732680760262': {
-  //       'key_1732680760262.7a3ae4a4-0e6f-42db-bba7-94d0ce244feb.description': 'ref',
-  //       'normal.field': 'raw'
-  //     }
-  //   };
-
-  //   const result = fieldsModeMap2Refs(input);
-
-  //   expect(result).toEqual({
-  //     'key_1732680760262': {
-  //       'render.buttons.7a3ae4a4-0e6f-42db-bba7-94d0ce244feb.payload': {
-  //         currentMode: 'ref'
-  //       },
-  //       'normal.field': {
-  //         currentMode: 'raw'
-  //       }
-  //     }
-  //   });
-  // });
-
-  // it('should handle mixed fields with blocks', () => {
-  //   const input = {
-  //     'key_1732680760262': {
-  //       'key_1732680760262.blocks.0': {
-  //         'inputs.system_prompt': 'ref'
-  //       },
-  //       'normal.field': 'raw',
-  //       'key_1732680760262.7a3ae4a4-0e6f-42db-bba7-94d0ce244feb.description': 'ref'
-  //     }
-  //   };
-
-  //   const result = fieldsModeMap2Refs(input);
-
-  //   expect(result).toEqual({
-  //     'key_1732680760262': {
-  //       'blocks.0.inputs.system_prompt': {
-  //         currentMode: 'ref'
-  //       },
-  //       'normal.field': {
-  //         currentMode: 'raw'
-  //       },
-  //       'render.buttons.7a3ae4a4-0e6f-42db-bba7-94d0ce244feb.payload': {
-  //         currentMode: 'ref'
-  //       }
-  //     }
-  //   });
-  // });
 });

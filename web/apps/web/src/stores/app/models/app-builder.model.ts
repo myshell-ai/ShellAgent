@@ -15,6 +15,7 @@ import { injectable, inject } from 'inversify';
 import { isEmpty } from 'lodash-es';
 import { action, makeObservable, observable, runInAction } from 'mobx';
 
+import { AppBuilderChatModel } from '@/components/chat/app-builder-chat.model';
 import {
   fetchAutomata,
   fetchFlow,
@@ -73,7 +74,7 @@ export class AppBuilderModel {
   @observable getAutomataLoading = false;
   @observable chatRunningLoading = false;
   @observable fetchFlowListLoading = false;
-  @observable versionData: GetAppVersionListResponse | undefined;
+  @observable versionData: GetAppVersionListResponse = { data: [] };
   @observable getVersionLoading = false;
   @observable releaseLoading = false;
   @observable saveLoading = false;
@@ -94,6 +95,7 @@ export class AppBuilderModel {
   constructor(
     @inject(EmitterModel) private emitter: EmitterModel,
     @inject('ComfyUIModel') private comfyui: ComfyUIModel,
+    @inject(AppBuilderChatModel) public chatModel: AppBuilderChatModel,
   ) {
     makeObservable(this);
   }
@@ -123,9 +125,6 @@ export class AppBuilderModel {
     const newRefs = handleRefScene(this.refs, evt);
     this.updateNodeData(evt, this.nodeData);
     this.config.refs = newRefs;
-
-    console.log('this.refs>>', this.refs, evt);
-    console.log('this.nodeData>>', this.nodeData);
   }
 
   @action.bound
@@ -318,7 +317,10 @@ export class AppBuilderModel {
       this.getVersionLoading = true;
       const result = await fetchAppVersionList({ app_id });
       runInAction(() => {
-        this.versionData = result;
+        this.versionData = {
+          ...result,
+          data: [...(result.data || [])],
+        };
       });
     } catch (error: any) {
       this.emitter.emitter.emit('message.error', error.message);
@@ -346,10 +348,12 @@ export class AppBuilderModel {
         if (result.success) {
           await this.getVersionList(app_id);
           this.versionName = '';
-          this.emitter.emitter.emit('message.success', 'publish success');
+          this.emitter.emitter.emit('message.success', 'Publish Success');
+        } else {
+          this.emitter.emitter.emit('message.error', 'Publish Error');
         }
       } catch (error) {
-        this.emitter.emitter.emit('message.error', 'publish error');
+        this.emitter.emitter.emit('message.error', 'Publish Error');
       } finally {
         runInAction(() => {
           this.releaseLoading = false;
@@ -359,7 +363,7 @@ export class AppBuilderModel {
   }
 
   @action.bound
-  async saveApp(app_id: string) {
+  async saveApp(app_id: string, showMessage = true) {
     const reactflow = this.flowInstance?.toObject() as IFlow;
     if (!isEmpty(reactflow) && app_id) {
       try {
@@ -371,7 +375,14 @@ export class AppBuilderModel {
           app_id,
         });
         if (result.success) {
-          this.emitter.emitter.emit('message.success', 'App Saved');
+          if (showMessage) {
+            this.emitter.emitter.emit('message.success', 'App Saved');
+          }
+        } else {
+          this.emitter.emitter.emit(
+            'message.error',
+            result.message || 'Save Error',
+          );
         }
       } catch (error: any) {
         this.emitter.emitter.emit('message.error', error.message);
@@ -396,10 +407,15 @@ export class AppBuilderModel {
           config: this.config,
         });
         if (result.success) {
-          this.emitter.emitter.emit('message.success', 'restore success');
+          this.emitter.emitter.emit('message.success', 'Restore Success');
+        } else {
+          this.emitter.emitter.emit(
+            'message.error',
+            result.message || 'Restore Error',
+          );
         }
       } catch (error: any) {
-        this.emitter.emitter.emit('message.error', 'restore error');
+        this.emitter.emitter.emit('message.error', 'Restore Error');
       } finally {
         runInAction(() => {
           this.restoreLoading = false;
@@ -436,6 +452,8 @@ export class AppBuilderModel {
       refs: {},
     };
 
+    this.chatModel.closeRunDrawer();
+
     emitter.emit(EventType.RESET_FORM, {
       data: `${new Date().valueOf()}`,
     });
@@ -462,5 +480,12 @@ export class AppBuilderModel {
       newId,
       displayName,
     };
+  }
+
+  @action.bound
+  setVersionName(versionName: string) {
+    runInAction(() => {
+      this.versionName = versionName;
+    });
   }
 }

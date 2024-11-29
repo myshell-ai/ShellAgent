@@ -1,7 +1,6 @@
 export * from './expression-input';
 export * from './mode-select';
 export * from './variable-select';
-export * from './render';
 export * from './tasks-config';
 export * from './message-preview';
 export * from './button-editor';

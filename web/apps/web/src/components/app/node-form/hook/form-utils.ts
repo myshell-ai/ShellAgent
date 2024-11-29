@@ -63,8 +63,9 @@ export const getDiffPath = (
   newObj: any,
   path = '',
 ): DiffResult[] => {
+  const diffs: DiffResult[] = [];
   // 基础情况处理
-  if (newObj === prevObj) return [];
+  if (newObj === prevObj) return diffs;
 
   if (
     !prevObj ||
@@ -87,6 +88,22 @@ export const getDiffPath = (
 
   // 添加数组重排序检测
   if (Array.isArray(prevObj) && Array.isArray(newObj)) {
+    // 先检查是否有被引用的任务被删除
+    const deletedTasks = prevObj.filter(
+      oldItem => !newObj.find(newItem => newItem.name === oldItem.name),
+    );
+
+    const isDeleted = deletedTasks.length > 0 && prevObj.length > newObj.length;
+
+    if (isDeleted) {
+      return deletedTasks.map(deletedTask => ({
+        path: String(prevObj.indexOf(deletedTask)),
+        type: DiffTypeEnum.Deleted,
+        oldValue: deletedTask,
+      }));
+    }
+
+    // 检查是否是重排序
     const isReordered =
       prevObj.length === newObj.length &&
       prevObj.every(item => newObj.some(newItem => isEqual(item, newItem))) &&
@@ -120,7 +137,6 @@ export const getDiffPath = (
     }
   }
 
-  const diffs: DiffResult[] = [];
   const allKeys = new Set([...Object.keys(prevObj), ...Object.keys(newObj)]);
   const processedKeys = new Set<string>();
 

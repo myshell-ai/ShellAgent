@@ -9,6 +9,7 @@ from pilmoji import Pilmoji
 import tempfile
 import requests
 from io import BytesIO
+from proconfig.core.exception import ShellException
 
 font_dir = os.path.abspath('proconfig/widgets/myshell_widgets/tools/fonts')
 
@@ -121,7 +122,12 @@ def resize_image(img, position, size, method='contain', rotation=0):
         return img, position
 
     else:
-        raise ValueError("Invalid resize method. Choose 'cover', 'contain', or 'fill'.")
+        error = {
+            'error_code': 'SHELL-1115',
+            'error_head': 'Image-Text Fuser Error', 
+            'msg': "Invalid resize method. Choose 'cover', 'contain', or 'fill'.",
+        }
+        raise ShellException(**error)
 
 def get_image(image_path):
     image_path = image_path.strip()

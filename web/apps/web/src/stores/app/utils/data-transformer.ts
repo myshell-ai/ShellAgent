@@ -37,7 +37,7 @@ function formatTemplateString(data: any): any {
     const jsonString = JSON.stringify(data);
     const formattedString = jsonString.replace(
       /\{\{([^{}]*?)\}\}/g,
-      (match, content) => `{{ ${content.trim()} }}`,
+      (match, content) => `{{${content.trim()}}}`,
     );
 
     return JSON.parse(formattedString);

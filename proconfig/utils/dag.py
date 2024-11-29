@@ -2,6 +2,8 @@ from collections import defaultdict, deque
 import time
 from pydantic import BaseModel, Field
 from typing import List, Dict
+from proconfig.core.exception import ShellException
+import traceback
 
 class DAG(BaseModel):
     graph: Dict[str, List[str]] = Field(defaultdict(list))
@@ -31,7 +33,12 @@ class DAG(BaseModel):
         if len(top_order) == len(self.graph):
             self.top_order = top_order
         else:
-            raise Exception("The graph has at least one cycle.")
+            error = {
+                'error_code': 'SHELL-1110',
+                'error_head': 'Workflow Initialization Error', 
+                'msg': "The graph has at least one cycle.",
+            }
+            raise ShellException(**error)
 
     def execute_task(self, task):
         print(f"Starting task {task}")
