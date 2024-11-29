@@ -35,7 +35,7 @@ export const SaveTemplateDialog = ({
   open,
   onClose,
 }: SaveTemplateDialogProps) => {
-  const [categories, setCategories] = useState<string[]>([]);
+  const [categories, setCategories] = useState<string[]>(['Custom']);
   const { loading, run } = useRequest(saveAsTemplate, {
     manual: true,
     onSuccess: result => {
@@ -48,7 +48,7 @@ export const SaveTemplateDialog = ({
           closeButton: false,
         });
         onClose();
-        setCategories([]);
+        // setCategories([]);
       }
     },
     onError: error => {
@@ -86,7 +86,7 @@ export const SaveTemplateDialog = ({
             </AlertDialogTitle>
           </AlertDialogHeader>
           <AlertDialogDescription>
-            <div className="flex flex-col gap-1.5">
+            {/* <div className="flex flex-col gap-1.5">
               <Text>
                 <span className="text-[#EC2F0D] mr-[2px]">*</span> Categories
               </Text>
@@ -101,8 +101,8 @@ export const SaveTemplateDialog = ({
                 }))}
                 placeholder="Please select template categories."
               />
-            </div>
-            {/* Feature in beta testing, Are you sure you want to save as template? */}
+            </div> */}
+            Feature in beta testing, Are you sure you want to save as template?
           </AlertDialogDescription>
           <AlertDialogFooter>
             <AlertDialogCancel
@@ -115,7 +115,7 @@ export const SaveTemplateDialog = ({
               loading={loading}
               className="flex-1"
               color="warning"
-              disabled={!categories.length}
+              // disabled={!categories.length}
               onClick={onConfirm}>
               Confirm
             </Button>
