@@ -1,0 +1,139 @@
+{
+  "type": "automata",
+  "properties": {
+    "cache": false
+  },
+  "context": {
+    "key_1731004782444": {
+      "type": "text",
+      "value": "0",
+      "name": "click count"
+    }
+  },
+  "initial": "key_1729790620672",
+  "blocks": {
+    "key_1729790620672": {
+      "type": "state",
+      "name": "State",
+      "render": {
+        "text": "This random transition example will generate a number between 0 and 9 randomly. If the result is 0-4, it will go one state, else the other. \n\nIt has 3 states. All important parts are in the first state. which generates a random number and executes a conditional transition based on the result. \n- The Output part shows how to randomize a number. \n- The Transition part shows how to write condition expressions and how to set \"Target Input\" for target states.\n\nTip: This random transition example is not the final version. The randomization method is a bit tricky.",
+        "buttons": [
+          {
+            "content": "Randomize",
+            "on_click": {
+              "event": "6875382b-8fa7-4b43-a13f-fb4d11d81281",
+              "payload": {}
+            },
+            "id": "6875382b-8fa7-4b43-a13f-fb4d11d81281",
+            "description": ""
+          }
+        ]
+      },
+      "blocks": [],
+      "inputs": {},
+      "outputs": {
+        "key_1732095511251": {
+          "type": "text",
+          "value": "{{ int((time.time() % 1) * 1e6 % (10-0)) + 0 }}",
+          "name": "random number"
+        }
+      },
+      "transitions": {
+        "6875382b-8fa7-4b43-a13f-fb4d11d81281": [
+          {
+            "target": "key_1731007762330",
+            "condition": "{{ key_1732095511251 < 5 }}",
+            "target_inputs": {
+              "key_1731008183587": "{{key_1732095511251}}"
+            }
+          },
+          {
+            "target": "key_1731008012254",
+            "condition": "{{ key_1732095511251 > 4 }}",
+            "target_inputs": {
+              "key_1731009518966": "{{key_1732095511251}}"
+            }
+          }
+        ]
+      }
+    },
+    "key_1731007762330": {
+      "type": "state",
+      "name": "State",
+      "render": {
+        "text": "Current State: 0-4.\nGenerated number: {{ key_1731008183587 }}. Should be <=4.",
+        "buttons": [
+          {
+            "content": "Go Home",
+            "on_click": {
+              "event": "31cddc46-4731-424d-8590-23f114e0837c",
+              "payload": {}
+            },
+            "id": "31cddc46-4731-424d-8590-23f114e0837c",
+            "description": ""
+          }
+        ]
+      },
+      "blocks": [],
+      "inputs": {
+        "key_1731008183587": {
+          "name": "random number",
+          "type": "text",
+          "user_input": false
+        }
+      },
+      "transitions": {
+        "43ee36f4-3d10-4dc6-a50d-df16e323921a": [
+          {
+            "target": "key_1729790620672"
+          }
+        ],
+        "31cddc46-4731-424d-8590-23f114e0837c": [
+          {
+            "target": "key_1729790620672"
+          }
+        ]
+      }
+    },
+    "key_1731008012254": {
+      "type": "state",
+      "name": "State",
+      "render": {
+        "text": "Current State: 5-9.\nGenerated number: {{ key_1731009518966 }}. Should be >= 5.",
+        "buttons": [
+          {
+            "content": "Go Home",
+            "on_click": {
+              "event": "87cfdc84-a47e-4fae-bb07-15838984c08a",
+              "payload": {}
+            },
+            "id": "87cfdc84-a47e-4fae-bb07-15838984c08a",
+            "description": ""
+          }
+        ]
+      },
+      "blocks": [],
+      "inputs": {
+        "key_1731009518966": {
+          "name": "random number",
+          "type": "text",
+          "user_input": false
+        }
+      },
+      "outputs": {},
+      "transitions": {
+        "78f5b793-4fc5-479e-8289-0e4cfa60ff25": [
+          {
+            "target": "key_1729790620672"
+          }
+        ],
+        "87cfdc84-a47e-4fae-bb07-15838984c08a": [
+          {
+            "target": "key_1729790620672"
+          }
+        ]
+      }
+    }
+  },
+  "transitions": {}
+}

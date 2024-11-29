@@ -622,7 +622,7 @@ describe('app builder utils', () => {
     const newId = 'state_6';
     const appName = 'app_1';
     const defaultLocation =
-      '/Users/shane/Downloads/ShellAgent_MacOS_release/ShellAgent/data/comfy_workflow/';
+      '/Users/shane/Downloads/ShellAgent_MacOS_release/ShellAgent/data/comfy_workflow';
     const ret = duplicateComfyUI(defaultLocation, appName, newId, nodeData);
     expect(ret).toMatchInlineSnapshot(`
       {
@@ -739,86 +739,86 @@ describe('app builder utils', () => {
 
     const ret = convertRefOptsToCascaderOpts(input as any);
     expect(ret).toMatchInlineSnapshot(`
-      [
-        {
-          "children": [
-            {
-              "children": [
-                {
-                  "field_type": "image",
-                  "label": "output_image",
-                  "parent": "context",
-                  "value": "{{__context__output_image__}}",
-                },
-              ],
-              "label": "Context",
-              "value": "Context",
-            },
-            {
-              "children": [
-                {
-                  "field_type": "text",
-                  "label": "output_data",
-                  "parent": "state",
-                  "value": "{{state2.output_data}}",
-                },
-              ],
-              "label": "State#2",
-              "value": "State#2",
-            },
-            {
-              "children": [
-                {
-                  "field_type": "text",
-                  "label": "Context/output_image",
-                  "parent": "state",
-                  "value": "{{__context__output_image__}}",
-                },
-              ],
-              "label": "State#4",
-              "value": "State#4",
-            },
-          ],
-          "label": "global",
-        },
-        {
-          "children": [
-            {
-              "children": [
-                {
-                  "field_type": "text",
-                  "label": "input_text",
-                  "parent": "inputs",
-                  "value": "{{input_text}}",
-                },
-              ],
-              "label": "Input",
-              "value": "Input",
-            },
-            {
-              "children": [
-                {
-                  "children": [
-                    {
-                      "field_type": "string",
-                      "label": "output_image",
-                      "parent": "blocks",
-                      "value": "{{comfy_ui1.output_image}}",
-                    },
-                  ],
-                  "label": "ComfyUI#1",
-                  "parent": "blocks",
-                  "value": "ComfyUI#1",
-                },
-              ],
-              "label": "Task",
-              "value": "Task",
-            },
-          ],
-          "label": "current",
-        },
-      ]
-    `);
+        [
+          {
+            "children": [
+              {
+                "children": [
+                  {
+                    "field_type": "image",
+                    "label": "output_image",
+                    "parent": "context",
+                    "value": "{{__context__output_image__}}",
+                  },
+                ],
+                "label": "Context",
+                "value": "Context",
+              },
+              {
+                "children": [
+                  {
+                    "field_type": "text",
+                    "label": "output_data",
+                    "parent": "state",
+                    "value": "{{state2.output_data}}",
+                  },
+                ],
+                "label": "State#2",
+                "value": "State#2",
+              },
+              {
+                "children": [
+                  {
+                    "field_type": "text",
+                    "label": "Context/output_image",
+                    "parent": "state",
+                    "value": "{{__context__output_image__}}",
+                  },
+                ],
+                "label": "State#4",
+                "value": "State#4",
+              },
+            ],
+            "label": "global",
+          },
+          {
+            "children": [
+              {
+                "children": [
+                  {
+                    "field_type": "text",
+                    "label": "input_text",
+                    "parent": "inputs",
+                    "value": "{{input_text}}",
+                  },
+                ],
+                "label": "Input",
+                "value": "Input",
+              },
+              {
+                "children": [
+                  {
+                    "children": [
+                      {
+                        "field_type": "string",
+                        "label": "output_image",
+                        "parent": "blocks",
+                        "value": "{{comfy_ui1.output_image}}",
+                      },
+                    ],
+                    "label": "ComfyUI#1",
+                    "parent": "blocks",
+                    "value": "ComfyUI#1",
+                  },
+                ],
+                "label": "Task",
+                "value": "Task",
+              },
+            ],
+            "label": "current",
+          },
+        ]
+      `);
   });
 
   describe('cases', () => {
@@ -872,39 +872,39 @@ describe('app builder utils', () => {
       };
       const ret = convertNodeDataToState(input);
       expect(ret).toMatchInlineSnapshot(`
-      {
-        "children": {
-          "inputs": {
-            "variables": {
-              "untitled_input_1": {
-                "display_name": "input_1",
-                "type": "text",
-              },
-            },
-          },
-          "outputs": {
-            "render": {
-              "buttons": {},
-            },
-            "variables": {},
-          },
-          "tasks": [
-            {
-              "display_name": "GPT#1",
-              "name": "gpt_1",
+        {
+          "children": {
+            "inputs": {
               "variables": {
-                "reply": {
-                  "display_name": "reply",
-                  "type": "string|object",
+                "untitled_input_1": {
+                  "display_name": "input_1",
+                  "type": "text",
                 },
               },
             },
-          ],
-        },
-        "display_name": "State",
-        "name": "state_2",
-      }
-    `);
+            "outputs": {
+              "render": {
+                "buttons": {},
+              },
+              "variables": {},
+            },
+            "tasks": [
+              {
+                "display_name": "GPT#1",
+                "name": "gpt_1",
+                "variables": {
+                  "reply": {
+                    "display_name": "reply",
+                    "type": "string|object",
+                  },
+                },
+              },
+            ],
+          },
+          "display_name": "State",
+          "name": "state_2",
+        }
+      `);
     });
 
     it('case#2', () => {
@@ -1052,114 +1052,114 @@ describe('app builder utils', () => {
 
       const ret = convetNodeDataToScopes(nodeDatas, []);
       expect(ret).toMatchInlineSnapshot(`
-      {
-        "scopes": {
-          "context": {
-            "variables": {
-              "7b_7b_name_7d_7d__1": {
-                "display_name": "2222",
-                "type": "text",
-              },
-              "7b_7b_name_7d_7d__2": {
-                "display_name": "1111",
-                "type": "text",
+        {
+          "scopes": {
+            "context": {
+              "variables": {
+                "7b_7b_name_7d_7d__1": {
+                  "display_name": "2222",
+                  "type": "text",
+                },
+                "7b_7b_name_7d_7d__2": {
+                  "display_name": "1111",
+                  "type": "text",
+                },
               },
             },
-          },
-          "edges": [],
-          "states": {
-            "state_1": {
-              "children": {
-                "inputs": {
-                  "variables": {
-                    "untitled_input_2": {
-                      "display_name": "Untitled Input",
-                      "type": "text",
-                    },
-                  },
-                },
-                "outputs": {
-                  "render": {
-                    "buttons": {
-                      "button_1": {
-                        "event": "button_1.on_click",
-                        "payload": {
-                          "key_1730724703385": {
-                            "display_name": "Untitled",
-                            "type": "text",
-                          },
-                        },
-                      },
-                    },
-                  },
-                  "variables": {
-                    "untitled_output_2": {
-                      "display_name": "Untitled Output",
-                      "type": "text",
-                    },
-                  },
-                },
-                "tasks": [],
-              },
-              "display_name": "State",
-              "name": "state_1",
-            },
-            "state_2": {
-              "children": {
-                "inputs": {
-                  "variables": {
-                    "untitled_input_1": {
-                      "display_name": "Untitled Input",
-                      "type": "text",
-                    },
-                  },
-                },
-                "outputs": {
-                  "render": {
-                    "buttons": {
-                      "button_1": {
-                        "event": "button_1.on_click",
-                        "payload": {
-                          "untitled_payload_1": {
-                            "display_name": "hhhh",
-                            "type": "text",
-                          },
-                        },
-                      },
-                    },
-                  },
-                  "variables": {
-                    "untitled_output_1": {
-                      "display_name": "Untitled Output",
-                      "type": "text",
-                    },
-                  },
-                },
-                "tasks": [
-                  {
-                    "display_name": "GPT#1",
-                    "name": "gpt_1",
+            "edges": [],
+            "states": {
+              "state_1": {
+                "children": {
+                  "inputs": {
                     "variables": {
-                      "reply": {
-                        "display_name": "reply",
-                        "type": "string|object",
+                      "untitled_input_2": {
+                        "display_name": "Untitled Input",
+                        "type": "text",
                       },
                     },
                   },
-                  {
-                    "display_name": "GPT",
-                    "name": "key_1730724856858",
-                    "variables": {},
+                  "outputs": {
+                    "render": {
+                      "buttons": {
+                        "button_1": {
+                          "event": "button_1.on_click",
+                          "payload": {
+                            "key_1730724703385": {
+                              "display_name": "Untitled",
+                              "type": "text",
+                            },
+                          },
+                        },
+                      },
+                    },
+                    "variables": {
+                      "untitled_output_2": {
+                        "display_name": "Untitled Output",
+                        "type": "text",
+                      },
+                    },
                   },
-                ],
+                  "tasks": [],
+                },
+                "display_name": "State",
+                "name": "state_1",
               },
-              "display_name": "State",
-              "name": "state_2",
+              "state_2": {
+                "children": {
+                  "inputs": {
+                    "variables": {
+                      "untitled_input_1": {
+                        "display_name": "Untitled Input",
+                        "type": "text",
+                      },
+                    },
+                  },
+                  "outputs": {
+                    "render": {
+                      "buttons": {
+                        "button_1": {
+                          "event": "button_1.on_click",
+                          "payload": {
+                            "untitled_payload_1": {
+                              "display_name": "hhhh",
+                              "type": "text",
+                            },
+                          },
+                        },
+                      },
+                    },
+                    "variables": {
+                      "untitled_output_1": {
+                        "display_name": "Untitled Output",
+                        "type": "text",
+                      },
+                    },
+                  },
+                  "tasks": [
+                    {
+                      "display_name": "GPT#1",
+                      "name": "gpt_1",
+                      "variables": {
+                        "reply": {
+                          "display_name": "reply",
+                          "type": "string|object",
+                        },
+                      },
+                    },
+                    {
+                      "display_name": "GPT",
+                      "name": "key_1730724856858",
+                      "variables": {},
+                    },
+                  ],
+                },
+                "display_name": "State",
+                "name": "state_2",
+              },
             },
           },
-        },
-      }
-    `);
+        }
+      `);
     });
 
     // it('case#3', () => {

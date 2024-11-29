@@ -1,8 +1,4 @@
 import {
-  ClipboardDocumentCheckIcon,
-  ClipboardDocumentIcon,
-} from '@heroicons/react/24/outline';
-import {
   Avatar,
   Clear,
   Text,
@@ -10,7 +6,13 @@ import {
   TooltipTrigger,
   TooltipContent,
   Loading,
+  IconButton,
 } from '@shellagent/ui';
+import {
+  ArrowUpIcon,
+  ClipboardDocumentCheckIcon,
+  ClipboardDocumentIcon,
+} from '@heroicons/react/24/outline';
 import { useInterval } from 'ahooks';
 import { useInjection } from 'inversify-react';
 import { observer } from 'mobx-react-lite';
@@ -187,7 +189,7 @@ const Editor = observer(() => {
   const model = useInjection(AssistantModel);
 
   return (
-    <div className="w-full flex py-1 px-2 items-center">
+    <div className="w-full flex py-2 px-3 items-center">
       <TextInput
         autoFocus
         value={model.question}
@@ -195,17 +197,16 @@ const Editor = observer(() => {
         sendDisabled={model.sending}
         onChange={e => model.setQuestion(e.target.value)}
         className="flex-grow min-h-5 max-h-28 text-sm"
-        placeholder="Write a message. Press `Enter` to send"
+        placeholder="Write a message"
       />
-      {/* <Button
+      <IconButton
         loading={model.sending}
-        disabled={model.sending || !text}
+        disabled={model.sending || !model.question}
         variant="primary"
         size="sm"
-        // onClick={onSend}
-        className={cn('w-fit rounded-lg shrink-0', text ? '' : 'hidden')}>
-        <PaperAirplaneIcon className="w-4 h-4" />
-      </Button> */}
+        icon={ArrowUpIcon}
+        onClick={model.query}
+      />
     </div>
   );
 });
@@ -259,7 +260,7 @@ export const AssistantBot = observer(() => {
           </TooltipTrigger>
           <TooltipContent>Clear Memory</TooltipContent>
         </Tooltip>
-        <div className="ml-2 flex-grow flex rounded-4xl p-2 bg-surface-hovered">
+        <div className="ml-2 flex-grow flex rounded-4xl bg-surface-hovered">
           <Editor />
         </div>
       </div>

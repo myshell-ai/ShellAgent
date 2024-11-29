@@ -3,5 +3,8 @@
   "description": "This app illustrate how to achieve several features in ShellAgent, including chat, random transition, global variable usage, passing values, rendering image and regeneration. ",
   "create_time": "Tue Nov 12 23:52:26 2024",
   "update_time": "Tue Nov 12 23:52:26 2024",
-  "type": "app"
+  "type": "app",
+  "categories": [
+    "Tutorial"
+  ]
 }
