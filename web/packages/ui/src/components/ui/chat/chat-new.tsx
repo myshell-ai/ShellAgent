@@ -1,5 +1,6 @@
 import {
   ChatModule,
+  IMLocalFile,
   Message,
   MessageContext,
   MessageContextProps,
@@ -13,7 +14,6 @@ import {
   useMessageParams,
   useUploadFiles,
   useVirtuosoMessageListApi,
-  IMLocalFile,
 } from 'myshell-bundled-chat';
 import 'myshell-bundled-chat/styles.css';
 import { useCallback, useEffect, useMemo } from 'react';
