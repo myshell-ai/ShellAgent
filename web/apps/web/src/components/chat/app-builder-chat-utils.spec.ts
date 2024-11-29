@@ -1197,4 +1197,3 @@ describe('app-builder-chat-utils', () => {
     console.log(lastValidReplyMessage.inputSetting);
   });
 });
-``;
