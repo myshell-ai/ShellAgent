@@ -185,7 +185,7 @@ function convertDtoC(d: any): any {
     session_id: d.session_id,
     id: d.id,
     status: d.status,
-    type: d.type,
+    type: 'REPLY',
     createdDateUnix: d.createdDateUnix,
     updatedDateUnix: d.updatedDateUnix,
     text: d.text,
