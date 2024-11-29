@@ -1,0 +1,225 @@
+{
+  "config": {
+    "fieldsModeMap": {
+      "key_1729790785383": {
+        "render.image": "ref"
+      },
+      "key_1731004797517": {
+        "render.text": "ui"
+      },
+      "key_1731007593384": {
+        "output.key_1731008360535.value": "raw"
+      },
+      "key_1731016186627": {
+        "output.__context__key_1731004782444__.value": "raw"
+      },
+      "key_1731016503383.condition.0": {
+        "key_1731016538235": "ui"
+      },
+      "key_1731017092731": {
+        "output.key_1731017936328.value": "ui",
+        "output.key_1731017975217.value": "ui",
+        "render.image": "raw"
+      },
+      "key_1731022659933": {
+        "output.key_1731025752183.value": "ui",
+        "output.key_1731025759555.value": "ui",
+        "render.image": "raw"
+      },
+      "key_1731007331763.blocks.0": {
+        "inputs.user_prompt": "ref"
+      },
+      "key_1731438818456": {
+        "output.key_1731438818458.value": "raw",
+        "output.__context__key_1731004782444__.value": "raw"
+      },
+      "key_1731021998817.blocks.0": {
+        "inputs.user_prompt": "ref"
+      }
+    },
+    "schemaModeMap": {}
+  },
+  "reactflow": {
+    "nodes": [
+      {
+        "width": 500,
+        "height": 128,
+        "id": "@@@start",
+        "position": {
+          "x": 0,
+          "y": 0
+        },
+        "type": "start",
+        "selectable": true,
+        "focusable": true,
+        "draggable": true,
+        "data": {
+          "type": "start",
+          "id": "@@@start"
+        },
+        "selected": false,
+        "positionAbsolute": {
+          "x": 0,
+          "y": 0
+        },
+        "dragging": false
+      },
+      {
+        "id": "key_1731004797517",
+        "position": {
+          "x": 630.8722741433021,
+          "y": 0
+        },
+        "type": "state",
+        "selectable": true,
+        "focusable": true,
+        "draggable": true,
+        "data": {
+          "type": "state",
+          "id": "key_1731004797517",
+          "name": "State",
+          "display_name": "Chat Intro"
+        },
+        "width": 500,
+        "height": 218,
+        "selected": true,
+        "positionAbsolute": {
+          "x": 630.8722741433021,
+          "y": 0
+        },
+        "dragging": false
+      },
+      {
+        "id": "key_1731007331763",
+        "position": {
+          "x": 1209.657320872274,
+          "y": 0
+        },
+        "type": "state",
+        "selectable": true,
+        "focusable": true,
+        "draggable": true,
+        "data": {
+          "type": "state",
+          "id": "key_1731007331763",
+          "name": "State",
+          "display_name": "Reply"
+        },
+        "width": 500,
+        "height": 256,
+        "selected": false,
+        "positionAbsolute": {
+          "x": 1209.657320872274,
+          "y": 0
+        },
+        "dragging": false
+      }
+    ],
+    "edges": [
+      {
+        "type": "custom_edge",
+        "style": {
+          "stroke": "var(--flow-color-04)"
+        },
+        "markerEnd": {
+          "color": "#5A646Es",
+          "height": 25,
+          "strokeWidth": 2,
+          "type": "arrowclosed",
+          "width": 10
+        },
+        "source": "key_1731004797517",
+        "sourceHandle": "custom_message-input-source-handle-key_1731004797517",
+        "target": "key_1731007331763",
+        "targetHandle": "key_1731007331763",
+        "data": {
+          "id": "1f06ade3-1a86-4406-947c-4e7cb7caa837",
+          "custom": true,
+          "type": "CHAT",
+          "source": "key_1731004797517",
+          "target": "key_1731007331763",
+          "conditions": []
+        },
+        "id": "reactflow__edge-key_1731004797517custom_message-input-source-handle-key_1731004797517-key_1731007331763key_1731007331763"
+      },
+      {
+        "type": "custom_edge",
+        "style": {
+          "stroke": "var(--flow-color-05)"
+        },
+        "markerEnd": {
+          "color": "#5A646Es",
+          "height": 25,
+          "strokeWidth": 2,
+          "type": "arrowclosed",
+          "width": 10
+        },
+        "source": "key_1731007331763",
+        "sourceHandle": "custom_message-input-source-handle-key_1731007331763",
+        "target": "key_1731007331763",
+        "targetHandle": "key_1731007331763",
+        "data": {
+          "id": "5526b204-1e3c-4778-b39d-6537bf97d36c",
+          "custom": true,
+          "type": "CHAT",
+          "source": "key_1731007331763",
+          "target": "key_1731007331763",
+          "conditions": []
+        },
+        "id": "reactflow__edge-key_1731007331763custom_message-input-source-handle-key_1731007331763-key_1731007331763key_1731007331763"
+      },
+      {
+        "type": "default_edge",
+        "style": {
+          "strokeWidth": 2,
+          "stroke": "#d1d5db"
+        },
+        "markerEnd": {
+          "color": "#5A646Es",
+          "height": 25,
+          "strokeWidth": 2,
+          "type": "arrowclosed",
+          "width": 10
+        },
+        "source": "@@@start",
+        "sourceHandle": "@@@start",
+        "target": "key_1731004797517",
+        "targetHandle": "key_1731004797517",
+        "animated": false,
+        "id": "reactflow__edge-@@@start@@@start-key_1731004797517key_1731004797517"
+      },
+      {
+        "type": "custom_edge",
+        "style": {
+          "stroke": "var(--flow-color-05)"
+        },
+        "markerEnd": {
+          "color": "#5A646Es",
+          "height": 25,
+          "strokeWidth": 2,
+          "type": "arrowclosed",
+          "width": 10
+        },
+        "source": "key_1731007331763",
+        "sourceHandle": "custom_button-source-handle-60d0e2b1-a849-416e-9785-b9bf976f331b#0",
+        "target": "key_1731004797517",
+        "targetHandle": "key_1731004797517",
+        "data": {
+          "id": "24cf2d52-7b68-40a0-8f2f-945f8f098518",
+          "custom": true,
+          "event_key": "60d0e2b1-a849-416e-9785-b9bf976f331b",
+          "type": "STATE",
+          "source": "key_1731007331763",
+          "target": "key_1731004797517",
+          "conditions": []
+        },
+        "id": "reactflow__edge-key_1731007331763custom_button-source-handle-60d0e2b1-a849-416e-9785-b9bf976f331b#0-key_1731004797517key_1731004797517"
+      }
+    ],
+    "viewport": {
+      "x": -57.636363636363626,
+      "y": 205.61818181818182,
+      "zoom": 0.7295454545454545
+    }
+  }
+}
