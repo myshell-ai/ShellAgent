@@ -4,8 +4,8 @@ import { observer } from 'mobx-react-lite';
 import React, { useState } from 'react';
 import { Rnd } from 'react-rnd';
 
-import { AssistantModel } from '@/components/assistant/model';
 import { AssistantBot } from '@/components/assistant/bot';
+import { AssistantModel } from '@/components/assistant/model';
 
 const Assistant = observer(() => {
   const model = useInjection(AssistantModel);

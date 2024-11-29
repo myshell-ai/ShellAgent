@@ -2,31 +2,22 @@
 
 'use client';
 
-import {
-  getDefaultValueBySchema,
-  TFieldMode,
-  TValues,
-} from '@shellagent/form-engine';
+import { getDefaultValueBySchema, TValues } from '@shellagent/form-engine';
 import { isEmpty, merge } from 'lodash-es';
 import { useCallback, useEffect, useMemo } from 'react';
 
 import NodeForm from '@/components/app/node-form';
 import { getPlugin } from '@/components/app/plugins';
-import { useAppStore } from '@/stores/app/app-provider';
 import { getSchemaByWidget } from '@/stores/app/utils/get-widget-schema';
 import { useWorkflowStore } from '@/stores/workflow/workflow-provider';
 
 export interface WidgetConfigProps {
   values: TValues | undefined;
   parent: string;
-  id: string;
   onChange: (values: TValues) => void;
 }
 
-export interface CommonWidgetConfigProps extends WidgetConfigProps {
-  onModeChange: (name: string, mode: TFieldMode) => void;
-  modeMap: Record<string, TFieldMode>;
-}
+export interface CommonWidgetConfigProps extends WidgetConfigProps {}
 
 const CustomWidgetConfig: React.FC<CommonWidgetConfigProps> = props => {
   const { values } = props;
@@ -46,8 +37,6 @@ const StandardWidgetConfig: React.FC<CommonWidgetConfigProps> = ({
   values,
   parent,
   onChange,
-  onModeChange,
-  modeMap,
 }) => {
   const { loading, getWidgetSchema, widgetSchema } = useWorkflowStore(
     state => ({
@@ -65,7 +54,6 @@ const StandardWidgetConfig: React.FC<CommonWidgetConfigProps> = ({
 
   const schema = useMemo(() => {
     const schema = getSchemaByWidget({
-      mode: 'basic',
       ...widgetSchema[values?.widget_class_name],
     });
     // Special process ImageCanvasWidget
@@ -122,41 +110,14 @@ const StandardWidgetConfig: React.FC<CommonWidgetConfigProps> = ({
       parent={parent}
       onChange={handleOnChange}
       loading={loading?.[values.widget_class_name]}
-      onModeChange={onModeChange}
-      modeMap={modeMap}
     />
   );
 };
 
 export const WidgetConfig: React.FC<WidgetConfigProps> = props => {
-  const { id, parent } = props;
-  const { setFieldsModeMap, fieldsModeMap } = useAppStore(state => ({
-    setFieldsModeMap: state.setFieldsModeMap,
-    fieldsModeMap: state.config?.fieldsModeMap,
-  }));
-
-  const onModeChange = useCallback(
-    (name: string, mode: TFieldMode) => {
-      setFieldsModeMap({ id: `${id}.${parent}`, name, mode });
-    },
-    [id, setFieldsModeMap, parent],
-  );
-
-  const modeMap = fieldsModeMap?.[`${id}.${parent}`] || {};
   if (props.values?.custom) {
-    return (
-      <CustomWidgetConfig
-        {...props}
-        onModeChange={onModeChange}
-        modeMap={modeMap}
-      />
-    );
+    return <CustomWidgetConfig {...props} />;
   }
-  return (
-    <StandardWidgetConfig
-      {...props}
-      onModeChange={onModeChange}
-      modeMap={modeMap}
-    />
-  );
+
+  return <StandardWidgetConfig {...props} />;
 };

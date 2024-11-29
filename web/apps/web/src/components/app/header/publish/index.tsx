@@ -4,7 +4,6 @@ import {
   ChevronDownIcon,
   XMarkIcon,
 } from '@heroicons/react/24/outline';
-import { IFlow } from '@shellagent/flow-engine';
 import {
   Button,
   Heading,
@@ -19,20 +18,15 @@ import {
   SaveIcon,
 } from '@shellagent/ui';
 import { Dropdown } from 'antd';
-import { useRequest } from 'ahooks';
 import dayjs from 'dayjs';
+import { useInjection } from 'inversify-react';
 import { isEmpty } from 'lodash-es';
-import { useRouter } from 'next/navigation';
+import { observer } from 'mobx-react-lite';
 import Link from 'next/link';
-import React, { useCallback, useState } from 'react';
-import { toast } from 'react-toastify';
+import React, { useCallback } from 'react';
 
-import { AppState } from '@/stores/app/app-store';
-import { saveApp, releaseApp, fetchAppVersionList } from '@/services/app';
-import { genAutomata } from '@/stores/app/utils/data-transformer';
+import { AppBuilderModel } from '@/stores/app/models/app-builder.model';
 import { cn } from '@/utils/cn';
-import { Metadata } from '@/services/home/type';
-import { GetAppVersionListResponse } from '@/services/app/type';
 
 import VersionSkeleton from '../skeleton';
 
@@ -40,50 +34,36 @@ interface PublishProps {
   app_id: string;
   version_name: string;
   loading: boolean;
-  config: AppState['config'];
-  nodeData: AppState['nodeData'];
-  flowInstance: AppState['flowInstance'];
-  metadata: Metadata;
 }
 
-const DropdownRender = ({
-  versionData,
-  getVersionLoading,
-  app_id,
-  versionName,
-  setVersionName,
-  handleRelease,
-  releaseLoading,
-  handleSave,
-  saveLoading,
-}: {
-  versionData?: GetAppVersionListResponse;
-  getVersionLoading: boolean;
-  app_id: string;
-  versionName: string;
-  setVersionName: React.Dispatch<React.SetStateAction<string>>;
-  handleRelease: () => Promise<void>;
-  releaseLoading: boolean;
-  handleSave: () => void;
-  saveLoading: boolean;
-}) => {
+const DropdownRender = observer(({ app_id }: { app_id: string }) => {
+  const appBuilder = useInjection<AppBuilderModel>('AppBuilderModel');
+
+  const handleRelease = useCallback(async () => {
+    appBuilder.releaseApp(app_id);
+  }, [app_id]);
+
+  const handleSave = useCallback(() => {
+    appBuilder.saveApp(app_id);
+  }, [app_id]);
+
   return (
     <div className="w-80 text-xs mx-4 p-3 text-left rounded-lg border border-opaque shadow-modal-default outline-none data-[state=open]:animate-in [&[data-state=open]>span]:animate-none data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 bg-surface-search-field text-subtle">
       <div className="flex flex-col gap-3">
         <Heading size="h4">Version</Heading>
         <Input
           placeholder="please enter version name"
-          value={versionName}
+          value={appBuilder.versionName}
           size="xs"
           className="col-span-3"
-          onChange={e => setVersionName(e.target.value)}
+          onChange={e => appBuilder.setVersionName(e.target.value)}
         />
-        {versionName ? (
+        {appBuilder.versionName ? (
           <Button
             onClick={handleRelease}
             size="md"
             className="w-full"
-            loading={releaseLoading}>
+            loading={appBuilder.releaseLoading}>
             Save As
           </Button>
         ) : (
@@ -91,7 +71,7 @@ const DropdownRender = ({
             onClick={handleSave}
             size="md"
             className="w-full"
-            loading={saveLoading}>
+            loading={appBuilder.saveLoading}>
             Save
           </Button>
         )}
@@ -101,14 +81,15 @@ const DropdownRender = ({
       <ScrollArea
         className={cn(
           'w-full',
-          Array.isArray(versionData?.data) && versionData?.data?.length > 3
+          Array.isArray(appBuilder.versionData?.data) &&
+            appBuilder.versionData?.data?.length > 3
             ? 'h-80'
             : 'h-52',
         )}>
-        {getVersionLoading ? (
+        {appBuilder.getVersionLoading ? (
           <VersionSkeleton />
         ) : (
-          versionData?.data?.map(item => {
+          appBuilder.versionData?.data?.map(item => {
             if (item.version_name === 'latest') {
               return (
                 <div className="p-1.5 rounded-md hover:bg-surface-hovered cursor-not-allowed">
@@ -148,175 +129,40 @@ const DropdownRender = ({
             );
           })
         )}
-        {!getVersionLoading && isEmpty(versionData?.data) ? (
+        {!appBuilder.getVersionLoading &&
+        isEmpty(appBuilder.versionData?.data) ? (
           <Text>No Data</Text>
         ) : null}
       </ScrollArea>
     </div>
   );
-};
+});
 
-export default function Publish({
-  app_id,
-  version_name,
-  loading,
-  config,
-  nodeData,
-  metadata,
-  flowInstance,
-}: PublishProps) {
-  const router = useRouter();
-  // const [autoSavedTime, setAutoSavedTime] = useState('');
-  const [versionName, setVersionName] = useState('');
+function Publish({ app_id, version_name, loading }: PublishProps) {
   const hiddenOperation = !!version_name;
-
-  const {
-    run: getVersionList,
-    data: versionData,
-    loading: getVersionLoading,
-  } = useRequest(fetchAppVersionList, {
-    manual: true,
-    onError: error => {
-      toast.error(error.message, {
-        position: 'top-center',
-        autoClose: 1000,
-        hideProgressBar: true,
-        pauseOnHover: true,
-        closeButton: false,
-      });
-    },
-  });
-
-  const { run: release, loading: releaseLoading } = useRequest(releaseApp, {
-    manual: true,
-    onSuccess: result => {
-      if (result.success) {
-        toast.success('publish success', {
-          position: 'top-center',
-          autoClose: 1000,
-          hideProgressBar: true,
-          pauseOnHover: true,
-          closeButton: false,
-        });
-        getVersionList({ app_id });
-        setVersionName('');
-      } else {
-        toast.error('publish error', {
-          position: 'top-center',
-          autoClose: 1000,
-          hideProgressBar: true,
-          pauseOnHover: true,
-          closeButton: false,
-        });
-      }
-    },
-    onError: () => {
-      toast.error('publish error', {
-        position: 'top-center',
-        autoClose: 1000,
-        hideProgressBar: true,
-        pauseOnHover: true,
-        closeButton: false,
-      });
-    },
-  });
-
-  const { run: restoreApp, loading: restoreLoading } = useRequest(saveApp, {
-    manual: true,
-    onSuccess: result => {
-      if (result.success) {
-        toast.success('restore success', {
-          position: 'top-center',
-          autoClose: 1000,
-          hideProgressBar: true,
-          pauseOnHover: true,
-          closeButton: false,
-        });
-        router.push(`/app/detail?id=${app_id}`);
-      } else {
-        toast.error('restore error', {
-          position: 'top-center',
-          autoClose: 1000,
-          hideProgressBar: true,
-          pauseOnHover: true,
-          closeButton: false,
-        });
-      }
-    },
-    onError: () => {
-      toast.error('restore error', {
-        position: 'top-center',
-        autoClose: 1000,
-        hideProgressBar: true,
-        pauseOnHover: true,
-        closeButton: false,
-      });
-    },
-  });
-
-  const { run: saveData, loading: saveLoading } = useRequest(saveApp, {
-    manual: true,
-    onSuccess: result => {
-      if (result.success) {
-        toast.success('App Saved', {
-          position: 'top-center',
-          autoClose: 1000,
-          hideProgressBar: true,
-          pauseOnHover: true,
-          closeButton: false,
-        });
-      }
-    },
-    onError: error => {
-      toast.error(error.message);
-    },
-  });
+  const appBuilder = useInjection<AppBuilderModel>('AppBuilderModel');
 
   const handleSave = useCallback(() => {
-    const reactflow = flowInstance?.toObject() as IFlow;
-    if (!isEmpty(reactflow)) {
-      saveData({
-        app_id,
-        reactflow,
-        automata: genAutomata(reactflow, nodeData),
-        config,
-      });
-    }
-  }, [flowInstance, nodeData, app_id, saveData, config]);
+    appBuilder.saveApp(app_id);
+  }, [app_id]);
 
-  const handleRelease = useCallback(async () => {
-    const reactflow = flowInstance?.toObject() as IFlow;
-    if (!isEmpty(reactflow)) {
-      release({
-        app_id,
-        reactflow,
-        automata: genAutomata(reactflow, nodeData),
-        config,
-        version_name: versionName,
-        metadata,
-      });
-    }
-  }, [flowInstance, nodeData, config, app_id, versionName, metadata]);
+  const handleRestore = useCallback(() => {
+    appBuilder.restoreApp(app_id);
+  }, [app_id]);
 
-  const handleRestore = () => {
-    const reactflow = flowInstance?.toObject() as IFlow;
-    if (!isEmpty(reactflow) && app_id) {
-      restoreApp({
-        app_id,
-        reactflow,
-        automata: genAutomata(reactflow, nodeData),
-        config,
-      });
-    }
-  };
+  const onOpenChange = useCallback(
+    (open: boolean) => {
+      if (open && app_id && isEmpty(appBuilder.versionData?.data)) {
+        appBuilder.getVersionList(app_id);
+      }
+    },
+    [app_id, appBuilder.versionData?.data],
+  );
 
-  const onOpenChange = (open: boolean) => {
-    if (open && app_id && !versionData?.data) {
-      getVersionList({
-        app_id,
-      });
-    }
-  };
+  const dropdownRender = useCallback(
+    () => <DropdownRender app_id={app_id} />,
+    [app_id],
+  );
 
   return (
     <div>
@@ -333,7 +179,7 @@ export default function Publish({
           </Link>
           <Button
             disabled={loading}
-            loading={restoreLoading}
+            loading={appBuilder.restoreLoading}
             onClick={handleRestore}
             className="w-28 px-8 ml-3"
             size="md"
@@ -344,26 +190,13 @@ export default function Publish({
       ) : (
         <Dropdown.Button
           onOpenChange={onOpenChange}
-          // eslint-disable-next-line react/no-unstable-nested-components
-          dropdownRender={() => (
-            <DropdownRender
-              versionData={versionData}
-              getVersionLoading={getVersionLoading}
-              app_id={app_id}
-              versionName={versionName}
-              setVersionName={setVersionName}
-              handleRelease={handleRelease}
-              releaseLoading={releaseLoading}
-              handleSave={handleSave}
-              saveLoading={saveLoading}
-            />
-          )}
+          dropdownRender={dropdownRender}
           buttonsRender={() => {
             return [
               <Button
                 size="md"
                 className="w-20 !rounded-r-none ml-3"
-                loading={saveLoading}
+                loading={appBuilder.saveLoading}
                 onClick={handleSave}
                 icon={SaveIcon}>
                 Save
@@ -380,3 +213,5 @@ export default function Publish({
     </div>
   );
 }
+
+export default observer(Publish);

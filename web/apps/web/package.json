@@ -8,7 +8,10 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint --fix",
-    "type-check": "tsc --noEmit"
+    "type-check": "tsc --noEmit",
+    "test:ci": "jest",
+    "test:u": "jest -u",
+    "test": "jest --watch"
   },
   "dependencies": {
     "@ant-design/icons": "^5.4.0",
@@ -23,12 +26,14 @@
     "@shellagent/flow-engine": "workspace:*",
     "@shellagent/form-engine": "workspace:*",
     "@shellagent/pro-config": "workspace:*",
+    "@shellagent/shared": "workspace:*",
     "@shellagent/tailwind-config": "workspace:*",
     "@shellagent/ui": "workspace:*",
     "ahooks": "^3.8.1",
     "antd": "^5.20.1",
     "axios": "^1.7.4",
     "canvas": "^2.11.2",
+    "change-case": "^4.1.2",
     "clsx": "^2.1.1",
     "crypto-js": "^4.2.0",
     "dayjs": "^1.11.12",

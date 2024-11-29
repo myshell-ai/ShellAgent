@@ -94,7 +94,11 @@ const Recursion: React.FC<IRecursionProps> = (props: IRecursionProps) => {
     case 'Switch':
       return <Switch name={name}>{renderChildren()}</Switch>;
     case 'Inline':
-      return <Inline name={name}>{renderChildren()}</Inline>;
+      return (
+        <Inline name={name} index={index}>
+          {renderChildren()}
+        </Inline>
+      );
     default:
       return <>{renderChildren()}</>;
   }

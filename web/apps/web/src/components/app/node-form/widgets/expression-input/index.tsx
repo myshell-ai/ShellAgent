@@ -90,7 +90,7 @@ const ExpressionInput: React.FC<IExpressionInputProps> = ({
 
     // 替换 value 为对应的 label
     valueToLabelMap.forEach((label, itemValue) => {
-      const regex = new RegExp(`\\b${itemValue}\\b`, 'g');
+      const regex = new RegExp(`\\b${itemValue.trim()}\\b`, 'g');
       // 确保替换时没有重复替换
       value = value.replace(regex, match => {
         // 检查是否已经被替换过

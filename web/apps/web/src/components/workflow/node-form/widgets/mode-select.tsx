@@ -4,7 +4,14 @@ import {
   RectangleStackIcon,
   Square3Stack3DIcon,
 } from '@heroicons/react/24/outline';
-import { TFieldMode } from '@shellagent/form-engine';
+import {
+  useFormEngineContext,
+  getDefaultValueBySchema,
+} from '@shellagent/form-engine';
+import {
+  FieldModeEnum,
+  FieldMode,
+} from '@shellagent/shared/protocol/extend-config';
 import {
   DropdownMenu,
   DropdownMenuTrigger,
@@ -14,49 +21,120 @@ import {
   IconButton,
   Text,
   HeroIcon,
+  useFormContext,
 } from '@shellagent/ui';
-import { useState } from 'react';
+import { useMemo, useCallback, useEffect } from 'react';
 
-// import { useVariableContext } from '@/stores/workflow/variable-provider';
+import { useSchemaContext } from '@/stores/workflow/schema-provider';
+import { useWorkflowStore } from '@/stores/workflow/workflow-provider';
 
 const ModeOptions: Array<{
   label: string;
-  value: TFieldMode;
+  value: FieldMode;
   icon: HeroIcon;
 }> = [
   {
     label: 'UI Mode',
-    value: 'ui',
+    value: FieldModeEnum.Enum.ui,
     icon: RectangleStackIcon,
   },
   {
     label: 'Ref Mode',
-    value: 'ref',
+    value: FieldModeEnum.Enum.ref,
     icon: Square3Stack3DIcon,
   },
   {
     label: 'Code mode',
-    value: 'raw',
+    value: FieldModeEnum.Enum.raw,
     icon: CodeBracketSquareIcon,
   },
 ];
 
+const rawReg = /{{.*}}/;
+const refReg = /^({{).*(}})$/;
+
 interface IModeSelectProps {
-  defaultValue: TFieldMode;
-  onChange?: (value: TFieldMode) => void;
+  name: string;
+  onChange?: (value: FieldMode) => void;
 }
 
-export function ModeSelect({ defaultValue, onChange }: IModeSelectProps) {
-  const [value, setValue] = useState<TFieldMode>(defaultValue);
+export function ModeSelect({ onChange, name }: IModeSelectProps) {
+  const { setFieldsModeMap, fieldsModeMap } = useWorkflowStore(state => ({
+    setFieldsModeMap: state.setFieldsModeMap,
+    fieldsModeMap: state.config?.fieldsModeMap,
+  }));
+  const id = useSchemaContext(state => state.id);
 
-  const IconMode = ModeOptions.find(
-    item => item.value === (value || 'ui'),
-  )?.icon!;
+  const { parent, fields } = useFormEngineContext();
+  const { setValue, getValues } = useFormContext();
+  const { schema } = fields[name] || {};
 
-  const handleChange = (value: TFieldMode) => {
-    setValue(value);
-    onChange?.(value);
-  };
+  const {
+    'x-raw': xRaw,
+    'x-raw-default': xRawDefault,
+    'x-raw-options': defaultOptions,
+    'x-raw-disabled': xRawDisabled,
+  } = schema;
+
+  const defaultValue = useMemo(() => {
+    if (!xRaw) {
+      return FieldModeEnum.Enum.ui;
+    }
+    const currentValue = getValues(name);
+    if (refReg.test(currentValue)) {
+      return FieldModeEnum.Enum.ref;
+    }
+    if (rawReg.test(currentValue)) {
+      return FieldModeEnum.Enum.raw;
+    }
+    return xRawDefault || FieldModeEnum.Enum.ui;
+  }, [name, xRaw, xRawDefault]);
+
+  const refPath = useMemo(
+    () => (parent ? `${parent}.${name}` : name),
+    [parent, name],
+  );
+  const currentMode = fieldsModeMap?.[id]?.[refPath] || defaultValue;
+
+  // 仅作为通知外部变化
+  useEffect(() => {
+    if (onChange && currentMode) {
+      onChange(currentMode);
+    }
+  }, [currentMode]);
+
+  const options = useMemo(() => {
+    if (!defaultOptions) {
+      return ModeOptions;
+    }
+    return ModeOptions.filter(option => defaultOptions?.includes(option.value));
+  }, [defaultOptions]);
+
+  const IconMode = useMemo(
+    () =>
+      options.find(
+        item => item.value === (currentMode || FieldModeEnum.Enum.ui),
+      )?.icon!,
+    [currentMode],
+  );
+
+  const handleChange = useCallback(
+    (value: FieldMode) => {
+      if (value === currentMode) return;
+
+      setValue(
+        name,
+        value === FieldModeEnum.Enum.ui ? getDefaultValueBySchema(schema) : '',
+      );
+
+      setFieldsModeMap({
+        id,
+        name,
+        mode: value,
+      });
+    },
+    [name, currentMode, refPath, schema, fieldsModeMap],
+  );
 
   return (
     <DropdownMenu>
@@ -65,13 +143,14 @@ export function ModeSelect({ defaultValue, onChange }: IModeSelectProps) {
           size="sm"
           color="gray"
           variant="ghost"
+          disabled={xRawDisabled}
           icon={IconMode}
           className="border-0 hover:bg-surface-accent-gray-subtle focus-visible:ring-0"
         />
       </DropdownMenuTrigger>
       <DropdownMenuPortal>
         <DropdownMenuContent className="w-44" sideOffset={5}>
-          {ModeOptions.map(item => (
+          {options.map(item => (
             <DropdownMenuItem
               key={item.label}
               className="flex justify-between hover:bg-surface-container rounded-lg py-1 px-2 mt-1"
@@ -80,9 +159,9 @@ export function ModeSelect({ defaultValue, onChange }: IModeSelectProps) {
                 <item.icon className="w-5 h-5" />
                 <Text className="ml-1.5">{item.label}</Text>
               </div>
-              {value === item.value ? (
+              {currentMode === item.value && (
                 <CheckIcon className="w-5 h-5 text-primary" />
-              ) : null}
+              )}
             </DropdownMenuItem>
           ))}
         </DropdownMenuContent>

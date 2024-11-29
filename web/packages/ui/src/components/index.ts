@@ -40,6 +40,7 @@ export * from './ui/tabs';
 export * from './ui/table';
 export * from './ui/cascader';
 export * from './ui/drawer.tsx';
+export * from './ui/unfocus-input.tsx';
 
 // outline icons
 export * from './ui/icons/outline/arrow-left';

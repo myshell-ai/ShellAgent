@@ -1,4 +1,5 @@
 import { ISchema } from '@shellagent/form-engine';
+import { FieldModeEnum } from '@shellagent/shared/protocol/extend-config';
 
 import { ENABLE_MIME } from '@/utils/file-types';
 
@@ -115,7 +116,6 @@ const startSchema: ISchema = {
             type: 'string',
             'x-component': 'Input',
             'x-type': 'Control',
-            'x-raw': true,
             'x-parent-deletable': true,
             'x-title-editable': true,
             'x-component-props': {
@@ -187,7 +187,6 @@ const startSchema: ISchema = {
                           when: '$this.value === "image"',
                           fullfill: {
                             schema: {
-                              'x-raw': true,
                               'x-component': 'FileUpload',
                               'x-component-props': {
                                 accept: ENABLE_MIME.audio,
@@ -200,7 +199,6 @@ const startSchema: ISchema = {
                           when: '$this.value === "audio"',
                           fullfill: {
                             schema: {
-                              'x-raw': true,
                               'x-component': 'FileUpload',
                               'x-component-props': {
                                 accept: ENABLE_MIME.audio,
@@ -258,7 +256,6 @@ const startSchema: ISchema = {
                     description: {
                       type: 'string',
                       title: 'Description',
-                      'x-raw': true,
                       'x-component': 'Textarea',
                       'x-layout': 'Vertical',
                       'x-class': 'border-0 bg-inherit rounded-lg p-0 pt-3',
@@ -294,6 +291,7 @@ const startSchema: ISchema = {
             title: 'Variable Name',
           },
         },
+        'x-key': '{{name}} Context_{{counter}}',
         'x-type': 'Inline',
         'x-collapsible': true,
       },
@@ -311,7 +309,7 @@ const stateConfigSchema: ISchema = {
   'x-title-size': 'h4',
   'x-class': 'space-y-3',
   properties: {
-    input: {
+    inputs: {
       type: 'object',
       title: 'Input',
       additionalProperties: {
@@ -322,11 +320,11 @@ const stateConfigSchema: ISchema = {
             default: 'Untitled',
             // 'x-role': 'title',
             'x-type': 'Control',
-            'x-component': 'Input',
+            'x-component': 'UnfocusInput',
             'x-class': 'border-0 bg-inherit rounded-lg p-0 w-full',
             'x-component-props': {
               size: '2xs',
-              autoFocus: true,
+              autoFocus: false,
               maxLength: 30,
               placeholder: 'Please name the event',
             },
@@ -365,7 +363,9 @@ const stateConfigSchema: ISchema = {
             'x-onchange-prop-name': 'onCheckedChange',
           },
         },
+        'x-key': '{{name}} Inputs_{{counter}}',
         'x-type': 'Inline',
+        'x-draggable': true,
         'x-deletable': true,
         'x-edit-dialog': {
           type: 'object',
@@ -877,7 +877,7 @@ const stateConfigSchema: ISchema = {
         draggable: true,
       },
     },
-    output: {
+    outputs: {
       type: 'object',
       title: 'Output',
       additionalProperties: {
@@ -985,11 +985,12 @@ const stateConfigSchema: ISchema = {
             'x-component': 'Input',
             'x-type': 'Control',
             'x-raw': true,
-            'x-raw-default': 'ref',
+            'x-raw-default': FieldModeEnum.Enum.ref,
             'x-parent-deletable': true,
             'x-title-editable': true,
             'x-title-component-props': {
               showDialog: true,
+              defaultKey: 'display_name',
               dialogConfig: {
                 title: 'Edit Output',
                 schema: {
@@ -997,7 +998,7 @@ const stateConfigSchema: ISchema = {
                   properties: {
                     name_mode: {
                       type: 'string',
-                      default: 'ui',
+                      default: FieldModeEnum.Enum.ui,
                       title: 'Mode',
                       'x-type': 'Control',
                       'x-hidden': true,
@@ -1043,10 +1044,14 @@ const stateConfigSchema: ISchema = {
                           message: 'Please input the Variable Name',
                         },
                         {
-                          maxLength: 30,
-                          message: 'Cannot exceed 30 characters',
+                          maxLength: 50,
+                          message: 'Cannot exceed 50 characters',
                         },
                       ],
+                    },
+                    display_name: {
+                      type: 'string',
+                      'x-hidden': true,
                     },
                     type: {
                       type: 'string',
@@ -1191,6 +1196,7 @@ const stateConfigSchema: ISchema = {
             'x-class': 'border-0 bg-inherit rounded-lg p-0',
           },
         },
+        'x-key': '{{name}} Outputs_{{counter}}',
         'x-type': 'Inline',
         'x-collapsible': true,
       },
@@ -1214,7 +1220,7 @@ const stateConfigSchema: ISchema = {
           'x-switchable': true,
           'x-switchable-default': true,
           'x-raw': true,
-          'x-raw-default': 'ui',
+          'x-raw-default': FieldModeEnum.Enum.ui,
         },
         audio: {
           type: 'string',
@@ -1227,7 +1233,7 @@ const stateConfigSchema: ISchema = {
             accept: ENABLE_MIME.audio,
           },
           'x-raw': true,
-          'x-raw-default': 'ui',
+          'x-raw-default': FieldModeEnum.Enum.ui,
         },
         image: {
           type: 'string',
@@ -1240,7 +1246,7 @@ const stateConfigSchema: ISchema = {
             accept: ENABLE_MIME.image,
           },
           'x-raw': true,
-          'x-raw-default': 'ui',
+          'x-raw-default': FieldModeEnum.Enum.ui,
         },
         buttons: {
           type: 'array',
@@ -1251,6 +1257,21 @@ const stateConfigSchema: ISchema = {
           'x-switchable-default': true,
         },
       },
+    },
+    id: {
+      type: 'string',
+      default: '',
+      'x-hidden': true,
+    },
+    name: {
+      type: 'string',
+      default: '',
+      'x-hidden': true,
+    },
+    type: {
+      type: 'string',
+      default: 'state',
+      'x-hidden': true,
     },
   },
 };
@@ -1266,7 +1287,7 @@ const buttonConfigSchema: ISchema = {
       'x-raw': true,
       'x-type': 'Control',
       'x-title-size': 'h4',
-      'x-component': 'Input',
+      'x-component': 'UnfocusInput',
       'x-collapsible': true,
       'x-addable': true,
       'x-component-props': {
@@ -1397,8 +1418,8 @@ const buttonConfigSchema: ISchema = {
                 'x-component': 'Input',
                 'x-type': 'Control',
                 'x-raw': true,
-                'x-raw-default': 'ref',
-                'x-raw-options': ['ref'],
+                'x-raw-default': FieldModeEnum.Enum.ref,
+                'x-raw-options': [FieldModeEnum.Enum.ref],
                 'x-parent-deletable': true,
                 'x-title-editable': true,
                 'x-component-props': {
@@ -1407,7 +1428,7 @@ const buttonConfigSchema: ISchema = {
                 'x-title-component-props': {
                   showDialog: true,
                   dialogConfig: {
-                    title: 'Edit Context',
+                    title: 'Edit Payload',
                     schema: {
                       type: 'object',
                       properties: {
@@ -1577,6 +1598,7 @@ const buttonConfigSchema: ISchema = {
                 title: 'Variable Name',
               },
             },
+            'x-key': '{{name}} Payload_{{counter}}',
             'x-type': 'Inline',
             'x-collapsible': true,
           },

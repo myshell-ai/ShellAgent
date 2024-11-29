@@ -4,10 +4,10 @@ import '../../reflect-metadata-client-side';
 import { FlowEngine, FlowRef } from '@shellagent/flow-engine';
 import { enableMapSet } from 'immer';
 import { useInjection } from 'inversify-react';
+import { observer } from 'mobx-react-lite';
 import dynamic from 'next/dynamic';
 import { useSearchParams } from 'next/navigation';
 import { useEffect, useRef } from 'react';
-import { useShallow } from 'zustand/react/shallow';
 import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
 
@@ -17,7 +17,7 @@ import { Header } from '@/components/app/header';
 import { AppBuilderChatModel } from '@/components/chat/app-builder-chat.model';
 import { ListFooterExtra } from '@/components/common/list-footer-extra';
 import { ImageCanvasDialog } from '@/components/image-canvas/open-image-canvas';
-import { useAppStore } from '@/stores/app/app-provider';
+import { AppBuilderModel } from '@/stores/app/models/app-builder.model';
 import { useAppState } from '@/stores/app/use-app-state';
 import { useWorkflowStore } from '@/stores/workflow/workflow-provider';
 
@@ -41,54 +41,76 @@ const ChatSheet = dynamic(() => import('@/components/app/chat-sheet'), {
   ssr: false,
 });
 
+interface FlowEngineWrapperProps {
+  appId: string;
+  versionName: string;
+}
+
+const FlowEngineWrapper = observer(
+  ({ appId, versionName }: FlowEngineWrapperProps) => {
+    const appBuilder = useInjection<AppBuilderModel>('AppBuilderModel');
+    const flowRef = useRef<FlowRef>(null);
+    const appBuilderChatModel = useInjection(AppBuilderChatModel);
+    const getWidgetList = useWorkflowStore(state => state.getWidgetList);
+    const flowInstance = flowRef?.current?.getFlowInstance();
+
+    const { resetState } = useAppState();
+
+    useEffect(() => {
+      appBuilderChatModel.closeRunDrawer();
+    }, [appId]);
+
+    // 退出页面初始化状态
+    useEffect(() => {
+      return () => {
+        resetState();
+      };
+    }, []);
+
+    useEffect(() => {
+      appBuilder.getAutomata({ app_id: appId, version_name: versionName });
+      getWidgetList({});
+      appBuilder.getFlowList({ type: 'workflow' });
+    }, [appId, versionName]);
+
+    useEffect(() => {
+      if (flowInstance) {
+        appBuilder.setFlowInstance(flowInstance);
+        appBuilder.getReactFlow(
+          { app_id: appId, version_name: versionName },
+          flowInstance,
+        );
+      }
+    }, [flowInstance, appId, versionName]);
+
+    return (
+      <FlowEngine
+        listLoading={false}
+        loading={
+          appBuilder.getAutomataLoading || appBuilder.getReactFlowLoading
+        }
+        ref={flowRef}
+        nodeTypes={nodeTypes}
+        edgeTypes={edgeTypes}
+        materialList={materialList}
+        footerExtra={<ListFooterExtra />}
+        header={
+          <>
+            <FlowHeader appId={appId} versionName={versionName} />
+            <StateConfigSheet />
+            <TransitionSheet />
+          </>
+        }
+      />
+    );
+  },
+);
+
 export default function AppBuilderDetail() {
   const params = useSearchParams();
-  const flowRef = useRef<FlowRef>(null);
-  const flowInstance = flowRef.current?.getFlowInstance();
-  const appBuilderChatModel = useInjection(AppBuilderChatModel);
 
   const appId = params.get('id') as string;
-  const version_name = params.get('version_name') as string;
-
-  const { setFlowInstance, getReactFlow, loading, getAutomata, getFlowList } =
-    useAppStore(
-      useShallow(state => ({
-        setFlowInstance: state.setFlowInstance,
-        getReactFlow: state.getReactFlow,
-        loading: state.loading,
-        getAutomata: state.getAutomata,
-        getFlowList: state.getFlowList,
-      })),
-    );
-
-  const getWidgetList = useWorkflowStore(state => state.getWidgetList);
-
-  const { resetState } = useAppState();
-
-  // 初始化reactflow
-  useEffect(() => {
-    if (flowInstance) {
-      setFlowInstance(flowInstance);
-      getReactFlow({ app_id: appId, version_name }, flowInstance);
-    }
-  }, [flowInstance, appId, version_name]);
-
-  useEffect(() => {
-    appBuilderChatModel.closeRunDrawer();
-  }, [appId]);
-
-  useEffect(() => {
-    getAutomata({ app_id: appId, version_name });
-    getWidgetList({});
-    getFlowList({ type: 'workflow' });
-  }, [appId, version_name]);
-
-  // 退出页面初始化状态
-  useEffect(() => {
-    return () => {
-      resetState();
-    };
-  }, []);
+  const versionName = params.get('version_name') as string;
 
   return (
     <DndProvider backend={HTML5Backend}>
@@ -99,22 +121,7 @@ export default function AppBuilderDetail() {
         <main
           id="workflow"
           style={{ height: 'calc(100vh - 60px)', position: 'relative' }}>
-          <FlowEngine
-            listLoading={false}
-            loading={loading.getAutomata || loading.getReactFlow}
-            ref={flowRef}
-            nodeTypes={nodeTypes}
-            edgeTypes={edgeTypes}
-            materialList={materialList}
-            footerExtra={<ListFooterExtra />}
-            header={
-              <>
-                <FlowHeader appId={appId} version_name={version_name} />
-                <StateConfigSheet />
-                <TransitionSheet />
-              </>
-            }
-          />
+          <FlowEngineWrapper appId={appId} versionName={versionName} />
           <ChatSheet />
           <ImageCanvasDialog />
         </main>

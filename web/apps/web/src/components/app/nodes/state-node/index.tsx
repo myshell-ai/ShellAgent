@@ -11,18 +11,24 @@ import {
   TargetHandle,
   useDrop,
   useReactFlowStore,
-  uuid,
 } from '@shellagent/flow-engine';
-import { TFieldMode, TValues } from '@shellagent/form-engine';
+import { TValues } from '@shellagent/form-engine';
+import { RefSceneEnum } from '@shellagent/shared/protocol/app-scope';
+import { Task, TaskSchema } from '@shellagent/shared/protocol/task';
+import { customSnakeCase, getTaskDisplayName } from '@shellagent/shared/utils';
 import { FormRef } from '@shellagent/ui';
 import { useKeyPress } from 'ahooks';
-import { isEqual } from 'lodash-es';
+import { useInjection } from 'inversify-react';
 import React, { useCallback, useRef, useEffect, useState } from 'react';
 
 import { EdgeDataTypeEnum, EdgeTypeEnum } from '@/components/app/edges';
 import NodeCard from '@/components/app/node-card';
 import NodeForm from '@/components/app/node-form';
-import { useAppStore } from '@/stores/app/app-provider';
+import { AppBuilderModel } from '@/stores/app/models/app-builder.model';
+import emitter, {
+  EventType,
+  useEventEmitter,
+} from '@/stores/app/models/emitter';
 import { useAppState } from '@/stores/app/use-app-state';
 import {
   getKeyboardKeyCodeBySystem,
@@ -30,47 +36,22 @@ import {
 } from '@/utils/common-helper';
 
 import { useDuplicateState } from './hook/use-duplicate-state';
-import emitter, { EventType, useEventEmitter } from '../../emitter';
 
-const StateNode: React.FC<NodeProps<StateNodeType>> = ({
-  id,
-  selected,
-  data,
-}) => {
+const StateNode: React.FC<NodeProps<StateNodeType>> = ({ selected, data }) => {
   const stateFormRef = useRef<FormRef>(null);
-  const {
-    setNodeData,
-    nodeData,
-    loading,
-    delNodeData,
-    setFieldsModeMap,
-    fieldsModeMap,
-  } = useAppStore(state => ({
-    setNodeData: state.setNodeData,
-    nodeData: state.nodeData,
-    loading: state.loading.getAutomata,
-    delNodeData: state.delNodeData,
-    setFieldsModeMap: state.setFieldsModeMap,
-    fieldsModeMap: state.config?.fieldsModeMap,
-  }));
-
+  const appBuilder = useInjection<AppBuilderModel>('AppBuilderModel');
   const { onDelNode, selectedNodes, onConnect } = useReactFlowStore(state => ({
     onDelNode: state.onDelNode,
     selectedNodes: state.selectedNodes,
     onConnect: state.onConnect,
   }));
 
-  const {
-    setStateConfigSheetOpen,
-    currentStateId,
-    setSelectedNode,
-    setCurrentCopyStateData,
-  } = useAppState(state => ({
-    setStateConfigSheetOpen: state.setStateConfigSheetOpen,
-    currentStateId: state.currentStateId,
-    setSelectedNode: state.setSelectedNode,
-    setCurrentCopyStateData: state.setCurrentCopyStateData,
-  }));
+  const { setStateConfigSheetOpen, currentStateId, setSelectedNode } =
+    useAppState(state => ({
+      setStateConfigSheetOpen: state.setStateConfigSheetOpen,
+      currentStateId: state.currentStateId,
+      setSelectedNode: state.setSelectedNode,
+    }));
 
   const { duplicateState } = useDuplicateState();
 
@@ -83,6 +64,8 @@ const StateNode: React.FC<NodeProps<StateNodeType>> = ({
     const selectedNode = selectedNodes[0];
     setSelectedNode(selectedNode);
 
+    appBuilder.selectedStateId = selectedNode?.id;
+
     if (selectedNode && selectedNode.type === NodeTypeEnum.state) {
       setStateConfigSheetOpen(selectedNode.id, true);
       selectedNodeRef.current = selectedNode;
@@ -94,16 +77,24 @@ const StateNode: React.FC<NodeProps<StateNodeType>> = ({
   const nodeRef = useRef<HTMLElement | null>(null);
 
   useEffect(() => {
-    nodeRef.current = document.querySelector(`[data-id=${id}]`) as HTMLElement;
-  }, [id]);
+    nodeRef.current = document.querySelector(
+      `[data-id=${data.id}]`,
+    ) as HTMLElement;
+  }, [data.id]);
 
   useKeyPress(
     ['delete', 'backspace'],
     e => {
       if (selected && e.target === nodeRef.current) {
-        delNodeData(id);
+        appBuilder.deleteNodeData(data.id);
         onDelNode({ id: data.id });
-        if (currentStateId === id) {
+        appBuilder.handleRefScene({
+          scene: RefSceneEnum.Enum.remove_state,
+          params: {
+            stateName: data.id as Lowercase<string>,
+          },
+        });
+        if (currentStateId === data.id) {
           setStateConfigSheetOpen(currentStateId, false);
         }
       }
@@ -120,10 +111,7 @@ const StateNode: React.FC<NodeProps<StateNodeType>> = ({
         return;
       }
       if (selected) {
-        setCurrentCopyStateData({
-          ...nodeData[id],
-          ...data,
-        });
+        appBuilder.setCopyData(data.id, data.display_name as string);
       }
     },
     {
@@ -139,7 +127,7 @@ const StateNode: React.FC<NodeProps<StateNodeType>> = ({
         return;
       }
       if (selected) {
-        duplicateState();
+        duplicateState(data.id, data.display_name as string);
       }
     },
     {
@@ -147,36 +135,34 @@ const StateNode: React.FC<NodeProps<StateNodeType>> = ({
     },
   );
 
-  const onModeChange = useCallback(
-    (name: string, mode: TFieldMode) => {
-      setFieldsModeMap({ id, name, mode });
-    },
-    [id, setFieldsModeMap],
-  );
-
   const onChange = useCallback(
     (values: TValues) => {
-      const newData = { id: data.id as NodeId, data: values };
+      const newValues = {
+        ...values,
+        id: data.id,
+        name: data.display_name,
+        type: data.type,
+      };
+      const newData = { id: data.id as NodeId, data: newValues };
 
-      setNodeData(newData);
-      emitter.emit(EventType.STATE_FORM_CHANGE, {
+      appBuilder.setNodeData(newData);
+      emitter.emit(EventType.FORM_CHANGE, {
         id: data.id as NodeId,
         data: `${new Date().valueOf()}`,
         type: 'StateCard',
       });
     },
-    [setNodeData, data.id],
+    [data.id],
   );
 
-  useEventEmitter(EventType.STATE_FORM_CHANGE, eventData => {
-    const currentFormData = stateFormRef.current?.getValues();
-    if (
-      eventData.id === data.id &&
-      eventData.type === 'StateConfigSheet' &&
-      !isEqual(currentFormData, eventData.data)
-    ) {
+  useEventEmitter(EventType.FORM_CHANGE, eventData => {
+    if (eventData.id === data.id && eventData.type === 'StateConfigSheet') {
       setFormKey(eventData.data);
     }
+  });
+
+  useEventEmitter(EventType.RESET_FORM, eventData => {
+    setFormKey(eventData.data);
   });
 
   const handleConnect = (connection: Connection) => {
@@ -186,7 +172,7 @@ const StateNode: React.FC<NodeProps<StateNodeType>> = ({
         edge: {
           type: EdgeTypeEnum.custom,
           data: {
-            id,
+            id: data.id,
             custom: true,
             type: EdgeDataTypeEnum.ALWAYS,
             source: connection.source,
@@ -210,40 +196,49 @@ const StateNode: React.FC<NodeProps<StateNodeType>> = ({
           item.nodeType === NodeTypeEnum.widget ||
           item.nodeType === NodeTypeEnum.workflow
         ) {
-          const newTask = {
-            type: 'task',
-            display_name: item.display_name,
-            name: uuid(),
-            mode: item.nodeType,
-            workflow_id: undefined,
-            widget_name:
-              item.nodeType === NodeTypeEnum.widget
-                ? item.widget_name
-                : undefined,
-            widget_class_name:
-              item.nodeType === NodeTypeEnum.widget ? item.name : undefined,
-            inputs: {},
-            outputs: {},
-            custom: item.custom,
-          };
+          try {
+            const displayName = getTaskDisplayName(
+              item,
+              appBuilder.nodeData[data.id]?.blocks as Task[],
+            );
+            const newTask = TaskSchema.parse({
+              type: 'task',
+              display_name: displayName,
+              name: customSnakeCase(displayName),
+              mode: item.type,
+              ...(item.type === NodeTypeEnum.widget && {
+                widget_name: item.widget_name,
+                widget_class_name: item.name,
+              }),
+              inputs: {},
+              outputs: {},
+              custom: item.custom,
+            });
 
-          setNodeData({
-            id,
-            data: {
-              ...nodeData[id],
-              blocks: [...(nodeData[id]?.blocks || []), newTask],
-            },
-          });
-          setFormKey(uuid());
-          emitter.emit(EventType.STATE_FORM_CHANGE, {
-            id: data.id as NodeId,
-            data: `${new Date().valueOf()}`,
-            type: 'StateCard',
-          });
+            appBuilder.setNodeData({
+              id: data.id,
+              data: {
+                ...appBuilder.nodeData[data.id],
+                blocks: [
+                  ...((appBuilder.nodeData[data.id]?.blocks as Task[]) || []),
+                  newTask,
+                ],
+              },
+            });
+            const key = `${new Date().valueOf()}`;
+            setFormKey(key);
+            emitter.emit(EventType.FORM_CHANGE, {
+              id: data.id as NodeId,
+              data: key,
+              type: 'StateCard',
+            });
+          } catch (error) {
+            console.error('Task parse error:', error);
+          }
         }
       },
     }),
-    [setNodeData, nodeData, id],
+    [appBuilder.setNodeData, appBuilder.nodeData, data.id],
   );
 
   const dropRef = useRef<HTMLDivElement>(null);
@@ -255,15 +250,13 @@ const StateNode: React.FC<NodeProps<StateNodeType>> = ({
         <NodeForm
           key={formKey}
           ref={stateFormRef}
-          loading={loading}
-          values={nodeData[data.id]}
+          loading={appBuilder.getAutomataLoading}
+          values={appBuilder.nodeData[data.id]}
           onChange={onChange}
-          onModeChange={onModeChange}
-          modeMap={fieldsModeMap?.[data.id] || {}}
         />
       </NodeCard>
-      <SourceHandle onConnect={handleConnect} id={`custom_${id}`} />
-      <TargetHandle id={id} />
+      <SourceHandle onConnect={handleConnect} id={`custom_${data.id}`} />
+      <TargetHandle id={data.id} />
     </div>
   );
 };
