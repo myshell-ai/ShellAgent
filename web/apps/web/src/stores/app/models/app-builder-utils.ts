@@ -343,7 +343,7 @@ export function duplicateComfyUI(
         const defaultName = customSnakeCase(
           `${appName}_${stateName}_${b.name}`,
         );
-        const locationNew = `${defaultLocation}${defaultName}.shellagent.json`;
+        const locationNew = `${defaultLocation}/${defaultName}.shellagent.json`;
         locations.push({
           from: b.location,
           to: locationNew,
