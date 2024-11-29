@@ -1,0 +1,91 @@
+{
+  "type": "automata",
+  "properties": {
+    "cache": false
+  },
+  "context": {},
+  "initial": "key_1731004797517",
+  "blocks": {
+    "key_1731004797517": {
+      "type": "state",
+      "name": "State",
+      "render": {
+        "text": "This chat example has 2 states. The first state is for introduction content. The second is for accepting user's input and replying with GPT's response.\nPlease check the second state's Input, Task/GPT and Message to see how it works.",
+        "buttons": []
+      },
+      "blocks": [],
+      "inputs": {},
+      "transitions": {
+        "CHAT": [
+          {
+            "target": "key_1731007331763"
+          }
+        ]
+      }
+    },
+    "key_1731007331763": {
+      "type": "state",
+      "name": "State",
+      "render": {
+        "text": "{{key_1731437188188.reply}}",
+        "buttons": []
+      },
+      "blocks": [
+        {
+          "inputs": {
+            "model": "gpt-3.5-turbo",
+            "system_prompt": "",
+            "user_prompt": "{{key_1731007361092}}",
+            "input_image": null,
+            "memory": [],
+            "function_parameters": [],
+            "memory_mode": "auto",
+            "temperature": 0.7,
+            "top_p": 1,
+            "max_tokens": null,
+            "stream": false,
+            "presence_penalty": 0,
+            "frequency_penalty": 0,
+            "callback": null,
+            "widget_run_id": null,
+            "function_name": "any_function_name",
+            "function_description": "any_function_description"
+          },
+          "outputs": {
+            "display": {
+              "reply": "string|object"
+            }
+          },
+          "render": null,
+          "type": "task",
+          "display_name": "GPT",
+          "name": "key_1731437188188",
+          "mode": "widget",
+          "widget_class_name": "GPTWidget"
+        }
+      ],
+      "inputs": {
+        "key_1731007361092": {
+          "name": "prompt",
+          "type": "text",
+          "user_input": true,
+          "source": "IM",
+          "default_value": "default prompt"
+        }
+      },
+      "transitions": {
+        "CHAT": [
+          {
+            "target": "key_1731007331763"
+          }
+        ],
+        "60d0e2b1-a849-416e-9785-b9bf976f331b": [
+          {
+            "target": "key_1731004797517"
+          }
+        ]
+      }
+    }
+  },
+  "transitions": {}
+}

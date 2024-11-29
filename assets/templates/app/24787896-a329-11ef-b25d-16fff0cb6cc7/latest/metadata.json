@@ -2,5 +2,8 @@
   "name": "Multi-template Img2Img",
   "description": "This app is an example template to develop a multi-template image-to-image generation bot.",
   "create_time": "Thu Nov 14 22:58:51 2024",
-  "update_time": "Thu Nov 14 22:58:51 2024"
+  "update_time": "Thu Nov 14 22:58:51 2024",
+  "categories": [
+    "Image Generation"
+  ]
 }
