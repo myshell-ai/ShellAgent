@@ -27,12 +27,8 @@ export default function RootLayout({
   return (
     <html lang="en">
       <head>
-        <link
-          rel="preload"
-          href="/Reflect.min.js"
-          as="script"
-          fetchPriority="high"
-        />
+        <script src="/Reflect.min.js"></script>
+        <script src="/fabric.js"></script>
       </head>
       <body>
         <Script strategy="beforeInteractive" id="sc-global">
