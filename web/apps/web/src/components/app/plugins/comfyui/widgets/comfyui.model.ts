@@ -4,7 +4,6 @@ import { isEmpty } from 'lodash-es';
 import { action, computed, makeObservable, observable } from 'mobx';
 
 import { SettingsModel } from '@/components/settings/settings.model';
-import { FormEngineModel } from '@/utils/form-engine.model';
 import { FormikModel } from '@/utils/formik.model';
 import { ModalModel } from '@/utils/modal.model';
 import { ToggleModel } from '@/utils/toggle.model';
@@ -42,7 +41,6 @@ export class ComfyUIModel {
     public appBuilderModelFactory: () => AppBuilderModel,
     @inject(FormikModel)
     public locationFormFormik: FormikModel<LocationFormType>,
-    @inject(FormEngineModel) public formRef: FormEngineModel,
     @inject(ModalModel) public locationFormDialog: ModalModel,
     @inject(ToggleModel) public fullscreen: ToggleModel,
     @inject(SettingsModel) public settings: SettingsModel,
@@ -65,16 +63,14 @@ export class ComfyUIModel {
   }
 
   @action.bound
-  async setLocation(location?: string) {
+  async setLocation(formRef: any, location?: string) {
     this.location = location;
     this.locationTemp = location;
-    await this.updateFormRefForAutomataMerge(location);
+    await this.updateFormRefForAutomataMerge(formRef, location);
   }
 
-  async updateFormRefForAutomataMerge(location?: string) {
-    await this.formRef.isReadyPromise;
-    this.formRef.formRef.setValue('location', location);
-    // this.formRef.formRef.setValue('comfy_workflow_id', undefined);
+  async updateFormRefForAutomataMerge(formRef: any, location?: string) {
+    formRef.setValue('location', location);
   }
 
   @action.bound
@@ -90,9 +86,9 @@ export class ComfyUIModel {
   }
 
   @action.bound
-  submitLocationDialog() {
+  submitLocationDialog(formRef: any) {
     const loc = this.locationFormFormik.formikProps.values.location;
-    this.setLocation(loc);
+    this.setLocation(formRef, loc);
   }
 
   checkLocation(loc?: string) {
@@ -106,10 +102,10 @@ export class ComfyUIModel {
   }
 
   @action.bound
-  async checkLocation2() {
+  async checkLocation2(formRef: any) {
     this.locErrorMsg = this.checkLocation(this.locationTemp);
     if (!this.locErrorMsg) {
-      await this.setLocation(this.locationTemp);
+      await this.setLocation(formRef, this.locationTemp);
       if (this.location) {
         await this.checkJsonExists(this.location);
       }
@@ -196,8 +192,8 @@ export class ComfyUIModel {
   }
 
   @action.bound
-  async openIframeDialog(iframeRef: any) {
-    await this.checkLocation2();
+  async openIframeDialog(iframeRef: any, formRef: any) {
+    await this.checkLocation2(formRef);
     this.iframeDialog.open();
     if (this.locErrorMsg == null) {
       if (this.location) {

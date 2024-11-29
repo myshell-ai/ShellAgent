@@ -14,7 +14,7 @@ import { useRequest } from 'ahooks';
 import { Form, Input, Modal, Tooltip } from 'antd';
 import { Field, FieldProps, Formik } from 'formik';
 import { useInjection } from 'inversify-react';
-import { get, isEmpty } from 'lodash-es';
+import { isEmpty } from 'lodash-es';
 import { observer } from 'mobx-react-lite';
 import React, {
   useCallback,
@@ -54,10 +54,10 @@ export const ComfyUIEditor = observer(
     const formRef = useFormContext();
     const { getValues, setValue } = formRef;
     useEffect(() => {
-      model.formRef.setFormRef(formRef);
+      // model.formRef.setFormRef(formRef);
       const location = getValues('location');
-      model.setLocation(location);
-    }, []);
+      model.setLocation(formRef, location);
+    }, [formRef]);
     const [messageDetailOpen, setMessageDetailOpen] = useState(false);
     const [messageDetail, setMessageDetail] = useState<string | null>(null);
 
@@ -364,7 +364,7 @@ export const ComfyUIEditor = observer(
 
     return (
       <div>
-        <ComfyUIEditorButton />
+        <ComfyUIEditorButton formRef={formRef} iframeRef={iframeRef} />
         <Modal
           title={
             <Flex justifyContent="space-between" alignItems="center">
@@ -505,7 +505,7 @@ export const ComfyUIEditor = observer(
             open={model.locationFormDialog.isOpen}
             onOk={model.onLocationDialogOk}
             onCancel={model.locationFormDialog.close}>
-            <LocationForm />
+            <LocationForm formRef={formRef} />
           </AModal>
         </Modal>
         <CheckDialog
@@ -558,7 +558,10 @@ export const LocationFormItem = observer(
   },
 );
 
-const ComfyUIEditorButton = observer(props => {
+const ComfyUIEditorButton = observer<{
+  formRef: any;
+  iframeRef: any;
+}>(props => {
   const model = useInjection<ComfyUIModel>('ComfyUIModel');
   return (
     <>
@@ -566,12 +569,12 @@ const ComfyUIEditorButton = observer(props => {
         onChange={model.setLocationTemp}
         value={model.locationTemp}
         errorMsg={model.locErrorMsg}
-        onBlur={() => model.checkLocation2()}
+        onBlur={() => model.checkLocation2(props.formRef)}
       />
       <Button
         size="sm"
         className="w-full"
-        onClick={model.openIframeDialog}
+        onClick={() => model.openIframeDialog(props.iframeRef, props.formRef)}
         disabled={model.buttonDisabled}>
         {model.buttonName}
       </Button>
@@ -579,7 +582,9 @@ const ComfyUIEditorButton = observer(props => {
   );
 });
 
-export const LocationForm = observer(() => {
+export const LocationForm = observer<{
+  formRef: any;
+}>(props => {
   const model = useInjection<ComfyUIModel>('ComfyUIModel');
   return (
     <Formik<{ location?: string }>
@@ -587,7 +592,7 @@ export const LocationForm = observer(() => {
         location: model.locationTemp,
       }}
       onSubmit={values => {
-        model.submitLocationDialog();
+        model.submitLocationDialog(props.formRef);
       }}>
       {formikProps => {
         model.locationFormFormik.setFormikProps(formikProps);
