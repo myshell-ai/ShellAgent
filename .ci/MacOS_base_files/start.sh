@@ -73,6 +73,7 @@ while true; do
 
     # Start the server
     export MYSHELL_KEY=OPENSOURCE_FIXED
+    pip install -e .
     python servers/main.py &
 
     # Wait for the server to start
