@@ -33,16 +33,22 @@ import emitter, { EventType } from '../emitter';
 import { getFile, saveComfy, uploadComfy } from '../services';
 import type { SaveResponse } from '../services/type';
 import { checkDependency, isValidUrl } from '../utils';
-// import { useAppStore } from '@/stores/app/app-provider';
 import { useFormEngineContext } from '@shellagent/form-engine';
 import { useSchemaContext } from '@/stores/app/schema-provider';
-import { useSearchParams } from 'next/navigation';
 
 const settingsDisabled = process.env.NEXT_PUBLIC_DISABLE_SETTING === 'yes';
 
 export const ComfyUIEditor = observer(
   ({ name, onChange }: { name: string; onChange: (value: string) => void }) => {
     const model = useInjection<ComfyUIModel>('ComfyUIModel');
+    const { id: stateId } = useSchemaContext(state => ({
+      id: state.id,
+    }));
+
+    const formRef = useFormContext();
+    const { getValues, setValue } = formRef;
+    const { parent } = useFormEngineContext();
+
     const [checkDialogOpen, setCheckDialogOpen] = useState(false);
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState<string>('');
@@ -51,13 +57,7 @@ export const ComfyUIEditor = observer(
       SaveResponse['data']['dependencies'] | null
     >(null);
     const iframeRef = useRef<HTMLIFrameElement>(null);
-    const formRef = useFormContext();
-    const { getValues, setValue } = formRef;
-    useEffect(() => {
-      // model.formRef.setFormRef(formRef);
-      const location = getValues('location');
-      model.setLocation(formRef, location);
-    }, [formRef]);
+
     const [messageDetailOpen, setMessageDetailOpen] = useState(false);
     const [messageDetail, setMessageDetail] = useState<string | null>(null);
 
@@ -171,14 +171,13 @@ export const ComfyUIEditor = observer(
           if (valueUrl.origin !== event.origin) return;
 
           const comfy_workflow_id = getValues('comfy_workflow_id');
-          const location = getValues('location');
 
           switch (event.data.type) {
             case MessageType.LOADED:
               setLoaded(true);
               getComfySchema({
                 comfy_workflow_id,
-                location,
+                location: model.locationTemp,
                 filename: 'workflow.json',
               });
               console.log('ComfyUI loaded');
@@ -223,11 +222,6 @@ export const ComfyUIEditor = observer(
       };
     }, [handleMessage]);
 
-    const { parent } = useFormEngineContext();
-    const { id: stateId } = useSchemaContext(state => ({
-      id: state.id,
-    }));
-    const sp = useSearchParams();
     const handleSave = () => {
       if (isEmpty(model.locationTemp)) {
         if (parent) {
@@ -364,7 +358,7 @@ export const ComfyUIEditor = observer(
 
     return (
       <div>
-        <ComfyUIEditorButton formRef={formRef} iframeRef={iframeRef} />
+        <ComfyUIEditorButton iframeRef={iframeRef} />
         <Modal
           title={
             <Flex justifyContent="space-between" alignItems="center">
@@ -505,7 +499,13 @@ export const ComfyUIEditor = observer(
             open={model.locationFormDialog.isOpen}
             onOk={model.onLocationDialogOk}
             onCancel={model.locationFormDialog.close}>
-            <LocationForm formRef={formRef} />
+            <LocationForm
+              stateId={stateId}
+              taskName={getValues('name')}
+              onChange={v => {
+                setValue('location', v);
+              }}
+            />
           </AModal>
         </Modal>
         <CheckDialog
@@ -559,7 +559,6 @@ export const LocationFormItem = observer(
 );
 
 const ComfyUIEditorButton = observer<{
-  formRef: any;
   iframeRef: any;
 }>(props => {
   const model = useInjection<ComfyUIModel>('ComfyUIModel');
@@ -569,12 +568,12 @@ const ComfyUIEditorButton = observer<{
         onChange={model.setLocationTemp}
         value={model.locationTemp}
         errorMsg={model.locErrorMsg}
-        onBlur={() => model.checkLocation2(props.formRef)}
+        onBlur={() => model.checkLocation2()}
       />
       <Button
         size="sm"
         className="w-full"
-        onClick={() => model.openIframeDialog(props.iframeRef, props.formRef)}
+        onClick={() => model.openIframeDialog(props.iframeRef)}
         disabled={model.buttonDisabled}>
         {model.buttonName}
       </Button>
@@ -583,7 +582,9 @@ const ComfyUIEditorButton = observer<{
 });
 
 export const LocationForm = observer<{
-  formRef: any;
+  stateId: string;
+  taskName: string;
+  onChange: (value: string) => void;
 }>(props => {
   const model = useInjection<ComfyUIModel>('ComfyUIModel');
   return (
@@ -592,7 +593,13 @@ export const LocationForm = observer<{
         location: model.locationTemp,
       }}
       onSubmit={values => {
-        model.submitLocationDialog(props.formRef);
+        // TODO: need to update form context?
+        const location = model.locationFormFormik.formikProps.values.location;
+        if (location) {
+          props.onChange(location);
+        }
+        // background: refactor to update app builder model nodedata directly
+        model.submitLocationDialog(props.stateId, props.taskName);
       }}>
       {formikProps => {
         model.locationFormFormik.setFormikProps(formikProps);

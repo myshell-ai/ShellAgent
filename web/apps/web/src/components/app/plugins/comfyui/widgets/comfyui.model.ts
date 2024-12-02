@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { inject, injectable, type interfaces } from 'inversify';
+import { inject, injectable } from 'inversify';
 import { isEmpty } from 'lodash-es';
 import { action, computed, makeObservable, observable } from 'mobx';
 
@@ -29,8 +29,8 @@ export type LocationFormType = {
 
 @injectable()
 export class ComfyUIModel {
+  // @observable location?: string = undefined;
   // TODO: use formik
-  @observable location?: string = undefined;
   @observable locationTemp?: string = undefined;
   @observable locErrorMsg?: string = undefined;
   @observable defaultLocation?: string = undefined;
@@ -51,26 +51,26 @@ export class ComfyUIModel {
 
   @computed
   get buttonDisabled(): boolean {
-    return this.location != null && this.locErrorMsg != null;
+    return this.locationTemp != null && this.locErrorMsg != null;
   }
 
   @computed
   get buttonName() {
-    if (isEmpty(this.location)) {
+    if (isEmpty(this.locationTemp)) {
       return 'Create in ComfyUI';
     }
     return 'Edit in ComfyUI';
   }
 
   @action.bound
-  async setLocation(formRef: any, location?: string) {
-    this.location = location;
+  async setLocation(stateId: string, taskName: string, location?: string) {
+    this.appBuilderModelFactory().nodeData[stateId].blocks.map((b: any) => {
+      if (b.name === taskName) {
+        b.location = location;
+      }
+      return b;
+    });
     this.locationTemp = location;
-    await this.updateFormRefForAutomataMerge(formRef, location);
-  }
-
-  async updateFormRefForAutomataMerge(formRef: any, location?: string) {
-    formRef.setValue('location', location);
   }
 
   @action.bound
@@ -86,9 +86,9 @@ export class ComfyUIModel {
   }
 
   @action.bound
-  submitLocationDialog(formRef: any) {
+  submitLocationDialog(stateId: string, taskName: string) {
     const loc = this.locationFormFormik.formikProps.values.location;
-    this.setLocation(formRef, loc);
+    this.setLocation(stateId, taskName, loc);
   }
 
   checkLocation(loc?: string) {
@@ -102,12 +102,12 @@ export class ComfyUIModel {
   }
 
   @action.bound
-  async checkLocation2(formRef: any) {
+  async checkLocation2() {
     this.locErrorMsg = this.checkLocation(this.locationTemp);
     if (!this.locErrorMsg) {
-      await this.setLocation(formRef, this.locationTemp);
-      if (this.location) {
-        await this.checkJsonExists(this.location);
+      await this.setLocationTemp(this.locationTemp);
+      if (this.locationTemp) {
+        await this.checkJsonExists(this.locationTemp);
       }
     }
   }
@@ -192,12 +192,12 @@ export class ComfyUIModel {
   }
 
   @action.bound
-  async openIframeDialog(iframeRef: any, formRef: any) {
-    await this.checkLocation2(formRef);
+  async openIframeDialog(iframeRef: any) {
+    await this.checkLocation2();
     this.iframeDialog.open();
     if (this.locErrorMsg == null) {
-      if (this.location) {
-        await this.getFile(this.location, iframeRef);
+      if (this.locationTemp) {
+        await this.getFile(this.locationTemp, iframeRef);
       } else {
         const value = this.getComfyUIUrl();
         iframeRef.current?.contentWindow?.postMessage(
