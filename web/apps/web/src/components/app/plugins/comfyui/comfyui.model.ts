@@ -24,7 +24,6 @@ import {
   SaveRequest,
   type SaveResponse,
 } from '@/components/app/plugins/comfyui/services/type';
-import emitter, { EventType } from '@/components/app/plugins/comfyui/emitter';
 import mitt from 'mitt';
 
 const settingsDisabled = process.env.NEXT_PUBLIC_DISABLE_SETTING === 'yes';
@@ -35,6 +34,10 @@ export const locationTip =
 export type LocationFormType = {
   location?: string;
 };
+
+export enum EventType {
+  UPDATE_FORM = 'UPDATE_FORM',
+}
 
 @injectable()
 export class ComfyUIModel {
@@ -49,6 +52,31 @@ export class ComfyUIModel {
     customWarn: {
       message?: string;
       message_detail?: string;
+    };
+    [EventType.UPDATE_FORM]: {
+      data: {
+        inputs: Record<
+          string,
+          {
+            title: string;
+            type: string;
+            default?: any;
+            description: string;
+          }
+        >;
+        outputs: Record<
+          string,
+          {
+            title: string;
+            type: string;
+            items?: {
+              type: string;
+              url_type: string;
+            };
+          }
+        >;
+      };
+      id: string;
     };
   }>();
 
@@ -363,7 +391,7 @@ export class ComfyUIModel {
           this.dependencies = data.dependencies;
         } else {
           this.iframeDialog.close();
-          emitter.emit(EventType.UPDATE_FORM, {
+          this.emitter.emit(EventType.UPDATE_FORM, {
             data: result.data.schemas,
             id: params.comfy_workflow_id,
           });

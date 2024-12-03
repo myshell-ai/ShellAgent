@@ -18,17 +18,36 @@ import React, {
 import { CommonWidgetConfigProps } from '@/components/app/config-form/widget-config';
 import NodeForm from '@/components/app/node-form';
 
-import { EventType, useEventEmitter } from './emitter';
 import { defaultSchema, getComfyUISchema } from './schema';
 import { getFile } from './services';
 import { generateHash } from './comfyui-utils';
 import { ComfyUIEditor } from './widgets/comfyui-editor';
 import { useInjection } from 'inversify-react';
-import { ComfyUIModel } from '@/components/app/plugins/comfyui/comfyui.model';
+import {
+  ComfyUIModel,
+  EventType,
+} from '@/components/app/plugins/comfyui/comfyui.model';
 
 export const ComfyUIPlugin = observer<CommonWidgetConfigProps>(
   ({ values, onChange, parent }) => {
     const model = useInjection<ComfyUIModel>('ComfyUIModel');
+
+    useEffect(() => {
+      model.emitter.on(EventType.UPDATE_FORM, evt => {
+        if (evt.id === values?.comfy_workflow_id) {
+          setSchema(
+            getComfyUISchema({
+              inputs: evt?.data?.inputs || {},
+              outputs: evt?.data?.outputs || {},
+            }),
+          );
+        }
+      });
+      return () => {
+        model.emitter.off(EventType.UPDATE_FORM);
+      };
+    }, []);
+
     const formRef = useRef<FormRef>(null);
     const [schema, setSchema] = useState<ISchema>(defaultSchema);
     const defaultValues = useMemo(
@@ -56,6 +75,7 @@ export const ComfyUIPlugin = observer<CommonWidgetConfigProps>(
       },
       [defaultValues, onChange],
     );
+
     const { run: getComfySchema, loading: isLoading } = useRequest(getFile, {
       manual: true,
       onSuccess: result => {
@@ -97,17 +117,6 @@ export const ComfyUIPlugin = observer<CommonWidgetConfigProps>(
         });
       }
     }, [values?.location, values?.comfy_workflow_id]);
-
-    useEventEmitter(EventType.UPDATE_FORM, eventData => {
-      if (eventData.id === values?.comfy_workflow_id) {
-        setSchema(
-          getComfyUISchema({
-            inputs: eventData?.data?.inputs || {},
-            outputs: eventData?.data?.outputs || {},
-          }),
-        );
-      }
-    });
 
     if (!values) {
       return null;
