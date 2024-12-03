@@ -160,10 +160,15 @@ export class ComfyUIModel {
   }
 
   @action.bound
-  async onLocationDialogOk() {
+  async onLocationDialogOk(iframeRef: RefObject<HTMLIFrameElement>) {
     await this.locationFormikModal.isReadyPromise;
     await this.locationFormikModal.formikProps!.submitForm();
     this.locationFormDialog.close();
+
+    iframeRef.current?.contentWindow?.postMessage(
+      { type: MessageType.SAVE },
+      this.comfyUIUrl,
+    );
   }
 
   checkLocation(location?: string): string | undefined {

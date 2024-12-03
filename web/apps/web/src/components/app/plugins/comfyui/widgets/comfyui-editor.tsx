@@ -296,7 +296,7 @@ export const ComfyUIEditor = observer(
             width={420}
             title="File path of extended ComfyUI json"
             open={model.locationFormDialog.isOpen}
-            onOk={model.onLocationDialogOk}
+            onOk={() => model.onLocationDialogOk(iframeRef)}
             onCancel={model.locationFormDialog.close}>
             <LocationForm
               model={model.locationFormikModal}
