@@ -1,28 +1,27 @@
 import type { IFlow, ReactFlowInstance } from '@shellagent/flow-engine';
-import type { TFieldMode } from '@shellagent/form-engine';
-import { CustomKey, CustomEventName, Automata } from '@shellagent/pro-config';
+import { Automata, CustomEventName, CustomKey } from '@shellagent/pro-config';
 import {
+  customSnakeCase,
+  getRefOptions,
+  handleRefScene,
+  HandleRefSceneEvent,
+  Refs,
   RefSceneEnum,
   RefType,
-  getRefOptions,
   Scopes,
-  HandleRefSceneEvent,
-  handleRefScene,
-  Refs,
-  customSnakeCase,
 } from '@shellagent/shared/protocol/app-scope';
 import type { FieldValues } from '@shellagent/ui';
-import { injectable, inject } from 'inversify';
+import { inject, injectable } from 'inversify';
 import { isEmpty } from 'lodash-es';
 import { action, makeObservable, observable, runInAction } from 'mobx';
 
 import { AppBuilderChatModel } from '@/components/chat/app-builder-chat.model';
 import {
+  fetchAppVersionList,
   fetchAutomata,
   fetchFlow,
-  saveApp,
   releaseApp,
-  fetchAppVersionList,
+  saveApp,
 } from '@/services/app';
 import type {
   GetAppFlowRequest,
@@ -31,9 +30,9 @@ import type {
 import { fetchList as fetchFlowList } from '@/services/home';
 import type { GetListRequest, GetListResponse } from '@/services/home/type';
 import emitter, { EventType } from '@/stores/app/models/emitter';
-import { genNodeData, genAutomata } from '@/stores/app/utils/data-transformer';
-import type { NodeDataType, Config, Metadata } from '@/types/app/types';
-import { EmitterModel } from '@/utils/emitter.model';
+import { genAutomata, genNodeData } from '@/stores/app/utils/data-transformer';
+import type { Config, Metadata, NodeDataType } from '@/types/app/types';
+import { ToastModel } from '@/utils/toast.model';
 
 import {
   CascaderOption,
@@ -44,12 +43,12 @@ import {
 import {
   handleRemoveRefOpts,
   handleRemoveRefOptsPrefix,
-  handleRenameRefOpt,
   handleRemoveState,
+  handleRenameRefOpt,
   handleReorderTask,
 } from './node-data-utils';
 import { defaultFlow } from '../../../components/app/constants';
-import { ComfyUIModel } from '@/components/app/plugins/comfyui/widgets/comfyui.model';
+import { ComfyUIModel } from '@/components/app/plugins/comfyui/comfyui.model';
 
 @injectable()
 export class AppBuilderModel {
@@ -83,6 +82,14 @@ export class AppBuilderModel {
 
   copyNodeData: FieldValues = {};
 
+  constructor(
+    @inject(ToastModel) private emitter: ToastModel,
+    @inject('ComfyUIModel') private comfyui: ComfyUIModel,
+    @inject(AppBuilderChatModel) public chatModel: AppBuilderChatModel,
+  ) {
+    makeObservable(this);
+  }
+
   get scopes(): Scopes | null {
     if (!this.flowInstance || !this.nodeData) return null;
     const edges = this.flowInstance.getEdges();
@@ -91,14 +98,6 @@ export class AppBuilderModel {
 
   get refs(): Refs {
     return this.config.refs || {};
-  }
-
-  constructor(
-    @inject(EmitterModel) private emitter: EmitterModel,
-    @inject('ComfyUIModel') private comfyui: ComfyUIModel,
-    @inject(AppBuilderChatModel) public chatModel: AppBuilderChatModel,
-  ) {
-    makeObservable(this);
   }
 
   getRefOptions(

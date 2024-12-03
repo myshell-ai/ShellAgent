@@ -2,7 +2,7 @@ import axios from 'axios';
 import { inject, injectable, postConstruct } from 'inversify';
 import { action, makeObservable, observable } from 'mobx';
 
-import { EmitterModel } from '@/utils/emitter.model';
+import { ToastModel } from '@/utils/toast.model';
 import { FormikModel } from '@/utils/formik.model';
 import { ModalModel } from '@/utils/modal.model';
 
@@ -64,7 +64,7 @@ export class SettingsModel {
   @observable envs: Map<string, string> = new Map();
 
   constructor(
-    @inject(EmitterModel) private emitter: EmitterModel,
+    @inject(ToastModel) private toast: ToastModel,
     @inject(ModalModel) public modal: ModalModel,
     @inject(ModalModel) public changelogModal: ModalModel,
     @inject(FormikModel) public formik: FormikModel<any>,
@@ -109,7 +109,7 @@ export class SettingsModel {
       });
       this.lastChecktime = res.data.last_check_time;
     } catch (e: any) {
-      this.emitter.emitter.emit('message.error', e.message);
+      this.toast.error(e.message);
     }
   }
 
@@ -127,7 +127,7 @@ export class SettingsModel {
       this.isAutoCheck = res.data.auto_update;
       return this.isAutoCheck;
     } catch (e: any) {
-      this.emitter.emitter.emit('message.error', e.message);
+      this.toast.emitter.emit('message.error', e.message);
       return false;
     }
   }
@@ -149,7 +149,7 @@ export class SettingsModel {
       );
       this.isAutoCheck = isAutoCheck;
     } catch (e: any) {
-      this.emitter.emitter.emit('message.error', e.message);
+      this.toast.emitter.emit('message.error', e.message);
     } finally {
       this.isAutoCheckLoading = false;
     }
@@ -173,7 +173,7 @@ export class SettingsModel {
         this.getLastChecktime();
       }
     } catch (e: any) {
-      this.emitter.emitter.emit('message.error', e.message);
+      this.toast.emitter.emit('message.error', e.message);
     } finally {
       this.isChecking = false;
     }
@@ -189,7 +189,7 @@ export class SettingsModel {
       });
       this.checkRet.current_version = res.data.current_version;
     } catch (e: any) {
-      this.emitter.emitter.emit('message.error', e.message);
+      this.toast.emitter.emit('message.error', e.message);
     }
   }
 
@@ -205,7 +205,7 @@ export class SettingsModel {
     const poll = async () => {
       try {
         await this.getLastChecktime();
-        this.emitter.emitter.emit(
+        this.toast.emitter.emit(
           'message.success',
           'Server restarted successfully, the web UI will reload automatically in 15s..',
         );
@@ -231,7 +231,7 @@ export class SettingsModel {
       });
       this.isToRestart = true;
     } catch (e: any) {
-      this.emitter.emitter.emit('message.error', e.message);
+      this.toast.emitter.emit('message.error', e.message);
     } finally {
       this.isUpdating = false;
     }
@@ -260,7 +260,7 @@ export class SettingsModel {
       };
     } catch (e: any) {
       this.isLoadLoading = false;
-      this.emitter.emitter.emit('message.error', e.message);
+      this.toast.emitter.emit('message.error', e.message);
       return null;
     }
   }
@@ -284,7 +284,7 @@ export class SettingsModel {
         },
       );
     } catch (e: any) {
-      this.emitter.emitter.emit('message.error', e.message);
+      this.toast.emitter.emit('message.error', e.message);
     }
   }
 

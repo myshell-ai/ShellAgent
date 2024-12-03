@@ -1,4 +1,4 @@
-import { pathJoin } from './comfyui.utils';
+import { pathJoin } from './comfyui-utils';
 
 describe('comfyui utils', () => {
   it('path join', () => {

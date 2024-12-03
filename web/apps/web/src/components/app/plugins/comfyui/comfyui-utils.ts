@@ -100,3 +100,6 @@ export function generateHash() {
   const hash = SHA256(data);
   return hash.toString(encHex).slice(0, 32);
 }
+
+export const pathJoin = (parts: string[], sep = '/') =>
+  parts.join(sep).replace(new RegExp(`${sep}{1,}`, 'g'), sep);

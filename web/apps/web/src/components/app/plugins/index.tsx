@@ -2,7 +2,7 @@ import React from 'react';
 
 import { CommonWidgetConfigProps } from '@/components/app/config-form/widget-config';
 
-import ComfyUIPlugin from './comfyui';
+import { ComfyUIPlugin } from './comfyui';
 
 const pluginMap = new Map<string, React.FC<CommonWidgetConfigProps>>();
 

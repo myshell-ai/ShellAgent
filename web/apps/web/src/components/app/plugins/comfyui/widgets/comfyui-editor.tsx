@@ -10,307 +10,72 @@ import {
 } from '@ant-design/icons';
 import { css } from '@emotion/react';
 import { AModal, Button, Spinner, useFormContext } from '@shellagent/ui';
-import { useRequest } from 'ahooks';
 import { Form, Input, Modal, Tooltip } from 'antd';
 import { Field, FieldProps, Formik } from 'formik';
 import { useInjection } from 'inversify-react';
-import { isEmpty } from 'lodash-es';
 import { observer } from 'mobx-react-lite';
-import React, {
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from 'react';
+import React, { useEffect, useRef } from 'react';
 import { Box, Flex } from 'react-system';
 import { toast } from 'react-toastify';
 
-import { ComfyUIModel, LocTip } from './comfyui.model';
+import { ComfyUIModel, LocationFormType, locationTip } from '../comfyui.model';
 import { CheckDialog } from '../check-dialog';
-import { COMFYUI_API, DEFAULT_COMFYUI_API, MessageType } from '../constant';
-import emitter, { EventType } from '../emitter';
-import { getFile, saveComfy, uploadComfy } from '../services';
-import type { SaveResponse } from '../services/type';
-import { checkDependency, isValidUrl } from '../utils';
 import { useFormEngineContext } from '@shellagent/form-engine';
 import { useSchemaContext } from '@/stores/app/schema-provider';
-
-const settingsDisabled = process.env.NEXT_PUBLIC_DISABLE_SETTING === 'yes';
+import { type FormikModel } from '@/utils/formik.model';
 
 export const ComfyUIEditor = observer(
   ({ name, onChange }: { name: string; onChange: (value: string) => void }) => {
     const model = useInjection<ComfyUIModel>('ComfyUIModel');
-    const { id: stateId } = useSchemaContext(state => ({
-      id: state.id,
-    }));
-
-    const formRef = useFormContext();
-    const { getValues, setValue } = formRef;
-    const { parent } = useFormEngineContext();
-
-    const [checkDialogOpen, setCheckDialogOpen] = useState(false);
-    const [isLoading, setIsLoading] = useState(true);
-    const [error, setError] = useState<string>('');
-    const [loaded, setLoaded] = useState(false);
-    const [dependencies, setDependencies] = useState<
-      SaveResponse['data']['dependencies'] | null
-    >(null);
-    const iframeRef = useRef<HTMLIFrameElement>(null);
-
-    const [messageDetailOpen, setMessageDetailOpen] = useState(false);
-    const [messageDetail, setMessageDetail] = useState<string | null>(null);
-
-    const value = useMemo(() => {
-      if (settingsDisabled) {
-        return DEFAULT_COMFYUI_API;
-      }
-      return model.settings.envs.get(COMFYUI_API) || '';
-    }, [model.settings.envs.get(COMFYUI_API), settingsDisabled]);
-
     useEffect(() => {
-      onChange(value);
-    }, [value]);
-
-    const { run: getComfySchema } = useRequest(getFile, {
-      manual: true,
-      onSuccess: result => {
-        if (result.success) {
-          const { data } = result;
-          iframeRef.current?.contentWindow?.postMessage(
-            { type: MessageType.LOAD, data: data.workflow },
-            value,
-          );
-        } else {
-          iframeRef.current?.contentWindow?.postMessage(
-            { type: MessageType.LOAD_DEFAULT },
-            value,
-          );
-        }
-      },
-      onError: () => {
-        iframeRef.current?.contentWindow?.postMessage(
-          { type: MessageType.LOAD_DEFAULT },
-          value,
-        );
-      },
-    });
-
-    const { run: saveComfyRequest, loading: saveLoading } = useRequest(
-      saveComfy,
-      {
-        manual: true,
-        onSuccess: result => {
-          if (result.success) {
-            const { data } = result;
-            const { hasMissingCustomNodes, hasMissingModels } = checkDependency(
-              data.dependencies,
-            );
-            if (hasMissingCustomNodes || hasMissingModels) {
-              setCheckDialogOpen(true);
-              setDependencies(data.dependencies);
-            } else {
-              model.iframeDialog.close();
-              const comfy_workflow_id = getValues('comfy_workflow_id');
-              emitter.emit(EventType.UPDATE_FORM, {
-                data: result.data.schemas,
-                id: comfy_workflow_id,
-              });
-            }
-            if (result.warning_message) {
-              toast.warning(result.warning_message, {
-                position: 'top-center',
-                autoClose: 3000,
-                hideProgressBar: true,
-                pauseOnHover: true,
-                closeButton: false,
-              });
-            }
-          } else {
-            toast.warning(
-              <div>
-                {result?.message}
-                {result?.message_detail ? (
-                  <Button
-                    className="ml-2"
-                    color="error"
-                    size="sm"
-                    onClick={() => showMessageDetail(result?.message_detail)}>
-                    View Detail
-                  </Button>
-                ) : null}
-              </div>,
-              {
-                position: 'top-center',
-                autoClose: 3000,
-                hideProgressBar: true,
-                pauseOnHover: true,
-                closeButton: false,
-              },
-            );
-          }
-        },
-      },
-    );
-
-    const { run: uploadComfyRequest } = useRequest(uploadComfy, {
-      manual: true,
-      onSuccess: result => {
-        console.log('Upload successful:', result);
-      },
-    });
-
-    const handleMessage = useCallback(
-      (event: MessageEvent) => {
-        if (!value) {
-          return;
-        }
-
-        try {
-          const valueUrl = new URL(value);
-          if (valueUrl.origin !== event.origin) return;
-
-          const comfy_workflow_id = getValues('comfy_workflow_id');
-
-          switch (event.data.type) {
-            case MessageType.LOADED:
-              setLoaded(true);
-              getComfySchema({
-                comfy_workflow_id,
-                location: model.locationTemp,
-                filename: 'workflow.json',
-              });
-              console.log('ComfyUI loaded');
-              break;
-            case MessageType.SAVE:
-              if (model.locationTemp == null) {
-                toast.error(
-                  'The file location of ShellAgent-extended ComfyUI JSON file is invalid',
-                  {
-                    position: 'top-center',
-                    autoClose: 3000,
-                    hideProgressBar: true,
-                    pauseOnHover: true,
-                    closeButton: false,
-                  },
-                );
-                return;
-              }
-              saveComfyRequest({
-                prompt: event.data.prompt,
-                comfyui_api: valueUrl.origin,
-                workflow: event.data.workflow,
-                name: event.data.name,
-                comfy_workflow_id,
-                location: model.locationTemp,
-              });
-              break;
-            default:
-              break;
-          }
-        } catch (error) {
-          console.error('Invalid URL:', error);
-        }
-      },
-      [value, getValues],
-    );
-
-    useEffect(() => {
-      window.addEventListener('message', handleMessage);
-      return () => {
-        window.removeEventListener('message', handleMessage);
-      };
-    }, [handleMessage]);
-
-    const handleSave = () => {
-      if (isEmpty(model.locationTemp)) {
-        if (parent) {
-          model.openLocationFormDialog(stateId, getValues('name'));
-          return;
-        }
-      }
-      iframeRef.current?.contentWindow?.postMessage(
-        { type: MessageType.SAVE },
-        value,
-      );
-    };
-
-    const handleImport = (file: File) => {
-      if (!file.name.toLowerCase().endsWith('.json')) {
-        toast.error('Please upload a JSON file', {
-          position: 'top-center',
-          autoClose: 3000,
-          hideProgressBar: true,
-          pauseOnHover: true,
-          closeButton: false,
-        });
-        return;
-      }
-
-      const reader = new FileReader();
-      reader.onload = event => {
-        try {
-          const json = JSON.parse(event.target?.result as string);
-          const comfy_workflow_id = getValues('comfy_workflow_id');
-          uploadComfyRequest({
-            workflow: json,
-            comfy_workflow_id,
-          });
-          iframeRef.current?.contentWindow?.postMessage(
-            { type: MessageType.LOAD, data: json },
-            value,
-          );
-        } catch (error) {
-          console.error('Invalid JSON file:', error);
-          toast.error('Invalid JSON file', {
+      model.emitter.on('customWarn', evt => {
+        toast.warning(
+          <div>
+            {evt.message}
+            {evt.message_detail ? (
+              <Button
+                className="ml-2"
+                color="error"
+                size="sm"
+                onClick={() => model.showMessageDetail(evt.message_detail)}>
+                View Detail
+              </Button>
+            ) : null}
+          </div>,
+          {
             position: 'top-center',
             autoClose: 3000,
             hideProgressBar: true,
             pauseOnHover: true,
             closeButton: false,
-          });
-        }
+          },
+        );
+      });
+      return () => {
+        model.emitter.off('customWarn');
       };
-      reader.readAsText(file);
-    };
+    }, []);
 
-    const handleIframeLoad = () => {
-      setIsLoading(false);
-    };
+    const { id: stateId } = useSchemaContext(state => ({
+      id: state.id,
+    }));
+    const formRef = useFormContext();
+    const { getValues, setValue } = formRef;
+    const { parent } = useFormEngineContext();
+    const iframeRef = useRef<HTMLIFrameElement>(null);
 
-    const handleIframeError = () => {
-      setIsLoading(false);
-      setError('Failed to load ComfyUI. Please ensure the API URL correct.');
-    };
+    useEffect(() => {
+      model.setButtonName(getValues('location'));
+    }, [getValues('location')]);
 
-    const showSettingButton = useMemo(() => {
-      if (settingsDisabled) {
-        return false;
-      }
-      return !isValidUrl(value);
-    }, [value, settingsDisabled]);
-
-    const reloadSettings = async () => {
-      const settings = await model.settings.loadSettingsEnv();
-      const api = settings?.envs?.find(env => env.key === COMFYUI_API)?.value;
-      if (api && isValidUrl(api)) {
-        setValue('api', api);
-        setIsLoading(true);
-      } else {
-        toast.error('Invalid ComfyUI API settings', {
-          position: 'top-center',
-          autoClose: 3000,
-          hideProgressBar: true,
-          pauseOnHover: true,
-          closeButton: false,
-        });
-      }
-    };
-
-    const disabled = useMemo(
-      () => showSettingButton || isLoading || !loaded,
-      [showSettingButton, isLoading, loaded],
-    );
+    useEffect(() => {
+      const handleMessage = (evt: MessageEvent) =>
+        model.handleMessage(iframeRef, getValues('comfy_workflow_id'), evt);
+      window.addEventListener('message', handleMessage);
+      return () => {
+        window.removeEventListener('message', handleMessage);
+      };
+    }, [getValues('comfy_workflow_id')]);
 
     const modalStyles = model.fullscreen.isOn
       ? {
@@ -351,26 +116,36 @@ export const ComfyUIEditor = observer(
           },
         };
 
-    const showMessageDetail = (detail?: string) => {
-      setMessageDetail(detail || '');
-      setMessageDetailOpen(true);
-    };
-
     return (
       <div>
-        <ComfyUIEditorButton iframeRef={iframeRef} />
+        <LocationForm
+          model={model.locationFormikSheet}
+          type="sheet"
+          value={getValues('location')}
+          onChange={v => {
+            setValue('location', v);
+          }}
+        />
+        <Button
+          size="sm"
+          className="w-full"
+          onClick={() => model.openIframeDialog(iframeRef)}>
+          {model.buttonName}
+        </Button>
         <Modal
           title={
             <Flex justifyContent="space-between" alignItems="center">
               <Box>
                 <span className="text-lg font-medium">ComfyUI Editor</span>
-                {error && (
-                  <div className="text-red-500 font-normal">{error}</div>
+                {model.iframeError && (
+                  <div className="text-red-500 font-normal">
+                    {model.iframeError}
+                  </div>
                 )}
                 <ExportOutlined
                   className="cursor-pointer text-primary"
                   onClick={() => {
-                    window.open(value, '_blank');
+                    window.open(model.comfyUIUrl, '_blank');
                   }}
                 />
               </Box>
@@ -386,9 +161,16 @@ export const ComfyUIEditor = observer(
                     </Box>
                     <Box mx={1}>
                       <Button
-                        onClick={handleSave}
-                        disabled={disabled}
-                        loading={saveLoading}
+                        onClick={() =>
+                          model.handleSave(
+                            iframeRef,
+                            parent,
+                            stateId,
+                            getValues('name'),
+                          )
+                        }
+                        disabled={model.disabled}
+                        loading={model.saveLoading.isOn}
                         variant="plain">
                         <SaveOutlined />
                       </Button>
@@ -415,7 +197,9 @@ export const ComfyUIEditor = observer(
           styles={modalStyles}
           forceRender
           open={model.iframeDialog.isOpen}
-          onOk={handleSave}
+          onOk={() =>
+            model.handleSave(iframeRef, parent, stateId, getValues('name'))
+          }
           mask={false}
           width={model.fullscreen.isOn ? '100%' : '80%'}
           className={model.fullscreen.isOn ? 'top-0 p-0 m-0' : 'top-5'}
@@ -432,26 +216,33 @@ export const ComfyUIEditor = observer(
                 </Button>
                 <Button
                   size="sm"
-                  onClick={handleSave}
-                  disabled={disabled}
-                  loading={saveLoading}>
+                  onClick={() =>
+                    model.handleSave(
+                      iframeRef,
+                      parent,
+                      stateId,
+                      getValues('name'),
+                    )
+                  }
+                  disabled={model.disabled}
+                  loading={model.saveLoading.isOn}>
                   Save
                 </Button>
               </div>
             )
           }
           closeIcon={null}>
-          {isLoading && !showSettingButton && (
+          {model.loading.isOn && !model.showSettingButton && (
             <div className="flex justify-center items-center h-[80vh]">
               <Spinner size="lg" className="text-brand" />
             </div>
           )}
-          {showSettingButton && (
+          {model.showSettingButton && (
             <div className="flex flex-col items-center justify-center h-[80vh]">
               <div className="text-center mb-4">
-                Failed to connect to ComfyUI at {value || 'undefined address'}.
-                Please verify the address or update it in the environment
-                settings.
+                Failed to connect to ComfyUI at{' '}
+                {model.comfyUIUrl || 'undefined address'}. Please verify the
+                address or update it in the environment settings.
                 <Button
                   size="sm"
                   onClick={model.settings.modal.open}
@@ -460,7 +251,12 @@ export const ComfyUIEditor = observer(
                   Settings
                 </Button>
               </div>
-              <Button variant="primary" size="sm" onClick={reloadSettings}>
+              <Button
+                variant="primary"
+                size="sm"
+                onClick={() => {
+                  model.reloadSettings(api => setValue('api', api));
+                }}>
                 <ReloadOutlined className="mr-2" />
                 Reload
               </Button>
@@ -469,25 +265,28 @@ export const ComfyUIEditor = observer(
           <iframe
             title="comfyui"
             ref={iframeRef}
-            src={value}
+            src={model.comfyUIUrl}
             className={`w-full ${
               model.fullscreen.isOn ? 'h-full' : 'h-[80vh]'
-            } ${isLoading || showSettingButton ? 'hidden' : ''}`}
-            onLoad={handleIframeLoad}
-            onError={handleIframeError}
+            } ${model.loading.isOn || model.showSettingButton ? 'hidden' : ''}`}
+            onLoad={() => {
+              model.loading.off();
+            }}
+            onError={() => {
+              model.loading.off();
+              model.setIframeError();
+            }}
           />
           <Modal
             title="Error Detail"
-            open={messageDetailOpen}
-            onCancel={() => setMessageDetailOpen(false)}
+            open={model.messageDetailModal.isOpen}
+            onCancel={model.messageDetailModal.close}
             footer={[
-              <Button onClick={() => setMessageDetailOpen(false)}>
-                Close
-              </Button>,
+              <Button onClick={model.messageDetailModal.close}>Close</Button>,
             ]}>
             <div
               dangerouslySetInnerHTML={{
-                __html: messageDetail?.replaceAll('\n', '<br />') || '',
+                __html: model.messageDetail?.replaceAll('\n', '<br />') || '',
               }}
             />
           </Modal>
@@ -500,8 +299,9 @@ export const ComfyUIEditor = observer(
             onOk={model.onLocationDialogOk}
             onCancel={model.locationFormDialog.close}>
             <LocationForm
-              stateId={stateId}
-              taskName={getValues('name')}
+              model={model.locationFormikModal}
+              type="modal"
+              value={getValues('location')}
               onChange={v => {
                 setValue('location', v);
               }}
@@ -509,10 +309,10 @@ export const ComfyUIEditor = observer(
           </AModal>
         </Modal>
         <CheckDialog
-          open={checkDialogOpen}
+          open={model.checkDialog.isOn}
           setModalOpen={model.iframeDialog.open}
-          setOpen={setCheckDialogOpen}
-          dependencies={dependencies}
+          setOpen={model.checkDialog.on}
+          dependencies={model.dependencies}
           comfy_workflow_id={getValues('comfy_workflow_id')}
         />
       </div>
@@ -520,89 +320,31 @@ export const ComfyUIEditor = observer(
   },
 );
 
-export const LocationFormItem = observer(
-  (props: {
-    value?: string;
-    onChange: (value: string) => void;
-    errorMsg?: string;
-    onBlur: (value?: string) => void;
-  }) => {
-    return (
-      <Form.Item
-        colon={false}
-        tooltip={LocTip}
-        label="Location"
-        help={props.errorMsg}
-        validateStatus={props.errorMsg == null ? undefined : 'error'}
-        css={css`
-          margin-bottom: 12px;
-          // .ant-row {
-          //   flex-flow: row;
-          // }
-        `}>
-        <Flex alignItems="center">
-          <Input
-            value={props.value}
-            onChange={e => {
-              props.onChange(e.target.value);
-            }}
-            onBlur={e => props.onBlur(props.value)}
-            placeholder="File path of extended ComfyUI json"
-          />
-          {/* <Box ml={1}>
-            <FolderOpenIcon className="w-5 h-5 text-icon-brand" />
-          </Box> */}
-        </Flex>
-      </Form.Item>
-    );
-  },
-);
-
-const ComfyUIEditorButton = observer<{
-  iframeRef: any;
-}>(props => {
-  const model = useInjection<ComfyUIModel>('ComfyUIModel');
-  return (
-    <>
-      <LocationFormItem
-        onChange={model.setLocationTemp}
-        value={model.locationTemp}
-        errorMsg={model.locErrorMsg}
-        onBlur={() => model.checkLocation2()}
-      />
-      <Button
-        size="sm"
-        className="w-full"
-        onClick={() => model.openIframeDialog(props.iframeRef)}
-        disabled={model.buttonDisabled}>
-        {model.buttonName}
-      </Button>
-    </>
-  );
-});
-
 export const LocationForm = observer<{
-  stateId: string;
-  taskName: string;
+  model: FormikModel<LocationFormType>;
+  type: 'sheet' | 'modal';
+  value: string;
   onChange: (value: string) => void;
 }>(props => {
-  const model = useInjection<ComfyUIModel>('ComfyUIModel');
+  const comfyUIModel = useInjection<ComfyUIModel>('ComfyUIModel');
   return (
-    <Formik<{ location?: string }>
+    <Formik<LocationFormType>
       initialValues={{
-        location: model.locationTemp,
+        location: props.value,
       }}
       onSubmit={values => {
-        // TODO: need to update form context?
-        const location = model.locationFormFormik.formikProps.values.location;
-        if (location) {
-          props.onChange(location);
+        if (values.location) {
+          props.onChange(values.location);
+          comfyUIModel.submitLocationFormModal(values.location);
         }
-        // background: refactor to update app builder model nodedata directly
-        model.submitLocationDialog(props.stateId, props.taskName);
       }}>
       {formikProps => {
-        model.locationFormFormik.setFormikProps(formikProps);
+        useEffect(() => {
+          props.model.setFormikProps(formikProps);
+          return () => {
+            props.model.reset();
+          };
+        }, []);
         return (
           <Form
             layout="horizontal"
@@ -610,17 +352,35 @@ export const LocationForm = observer<{
             wrapperCol={{ span: 18 }}>
             <Field name="location">
               {({ field }: FieldProps) => (
-                <LocationFormItem
-                  value={field.value}
-                  onChange={v => {
-                    formikProps.setFieldValue('location', v);
-                  }}
-                  errorMsg={formikProps.errors.location}
-                  onBlur={() => {
-                    const e = model.checkLocation(field.value);
-                    formikProps.setFieldError('location', e);
-                  }}
-                />
+                <Form.Item
+                  colon={false}
+                  tooltip={locationTip}
+                  label="Location"
+                  help={formikProps.errors.location}
+                  validateStatus={
+                    formikProps.errors.location == null ? undefined : 'error'
+                  }
+                  css={css`
+                    margin-bottom: 12px;
+                  `}>
+                  <Flex alignItems="center">
+                    <Input
+                      value={field.value}
+                      onChange={async e => {
+                        formikProps.values.location = e.target.value; // workaround: cannot update immediately
+                        formikProps.setFieldValue('location', e.target.value);
+                      }}
+                      onBlur={() =>
+                        comfyUIModel.onLocationBlur(
+                          props.model,
+                          props.type,
+                          field,
+                        )
+                      }
+                      placeholder="File path of extended ComfyUI json"
+                    />
+                  </Flex>
+                </Form.Item>
               )}
             </Field>
           </Form>
