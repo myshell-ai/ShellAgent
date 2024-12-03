@@ -55,14 +55,25 @@ export const deleteItem = (params: DeleteRequest) => {
 // 获取模版列表
 export const getTemplateList = (params: TemplateListRequest) => {
   return APIFetch.post<TemplateListResponse>('/api/template_list', {
-    body: params,
+    body: {
+      ...params,
+      categories: params?.categories?.includes('All')
+        ? null
+        : params.categories,
+    },
   });
 };
 
 // 保存模版
-export const saveAsTemplate = (app_id: string) => {
+export const saveAsTemplate = ({
+  app_id,
+  categories,
+}: {
+  app_id: string;
+  categories: string[];
+}) => {
   return APIFetch.post<SaveAsTemplateResponse>('/api/save_as_template', {
-    body: { app_id },
+    body: { app_id, categories },
   });
 };
 

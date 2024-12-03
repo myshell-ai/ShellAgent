@@ -276,7 +276,7 @@ def comfyui_run(api, workflow, prompt, schemas, user_inputs):
                 error = {
                     'error_code': 'COMFY-1105',
                     'error_head': 'ComfyUI Workflow Output Processing Error', 
-                    'msg': f"ShellAgent outputs Node '{schema['title']}' cannot be founded in the ComfyUI results. Please check the ComfyUI workflow: {str(e)}", 
+                    'msg': f"ShellAgent outputs Node '{schema['title']}' cannot be founded in the ComfyUI results. Please check the ComfyUI workflow", 
                     'traceback': f"The output schemas for your workflow are {[schema['title'] for schema in schemas['outputs']]}. However, there is at least one missing output is missing in the final outputs of ComfyUI {outputs}."
                 }
                 raise ShellException(**error)

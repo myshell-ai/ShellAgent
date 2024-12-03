@@ -35,6 +35,19 @@ const ImportModal: React.FC<{
           if (!success) {
             throw new Error('');
           }
+          if (!data?.reactflow) {
+            toast.error(
+              'Import error, please upload the exported data of the latest ShellAgent version!',
+              {
+                position: 'top-center',
+                autoClose: 1000,
+                hideProgressBar: true,
+                pauseOnHover: true,
+                closeButton: false,
+              },
+            );
+            return;
+          }
           setShellAgent({
             reactflow: data?.reactflow?.reactflow,
             config: data?.reactflow?.config,
@@ -45,7 +58,7 @@ const ImportModal: React.FC<{
         .catch(() => {
           setShellAgent(undefined);
           setFileUrl(undefined);
-          toast.error('read json error, please try again later!', {
+          toast.error('Read json error, please try again later!', {
             position: 'top-center',
             autoClose: 1000,
             hideProgressBar: true,

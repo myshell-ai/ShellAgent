@@ -105,6 +105,7 @@ while true; do
     cd ShellAgent
 
     export MYSHELL_KEY=OPENSOURCE_FIXED
+    pip install -e .
     python servers/main.py --port 8154
 
     exit_code=$?
