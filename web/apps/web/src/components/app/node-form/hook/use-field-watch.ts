@@ -124,9 +124,9 @@ export function useFieldWatch(formRef: React.RefObject<FormRef>) {
                 value: diffNewValue
                   ? get(newInputs, name.split('.')[1])
                   : {
-                    ...(get(newInputs, name.split('.')?.[1]) || {}),
-                    name: newName,
-                  },
+                      ...(get(newInputs, name.split('.')?.[1]) || {}),
+                      name: newName,
+                    },
               });
             }
             break;
@@ -191,9 +191,9 @@ export function useFieldWatch(formRef: React.RefObject<FormRef>) {
                 newKey,
                 value: refReg.test(diffNewValue) // outputs context
                   ? {
-                    ...(get(newOutputs, name.split('.')?.[1]) || {}),
-                    name: diffNewValue,
-                  }
+                      ...(get(newOutputs, name.split('.')?.[1]) || {}),
+                      name: diffNewValue,
+                    }
                   : get(newOutputs, name.split('.')[1]),
               });
             }
@@ -342,10 +342,15 @@ export function useFieldWatch(formRef: React.RefObject<FormRef>) {
               });
 
               const event = `${newKey}.on_click`;
+              const oldEvent = formRef.current?.getValues(
+                `${name}.on_click.event`,
+              );
               if (!diffNewValue) {
                 formRef.current?.setValue(`${name}.content`, newName);
               }
               formRef.current?.setValue(`${name}.on_click.event`, event);
+
+              appBuilder.setEdgeDataByEventKey(oldEvent, event);
 
               appBuilder.handleRefScene({
                 scene: RefSceneEnum.Enum.rename_ref_opt,
