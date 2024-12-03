@@ -336,7 +336,7 @@ export class ComfyUIModel {
         },
       );
     } catch (e) {
-      this.toast.emitter.emit('message.error', (e as Error).message);
+      this.toast.error((e as Error).message);
       throw e;
     }
   }

@@ -1,19 +1,8 @@
-import {
-  getDefaultValueBySchema,
-  ISchema,
-  TValues,
-} from '@shellagent/form-engine';
+import { ISchema } from '@shellagent/form-engine';
 import { FormRef } from '@shellagent/ui';
 import { useRequest } from 'ahooks';
-import { isEmpty, merge } from 'lodash-es';
 import { observer } from 'mobx-react-lite';
-import React, {
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 
 import { CommonWidgetConfigProps } from '@/components/app/config-form/widget-config';
 import NodeForm from '@/components/app/node-form';
@@ -27,6 +16,7 @@ import {
   ComfyUIModel,
   EventType,
 } from '@/components/app/plugins/comfyui/comfyui.model';
+import { useSchemaContext } from '@/stores/app/schema-provider';
 
 export const ComfyUIPlugin = observer<CommonWidgetConfigProps>(
   ({ values, onChange, parent }) => {
@@ -50,31 +40,6 @@ export const ComfyUIPlugin = observer<CommonWidgetConfigProps>(
 
     const formRef = useRef<FormRef>(null);
     const [schema, setSchema] = useState<ISchema>(defaultSchema);
-    const defaultValues = useMemo(
-      () => getDefaultValueBySchema(schema, false),
-      [schema],
-    );
-    const mergeValues = (formValues: TValues, newValues?: TValues) => {
-      const result = {
-        ...merge({}, formValues, newValues),
-        inputs: isEmpty(formValues?.inputs)
-          ? newValues?.inputs
-          : Object.keys(formValues?.inputs || {})?.reduce((prev, key) => {
-              prev[key] = newValues?.inputs?.[key] || formValues?.inputs?.[key];
-              return prev;
-            }, {} as any),
-        outputs: !isEmpty(formValues?.outputs?.display)
-          ? formValues?.outputs
-          : newValues?.outputs,
-      };
-      return result;
-    };
-    const handleOnChange = useCallback(
-      (newValues: TValues) => {
-        onChange(mergeValues(defaultValues, newValues));
-      },
-      [defaultValues, onChange],
-    );
 
     const { run: getComfySchema, loading: isLoading } = useRequest(getFile, {
       manual: true,
@@ -105,10 +70,6 @@ export const ComfyUIPlugin = observer<CommonWidgetConfigProps>(
     }, [model.comfyUIUrl]);
 
     useEffect(() => {
-      onChange(mergeValues(defaultValues, values));
-    }, [schema]);
-
-    useEffect(() => {
       if (values?.comfy_workflow_id || values?.location) {
         getComfySchema({
           comfy_workflow_id: values?.comfy_workflow_id,
@@ -122,6 +83,10 @@ export const ComfyUIPlugin = observer<CommonWidgetConfigProps>(
       return null;
     }
 
+    const { id: stateId } = useSchemaContext(state => ({
+      id: state.id,
+    }));
+
     return (
       <div className="comfyui-widget flex flex-col">
         <NodeForm
@@ -130,7 +95,17 @@ export const ComfyUIPlugin = observer<CommonWidgetConfigProps>(
           key={JSON.stringify(schema)}
           schema={schema}
           values={values}
-          onChange={handleOnChange}
+          onChange={newValues => {
+            const appModel = model.appBuilderModelFactory();
+            appModel.nodeData[stateId].blocks = appModel.nodeData[
+              stateId
+            ].blocks.map((b: any) => {
+              if (parent.endsWith(b.name)) {
+                return newValues;
+              }
+              return b;
+            });
+          }}
           loading={isLoading}
           components={{
             ComfyUIEditor,

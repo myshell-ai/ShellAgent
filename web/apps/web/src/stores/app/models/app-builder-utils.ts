@@ -8,7 +8,7 @@ import {
 } from '@shellagent/shared/protocol/app-scope';
 import { reservedStateNameSchema } from '@shellagent/shared/protocol/node';
 import { FieldValues } from '@shellagent/ui';
-import { mapValues, isEmpty } from 'lodash-es';
+import { cloneDeep, isEmpty, mapValues } from 'lodash-es';
 
 export interface CascaderOption {
   label: string;
@@ -337,8 +337,9 @@ export function duplicateComfyUI(
     from: string;
     to: string;
   }> = [];
-  if (Array.isArray(nodeData.blocks)) {
-    nodeData.blocks = nodeData.blocks.map(b => {
+  const nodeData2 = cloneDeep(nodeData);
+  if (Array.isArray(nodeData2.blocks)) {
+    nodeData2.blocks = nodeData2.blocks.map(b => {
       if (b.widget_class_name === 'ComfyUIWidget') {
         const defaultName = customSnakeCase(
           `${appName}_${stateName}_${b.name}`,
@@ -354,7 +355,7 @@ export function duplicateComfyUI(
     });
   }
   return {
-    nodeData,
+    nodeData: nodeData2,
     locations,
   };
 }
