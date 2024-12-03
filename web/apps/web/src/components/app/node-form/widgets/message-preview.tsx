@@ -104,13 +104,11 @@ const InputPreview = () => {
 
 const ButtonPreview = ({
   index,
-  id,
-  children,
-}: PropsWithChildren<{
-  id: string;
+  button,
+}: {
   index: number;
-}>) => {
-  const appBuilder = useInjection<AppBuilderModel>('AppBuilderModel');
+  button: IButtonType;
+}) => {
   const { setInsideSheetOpen } = useAppState(state => state);
   const stateId = useSchemaContext(state => state.id);
 
@@ -120,20 +118,15 @@ const ButtonPreview = ({
       stateId,
       open: true,
       mode: 'button',
-      buttonId: id,
+      buttonId: button.id,
     });
   };
   const onConnect = useReactFlowStore(state => state.onConnect);
 
-  const handleId = `${buttonSourceHandle}-${id}#${index}`;
+  const handleId = `${buttonSourceHandle}-${button.id}#${index}`;
 
   const handleConnect = (connection: Connection) => {
     if (connection.source && connection.target) {
-      const { event: event_key } =
-        ((appBuilder.nodeData[stateId]?.render?.buttons as IButtonType[])?.find(
-          button => button.id === id,
-        )?.on_click as any) || {};
-
       onConnect({
         connect: connection,
         edge: {
@@ -141,7 +134,7 @@ const ButtonPreview = ({
           data: {
             id: generateUUID(),
             custom: true,
-            event_key,
+            event_key: button.on_click.event,
             type: EdgeDataTypeEnum.STATE,
             source: connection.source,
             target: connection.target,
@@ -162,7 +155,7 @@ const ButtonPreview = ({
       color="brand"
       size="md"
       className="w-full relative border-default text-subtle">
-      <div className="mr-1">{children}</div>
+      <div className="mr-1">{button.content}</div>
       <CustomHandle
         id={handleId}
         type="source"
@@ -190,9 +183,7 @@ const MessagePreview = () => {
       {buttons.length ? (
         <>
           {buttons.map((button, index) => (
-            <ButtonPreview key={button.id} id={button.id} index={index}>
-              {button.content}
-            </ButtonPreview>
+            <ButtonPreview button={button} index={index} key={button.id} />
           ))}
         </>
       ) : null}
