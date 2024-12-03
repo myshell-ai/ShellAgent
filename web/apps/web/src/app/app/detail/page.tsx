@@ -119,11 +119,11 @@ const FlowEngineWrapper = observer(
         materialList={materialList}
         footerExtra={<ListFooterExtra />}
         header={
-          <>
+          <div onDoubleClick={e => e.stopPropagation()}>
             <FlowHeader appId={appId} versionName={versionName} />
             <StateConfigSheet />
             <TransitionSheet />
-          </>
+          </div>
         }
         onDoubleClick={onDoubleClick}
       />
