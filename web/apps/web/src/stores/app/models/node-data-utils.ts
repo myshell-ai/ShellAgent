@@ -113,7 +113,7 @@ export const handleRenameRefOpt = (
   const newPathMatch = newPath.match(pathRegex);
   if (!oldPathMatch || !newPathMatch) return updatedNodeData;
 
-  const [, stateId, pathType, oldVarName] = oldPathMatch;
+  const [, stateId, , oldVarName] = oldPathMatch;
   const [, , , newVarName] = newPathMatch;
 
   let stateNode: FieldValues | undefined;

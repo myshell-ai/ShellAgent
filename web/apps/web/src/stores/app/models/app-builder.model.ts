@@ -1,5 +1,4 @@
 import type { IFlow, ReactFlowInstance } from '@shellagent/flow-engine';
-import type { TFieldMode } from '@shellagent/form-engine';
 import { CustomKey, CustomEventName, Automata } from '@shellagent/pro-config';
 import {
   RefSceneEnum,

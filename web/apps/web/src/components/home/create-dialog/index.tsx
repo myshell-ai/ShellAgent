@@ -21,8 +21,8 @@ import {
   CreateTemplate,
   Spinner,
 } from '@shellagent/ui';
-import { Tag } from 'antd';
 import { useBoolean, useRequest } from 'ahooks';
+import { Tag } from 'antd';
 import { capitalize } from 'lodash-es';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';

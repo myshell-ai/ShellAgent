@@ -56,7 +56,7 @@ export function convertNodeDataToState(nodeData: any): State {
         ),
         render: {
           buttons: Object.fromEntries(
-            (nodeData.render?.buttons || []).map((button: any) => {
+            (nodeData.render?.buttons || []).map((button: IButtonType) => {
               const [name] = button.on_click.event.split('.');
               return [
                 name,
