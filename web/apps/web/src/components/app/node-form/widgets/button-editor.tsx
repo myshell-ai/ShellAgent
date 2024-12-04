@@ -9,6 +9,7 @@ import { useRef, useCallback } from 'react';
 import { useDrag, useDrop } from 'react-dnd';
 
 import { useAppState } from '@/stores/app/use-app-state';
+import { generateUUID } from '@/utils/common-helper';
 
 interface VariableNodeProps {
   name: string;
@@ -142,7 +143,7 @@ const ButtonEditor = ({ name, onChange }: VariableNodeProps) => {
         {
           content,
           on_click: { event, payload: {} },
-          id: event,
+          id: generateUUID(),
           description: '',
         },
       ]);

@@ -5,8 +5,8 @@ import {
   State,
   stateSchema,
 } from '@shellagent/shared/protocol/app-scope';
-import { Button as IButtonType } from '@shellagent/shared/protocol/render-button';
 import { reservedStateNameSchema } from '@shellagent/shared/protocol/node';
+import { Button as IButtonType } from '@shellagent/shared/protocol/render-button';
 import { mapValues, isEmpty } from 'lodash-es';
 
 export interface CascaderOption {
