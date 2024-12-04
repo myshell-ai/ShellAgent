@@ -15,12 +15,12 @@ import {
   AlertDialogPortal,
   Text,
 } from '@shellagent/ui';
-import { Select } from 'antd';
 import { useRequest } from 'ahooks';
+import { Select } from 'antd';
+import { useState } from 'react';
 import { toast } from 'react-toastify';
 
 import { saveAsTemplate } from '@/services/home';
-import { useState } from 'react';
 
 export const CATEGORY_LIST = ['Tutorial', 'Image Generation', 'Custom'];
 

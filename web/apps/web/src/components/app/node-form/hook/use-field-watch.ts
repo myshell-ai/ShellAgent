@@ -342,10 +342,15 @@ export function useFieldWatch(formRef: React.RefObject<FormRef>) {
               });
 
               const event = `${newKey}.on_click`;
+              const oldEvent = formRef.current?.getValues(
+                `${name}.on_click.event`,
+              );
               if (!diffNewValue) {
                 formRef.current?.setValue(`${name}.content`, newName);
               }
               formRef.current?.setValue(`${name}.on_click.event`, event);
+
+              appBuilder.setEdgeDataByEventKey(oldEvent, event);
 
               appBuilder.handleRefScene({
                 scene: RefSceneEnum.Enum.rename_ref_opt,

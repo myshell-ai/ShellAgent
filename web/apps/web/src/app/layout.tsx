@@ -27,8 +27,8 @@ export default function RootLayout({
   return (
     <html lang="en">
       <head>
-        <script src="/Reflect.min.js"></script>
-        <script src="/fabric.js"></script>
+        <script src="/Reflect.min.js" />
+        <script src="/fabric.js" />
       </head>
       <body>
         <Script strategy="beforeInteractive" id="sc-global">

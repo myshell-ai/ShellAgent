@@ -1,4 +1,9 @@
 import {
+  ArrowUpIcon,
+  ClipboardDocumentCheckIcon,
+  ClipboardDocumentIcon,
+} from '@heroicons/react/24/outline';
+import {
   Avatar,
   Clear,
   Text,
@@ -8,11 +13,6 @@ import {
   Loading,
   IconButton,
 } from '@shellagent/ui';
-import {
-  ArrowUpIcon,
-  ClipboardDocumentCheckIcon,
-  ClipboardDocumentIcon,
-} from '@heroicons/react/24/outline';
 import { useInterval } from 'ahooks';
 import { useInjection } from 'inversify-react';
 import { observer } from 'mobx-react-lite';
