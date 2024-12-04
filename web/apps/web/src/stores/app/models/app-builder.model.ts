@@ -52,7 +52,7 @@ import { defaultFlow } from '../../../components/app/constants';
 @injectable()
 export class AppBuilderModel {
   nodeData: NodeDataType = {};
-  metadata: Metadata = {
+  @observable metadata: Metadata = {
     name: '',
     description: '',
   };

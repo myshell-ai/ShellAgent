@@ -8,7 +8,7 @@ import clsx from 'clsx';
 import { useRef, useCallback } from 'react';
 
 import { useAppState } from '@/stores/app/use-app-state';
-
+import { generateUUID } from '@/utils/common-helper';
 interface VariableNodeProps {
   name: string;
   onChange: (value: IButtonType[]) => void;
@@ -105,7 +105,7 @@ const ButtonEditor = ({ name, onChange }: VariableNodeProps) => {
         {
           content,
           on_click: { event, payload: {} },
-          id: event,
+          id: generateUUID(),
           description: '',
         },
       ]);
