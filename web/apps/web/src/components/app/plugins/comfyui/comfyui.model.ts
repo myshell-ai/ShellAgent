@@ -134,6 +134,7 @@ export class ComfyUIModel {
     model: FormikModel<LocationFormType>,
     type: 'modal' | 'sheet',
     field: FieldInputProps<string>,
+    callback: () => void,
   ) {
     this.setButtonName(field.value);
     await model.isReadyPromise;
@@ -141,6 +142,9 @@ export class ComfyUIModel {
     if (type === 'sheet') {
       const e = await this.checkLocationExists(field.value);
       formikProps.setFieldError('location', e);
+      if (!e) {
+        callback();
+      }
     } else if (type === 'modal') {
       const e = this.checkLocation(field.value);
       formikProps.setFieldError('location', e);

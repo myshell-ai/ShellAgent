@@ -377,6 +377,9 @@ export const LocationForm = observer<{
                           props.model,
                           props.type,
                           field,
+                          () => {
+                            props.onChange(field.value);
+                          },
                         )
                       }
                       placeholder="File path of extended ComfyUI json"
