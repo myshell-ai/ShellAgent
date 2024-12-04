@@ -111,6 +111,7 @@ const ButtonPreview = ({
 }) => {
   const { setInsideSheetOpen } = useAppState(state => state);
   const stateId = useSchemaContext(state => state.id);
+  const edges = useReactFlowStore(state => state.edges);
 
   const handleClick = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.stopPropagation();
@@ -123,7 +124,19 @@ const ButtonPreview = ({
   };
   const onConnect = useReactFlowStore(state => state.onConnect);
 
-  const handleId = `${buttonSourceHandle}-${button.id}#${index}`;
+  const checkExistingConnection = (handleId: string) => {
+    return edges.some(
+      edge => edge.source === stateId && edge.sourceHandle === handleId,
+    );
+  };
+
+  // 兼容旧数据
+  const hasExistingConnection = checkExistingConnection(
+    `${buttonSourceHandle}-${button.id}#${index}`,
+  );
+  const handleId = hasExistingConnection
+    ? `${buttonSourceHandle}-${button.id}#${index}`
+    : `${buttonSourceHandle}-${button.id}`;
 
   const handleConnect = (connection: Connection) => {
     if (connection.source && connection.target) {
