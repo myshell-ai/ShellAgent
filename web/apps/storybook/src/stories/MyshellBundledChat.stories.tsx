@@ -27,14 +27,14 @@ import {
   useUploadFiles,
   ServerFileTypes,
 } from 'myshell-bundled-chat';
-import messages from '../messages/en.json';
-import clearMemoryMessage from './__stories_data__/clearMemoryMessage.json';
-import greetingMessage from './__stories_data__/greetingMessage.json';
-import updateReplyMessageError from './__stories_data__/updateReplyMessageError.json';
-import updateReplyMessageLUIForm from './__stories_data__/updateReplyMessageLUIForm.json';
-import shellAgentMessageError from './__stories_data__/shellAgentMessageError.json';
-import multiImageMessage from './__stories_data__/multiImageMessage.json';
-import caseTplSingleImage from './__stories_data__/caseTplSingleImage.json';
+import messages from '../../messages/en.json';
+import clearMemoryMessage from '../__stories_data__/clearMemoryMessage.json';
+import greetingMessage from '../__stories_data__/greetingMessage.json';
+import updateReplyMessageError from '../__stories_data__/updateReplyMessageError.json';
+import updateReplyMessageLUIForm from '../__stories_data__/updateReplyMessageLUIForm.json';
+import shellAgentMessageError from '../__stories_data__/shellAgentMessageError.json';
+import multiImageMessage from '../__stories_data__/multiImageMessage.json';
+import caseTplSingleImage from '../__stories_data__/caseTplSingleImage.json';
 import { ChakraProvider, extendTheme } from '@chakra-ui/react';
 
 const user = {
@@ -318,7 +318,7 @@ export const Primary: Story = {
         sendAudioMessage: (audioBlob: Blob, mimeType?: string | undefined) => {
           return Promise.resolve();
         },
-        terminate: () => {},
+        terminate: () => { },
         hasMore: false,
         gettingHistory: false,
         initializingHistory: false,
@@ -332,7 +332,7 @@ export const Primary: Story = {
         deleteSpecifiedMessageId,
         partialUpdateMessage: partialUpdateMsg,
         translationStatus: 'TRANSLATING',
-        translate: async () => {},
+        translate: async () => { },
         dragMaskVisible: false,
         editorMode,
         setEditorMode,

@@ -15,9 +15,13 @@
     "myshell-bundled-chat": "workspace:*",
     "next": "14.2.12",
     "react": "^18",
-    "react-dom": "^18"
+    "react-dom": "^18",
+    "@shellagent/tailwind-config": "workspace:*",
+    "@shellagent/ui": "workspace:*"
   },
   "devDependencies": {
+    "@shellagent/eslint-config": "workspace:*",
+    "@shellagent/typescript-config": "workspace:*",
     "@chakra-ui/react": "2.8.0",
     "@chakra-ui/storybook-addon": "^5.2.5",
     "@chromatic-com/storybook": "^1.9.0",

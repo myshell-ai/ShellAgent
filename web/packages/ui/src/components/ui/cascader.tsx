@@ -55,14 +55,14 @@ function CascaderContent({
   onValueChange: (value: string, parent?: string) => void;
   className?: ClassNameValue;
   emptyText?: string;
-  buttonRef: React.RefObject<HTMLButtonElement>;
+  buttonRef?: React.RefObject<HTMLButtonElement>;
 }) {
   return (
     <DropdownMenuPortal
       container={document.getElementById('cascader-container')}>
       <DropdownMenuContent
         className={cn(className, 'w-full')}
-        style={{ width: buttonRef.current?.offsetWidth }}>
+        style={{ width: buttonRef?.current?.offsetWidth }}>
         {options.length ? (
           options.map(option => (
             <Fragment key={option.value}>
