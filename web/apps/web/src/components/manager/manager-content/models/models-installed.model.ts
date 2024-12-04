@@ -4,7 +4,7 @@ import { action, makeObservable, observable, runInAction } from 'mobx';
 
 import { url_models_installed_list } from '@/components/manager/manager-definitions';
 import { SettingsModel } from '@/components/settings/settings.model';
-import { EmitterModel } from '@/utils/emitter.model';
+import { ToastModel } from '@/utils/toast.model';
 
 import { ModelsCommonModel } from './models-common.model';
 
@@ -16,7 +16,7 @@ export class ModelsInstalledModel {
 
   constructor(
     @inject(ModelsCommonModel) public common: ModelsCommonModel,
-    @inject(EmitterModel) public emitter: EmitterModel,
+    @inject(ToastModel) public emitter: ToastModel,
     @inject(SettingsModel) private settings: SettingsModel,
   ) {
     makeObservable(this);

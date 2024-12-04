@@ -3,7 +3,7 @@ import { inject, injectable } from 'inversify';
 import { action, makeObservable, observable, runInAction } from 'mobx';
 
 import { WidgetsCommonModel } from './widgets-common.model';
-import { EmitterModel } from '../../../../utils/emitter.model';
+import { ToastModel } from '../../../../utils/toast.model';
 
 export type ActionKey = 'Install' | 'Update' | 'Uninstall';
 
@@ -15,7 +15,7 @@ export class WidgetsInstalledModel {
 
   constructor(
     @inject(WidgetsCommonModel) public common: WidgetsCommonModel,
-    @inject(EmitterModel) private emitter: EmitterModel,
+    @inject(ToastModel) private emitter: ToastModel,
   ) {
     makeObservable(this);
   }

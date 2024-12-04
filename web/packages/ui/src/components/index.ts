@@ -13,7 +13,7 @@ export * from './ui/image';
 export * from './ui/image-preview-group';
 export * from './ui/input';
 export * from './ui/label';
-export * from './ui/number-input/number-input.tsx';
+export * from './ui/number-input/number-input';
 export * from './ui/radio-group';
 export * from './ui/select';
 export * from './ui/separator';
@@ -39,8 +39,8 @@ export * from './ui/accordion';
 export * from './ui/tabs';
 export * from './ui/table';
 export * from './ui/cascader';
-export * from './ui/drawer.tsx';
-export * from './ui/unfocus-input.tsx';
+export * from './ui/drawer';
+export * from './ui/unfocus-input';
 
 // outline icons
 export * from './ui/icons/outline/arrow-left';
@@ -66,7 +66,7 @@ export * from './ui/icons/solid/code';
 export * from './ui/icons/solid/drag';
 export * from './ui/icons/solid/phone';
 export * from './ui/icons/solid/rectangle-group';
-export * from './ui/icons/solid/shell-agent.tsx';
+export * from './ui/icons/solid/shell-agent';
 export * from './ui/icons/solid/myshell-logo';
 export * from './ui/icons/solid/discord';
 export * from './ui/icons/solid/report';
@@ -79,6 +79,6 @@ export * from './ui/icons/solid/bot';
 export * from './ui/icons/solid/clear';
 export * from './ui/icons/solid/loading';
 
-export * from './ui/theme.tsx';
+export * from './ui/theme';
 export * from './ui/a-components';
 export * from './ui/chat/index';
