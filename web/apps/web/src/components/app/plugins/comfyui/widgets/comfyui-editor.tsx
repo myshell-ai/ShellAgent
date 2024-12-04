@@ -129,7 +129,9 @@ export const ComfyUIEditor = observer(
         <Button
           size="sm"
           className="w-full"
-          onClick={() => model.openIframeDialog(iframeRef)}>
+          onClick={() =>
+            model.openIframeDialog(iframeRef, getValues('comfy_workflow_id'))
+          }>
           {model.buttonName}
         </Button>
         <Modal

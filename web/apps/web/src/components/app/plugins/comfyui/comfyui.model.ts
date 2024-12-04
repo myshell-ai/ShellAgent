@@ -268,7 +268,10 @@ export class ComfyUIModel {
     }
   }
 
-  async openIframeDialog(iframeRef: RefObject<HTMLIFrameElement>) {
+  async openIframeDialog(
+    iframeRef: RefObject<HTMLIFrameElement>,
+    comfy_workflow_id: string,
+  ) {
     await this.locationFormikSheet.isReadyPromise;
     const { values, errors, setFieldError } =
       this.locationFormikSheet.formikProps!;
@@ -284,7 +287,9 @@ export class ComfyUIModel {
 
     if (errors.location == null) {
       if (values.location) {
-        await this.getFile(values.location, iframeRef);
+        await this.getFile(iframeRef, values.location, undefined);
+      } else if (comfy_workflow_id) {
+        await this.getFile(iframeRef, undefined, comfy_workflow_id);
       } else {
         iframeRef.current?.contentWindow?.postMessage(
           { type: MessageType.LOAD_DEFAULT },
@@ -294,12 +299,18 @@ export class ComfyUIModel {
     }
   }
 
-  async getFile(location: string, iframeRef: RefObject<HTMLIFrameElement>) {
+  async getFile(
+    iframeRef: RefObject<HTMLIFrameElement>,
+    location?: string,
+    comfy_workflow_id?: string,
+  ) {
     try {
       const res = await axios.post(
         `/api/comfyui/get_file`,
         {
+          comfy_workflow_id,
           location,
+          filename: 'workflow.shellagent.json',
         },
         {
           headers: {
