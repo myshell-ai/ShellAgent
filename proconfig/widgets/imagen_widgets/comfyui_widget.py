@@ -165,8 +165,11 @@ def comfyui_run(api, workflow, prompt, schemas, user_inputs):
                 }
                 raise ShellException(**error)     
 
-            if is_local:
+            if input_value.startswith("http"):
+                pass
+            elif is_local:
                 input_value = os.path.join(os.getcwd(), input_value)
+                assert os.path.isfile(input_value), f"filename {input_value} not exists"
             elif os.path.isfile(input_value):
                 # upload to CDN
                 print(f"upload {input_value} to cdn:")
@@ -277,7 +280,7 @@ def comfyui_run(api, workflow, prompt, schemas, user_inputs):
                     'error_code': 'COMFY-1105',
                     'error_head': 'ComfyUI Workflow Output Processing Error', 
                     'msg': f"ShellAgent outputs Node '{schema['title']}' cannot be founded in the ComfyUI results. Please check the ComfyUI workflow: {str(e)}", 
-                    'traceback': f"The output schemas for your workflow are {[schema['title'] for schema in schemas['outputs']]}. However, there is at least one missing output is missing in the final outputs of ComfyUI {outputs}."
+                    'traceback': f"The output schemas for your workflow are {[schema['title'] for schema in schemas['outputs'].values()]}. However, there is at least one missing output is missing in the final outputs of ComfyUI {outputs}."
                 }
                 raise ShellException(**error)
         return outputs
