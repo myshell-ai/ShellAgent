@@ -172,8 +172,11 @@ export class ComfyUIModel {
   }
 
   checkLocation(location?: string): string | undefined {
-    if (isEmpty(location)) {
+    if (location == null) {
       return undefined;
+    }
+    if (location.trim() !== location) {
+      return `Please remove spaces from the beginning and end of the path.`;
     }
     if (location?.endsWith('.shellagent.json') === false) {
       return locationTip;
@@ -189,7 +192,7 @@ export class ComfyUIModel {
         return this.checkJsonExists(location);
       }
     }
-    return undefined;
+    return error;
   }
 
   async checkJsonExists(location: string) {
