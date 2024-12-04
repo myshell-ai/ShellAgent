@@ -269,11 +269,18 @@ export class ComfyUIModel {
   }
 
   async openIframeDialog(iframeRef: RefObject<HTMLIFrameElement>) {
-    await this.checkLocationExists();
-    this.iframeDialog.open();
+    await this.locationFormikSheet.isReadyPromise;
+    const { values, errors, setFieldError } =
+      this.locationFormikSheet.formikProps!;
+    const err = await this.checkLocationExists(values.location);
+    if (!isEmpty(err)) {
+      setFieldError('location', err);
+      return;
+    } else {
+      setFieldError('location', undefined);
+    }
 
-    await this.locationFormikModal.isReadyPromise;
-    const { values, errors } = this.locationFormikModal.formikProps!;
+    this.iframeDialog.open();
 
     if (errors.location == null) {
       if (values.location) {
