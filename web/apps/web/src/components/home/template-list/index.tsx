@@ -1,4 +1,3 @@
-import React from 'react';
 import { PlusIcon } from '@heroicons/react/24/outline';
 import {
   Card,
@@ -9,11 +8,11 @@ import {
   Description,
   Spinner,
 } from '@shellagent/ui';
-import dayjs from 'dayjs';
 import { Tag } from 'antd';
+import dayjs from 'dayjs';
+import React from 'react';
 
-import { TemplateListResponse } from '@/services/home/type';
-import { Metadata } from '@/services/home/type';
+import { TemplateListResponse, Metadata } from '@/services/home/type';
 import { cn } from '@/utils/cn';
 
 const relativeTime = require('dayjs/plugin/relativeTime');

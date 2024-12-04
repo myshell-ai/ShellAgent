@@ -9,6 +9,7 @@ import { useRef, useCallback } from 'react';
 
 import { useAppState } from '@/stores/app/use-app-state';
 import { generateUUID } from '@/utils/common-helper';
+
 interface VariableNodeProps {
   name: string;
   onChange: (value: IButtonType[]) => void;
