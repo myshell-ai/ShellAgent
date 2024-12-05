@@ -13,8 +13,8 @@ import {
   url_download_center_list,
 } from '@/components/download/download-definitions';
 import { url_models_marketplace_install } from '@/components/manager/manager-definitions';
-import { EmitterModel } from '@/utils/emitter.model';
 import { ModalModel } from '@/utils/modal.model';
+import { ToastModel } from '@/utils/toast.model';
 
 @injectable()
 export class DownloadModel {
@@ -25,7 +25,7 @@ export class DownloadModel {
   progressAbortCtrl = new AbortController();
 
   constructor(
-    @inject(EmitterModel) private emitter: EmitterModel,
+    @inject(ToastModel) private emitter: ToastModel,
     @inject(ModalModel) public drawer: ModalModel,
   ) {
     makeObservable(this);
