@@ -1,7 +1,7 @@
 import PlusIcon from '@heroicons/react/24/outline/esm/PlusIcon';
 import { useReactFlowStore } from '@shellagent/flow-engine';
 import { Button as IButtonType } from '@shellagent/shared/protocol/render-button';
-import { getButtonDisplayName, getEventKey } from '@shellagent/shared/utils';
+import { getButtonDisplayName } from '@shellagent/shared/utils';
 import { Button, XMark, IconButton, useFormContext } from '@shellagent/ui';
 import { useHover } from 'ahooks';
 import clsx from 'clsx';
