@@ -21,11 +21,11 @@ import { WidgetsInstalledModel } from '@/components/manager/manager-content/widg
 import { WidgetsMarketplaceModel } from '@/components/manager/manager-content/widgets/widgets-marketplace.model';
 import { SettingsModel } from '@/components/settings/settings.model';
 import { AppBuilderModel } from '@/stores/app/models/app-builder.model';
-import { ToastModel } from '@/utils/toast.model';
 import { FormEngineModel } from '@/utils/form-engine.model';
 import { FormikModel } from '@/utils/formik.model';
 import { ModalModel } from '@/utils/modal.model';
 import { RequestModel } from '@/utils/request.model';
+import { ToastModel } from '@/utils/toast.model';
 import { ToggleModel } from '@/utils/toggle.model';
 
 if (typeof window !== 'undefined') {

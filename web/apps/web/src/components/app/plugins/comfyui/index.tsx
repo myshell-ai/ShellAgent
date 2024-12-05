@@ -1,22 +1,22 @@
 import { ISchema } from '@shellagent/form-engine';
 import { FormRef } from '@shellagent/ui';
 import { useRequest } from 'ahooks';
+import { useInjection } from 'inversify-react';
 import { observer } from 'mobx-react-lite';
 import React, { useEffect, useRef, useState } from 'react';
 
 import { CommonWidgetConfigProps } from '@/components/app/config-form/widget-config';
 import NodeForm from '@/components/app/node-form';
-
-import { defaultSchema, getComfyUISchema } from './schema';
-import { getFile } from './services';
-import { generateHash } from './comfyui-utils';
-import { ComfyUIEditor } from './widgets/comfyui-editor';
-import { useInjection } from 'inversify-react';
 import {
   ComfyUIModel,
   EventType,
 } from '@/components/app/plugins/comfyui/comfyui.model';
 import { useSchemaContext } from '@/stores/app/schema-provider';
+
+import { generateHash } from './comfyui-utils';
+import { defaultSchema, getComfyUISchema } from './schema';
+import { getFile } from './services';
+import { ComfyUIEditor } from './widgets/comfyui-editor';
 
 export const ComfyUIPlugin = observer<CommonWidgetConfigProps>(
   ({ values, onChange, parent }) => {

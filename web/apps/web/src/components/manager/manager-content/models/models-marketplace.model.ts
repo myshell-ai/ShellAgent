@@ -8,8 +8,8 @@ import {
   ModelsMarketPlaceRes,
   url_models_marketplace_list,
 } from '@/components/manager/manager-definitions';
-import { ToastModel } from '@/utils/toast.model';
 import { RequestModel } from '@/utils/request.model';
+import { ToastModel } from '@/utils/toast.model';
 
 import { ModelsCommonModel } from './models-common.model';
 

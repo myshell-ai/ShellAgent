@@ -59,7 +59,7 @@ export function convertNodeDataToState(nodeData: any): State {
         render: {
           buttons: Object.fromEntries(
             (nodeData.render?.buttons || []).map((button: IButtonType) => {
-              const content = button.content;
+              const { content } = button;
               if (!isEmpty(button?.on_click?.payload)) {
                 return [
                   content,
