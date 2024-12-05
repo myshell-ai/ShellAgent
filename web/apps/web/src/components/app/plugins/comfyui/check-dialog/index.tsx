@@ -3,13 +3,13 @@
 import { AModal, Button, Title } from '@shellagent/ui';
 import { useRequest } from 'ahooks';
 import { FormInstance } from 'antd';
-import { toast } from 'react-toastify';
 import React, { useRef, useCallback } from 'react';
+import { toast } from 'react-toastify';
 
 import { CheckerContent } from './content';
+import { formatFormData2Dependency } from '../comfyui-utils';
 import { updateDependency } from '../services';
 import type { SaveResponse } from '../services/type';
-import { formatFormData2Dependency } from '../utils';
 
 interface CheckDialogProps {
   open: boolean;

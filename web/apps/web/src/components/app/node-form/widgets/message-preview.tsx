@@ -7,8 +7,10 @@ import {
   useReactFlowStore,
   getColor,
 } from '@shellagent/flow-engine';
+import { Button as IButtonType } from '@shellagent/shared/protocol/render-button';
 import { IconButton, Button, Text } from '@shellagent/ui';
 import clsx from 'clsx';
+import { useInjection } from 'inversify-react';
 import { PropsWithChildren } from 'react';
 
 import {
@@ -16,12 +18,10 @@ import {
   buttonSourceHandle,
 } from '@/components/app/constants';
 import { EdgeTypeEnum, EdgeDataTypeEnum } from '@/components/app/edges';
-import { useAppStore } from '@/stores/app/app-provider';
+import { AppBuilderModel } from '@/stores/app/models/app-builder.model';
 import { useSchemaContext } from '@/stores/app/schema-provider';
 import { useAppState } from '@/stores/app/use-app-state';
 import { generateUUID } from '@/utils/common-helper';
-
-import { IButtonType } from './button-editor';
 
 const CustomPoint: React.FC<{
   className?: string;
@@ -104,15 +104,14 @@ const InputPreview = () => {
 
 const ButtonPreview = ({
   index,
-  id,
-  children,
-}: PropsWithChildren<{
-  id: string;
+  button,
+}: {
   index: number;
-}>) => {
+  button: IButtonType;
+}) => {
   const { setInsideSheetOpen } = useAppState(state => state);
-  const nodeData = useAppStore(state => state.nodeData);
   const stateId = useSchemaContext(state => state.id);
+  const edges = useReactFlowStore(state => state.edges);
 
   const handleClick = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.stopPropagation();
@@ -120,20 +119,27 @@ const ButtonPreview = ({
       stateId,
       open: true,
       mode: 'button',
-      buttonId: id,
+      buttonId: button.id,
     });
   };
   const onConnect = useReactFlowStore(state => state.onConnect);
 
-  const handleId = `${buttonSourceHandle}-${id}#${index}`;
+  const checkExistingConnection = (handleId: string) => {
+    return edges.some(
+      edge => edge.source === stateId && edge.sourceHandle === handleId,
+    );
+  };
+
+  // 兼容旧数据
+  const hasExistingConnection = checkExistingConnection(
+    `${buttonSourceHandle}-${button.id}#${index}`,
+  );
+  const handleId = hasExistingConnection
+    ? `${buttonSourceHandle}-${button.id}#${index}`
+    : `${buttonSourceHandle}-${button.id}`;
 
   const handleConnect = (connection: Connection) => {
     if (connection.source && connection.target) {
-      const { event: event_key } =
-        ((nodeData[stateId]?.render?.buttons as IButtonType[])?.find(
-          button => button.id === id,
-        )?.on_click as any) || {};
-
       onConnect({
         connect: connection,
         edge: {
@@ -141,7 +147,7 @@ const ButtonPreview = ({
           data: {
             id: generateUUID(),
             custom: true,
-            event_key,
+            event_key: button.on_click.event,
             type: EdgeDataTypeEnum.STATE,
             source: connection.source,
             target: connection.target,
@@ -162,7 +168,7 @@ const ButtonPreview = ({
       color="brand"
       size="md"
       className="w-full relative border-default text-subtle">
-      <div className="mr-1">{children}</div>
+      <div className="mr-1">{button.content}</div>
       <CustomHandle
         id={handleId}
         type="source"
@@ -180,18 +186,17 @@ const ButtonPreview = ({
 };
 
 const MessagePreview = () => {
-  const nodeData = useAppStore(state => state.nodeData);
+  const appBuilder = useInjection<AppBuilderModel>('AppBuilderModel');
   const stateId = useSchemaContext(state => state.id);
-  const buttons = (nodeData[stateId]?.render?.buttons || []) as IButtonType[];
+  const buttons = (appBuilder.nodeData[stateId]?.render?.buttons ||
+    []) as IButtonType[];
 
   return (
     <div className="flex flex-col gap-3">
       {buttons.length ? (
         <>
           {buttons.map((button, index) => (
-            <ButtonPreview key={button.id} id={button.id} index={index}>
-              {button.content}
-            </ButtonPreview>
+            <ButtonPreview button={button} index={index} key={button.id} />
           ))}
         </>
       ) : null}

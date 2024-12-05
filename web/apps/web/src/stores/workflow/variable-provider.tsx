@@ -134,7 +134,7 @@ export const VariableProvider: React.FC<VariableProviderProps> = ({
 
     return [
       {
-        label: 'Start-Context',
+        label: 'Context',
         value: '',
         children: Object.entries(contextDataMap).map(([key, data]) => ({
           label: data?.name || key,

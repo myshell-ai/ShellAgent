@@ -72,7 +72,10 @@ export const AModal = (
           size="large"
           type="primary"
           style={{ width: '100%' }}
-          onClick={props.onOk}>
+          onClick={props.onOk}
+          css={css`
+            color: #fff;
+          `}>
           {props.okText ?? 'Confirm'}
         </AButton>
       );

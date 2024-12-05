@@ -1,7 +1,7 @@
 'use client';
 
 import { PencilSquare, Heading, Input } from '@shellagent/ui';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 interface EditableTitleProps {
   value: string;
@@ -15,8 +15,17 @@ export const EditableTitle: React.FC<EditableTitleProps> = ({
   const [isEditing, setIsEditing] = useState(false);
   const [titleInput, setTitleInput] = useState(value);
 
+  useEffect(() => {
+    setTitleInput(value);
+  }, [value]);
+
   const handleTitleChange = () => {
-    onChange(titleInput);
+    if (titleInput.trim() === '') {
+      setTitleInput(value);
+      setIsEditing(false);
+      return;
+    }
+    onChange(titleInput.trim());
     setIsEditing(false);
   };
 
@@ -24,6 +33,7 @@ export const EditableTitle: React.FC<EditableTitleProps> = ({
     return (
       <div className="flex items-center">
         <Input
+          aria-label="Edit title"
           className="max-w-[200px] h-7 rounded-lg border border-default bg-surface-search-field p-1.5 text-sm"
           autoFocus
           value={titleInput}
@@ -34,6 +44,7 @@ export const EditableTitle: React.FC<EditableTitleProps> = ({
             }
           }}
           onBlur={handleTitleChange}
+          maxLength={50}
         />
       </div>
     );
@@ -42,9 +53,10 @@ export const EditableTitle: React.FC<EditableTitleProps> = ({
   return (
     <div className="flex items-center">
       <Heading size="h4" className="truncate">
-        {titleInput}
+        {value}
       </Heading>
       <PencilSquare
+        aria-label="Edit title"
         size="sm"
         color="subtle"
         className="ml-1 cursor-pointer"

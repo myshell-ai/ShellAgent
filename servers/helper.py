@@ -10,6 +10,7 @@ import sys
 import platform
 import os
 import tempfile
+import os
 from proconfig.utils.misc import is_valid_url, upload_file_to_myshell
 
 history = []

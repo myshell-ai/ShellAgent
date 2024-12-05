@@ -1,4 +1,5 @@
 import { FieldValues, FieldValue, FieldPath, Mode } from '@shellagent/ui';
+import { FieldMode } from '@shellagent/shared/protocol/extend-config';
 
 import { ISchema } from './schema';
 
@@ -29,7 +30,7 @@ export type TFields = {
 
 export type TMode = Mode;
 
-export type TFieldMode = 'raw' | 'ui' | 'ref';
+export type TFieldMode = FieldMode;
 
 export * from './schema';
 export * from './uiSchema';

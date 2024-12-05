@@ -3,9 +3,9 @@
 import { sharedTheme } from '@shellagent/ui';
 import { ConfigProvider } from 'antd';
 import { Provider } from 'inversify-react';
+import dynamic from 'next/dynamic';
 import React, { PropsWithChildren, Suspense } from 'react';
 import { ToastContainer } from 'react-toastify';
-import dynamic from 'next/dynamic';
 
 import { container } from '@/app/container';
 import { SWRWrapper } from '@/components/common/swr';

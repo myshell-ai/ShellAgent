@@ -1,4 +1,5 @@
 import { ISchema, TValues } from '@shellagent/form-engine';
+import { FieldModeEnum } from '@shellagent/shared/protocol/extend-config';
 import { isEmpty } from 'lodash-es';
 
 import { ENABLE_MIME } from '@/utils/file-types';
@@ -20,7 +21,6 @@ export const getSchemaByInputs = (inputs: TValues): ISchema => {
           'x-component': 'FileUpload',
           'x-title-size': 'h4',
           'x-raw': true,
-          // 'x-raw-default': 'ref',
           'x-component-props': {
             accept: ENABLE_MIME.audio,
           },
@@ -36,7 +36,6 @@ export const getSchemaByInputs = (inputs: TValues): ISchema => {
           'x-type': 'Control',
           'x-component': 'FileUpload',
           'x-raw': true,
-          // 'x-raw-default': 'ref',
           'x-title-size': 'h4',
           'x-component-props': {
             accept: ENABLE_MIME.image,
@@ -96,7 +95,7 @@ export const getSchemaByInputs = (inputs: TValues): ISchema => {
           description,
           'x-layout': 'Vertical',
           'x-raw': true,
-          'x-raw-default': 'ref',
+          'x-raw-default': FieldModeEnum.Enum.ref,
           'x-type': 'Control',
           'x-component': 'Textarea',
           'x-title-size': 'h4',
@@ -152,7 +151,7 @@ export const getSchemaByInputs = (inputs: TValues): ISchema => {
   };
 };
 
-export const defaultSchema: ISchema = {
+export const defaultSchema = {
   type: 'object',
   'x-type': 'Section',
   'x-title-copiable': false,
@@ -172,10 +171,17 @@ export const defaultSchema: ISchema = {
       'x-title-size': 'h4',
       'x-hidden': true,
     },
+    location: {
+      type: 'string',
+      'x-component': 'Input',
+      'x-type': 'Control',
+      'x-title-size': 'h4',
+      'x-hidden': true,
+    },
   },
-};
+} satisfies ISchema;
 
-export const getComfyuiSchema = ({
+export const getComfyUISchema = ({
   inputs = {},
   outputs = {},
 }: {
@@ -203,21 +209,7 @@ export const getComfyuiSchema = ({
     'x-type': 'Section',
     'x-title-copiable': false,
     properties: {
-      api: {
-        type: 'string',
-        'x-layout': 'Vertical',
-        'x-type': 'Block',
-        'x-component': 'ComfyUIEditor',
-        'x-onchange-prop-name': 'onChange',
-        'x-title-size': 'h4',
-      },
-      comfy_workflow_id: {
-        type: 'string',
-        'x-component': 'Input',
-        'x-type': 'Control',
-        'x-title-size': 'h4',
-        'x-hidden': true,
-      },
+      ...defaultSchema.properties,
       inputs: getSchemaByInputs(inputs),
       outputs: {
         type: 'object',

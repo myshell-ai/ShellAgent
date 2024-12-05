@@ -4,61 +4,41 @@ import {
   PlayIcon,
 } from '@heroicons/react/24/outline';
 import { IFlow } from '@shellagent/flow-engine';
-import {
-  Button,
-  Heading,
-  IconButton,
-  Input,
-  SaveIcon,
-  Text,
-} from '@shellagent/ui';
+import { Button, Heading, IconButton, Input, Text } from '@shellagent/ui';
 import { useRequest } from 'ahooks';
 import { useInjection } from 'inversify-react';
-import { isEmpty } from 'lodash-es';
 import { observer } from 'mobx-react-lite';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import React, { useCallback, useMemo } from 'react';
 import { toast } from 'react-toastify';
-import { useShallow } from 'zustand/react/shallow';
 
-import { AppBuilderChatModel } from '@/components/chat/app-builder-chat.model';
-import { saveApp } from '@/services/app';
-import { editItem } from '@/services/home';
-import { useAppStore } from '@/stores/app/app-provider';
-import { useAppState } from '@/stores/app/use-app-state';
-import { genAutomata } from '@/stores/app/utils/data-transformer';
-import { validateAutomata } from '@/stores/app/utils/date-validate';
-import { SettingsModel } from '@/components/settings/settings.model';
 import {
   COMFYUI_API,
   DEFAULT_COMFYUI_API,
 } from '@/components/app/plugins/comfyui/constant';
+import { AppBuilderChatModel } from '@/components/chat/app-builder-chat.model';
+import { SettingsModel } from '@/components/settings/settings.model';
+import { editItem } from '@/services/home';
+import { AppBuilderModel } from '@/stores/app/models/app-builder.model';
+import { useAppState } from '@/stores/app/use-app-state';
+import { genAutomata } from '@/stores/app/utils/data-transformer';
+import { validateAutomata } from '@/stores/app/utils/date-validate';
 
-import { ExportDialog } from '../export-dialog';
 import { ExtraActions } from './extra-action';
 import Publish from './publish';
+import { ExportDialog } from '../export-dialog';
 
 const settingsDisabled = process.env.NEXT_PUBLIC_DISABLE_SETTING === 'yes';
 
 export const Header: React.FC = observer(() => {
   const model = useInjection(SettingsModel);
   const appBuilderChatModel = useInjection(AppBuilderChatModel);
+  const appBuilder = useInjection<AppBuilderModel>('AppBuilderModel');
   const params = useSearchParams();
   const version_name = params.get('version_name') as string;
 
   const id = params.get('id') as string;
-  const { metadata, flowInstance, nodeData, config, loading, updateMetadata } =
-    useAppStore(
-      useShallow(state => ({
-        config: state.config,
-        metadata: state.metadata,
-        nodeData: state.nodeData,
-        flowInstance: state.flowInstance,
-        loading: state.loading,
-        updateMetadata: state.updateMetadata,
-      })),
-    );
 
   const comfyui_api = useMemo(() => {
     if (settingsDisabled) {
@@ -88,12 +68,12 @@ export const Header: React.FC = observer(() => {
   });
 
   const handleRun = useCallback(async () => {
-    const reactflow = flowInstance?.toObject() as IFlow;
-    const automata = genAutomata(reactflow, nodeData, comfyui_api);
+    const reactflow = appBuilder.flowInstance?.toObject() as IFlow;
+    const automata = genAutomata(reactflow, appBuilder.nodeData, comfyui_api);
 
     try {
       // 数据校验
-      await validateAutomata(automata, reactflow);
+      // await validateAutomata(automata, reactflow);
       appBuilderChatModel.initBot(automata);
     } catch (e) {
       toast.error(e, {
@@ -107,7 +87,12 @@ export const Header: React.FC = observer(() => {
         },
       });
     }
-  }, [flowInstance, appBuilderChatModel, nodeData, comfyui_api]);
+  }, [
+    appBuilder.flowInstance,
+    appBuilderChatModel,
+    appBuilder.nodeData,
+    comfyui_api,
+  ]);
 
   return (
     <div className="w-full h-full relative flex items-center justify-between p-3 border-b border-default font-medium">
@@ -124,10 +109,10 @@ export const Header: React.FC = observer(() => {
           {editing ? (
             <Input
               size="xs"
-              value={metadata?.name}
+              value={appBuilder.metadata?.name}
               rounded="lg"
               onChange={e => {
-                updateMetadata({
+                appBuilder.updateMetadata({
                   metadata: {
                     name: e.target.value,
                   },
@@ -138,14 +123,14 @@ export const Header: React.FC = observer(() => {
                 runEditWorkflow({
                   id,
                   type: 'app',
-                  ...metadata,
+                  ...appBuilder.metadata,
                 });
               }}
             />
           ) : (
             <>
               <Text size="lg" weight="medium">
-                {metadata?.name}
+                {appBuilder.metadata?.name}
               </Text>
               <IconButton
                 onClick={() => setEditing(true)}
@@ -159,7 +144,7 @@ export const Header: React.FC = observer(() => {
         </Heading>
       </div>
       <div className="inline-flex items-center justify-center flex-[0_0_auto]">
-        <ExportDialog id={id} name={metadata.name} />
+        <ExportDialog id={id} name={appBuilder.metadata?.name} />
         <Button
           loading={appBuilderChatModel.isInitBotLoading}
           onClick={handleRun}
@@ -172,11 +157,9 @@ export const Header: React.FC = observer(() => {
         <Publish
           app_id={id}
           version_name={version_name}
-          config={config}
-          nodeData={nodeData}
-          flowInstance={flowInstance}
-          metadata={metadata}
-          loading={loading.getAutomata || loading.getReactFlow}
+          loading={
+            appBuilder.getAutomataLoading || appBuilder.getReactFlowLoading
+          }
         />
         <ExtraActions />
       </div>

@@ -5,15 +5,15 @@ import {
   ArrowRightIcon,
 } from '@heroicons/react/24/outline';
 import { useReactFlowStore, NodeTypeEnum } from '@shellagent/flow-engine';
-import { TFieldMode } from '@shellagent/form-engine';
 import { Button, Input, Select, IconButton, Drawer } from '@shellagent/ui';
 import { produce } from 'immer';
-import { useRef, useState, useCallback } from 'react';
+import { useInjection } from 'inversify-react';
+import { useRef, useState } from 'react';
 
 import { ICondition } from '@/components/app/edges';
 import NodeForm from '@/components/app/node-form';
 import { ExpressionInput } from '@/components/app/node-form/widgets/expression-input';
-import { useAppStore } from '@/stores/app/app-provider';
+import { AppBuilderModel } from '@/stores/app/models/app-builder.model';
 import { useAppState } from '@/stores/app/use-app-state';
 import { getSchemaByInputs } from '@/stores/app/utils/get-workflow-schema';
 
@@ -117,18 +117,15 @@ const TransitionConditionEditor = ({
     open: state.targetInputsSheetOpen,
     setOpen: state.setTargetInputsSheetOpen,
   }));
-
-  const { nodeData, setFieldsModeMap, fieldsModeMap } = useAppStore(state => ({
-    nodeData: state.nodeData,
-    setFieldsModeMap: state.setFieldsModeMap,
-    fieldsModeMap: state.config?.fieldsModeMap,
-  }));
+  const appBuilder = useInjection<AppBuilderModel>('AppBuilderModel');
 
   const handleOpen = (open: boolean, index: number) => {
     setOpen(open);
     setIndex(index);
     const currentCondition = value[index];
-    const schema = getSchemaByInputs(nodeData[currentCondition.target]?.input);
+    const schema = getSchemaByInputs(
+      appBuilder.nodeData[currentCondition.target]?.inputs,
+    );
     setSchema(schema);
   };
 
@@ -172,15 +169,6 @@ const TransitionConditionEditor = ({
       }));
   };
 
-  const modeId = `${source}.condition.${index}`;
-
-  const onModeChange = useCallback(
-    (name: string, mode: TFieldMode) => {
-      setFieldsModeMap({ id: modeId, name, mode });
-    },
-    [modeId, setFieldsModeMap],
-  );
-
   return (
     <div className="flex gap-3 flex-col justify-center">
       {value?.map?.((condition, index) => (
@@ -218,8 +206,6 @@ const TransitionConditionEditor = ({
           parent={`condition.${index}`}
           schema={schema}
           values={value?.[index]?.target_inputs}
-          onModeChange={onModeChange}
-          modeMap={fieldsModeMap?.[modeId] || {}}
           onChange={values =>
             onChange(
               produce(value, draft => {

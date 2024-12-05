@@ -4,8 +4,8 @@ import { observer } from 'mobx-react-lite';
 import React, { useState } from 'react';
 import { Rnd } from 'react-rnd';
 
-import { AssistantModel } from '@/components/assistant/model';
 import { AssistantBot } from '@/components/assistant/bot';
+import { AssistantModel } from '@/components/assistant/model';
 
 const Assistant = observer(() => {
   const model = useInjection(AssistantModel);
@@ -20,19 +20,18 @@ const Assistant = observer(() => {
         : 0, // 计算初始 x 位置
     y:
       typeof window !== 'undefined'
-        ? window.innerHeight - Number(drawerSize.height) - 72
+        ? window.innerHeight - Number(drawerSize.height) - 64
         : 0, // 计算初始 y 位置
   });
 
   return (
     <>
-      <div className="fixed right-6 bottom-8">
+      <div className="fixed right-6 bottom-3">
         <IconButton
-          icon={Bot}
+          icon={() => <Bot className="w-9 h-9" />}
           variant="outline"
-          className="w-9 h-9 text-brand bg-white shadow-button-basic"
+          className="w-11 h-11 text-brand bg-white shadow-button-basic"
           color="default"
-          size="md"
           onClick={model.drawer.open}
           autoFocus={false}
         />
@@ -63,7 +62,7 @@ const Assistant = observer(() => {
           <Drawer
             width="100%"
             height="100%"
-            className="rounded-lg"
+            className="rounded-2xl"
             headerClassName="px-4 !py-3 bg-surface-container-default rnd-drag-header cursor-move"
             contentClassName="!p-0"
             onClose={model.drawer.close}

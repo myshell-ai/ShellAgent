@@ -16,5 +16,6 @@ module.exports = {
     'react/self-closing-comp': 'warn',
     'import/no-duplicates': 'warn',
     '@typescript-eslint/lines-between-class-members': 'off',
+    'no-nested-ternary': 'warn',
   },
 };

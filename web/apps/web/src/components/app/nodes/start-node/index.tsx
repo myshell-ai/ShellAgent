@@ -5,68 +5,39 @@ import {
   SourceHandle,
   useReactFlowStore,
 } from '@shellagent/flow-engine';
-import { TValues, TFieldMode } from '@shellagent/form-engine';
-import React, { useCallback, useRef, useEffect, useMemo } from 'react';
+import { TValues } from '@shellagent/form-engine';
+import { useInjection } from 'inversify-react';
+import React, { useCallback, useMemo, useState } from 'react';
 
 import NodeCard from '@/components/app/node-card';
 import NodeForm from '@/components/app/node-form';
-// import { getDelPathInfo } from '@/stores/workflow/utils/data-transformer';
-import { useAppStore } from '@/stores/app/app-provider';
-// import { findDiffKeys } from '@/utils/common-helper';
+import { AppBuilderModel } from '@/stores/app/models/app-builder.model';
+import { EventType, useEventEmitter } from '@/stores/app/models/emitter';
 
 const StartNode: React.FC<NodeProps<StartNodeType>> = ({
   id,
   selected,
   data,
 }) => {
-  const {
-    setNodeData,
-    nodeData,
-    fieldsModeMap,
-    setFieldsModeMap,
-    setResetData,
-    loading,
-  } = useAppStore(state => ({
-    setNodeData: state.setNodeData,
-    nodeData: state.nodeData,
-    fieldsModeMap: state.config?.fieldsModeMap || {},
-    setFieldsModeMap: state.setFieldsModeMap,
-    setResetData: state.setResetData,
-    loading: state.loading.getAutomata,
-  }));
+  const appBuilder = useInjection<AppBuilderModel>('AppBuilderModel');
+  const [formKey, setFormKey] = useState('');
 
   const edges = useReactFlowStore(state => state.edges);
 
-  const preNodeData = useRef<TValues>(nodeData);
-
-  useEffect(() => {
-    preNodeData.current = nodeData;
-  }, [nodeData]);
-
   const onChange = useCallback(
     (values: TValues) => {
-      setNodeData({ id: NodeIdEnum.start, data: values });
-      // const diffKeys = findDiffKeys(preNodeData.current[data.id], values);
-      // if (diffKeys.length) {
-      //   diffKeys.forEach(key => {
-      //     const id = key.includes('input.') ? key.split('.')[1] : key;
-      //     const paths = getDelPathInfo(preNodeData.current, id);
-      //     Object.entries(paths).forEach(([path, value]) => {
-      //       setResetData({ path, value });
-      //     });
-      //   });
-      // }
-      // preNodeData.current[data.id] = values;
+      appBuilder.setNodeData({ id: NodeIdEnum.start, data: values });
     },
-    [setNodeData, nodeData, setResetData, data.id],
+    [appBuilder.setNodeData],
   );
 
-  const onModeChange = useCallback(
-    (name: string, mode: TFieldMode) => {
-      setFieldsModeMap({ id, name, mode });
-    },
-    [id, setFieldsModeMap],
-  );
+  useEventEmitter(EventType.RESET_FORM, eventData => {
+    setFormKey(eventData.data);
+  });
+
+  useEventEmitter(EventType.FORM_CHANGE, eventData => {
+    setFormKey(eventData.data);
+  });
 
   // 只能连接一个state节点
   const isConnectable = useMemo(() => {
@@ -77,11 +48,10 @@ const StartNode: React.FC<NodeProps<StartNodeType>> = ({
     <>
       <NodeCard selected={selected} {...data}>
         <NodeForm
-          loading={loading}
-          values={nodeData[data.id]}
+          key={formKey}
+          loading={appBuilder.getAutomataLoading}
+          values={appBuilder.nodeData[data.id] || {}}
           onChange={onChange}
-          onModeChange={onModeChange}
-          modeMap={fieldsModeMap?.[data.id] || {}}
         />
       </NodeCard>
       <SourceHandle isConnectable={isConnectable} id={id} />

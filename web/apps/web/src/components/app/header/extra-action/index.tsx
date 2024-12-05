@@ -7,66 +7,23 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
 } from '@shellagent/ui';
-import { Automata } from '@shellagent/pro-config';
+import { useInjection } from 'inversify-react';
 import { useState } from 'react';
-import { toast } from 'react-toastify';
-import { useShallow } from 'zustand/react/shallow';
 
+import { AppBuilderModel } from '@/stores/app/models/app-builder.model';
+import { ShellAgent } from '@/types/app/types';
 import { cn } from '@/utils/cn';
-import { useAppStore } from '@/stores/app/app-provider';
-import { ShellAgent } from '@/stores/app/app-store';
 
 import ImportModal from './import-modal';
 
 export const ExtraActions = () => {
   const [importDialogOpen, setImportDialogOpen] = useState(false);
-  const { initAppBuilder } = useAppStore(
-    useShallow(state => ({
-      initAppBuilder: state.initAppBuilder,
-    })),
-  );
+  const appBuilder = useInjection<AppBuilderModel>('AppBuilderModel');
 
   const onConfirm = (data: ShellAgent) => {
-    return new Promise((resolve, reject) => {
-      initAppBuilder({
-        reactflow: {
-          nodes: [],
-          edges: [],
-          viewport: {
-            x: 0,
-            y: 0,
-            zoom: 0,
-          },
-        },
-        config: {
-          fieldsModeMap: {},
-          schemaModeMap: {},
-        },
-        metadata: data.metadata,
-        automata: {} as Automata,
-      });
-      setTimeout(() => {
-        try {
-          initAppBuilder(data);
-          toast.success(`import success!`, {
-            position: 'top-center',
-            autoClose: 1000,
-            hideProgressBar: true,
-            pauseOnHover: true,
-            closeButton: false,
-          });
-          resolve('success');
-        } catch (error: any) {
-          toast.error(`import error: ${error?.message}`, {
-            position: 'top-center',
-            autoClose: 1000,
-            hideProgressBar: true,
-            pauseOnHover: true,
-            closeButton: false,
-          });
-          resolve('failed');
-        }
-      });
+    return new Promise(resolve => {
+      appBuilder.initAppBuilder(data);
+      resolve(true);
     });
   };
 

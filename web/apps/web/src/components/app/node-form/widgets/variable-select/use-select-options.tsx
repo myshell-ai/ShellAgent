@@ -1,99 +1,54 @@
 import { useFormEngineContext } from '@shellagent/form-engine';
-import { CascaderOption } from '@shellagent/ui';
-import { isEmpty } from 'lodash-es';
+import { CustomEventName } from '@shellagent/pro-config';
+import { RefType, refTypeSchema } from '@shellagent/shared/protocol/app-scope';
+import { reservedKeySchema } from '@shellagent/shared/protocol/pro-config';
+import { WidgetTask, WorkflowTask } from '@shellagent/shared/protocol/task';
+import { useInjection } from 'inversify-react';
 import { useMemo } from 'react';
 
-import { useVariableContext } from '@/stores/app/variable-provider';
+import { AppBuilderModel } from '@/stores/app/models/app-builder.model';
+import { useSchemaContext } from '@/stores/app/schema-provider';
+import { useAppState } from '@/stores/app/use-app-state';
 
 export const useSelectOptions = (name?: string) => {
   const { parent } = useFormEngineContext();
-  const {
-    payloads = [],
-    input = [],
-    tasks = [],
-    output = [],
-    context = [],
-    states = [],
-  } = useVariableContext(state => ({
-    payloads: state.payloads,
-    input: state.input,
-    tasks: state.tasks,
-    output: state.output,
-    context: state.context,
-    states: state.states,
-  }));
+  const stateId = useSchemaContext(state => state.id);
+  const appBuilder = useInjection<AppBuilderModel>('AppBuilderModel');
+  const currentEdegData = useAppState(state => state.currentEdegData);
 
-  const currentGroup = [...input, ...tasks, ...output];
+  const { refType, taskIndex } = useMemo(() => {
+    let refType: RefType | null = null;
+    let taskIndex: number | undefined;
+    if (parent?.startsWith(`${reservedKeySchema.Enum.condition}.`)) {
+      refType = refTypeSchema.Enum.target_input;
+    } else if (parent?.startsWith(`${reservedKeySchema.Enum.inputs}.`)) {
+      refType = refTypeSchema.Enum.state_input;
+    } else if (parent?.startsWith(`${reservedKeySchema.Enum.blocks}.`)) {
+      refType = refTypeSchema.Enum.state_task;
+      taskIndex = (appBuilder.nodeData[stateId]?.blocks || []).findIndex(
+        (block: WorkflowTask | WidgetTask) =>
+          block.name === parent.split('.')?.[1],
+      );
+    } else if (name?.startsWith(`${reservedKeySchema.Enum.outputs}.`)) {
+      refType = refTypeSchema.Enum.state_output;
+    } else if (
+      parent?.startsWith(
+        `${reservedKeySchema.Enum.render}.${reservedKeySchema.Enum.buttons}.`,
+      ) ||
+      name?.startsWith(`${reservedKeySchema.Enum.render}`)
+    ) {
+      refType = refTypeSchema.Enum.state_render;
+    }
 
-  if (parent?.startsWith('condition.')) {
-    // target inputs需要payload
-    currentGroup.push(...payloads);
-  }
+    return { refType, taskIndex };
+  }, [parent, name]);
 
-  const globalGroup = [...context, ...states];
+  const refOptions = appBuilder.getRefOptions(
+    stateId as Lowercase<string>,
+    refType as RefType,
+    taskIndex,
+    currentEdegData?.event_key as CustomEventName | undefined,
+  );
 
-  const formatOptions = (items: any[]): CascaderOption[] => {
-    return items.reduce((memo, item) => {
-      const current = { ...item };
-      if (
-        parent?.startsWith('input.') &&
-        ['Input', 'Output', 'Task'].includes(current.label)
-      ) {
-        return memo;
-      }
-      if (parent?.startsWith('blocks.')) {
-        if (['Output'].includes(current.label)) {
-          return memo;
-        }
-        if (['Task'].includes(current.label)) {
-          const match = parent.match(/(\d+)$/);
-          if (match?.[1]) {
-            const parentIndex = Number(match[1]);
-            // 只展示索引小于当前任务索引的任务
-            current.children = (current.children as CascaderOption[])?.filter(
-              (_, index) => index < parentIndex,
-            );
-          }
-          if (isEmpty(current.children)) {
-            return memo;
-          }
-        }
-      } else if (
-        name?.startsWith('output.') &&
-        ['Output'].includes(current.label)
-      ) {
-        return memo;
-      } else if (
-        name?.startsWith('context.') &&
-        ['Start-Context'].includes(current.label)
-      ) {
-        return memo;
-      }
-      memo.push({
-        label: current.label,
-        value: `{{${current.value}}}`,
-        field_type: current.field_type,
-        children: current.children?.map((child: any) => ({
-          label: child.label,
-          value: `{{${child.value}}}`,
-          field_type: child.field_type,
-          children: child.children?.map((grandchild: any) => ({
-            label: grandchild.label,
-            value: `{{${grandchild.value}}}`,
-            field_type: grandchild.field_type,
-          })),
-        })),
-      });
-      return memo;
-    }, [] as CascaderOption[]);
-  };
-
-  const options = useMemo(() => {
-    return [
-      { label: 'current', children: formatOptions(currentGroup) },
-      { label: 'global', children: formatOptions(globalGroup) },
-    ];
-  }, [currentGroup, globalGroup, parent, name]);
-
-  return options;
+  return refOptions;
 };

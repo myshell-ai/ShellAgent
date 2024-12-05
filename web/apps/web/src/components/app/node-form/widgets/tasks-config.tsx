@@ -1,6 +1,8 @@
 import { PlusIcon } from '@heroicons/react/24/outline';
 import { XMarkIcon } from '@heroicons/react/24/solid';
-import { WidgetItem, uuid, NodeTypeEnum } from '@shellagent/flow-engine';
+import { WidgetItem, NodeTypeEnum } from '@shellagent/flow-engine';
+import { Task, TaskSchema } from '@shellagent/shared/protocol/task';
+import { customSnakeCase, getTaskDisplayName } from '@shellagent/shared/utils';
 import { Button, useFormContext, Drag } from '@shellagent/ui';
 import { useClickAway } from 'ahooks';
 import { Dropdown } from 'antd';
@@ -10,38 +12,6 @@ import { useDrag, useDrop } from 'react-dnd';
 import { materialList } from '@/components/app/constants';
 import { TaskList } from '@/components/app/task-list';
 import { useAppState } from '@/stores/app/use-app-state';
-import { generateUUID } from '@/utils/common-helper';
-
-export interface IWorkflowTask {
-  type: 'task';
-  display_name: string;
-  name: string;
-  mode: NodeTypeEnum.workflow;
-  workflow_id: string;
-  key: string;
-  inputs: {
-    [key: string]: string;
-  };
-  outputs: {
-    [key: string]: string;
-  };
-}
-
-export interface IWidgetTask {
-  type: 'task';
-  display_name: string;
-  name: string;
-  mode: NodeTypeEnum.widget;
-  widget_name: string;
-  widget_class_name: string;
-  key: string;
-  inputs: {
-    [key: string]: string;
-  };
-  outputs: {
-    [key: string]: string;
-  };
-}
 
 const TaskItem = ({
   name,
@@ -55,11 +25,24 @@ const TaskItem = ({
   onDelete: () => void;
   onClick: (e: React.MouseEvent<HTMLDivElement>) => void;
   index: number;
-  moveTask: (dragIndex: number, hoverIndex: number) => void;
+  moveTask: (
+    dragIndex: number,
+    hoverIndex: number,
+    isDragging: boolean,
+  ) => void;
   draggable?: boolean; // 新增参数类型
 }) => {
   const dragRef = useRef<HTMLDivElement>(null);
   const previewRef = useRef<HTMLDivElement>(null);
+
+  const [{ isDragging }, drag, preview] = useDrag({
+    type: 'TASK',
+    item: { index },
+    collect: monitor => ({
+      isDragging: monitor.isDragging(),
+    }),
+    canDrag: draggable,
+  });
 
   const [, drop] = useDrop<DragItem, void>({
     accept: 'TASK',
@@ -86,18 +69,9 @@ const TaskItem = ({
         return;
       }
 
-      moveTask(dragIndex, hoverIndex);
+      moveTask(dragIndex, hoverIndex, isDragging);
       item.index = hoverIndex;
     },
-  });
-
-  const [{ isDragging }, drag, preview] = useDrag({
-    type: 'TASK',
-    item: { index },
-    collect: monitor => ({
-      isDragging: monitor.isDragging(),
-    }),
-    canDrag: draggable,
   });
 
   if (draggable) {
@@ -112,7 +86,9 @@ const TaskItem = ({
         e.stopPropagation();
         onClick(e);
       }}
-      className={`relative group h-8 flex items-center bg-surface-container-default rounded-lg p-2 text-default font-medium cursor-pointer ${isDragging ? 'opacity-50' : ''}`}>
+      className={`relative group h-8 flex items-center bg-surface-container-default rounded-lg p-2 text-default font-medium cursor-pointer ${
+        isDragging ? 'opacity-50' : ''
+      }`}>
       {draggable && (
         <div
           ref={dragRef}
@@ -143,13 +119,13 @@ const TasksConfig = ({
   draggable,
 }: {
   name: string;
-  onChange: (value: (IWorkflowTask | IWidgetTask)[]) => void;
+  onChange: (value: Task[]) => void;
   draggable?: boolean;
 }) => {
   const btnRef = useRef<HTMLButtonElement>(null);
   const [open, setOpen] = useState(false);
   const { getValues } = useFormContext();
-  const values = getValues(name) as (IWorkflowTask | IWidgetTask)[];
+  const values = getValues(name) as Task[];
 
   const { currentStateId, setInsideSheetOpen } = useAppState(state => state);
 
@@ -180,36 +156,40 @@ const TasksConfig = ({
   const handleSelect = useCallback(
     (task: WidgetItem) => {
       setOpen(false);
-      const newTask = {
-        type: 'task',
-        display_name: task.display_name,
-        name: uuid(), // 需要是key_xxx，作为ref引用
-        mode: task.type,
-        workflow_id:
-          task.type === NodeTypeEnum.workflow ? generateUUID() : undefined,
-        widget_name:
-          task.type === NodeTypeEnum.widget ? task.widget_name : undefined,
-        widget_class_name:
-          task.type === NodeTypeEnum.widget ? task.name : undefined,
-        inputs: {},
-        outputs: {},
-        custom: task.custom,
-      };
+      try {
+        const displayName = getTaskDisplayName(task, values);
+        const newTask = TaskSchema.parse({
+          type: 'task',
+          display_name: displayName,
+          name: customSnakeCase(displayName),
+          mode: task.type,
+          ...(task.type === NodeTypeEnum.widget && {
+            widget_name: task.widget_name,
+            widget_class_name: task.name,
+          }),
+          inputs: {},
+          outputs: {},
+          custom: task.custom,
+        });
 
-      const blocks = Array.isArray(values) ? [...values, newTask] : [newTask];
-      onChange(blocks as (IWidgetTask | IWorkflowTask)[]);
+        const blocks = Array.isArray(values) ? [...values, newTask] : [newTask];
+        onChange(blocks);
+      } catch (error) {
+        console.error('Task parse error:', error);
+      }
     },
     [values, onChange],
   );
 
   const moveTask = useCallback(
-    (dragIndex: number, hoverIndex: number) => {
-      const draggedTask = values[dragIndex];
-      const updatedTasks = [...values];
-      updatedTasks.splice(dragIndex, 1);
-      updatedTasks.splice(hoverIndex, 0, draggedTask);
-
-      onChange(updatedTasks);
+    (dragIndex: number, hoverIndex: number, isDragging: boolean) => {
+      if (!isDragging) {
+        const draggedTask = values[dragIndex];
+        const updatedTasks = [...values];
+        updatedTasks.splice(dragIndex, 1);
+        updatedTasks.splice(hoverIndex, 0, draggedTask);
+        onChange(updatedTasks);
+      }
     },
     [values, onChange],
   );

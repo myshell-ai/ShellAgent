@@ -23,7 +23,6 @@ import {
   Node,
 } from 'reactflow';
 import { useContextSelector, createContext } from 'use-context-selector';
-import { useImmer } from 'use-immer';
 
 import {
   INode,
@@ -36,7 +35,8 @@ import {
   NodeId,
   NodeName,
 } from '../../types';
-import { getLayouted, getNodeName, parseNodeName, uuid } from '../../utils';
+import { getLayouted, getNodeName, parseNodeName } from '../../utils';
+import { customSnakeCase } from '@shellagent/shared/utils';
 
 export type FlowState = {
   readonly flow: IFlow;
@@ -59,6 +59,7 @@ export interface AddNodeProps {
     icon?: string;
     id?: string;
   };
+  isCopy?: boolean;
 }
 
 export interface DelNodeProps {
@@ -133,7 +134,7 @@ export const FlowStoreProvider = ({ children }: FlowStoreProviderProps) => {
   const [selectedEdges, setSelectedEdges] = useState<Edge[]>([]);
 
   const viewport = useViewport();
-  const [nodeIndex, setNodeIndex] = useImmer<Record<string, number>>({});
+  const [nodeIndex, setNodeIndex] = useState<Record<string, number>>({});
   const reactFlowWrapper = useRef<HTMLDivElement>(null);
   useOnSelectionChange({
     onChange: params => {
@@ -171,18 +172,27 @@ export const FlowStoreProvider = ({ children }: FlowStoreProviderProps) => {
   };
 
   const onAddNode = useCallback(
-    ({ type, position, data }: AddNodeProps) => {
+    ({ type, position, data, isCopy }: AddNodeProps) => {
       const { name, display_name: displayName } = data;
-      const lastNodeName =
-        findLast(nodes, node => node.data.name === name)?.data.display_name ||
-        '';
-      const lastIndex = parseNodeName(lastNodeName as NodeName).index || 0;
+      // 找出所有同名节点
+      const sameNameNodes = nodes.filter(node =>
+        node.data.display_name?.startsWith(displayName),
+      );
 
-      const index = (nodeIndex[name] || lastIndex) + 1;
-      const id = data?.id || (uuid() as NodeId);
-      setNodeIndex(draft => {
-        draft[name] = index;
+      // 获取最大编号
+      let maxIndex = 0;
+      sameNameNodes.forEach(node => {
+        const match = node.data.display_name?.match(/#(\d+)$/);
+        if (match) {
+          const num = parseInt(match[1]);
+          maxIndex = Math.max(maxIndex, num);
+        }
       });
+
+      // 生成新的节点名称
+      const nodeName = isCopy ? displayName : `${displayName}#${maxIndex + 1}`;
+      const id = customSnakeCase(nodeName);
+
       setNodes(
         nodes =>
           [
@@ -198,13 +208,13 @@ export const FlowStoreProvider = ({ children }: FlowStoreProviderProps) => {
                 type,
                 id,
                 name,
-                display_name: getNodeName(displayName, index),
+                display_name: nodeName,
               },
             },
           ] as any,
       );
     },
-    [nodeIndex, nodes],
+    [nodes],
   );
 
   const onDelNode = useCallback(({ id }: DelNodeProps) => {

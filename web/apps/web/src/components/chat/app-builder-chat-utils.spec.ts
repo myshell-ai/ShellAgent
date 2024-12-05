@@ -1,4 +1,5 @@
 import { ButtonFnParams } from 'myshell-bundled-chat';
+
 import {
   patchImageUrl,
   patchMessageActionPopupForm,
@@ -104,7 +105,7 @@ describe('app-builder-chat-utils', () => {
       session_id: 'f2350708-a31b-11ef-9b11-9ebb585eaf7d',
       id: '0',
       status: 'DONE',
-      type: 'TEXT',
+      type: 'REPLY',
       createdDateUnix: '2024-11-15 14:36:30',
       updatedDateUnix: '2024-11-15 14:36:30',
       text: 'Hi there!',
@@ -570,7 +571,7 @@ describe('app-builder-chat-utils', () => {
         "session_id": "5c4196a0-a3aa-11ef-ba7c-9ebb585eaf7d",
         "status": "DONE",
         "text": "Hi!",
-        "type": "TEXT",
+        "type": "REPLY",
         "updatedDateUnix": "2024-11-16 07:38:45",
       }
     `);
@@ -914,7 +915,7 @@ describe('app-builder-chat-utils', () => {
         "session_id": "a1b8fdcc-a3af-11ef-ba7c-9ebb585eaf7d",
         "status": "DONE",
         "text": "",
-        "type": "TEXT",
+        "type": "REPLY",
         "updatedDateUnix": "2024-11-16 08:13:40",
       }
     `);
@@ -1084,5 +1085,115 @@ describe('app-builder-chat-utils', () => {
         },
       ]
     `);
+  });
+
+  it.skip('lastValidReplyMessage', () => {
+    const msgList: any[] = [
+      {
+        session_id: '3def32d2-adf7-11ef-bcef-9ebb585eaf7c',
+        id: '1',
+        status: 'DONE',
+        type: 'TEXT',
+        createdDateUnix: '2024-11-29 10:11:30',
+        updatedDateUnix: '2024-11-29 10:11:30',
+        text: "This chat example has 2 states. The first state is for introduction content. The second is for accepting user's input and replying with GPT's response.\nPlease check the second state's Input, Task/GPT and Message to see how it works.",
+        embedObjs: [],
+        replyId: '',
+        componentContainer: {
+          type: 'BOT_MESSAGE_COMPONENTS_TYPE_CONTAINER',
+          button: null,
+          components: [
+            {
+              type: 'BOT_MESSAGE_COMPONENTS_TYPE_ROW',
+              components: [
+                {
+                  type: 'BOT_MESSAGE_COMPONENTS_TYPE_BUTTON',
+                  components: [],
+                  button: {
+                    content: {
+                      text: 'End Chat',
+                      iconUrl: null,
+                      iconLabel: null,
+                      direction: null,
+                      description: null,
+                    },
+                    style: {
+                      fontColorHex: '#202223',
+                      backgroundColorHex: '#F6F6F7',
+                      borderColorHex: '#E4E9F0',
+                      darkModeFontColorHex: '#B8BCCF',
+                      darkModeBackgroundColorHex: '#323339',
+                      darkModeBorderColorHex: '#42434A',
+                      iconLineColorHex: '#00000033',
+                      darkModeIconLineColorHex: '#FFFFFF33',
+                    },
+                    buttonId: 'MESSAGE_1_BUTTON_0',
+                    actions: [
+                      {
+                        action:
+                          'MESSAGE_COMPONENTS_BUTTON_ACTION_TYPE_INTERACTION',
+                        interactionInput: {
+                          displayType:
+                            'BOT_MESSAGE_COMPONENTS_BUTTON_ACTION_INTERACTION_INPUT_DISPLAY_TYPE_SLASH_COMMAND',
+                          slashCommandInput: {
+                            name: '/End Chat',
+                            paramMap: {},
+                          },
+                        },
+                      },
+                    ],
+                    disabled: false,
+                    doubleCheck: {
+                      isNeedDoubleCheck: false,
+                      title: '',
+                      description: '',
+                    },
+                    payload: {},
+                  },
+                },
+              ],
+            },
+          ],
+        },
+        inputSetting: {
+          canInputText: true,
+          canInputAudio: false,
+          canUploadFile: false,
+        },
+      },
+      {
+        session_id: 'd60cdd66-adf8-11ef-bcef-9ebb585eaf7c',
+        id: '2',
+        status: 'DONE',
+        type: 'TEXT',
+        createdDateUnix: '2024-11-29 10:23:21',
+        updatedDateUnix: '2024-11-29 10:23:21',
+        text: '',
+        embedObjs: [],
+        replyId: '',
+        componentContainer: {
+          type: 'BOT_MESSAGE_COMPONENTS_TYPE_CONTAINER',
+          components: [],
+          button: null,
+        },
+        inputSetting: {
+          canInputText: true,
+          canInputAudio: false,
+          canUploadFile: false,
+        },
+      },
+    ];
+    const lastValidReplyMessage = msgList.reduceRight((lastDone, message) => {
+      if (lastDone) return lastDone;
+      console.log(message.type);
+      if (
+        (message.type === 'REPLY' || message.type === 'GREETING') &&
+        message.status === 'DONE'
+      ) {
+        return message;
+      }
+      return null;
+    }, null);
+    console.log(lastValidReplyMessage.inputSetting);
   });
 });

@@ -14,12 +14,13 @@ import {
   Heading,
   useFormContext,
   IconButton,
+  FormRef,
 } from '@shellagent/ui';
 import * as React from 'react';
-import { useState } from 'react';
+import { useState, useRef, useMemo } from 'react';
 
 import { MemoizedFormEngine } from '../..';
-import { ISchema, TValue, TValues, TFieldMode } from '../../types';
+import { ISchema, TValue, TValues } from '../../types';
 import { useFormEngineContext } from '../provider';
 
 export type InputProps = React.InputHTMLAttributes<HTMLInputElement>;
@@ -33,10 +34,10 @@ export interface IEditDialogProps {
 const EditDialog = (props: IEditDialogProps) => {
   const { name, children, schema } = props;
   const { getValues, setValue } = useFormContext();
-  const { components, onModeChange, modeMap } = useFormEngineContext();
+  const { components } = useFormEngineContext();
   const [isOpen, setIsOpen] = useState(false);
   const [formData, setFormData] = useState<TValues>({});
-
+  const formRef = useRef<FormRef>(null);
   React.useEffect(() => {
     if (isOpen) {
       setFormData(getValues(name));
@@ -52,30 +53,27 @@ const EditDialog = (props: IEditDialogProps) => {
   };
 
   const onConfirm = () => {
-    for (const key in formData) {
-      setValue(`${name}.${key}`, formData[key]);
+    const { errors = {} } = formRef.current?.formState || {};
+    if (Object.keys(errors).length > 0) {
+      return;
+    } else {
+      for (const key in formData) {
+        if (formData[key] !== undefined) {
+          setValue(`${name}.${key}`, formData[key]);
+        }
+      }
+      setIsOpen(false);
     }
-    setIsOpen(false);
   };
 
   const onFormChange = (values: TValue) => {
     setFormData(values);
   };
 
-  const onFormModeChange = (key: string, mode: TFieldMode) => {
-    onModeChange?.(`${name}.${key}`, mode);
-  };
-
-  const dialogModeMap: typeof modeMap = Object.keys(modeMap || {}).reduce(
-    (acc: typeof modeMap, key: string) => {
-      if (key.startsWith(name) && acc && modeMap) {
-        const newKey = key.replace(`${name}.`, '');
-        acc[newKey] = modeMap?.[key];
-      }
-      return acc;
-    },
-    {},
-  );
+  const disabled = useMemo(() => {
+    const { errors = {} } = formRef.current?.formState || {};
+    return Object.keys(errors).length > 0;
+  }, [formRef.current?.formState]);
 
   return (
     <Dialog open={isOpen}>
@@ -105,13 +103,12 @@ const EditDialog = (props: IEditDialogProps) => {
             <DialogDescription className="px-4 py-3 grid gap-y-1.5 min-h-[160px] max-h-[364px] overflow-y-auto">
               {schema && isOpen ? (
                 <MemoizedFormEngine
+                  ref={formRef}
                   values={formData}
                   schema={schema}
                   parent={name}
                   components={components}
                   onChange={onFormChange}
-                  modeMap={dialogModeMap}
-                  onModeChange={onFormModeChange}
                 />
               ) : null}
               {children}
@@ -126,6 +123,7 @@ const EditDialog = (props: IEditDialogProps) => {
                 Cancel
               </Button>
               <Button
+                disabled={disabled}
                 type="button"
                 className="min-w-[92px] px-[24px]"
                 onClick={onConfirm}>

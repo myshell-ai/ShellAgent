@@ -3,7 +3,7 @@ import {
   NodeIdEnum,
   StartNode as StartNodeType,
 } from '@shellagent/flow-engine';
-import { TValues, TFieldMode } from '@shellagent/form-engine';
+import { TValues } from '@shellagent/form-engine';
 import React, { useCallback, useRef, useEffect } from 'react';
 
 import NodeCard from '@/components/workflow/node-card';
@@ -17,21 +17,14 @@ const StartNode: React.FC<NodeProps<StartNodeType>> = ({
   selected,
   data,
 }) => {
-  const {
-    setNodeData,
-    nodeData,
-    loading,
-    fieldsModeMap,
-    setFieldsModeMap,
-    setResetData,
-  } = useWorkflowStore(state => ({
-    setNodeData: state.setNodeData,
-    nodeData: state.nodeData,
-    loading: state.loading.getProConfig,
-    fieldsModeMap: state.config?.fieldsModeMap || {},
-    setFieldsModeMap: state.setFieldsModeMap,
-    setResetData: state.setResetData,
-  }));
+  const { setNodeData, nodeData, loading, setResetData } = useWorkflowStore(
+    state => ({
+      setNodeData: state.setNodeData,
+      nodeData: state.nodeData,
+      loading: state.loading.getProConfig,
+      setResetData: state.setResetData,
+    }),
+  );
 
   const preNodeData = useRef<TValues>(nodeData);
 
@@ -57,21 +50,12 @@ const StartNode: React.FC<NodeProps<StartNodeType>> = ({
     [setNodeData, nodeData, setResetData, data.id],
   );
 
-  const onModeChange = useCallback(
-    (name: string, mode: TFieldMode) => {
-      setFieldsModeMap({ id, name, mode });
-    },
-    [id, setFieldsModeMap],
-  );
-
   return (
     <NodeCard sourceHandle={id} selected={selected} {...data}>
       <NodeForm
         loading={loading}
         values={nodeData[data.id]}
         onChange={onChange}
-        onModeChange={onModeChange}
-        modeMap={fieldsModeMap?.[data.id] || {}}
       />
     </NodeCard>
   );

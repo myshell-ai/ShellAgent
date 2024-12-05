@@ -1,5 +1,5 @@
 /* eslint-disable */
-import { useMemo, useState } from 'react';
+import { useState } from 'react';
 import {
   CheckIcon,
   RectangleStackIcon,
@@ -7,24 +7,31 @@ import {
 } from '@heroicons/react/24/outline';
 import {
   DropdownMenu,
-  DropdownMenuTrigger,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuPortal,
-  IconButton,
-  Text,
+  DropdownMenuTrigger,
   HeroIcon,
-  ISelectProps,
+  IconButton,
   Input,
-  Select,
+  Cascader,
+  CascaderOption,
+  Text,
   useFormContext,
 } from '@shellagent/ui';
-import { useFormEngineContext, TFieldMode } from '@shellagent/form-engine';
+import { refTypeSchema } from '@shellagent/shared/protocol/app-scope';
+import {
+  FieldModeEnum,
+  FieldMode,
+} from '@shellagent/shared/protocol/extend-config';
+import { useSchemaContext } from '@/stores/app/schema-provider';
+import { removeBrackets } from '@shellagent/shared/utils';
+import { contextTempReg } from '@/stores/app/utils/data-transformer';
 
-import { useVariableContext } from '@/stores/app/variable-provider';
-import { uuid } from '@shellagent/flow-engine';
+import { useInjection } from 'inversify-react';
+import { AppBuilderModel } from '@/stores/app/models/app-builder.model';
 
-interface VariableSelectProps extends ISelectProps {
+interface VariableSelectProps {
   name: string;
   value?: string;
   onChange?: (value: string) => void;
@@ -35,82 +42,70 @@ interface VariableSelectProps extends ISelectProps {
 
 const ModeOptions: Array<{
   label: string;
-  value: TFieldMode;
+  value: FieldMode;
   icon: HeroIcon;
 }> = [
   {
     label: 'Custom Output Name',
-    value: 'ui',
+    value: FieldModeEnum.Enum.ui,
     icon: RectangleStackIcon,
   },
   {
     label: 'Select Output',
-    value: 'ref',
+    value: FieldModeEnum.Enum.ref,
     icon: Square3Stack3DIcon,
   },
 ];
 
 const VariableNameInput = (props: VariableSelectProps) => {
-  const { name, value } = props;
-  const context = useVariableContext(state => state.context);
+  const { value, onChange } = props;
   const { setValue, getValues } = useFormContext();
-  const [mode, setMode] = useState(getValues('name_mode') || 'ui');
-  const { parent } = useFormEngineContext();
+  const stateName = useSchemaContext(state => state.id);
+  const [mode, setMode] = useState(
+    getValues('name_mode') || FieldModeEnum.Enum.ui,
+  );
 
   const IconMode = ModeOptions.find(item => item.value === mode)?.icon!;
 
-  const options = useMemo(() => {
-    return (
-      (context?.[0]?.children?.map(item => ({
-        label: `Start-Context/${item.label}`,
-        value: item.value,
-      })) as ISelectProps['options']) || []
-    );
-  }, [context]);
+  const appBuilder = useInjection<AppBuilderModel>('AppBuilderModel');
+
+  const contextOptions = appBuilder.getRefOptions(
+    stateName as Lowercase<string>,
+    refTypeSchema.Enum.state_output_key,
+  );
 
   const onValueChange = (value: string) => {
-    if (value.startsWith('__context__')) {
-      const item = options?.find(item => item.value === value);
-      setValue(name, item?.label);
-      setValue('__changeKey__', value);
-    } else {
-      setValue(name, value);
-      if (parent?.startsWith('output.__context__') || !value) {
-        setValue('__changeKey__', uuid());
-      }
-    }
+    const displayName = removeBrackets(
+      value?.replace(contextTempReg, 'Context/$1'),
+    );
+    onChange?.(value);
+    setValue('display_name', displayName);
   };
-  const selectValue = parent?.replace('output.', '');
 
-  const onModeChange = (mode: string) => {
-    setMode(mode);
+  const onModeChange = (value: string) => {
+    if (value === mode) {
+      return;
+    }
+    setMode(value);
     onValueChange('');
-    setValue('name_mode', mode);
+    setValue('name_mode', value);
   };
 
   return (
     <div className="w-full flex items-center gap-x-1.5">
       <div className="grow">
-        {mode === 'ref' ? (
-          <Select
+        {mode === FieldModeEnum.Enum.ref ? (
+          <Cascader
+            className="w-44"
+            emptyText="No variable"
+            placeholder="Please select variable"
+            showParentLabel
+            options={contextOptions as CascaderOption[]}
+            value={value}
             onValueChange={onValueChange}
-            options={options}
-            placeholder={
-              options?.length ? 'Please select Output' : 'No Context'
-            }
-            value={
-              options?.find(
-                item =>
-                  item.value === selectValue ||
-                  item.value === getValues('__changeKey__'),
-              )?.value
-            }
           />
         ) : (
-          <Input
-            onChange={e => onValueChange(e.target.value)}
-            value={value || 'Untitled'}
-          />
+          <Input onChange={e => onValueChange(e.target.value)} value={value} />
         )}
       </div>
       <DropdownMenu>

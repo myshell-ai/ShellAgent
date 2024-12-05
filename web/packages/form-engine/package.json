@@ -12,9 +12,13 @@
     "build": "tailwindcss -i ./src/styles.css -o ./dist/index.css",
     "lint": "eslint src/ --fix",
     "dev": "tailwindcss -i ./src/styles.css -o ./dist/index.css --watch",
-    "type-check": "tsc --noEmit"
+    "type-check": "tsc --noEmit",
+    "test:ci": "jest",
+    "test:u": "jest -u",
+    "test": "jest --watch"
   },
   "dependencies": {
+    "@shellagent/shared": "workspace:*",
     "@heroicons/react": "^2.1.5",
     "@shellagent/ui": "workspace:*",
     "clsx": "^2.1.1",
@@ -27,7 +31,6 @@
     "react-dnd-html5-backend": "^16.0.1",
     "react-error-boundary": "^4.0.13",
     "tailwind-merge": "^2.5.2",
-    "use-immer": "^0.10.0",
     "zod": "^3.23.8",
     "zustand": "^4.5.5"
   },
@@ -35,7 +38,10 @@
     "@shellagent/eslint-config": "workspace:*",
     "@shellagent/tailwind-config": "workspace:*",
     "@shellagent/typescript-config": "workspace:*",
+    "@types/jest": "^29.4.0",
     "@types/lodash-es": "^4.17.12",
+    "jest": "^29.4.1",
+    "ts-jest": "^29.0.5",
     "@types/react": "^18.3.3",
     "@types/react-copy-to-clipboard": "^5.0.7",
     "autoprefixer": "^10.4.20",

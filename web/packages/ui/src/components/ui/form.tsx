@@ -14,6 +14,7 @@ import {
   Mode,
   useForm,
   UseFormReturn,
+  useWatch,
 } from 'react-hook-form';
 
 import { Label } from './label';
@@ -205,6 +206,7 @@ FormMessage.displayName = 'FormMessage';
 
 export {
   useForm,
+  useWatch,
   FormItem,
   FormLabel,
   FormControl,

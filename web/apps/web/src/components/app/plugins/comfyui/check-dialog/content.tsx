@@ -1,10 +1,10 @@
 import { DeleteOutlined } from '@ant-design/icons';
 import { Text } from '@shellagent/ui';
-import { Form, Input, Button, FormInstance, Tabs } from 'antd';
-import React, { useState, useMemo, useEffect } from 'react';
+import { Button, Form, FormInstance, Input, Tabs } from 'antd';
+import React, { useEffect, useMemo, useState } from 'react';
 
+import { checkDependency, formatDependencyData2Form } from '../comfyui-utils';
 import type { SaveResponse } from '../services/type';
-import { checkDependency, formatDependencyData2Form } from '../utils';
 
 interface CheckerContentProps {
   formRef: React.RefObject<FormInstance>;

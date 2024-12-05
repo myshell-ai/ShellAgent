@@ -1,28 +1,21 @@
-import {
-  useReactFlowStore,
-  getCanvasCenter,
-  uuid,
-} from '@shellagent/flow-engine';
+import { useReactFlowStore, getCanvasCenter } from '@shellagent/flow-engine';
+import type { FieldValues } from '@shellagent/ui';
 import { useKeyPress } from 'ahooks';
+import { useInjection } from 'inversify-react';
 import { useCallback } from 'react';
 
-import { useAppStore } from '@/stores/app/app-provider';
-import { useAppState } from '@/stores/app/use-app-state';
+import { AppBuilderModel } from '@/stores/app/models/app-builder.model';
 import {
   getKeyboardKeyCodeBySystem,
   isEventTargetInputArea,
 } from '@/utils/common-helper';
-
-import { initData } from '../utils';
 
 export const usePasteState = ({
   enabeKeyboard = false,
 }: {
   enabeKeyboard: boolean;
 }) => {
-  const { setNodeData } = useAppStore(state => ({
-    setNodeData: state.setNodeData,
-  }));
+  const appBuilder = useInjection<AppBuilderModel>('AppBuilderModel');
 
   const { reactFlowWrapper, viewport, onAddNode } = useReactFlowStore(
     state => ({
@@ -32,34 +25,36 @@ export const usePasteState = ({
     }),
   );
 
-  const { currentCopyStateData: data } = useAppState(state => ({
-    currentCopyStateData: state.currentCopyStateData,
-  }));
-
-  const pasteState = useCallback(() => {
-    const newId = uuid();
-    const newData = initData(data);
-
-    setNodeData({ id: newId, data: newData });
-
-    const position = getCanvasCenter(reactFlowWrapper, viewport);
-    onAddNode({
-      type: data.type || 'state',
-      position,
-      data: {
-        id: newId,
-        name: data.name || '',
-        display_name: 'State',
-      },
-    });
-  }, [setNodeData, data, reactFlowWrapper, viewport, onAddNode]);
+  const pasteState = useCallback(
+    async (data: FieldValues) => {
+      const { newId, displayName } = await appBuilder.duplicateState(data);
+      const position = getCanvasCenter(reactFlowWrapper, viewport);
+      onAddNode({
+        type: data?.type || 'state',
+        position,
+        data: {
+          id: newId,
+          name: data?.name || '',
+          display_name: displayName,
+        },
+        isCopy: true,
+      });
+    },
+    [
+      appBuilder.setNodeData,
+      reactFlowWrapper,
+      viewport,
+      onAddNode,
+      appBuilder.nodeData,
+    ],
+  );
 
   useKeyPress(`${getKeyboardKeyCodeBySystem('ctrl')}.v`, e => {
     if (isEventTargetInputArea(e.target as HTMLElement)) {
       return;
     }
-    if (data && enabeKeyboard) {
-      pasteState();
+    if (appBuilder.copyNodeData && enabeKeyboard) {
+      pasteState(appBuilder.copyNodeData);
     }
   });
 

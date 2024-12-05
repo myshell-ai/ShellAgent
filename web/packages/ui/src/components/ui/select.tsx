@@ -56,7 +56,9 @@ const Select = React.forwardRef<
             </div>
           </SelectTrigger>
           {Array.isArray(options) && options.length ? (
-            <SelectContent style={{ zIndex: 9999 }}>
+            <SelectContent
+              style={{ zIndex: 9999 }}
+              className="max-h-[500px] overflow-y-auto">
               {/* <SearchBar
                 autoFocus
                 value={query}

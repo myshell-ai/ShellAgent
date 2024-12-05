@@ -2,6 +2,7 @@ import { Edge } from '@shellagent/flow-engine';
 
 export enum EdgeTypeEnum {
   custom = 'custom_edge',
+  default = 'default_edge',
 }
 
 export enum EdgeDataTypeEnum {

@@ -6,10 +6,10 @@ import '@shellagent/flow-engine/styles.css';
 import '@shellagent/form-engine/styles.css';
 import 'react-toastify/dist/ReactToastify.css';
 import type { Metadata } from 'next';
+import Script from 'next/script';
 import { PropsWithChildren } from 'react';
 
 import MainLayout from '@/components/layouts/main-layout';
-import Script from 'next/script';
 
 export const metadata: Metadata = {
   metadataBase: process.env.VERCEL_URL
@@ -27,12 +27,8 @@ export default function RootLayout({
   return (
     <html lang="en">
       <head>
-        <link
-          rel="preload"
-          href="/Reflect.min.js"
-          as="script"
-          fetchPriority="high"
-        />
+        <script src="/Reflect.min.js" />
+        <script src="/fabric.js" />
       </head>
       <body>
         <Script strategy="beforeInteractive" id="sc-global">

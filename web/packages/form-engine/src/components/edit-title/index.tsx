@@ -15,9 +15,10 @@ import {
   Tooltip,
   TooltipTrigger,
   TooltipContent,
+  FormRef,
 } from '@shellagent/ui';
 import * as React from 'react';
-import { useState } from 'react';
+import { useState, useRef, useMemo, useEffect } from 'react';
 
 import { MemoizedFormEngine } from '../..';
 import { ISchema, TValue, TValues } from '../../types';
@@ -29,6 +30,7 @@ export type InputProps = React.InputHTMLAttributes<HTMLInputElement>;
 export interface IEditTitleProps extends InputProps {
   path: string;
   showDialog?: boolean;
+  defaultKey?: string;
   dialogConfig?: {
     title: string;
     schema: ISchema;
@@ -41,7 +43,8 @@ export interface IEditTitleProps extends InputProps {
 
 const EditTitle = React.forwardRef<HTMLInputElement, IEditTitleProps>(
   (props, ref) => {
-    const { components, replaceKey } = useFormEngineContext();
+    const formRef = useRef<FormRef>(null);
+    const { components } = useFormEngineContext();
     const [isOpenDialog, setIsOpenDialog] = useState(false);
     const { getValues, setValue } = useFormContext();
     const {
@@ -52,12 +55,22 @@ const EditTitle = React.forwardRef<HTMLInputElement, IEditTitleProps>(
       dialogConfig,
       validates,
       autoFocus,
+      defaultKey,
     } = props;
     const title = value || defaultValue;
-    const [formData, setFormData] = useState<TValues>(getValues(path));
+    const [formData, setFormData] = useState<TValues>({});
     const [inputValue, setInputValue] = useState<InputProps['value']>(
-      (path && getValues(path)?.name) || title,
+      (path &&
+        ((defaultKey && getValues(path)?.[defaultKey]) ||
+          getValues(path)?.name)) ||
+        title,
     );
+
+    useEffect(() => {
+      if (isOpenDialog) {
+        setFormData(getValues(path));
+      }
+    }, [isOpenDialog]);
 
     const handleEditMode = () => {
       setIsOpenDialog(true);
@@ -100,18 +113,33 @@ const EditTitle = React.forwardRef<HTMLInputElement, IEditTitleProps>(
     };
 
     const onConfirm = () => {
-      const { __changeKey__, ...data } = formData;
-      if (__changeKey__) {
-        replaceKey(path, __changeKey__, data);
+      const { errors = {} } = formRef.current?.formState || {};
+      if (Object.keys(errors).length > 0) {
+        return;
       } else {
         setValue(path, formData);
+        setIsOpenDialog(false);
       }
-      setIsOpenDialog(false);
     };
 
+    const disabled = useMemo(() => {
+      const { errors = {} } = formRef.current?.formState || {};
+      return Object.keys(errors).length > 0;
+    }, [formRef.current?.formState]);
+
     const getTitle = () => {
-      const name = path && getValues(path)?.name;
-      return name || title || 'Untitled';
+      if (!path) return title || 'Untitled';
+
+      const values = getValues(path);
+      if (defaultKey && values?.[defaultKey]) {
+        return values[defaultKey];
+      }
+
+      if (values?.name) {
+        return values.name;
+      }
+
+      return title || 'Untitled';
     };
 
     const onFormChange = (values: TValue) => {
@@ -135,19 +163,23 @@ const EditTitle = React.forwardRef<HTMLInputElement, IEditTitleProps>(
     }
 
     return (
-      <div className="max-w-36 flex items-center">
-        <Tooltip>
-          <TooltipTrigger type="button">
-            <Heading size="h5" className="max-w-28 truncate">
+      <div className="flex items-center min-w-0 max-w-full">
+        <div className="min-w-0 flex-1 flex items-center">
+          <Tooltip>
+            <TooltipTrigger type="button" className="w-full">
+              <Heading size="h5" className="truncate text-left w-full pr-1">
+                {getTitle()}
+              </Heading>
+            </TooltipTrigger>
+            <TooltipContent showArrow={false} side="right">
               {getTitle()}
-            </Heading>
-          </TooltipTrigger>
-          <TooltipContent>{getTitle()}</TooltipContent>
-        </Tooltip>
+            </TooltipContent>
+          </Tooltip>
+        </div>
         <PencilSquare
           size="sm"
           color="subtle"
-          className="ml-1"
+          className="shrink-0 ml-1 cursor-pointer"
           onClick={handleEditMode}
         />
         <Dialog open={isOpenDialog && showDialog}>
@@ -163,6 +195,7 @@ const EditTitle = React.forwardRef<HTMLInputElement, IEditTitleProps>(
             <DialogDescription className="px-4 py-3 grid gap-y-1.5 min-h-[160px] max-h-[364px] overflow-y-auto">
               {dialogConfig?.schema && isOpenDialog ? (
                 <MemoizedFormEngine
+                  ref={formRef}
                   values={formData}
                   parent={path}
                   schema={dialogConfig?.schema}
@@ -181,6 +214,7 @@ const EditTitle = React.forwardRef<HTMLInputElement, IEditTitleProps>(
                 Cancel
               </Button>
               <Button
+                disabled={disabled}
                 type="button"
                 className="min-w-[92px] px-[24px]"
                 onClick={onConfirm}>
