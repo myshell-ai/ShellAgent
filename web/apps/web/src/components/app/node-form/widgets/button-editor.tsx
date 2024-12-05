@@ -100,13 +100,13 @@ const ButtonEditor = ({ name, onChange }: VariableNodeProps) => {
     (e: React.MouseEvent<HTMLButtonElement>) => {
       e.stopPropagation();
       const content = getButtonDisplayName(value);
-      const event = getEventKey(content);
+      const id = generateUUID() as Lowercase<string>;
       onChange([
         ...(value || []),
         {
           content,
-          on_click: { event, payload: {} },
-          id: generateUUID(),
+          on_click: { event: id, payload: {} },
+          id,
           description: '',
         },
       ]);
