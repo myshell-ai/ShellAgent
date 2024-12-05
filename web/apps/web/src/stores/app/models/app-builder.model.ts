@@ -1,28 +1,27 @@
 import type { IFlow, ReactFlowInstance } from '@shellagent/flow-engine';
-import { Automata, CustomEventName, CustomKey } from '@shellagent/pro-config';
+import type { TFieldMode } from '@shellagent/form-engine';
+import { CustomKey, CustomEventName, Automata } from '@shellagent/pro-config';
 import {
-  customSnakeCase,
-  getRefOptions,
-  handleRefScene,
-  HandleRefSceneEvent,
-  Refs,
   RefSceneEnum,
   RefType,
+  getRefOptions,
   Scopes,
+  HandleRefSceneEvent,
+  handleRefScene,
+  Refs,
 } from '@shellagent/shared/protocol/app-scope';
 import type { FieldValues } from '@shellagent/ui';
-import { inject, injectable } from 'inversify';
+import { injectable, inject } from 'inversify';
 import { isEmpty } from 'lodash-es';
 import { action, makeObservable, observable, runInAction } from 'mobx';
 
-import { ComfyUIModel } from '@/components/app/plugins/comfyui/comfyui.model';
 import { AppBuilderChatModel } from '@/components/chat/app-builder-chat.model';
 import {
-  fetchAppVersionList,
   fetchAutomata,
   fetchFlow,
-  releaseApp,
   saveApp,
+  releaseApp,
+  fetchAppVersionList,
 } from '@/services/app';
 import type {
   GetAppFlowRequest,
@@ -31,9 +30,9 @@ import type {
 import { fetchList as fetchFlowList } from '@/services/home';
 import type { GetListRequest, GetListResponse } from '@/services/home/type';
 import emitter, { EventType } from '@/stores/app/models/emitter';
-import { genAutomata, genNodeData } from '@/stores/app/utils/data-transformer';
-import type { Config, Metadata, NodeDataType } from '@/types/app/types';
-import { ToastModel } from '@/utils/toast.model';
+import { genNodeData, genAutomata } from '@/stores/app/utils/data-transformer';
+import type { NodeDataType, Config, Metadata } from '@/types/app/types';
+import { EmitterModel } from '@/utils/emitter.model';
 
 import {
   CascaderOption,
@@ -44,8 +43,8 @@ import {
 import {
   handleRemoveRefOpts,
   handleRemoveRefOptsPrefix,
-  handleRemoveState,
   handleRenameRefOpt,
+  handleRemoveState,
   handleReorderTask,
 } from './node-data-utils';
 import { defaultFlow } from '../../../components/app/constants';
@@ -82,14 +81,6 @@ export class AppBuilderModel {
 
   copyNodeData: FieldValues = {};
 
-  constructor(
-    @inject(ToastModel) private emitter: ToastModel,
-    @inject('ComfyUIModel') private comfyui: ComfyUIModel,
-    @inject(AppBuilderChatModel) public chatModel: AppBuilderChatModel,
-  ) {
-    makeObservable(this);
-  }
-
   get scopes(): Scopes | null {
     if (!this.flowInstance || !this.nodeData) return null;
     const edges = this.flowInstance.getEdges();
@@ -98,6 +89,13 @@ export class AppBuilderModel {
 
   get refs(): Refs {
     return this.config.refs || {};
+  }
+
+  constructor(
+    @inject(EmitterModel) private emitter: EmitterModel,
+    @inject(AppBuilderChatModel) public chatModel: AppBuilderChatModel,
+  ) {
+    makeObservable(this);
   }
 
   getRefOptions(
@@ -457,29 +455,6 @@ export class AppBuilderModel {
     emitter.emit(EventType.RESET_FORM, {
       data: `${new Date().valueOf()}`,
     });
-  }
-
-  async duplicateState(data: FieldValues) {
-    const index = Object.values(this.nodeData).map(
-      value => value.type === 'state',
-    )?.length;
-    const displayName = `${data?.display_name} Copy${
-      index > 0 ? `#${index}` : ''
-    }`;
-    const newId = customSnakeCase(displayName);
-    data = await this.comfyui.handleDuplicateState(newId, data);
-    this.setNodeData({ id: newId, data });
-    this.handleRefScene({
-      scene: RefSceneEnum.Enum.duplicate_state,
-      params: {
-        stateName: data?.id as Lowercase<string>,
-        duplicateStateName: newId,
-      },
-    });
-    return {
-      newId,
-      displayName,
-    };
   }
 
   @action.bound
