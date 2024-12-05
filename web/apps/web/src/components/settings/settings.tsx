@@ -8,9 +8,9 @@ import {
   AButton,
   contentPadding,
   Icon,
-  Spinner,
-  Text,
   TrashIcon,
+  Text,
+  Spinner,
 } from '@shellagent/ui';
 import { Button, Card, Divider, Form, Input, Modal, Switch, theme } from 'antd';
 import dayjs from 'dayjs';
@@ -23,9 +23,9 @@ import { Box, Flex } from 'react-system';
 import { toast } from 'react-toastify';
 
 import {
+  SettingEnvFormValue,
   DefaultEnvs,
   DefaultEnvsMap,
-  SettingEnvFormValue,
 } from './settings-definitions';
 import { SettingsSideBar } from './settings-sidebar';
 import { SettingsModel } from './settings.model';
@@ -56,7 +56,7 @@ export const EnvForm = observer(() => {
         model.saveSettingsEnv(values);
       }}>
       {formikProps => {
-        model.formik.setFormikProps(formikProps);
+        model.setFormikProps(formikProps);
         return (
           <Form
             layout="horizontal"
@@ -73,7 +73,6 @@ export const EnvForm = observer(() => {
                     if (defaultEnv) {
                       return (
                         <Form.Item
-                          colon={false}
                           label={defaultEnv.label}
                           hidden={defaultEnv.hidden}
                           tooltip={defaultEnv.tooltip}>

@@ -69,6 +69,89 @@ else:
 repo = pygit2.Repository(repo_path)
 ident = pygit2.Signature('shellagent', 'shellagent@myshell.ai')
 
+def download_latest_web_build():
+    print("Downloading the latest web-build...")
+
+    if branch_name != 'main':
+        if 'WEB_BUILD_URL' not in os.environ:
+            print("WEB_BUILD_URL is not set")
+            return
+        download_url = os.environ['WEB_BUILD_URL']
+        try:
+            # URL format like: https://github.com/myshell-ai/ShellAgent/actions/runs/{run_id}/artifacts/{artifact_id}
+            parts = download_url.split('/')
+            artifact_id = parts[-1]
+            owner = "myshell-ai"
+            repo = "ShellAgent"
+            
+            # Construct GitHub API URL
+            api_url = f"https://api.github.com/repos/{owner}/{repo}/actions/artifacts/{artifact_id}/zip"
+            
+            # Set GitHub API authentication headers
+            headers = {
+                'Authorization': f'token {os.environ.get("GITHUB_TOKEN")}',
+                'Accept': 'application/vnd.github+json'
+            }
+            
+            response = requests.get(api_url, headers=headers)
+            response.raise_for_status()
+            
+            with open('web-build.zip', 'wb') as f:
+                f.write(response.content)
+            print("Download completed successfully")
+        except Exception as e:
+            print(f"Failed to download web-build: {e}")
+            error = {
+                'error_code': 'SHELL-1116',
+                'error_head': 'Auto-update Error',
+                'msg': f"Failed to download web-build, status code: {response.status_code}",
+            }
+            raise ShellException(**error)
+    else:
+        # Get the latest release information
+        api_url = "https://api.github.com/repos/myshell-ai/ShellAgent/releases/latest"
+        response = requests.get(api_url)
+        if response.status_code != 200:
+            print("Failed to get the latest release information")
+            return
+
+        release_info = response.json()
+        web_build_asset = next((asset for asset in release_info['assets'] if asset['name'] == 'web-build.zip'), None)
+
+        if not web_build_asset:
+            print("web-build.zip resource not found")
+            return
+
+        # Download web-build
+        download_url = web_build_asset['browser_download_url']
+
+        response = requests.get(download_url)
+
+        if response.status_code != 200:
+            print("Failed to download web-build")
+            error = {
+                'error_code': 'SHELL-1116',
+                'error_head': 'Auto-update Error',
+                'msg': f"Failed to download web-build, status code: {response.status_code}",
+            }
+            raise ShellException(**error)
+
+        # Save and extract web-build
+        with open('web-build.zip', 'wb') as f:
+            f.write(response.content)
+
+    target_dir = os.path.join(repo_path, "servers", "web-build")
+    if os.path.exists(target_dir):
+        shutil.rmtree(target_dir)
+
+    with zipfile.ZipFile('web-build.zip', 'r') as zip_ref:
+        zip_ref.extractall(target_dir)
+
+    os.remove('web-build.zip')
+    print("web-build updated")
+
+download_latest_web_build()
+
 # Check and update .gitmodules file and submodules
 gitmodules_path = os.path.join(repo_path, '.gitmodules')
 gitmodules_updated = False
@@ -157,78 +240,5 @@ if "--stable" in sys.argv and branch_name == 'main':
         if result.returncode != 0:
             print("Failed to update submodules for stable version:", result.stderr.decode())
             sys.exit(1)
-
-def download_latest_web_build():
-    print("Downloading the latest web-build...")
-
-    if branch_name != 'main':
-        if 'WEB_BUILD_URL' not in os.environ:
-            print("WEB_BUILD_URL is not set")
-            return
-        download_url = os.environ['WEB_BUILD_URL']
-        try:
-            # URL format like: https://github.com/myshell-ai/ShellAgent/actions/runs/{run_id}/artifacts/{artifact_id}
-            parts = download_url.split('/')
-            artifact_id = parts[-1]
-            owner = "myshell-ai"
-            repo = "ShellAgent"
-            
-            # Construct GitHub API URL
-            api_url = f"https://api.github.com/repos/{owner}/{repo}/actions/artifacts/{artifact_id}/zip"
-            
-            # Set GitHub API authentication headers
-            headers = {
-                'Authorization': f'token {os.environ.get("GITHUB_TOKEN")}',
-                'Accept': 'application/vnd.github+json'
-            }
-            
-            response = requests.get(api_url, headers=headers)
-            response.raise_for_status()
-            
-            with open('web-build.zip', 'wb') as f:
-                f.write(response.content)
-            print("Download completed successfully")
-        except Exception as e:
-            print(f"Failed to download web-build: {e}")
-            return
-    else:
-        # Get the latest release information
-        api_url = "https://api.github.com/repos/myshell-ai/ShellAgent/releases/latest"
-        response = requests.get(api_url)
-        if response.status_code != 200:
-            print("Failed to get the latest release information")
-            return
-
-        release_info = response.json()
-        web_build_asset = next((asset for asset in release_info['assets'] if asset['name'] == 'web-build.zip'), None)
-
-        if not web_build_asset:
-            print("web-build.zip resource not found")
-            return
-
-        # Download web-build
-        download_url = web_build_asset['browser_download_url']
-
-        response = requests.get(download_url)
-
-        if response.status_code != 200:
-            print("Failed to download web-build")
-            return
-
-        # Save and extract web-build
-        with open('web-build.zip', 'wb') as f:
-            f.write(response.content)
-
-    target_dir = os.path.join(repo_path, "servers", "web-build")
-    if os.path.exists(target_dir):
-        shutil.rmtree(target_dir)
-
-    with zipfile.ZipFile('web-build.zip', 'r') as zip_ref:
-        zip_ref.extractall(target_dir)
-
-    os.remove('web-build.zip')
-    print("web-build updated")
-
-download_latest_web_build()
 
 print("Done!")

@@ -1,10 +1,10 @@
 import { Decimal } from 'decimal.js';
 import React from 'react';
 
-import { cn } from '../../../lib/utils';
+import { cn } from '../../../lib/utils.ts';
 
-import { Input } from '../input';
-import { calculateNearestValue } from './number-input-utils';
+import { Input } from '../input.tsx';
+import { calculateNearestValue } from './number-input-utils.ts';
 
 export type INumberInputProps = Omit<
   React.InputHTMLAttributes<HTMLInputElement>,
