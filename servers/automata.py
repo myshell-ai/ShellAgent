@@ -349,7 +349,8 @@ async def init_bot(data: dict):
         error_message = str(traceback.format_exc())
         return_data = {
             "session_id": None,
-            "message": error_message
+            "message": str(traceback.format_exc()),
+            "message_detail": str(e),
         }
 
     return JSONResponse(content=return_data)

@@ -13,7 +13,7 @@ from proconfig.widgets.base import WIDGETS
 from proconfig.widgets import load_custom_widgets
 from proconfig.utils.misc import is_valid_url, _make_temp_file
 from proconfig.utils.pytree import tree_map
-from proconfig.utils.misc import process_local_file_path_async
+from proconfig.utils.misc import process_local_file_path_async, get_current_version
 from servers.base import app, APP_SAVE_ROOT, WORKFLOW_SAVE_ROOT, PROJECT_ROOT, get_file_times, UPLOAD_FOLDER, ASSET_ROOT
 
 from fastapi import FastAPI, UploadFile, File, HTTPException
@@ -262,6 +262,7 @@ async def create_workflow(params: Dict):
     os.makedirs(os.path.dirname(metadata_file), exist_ok=True)
 
     # Write metadata to file
+    params["version"] = get_current_version()
     with open(metadata_file, "w") as f:
         json.dump(params, f, indent=2)
 
@@ -438,13 +439,8 @@ async def check_repo_status():
         latest_commit = repo.revparse_single(current_branch)
         current_commit_id = str(latest_commit.id)
 
-        for reference in repo.references:
-            if reference.startswith('refs/tags/v'):
-                tag = repo.lookup_reference(reference)
-                if tag.peel().id == latest_commit.id:
-                    current_tag = reference
-                    current_version = reference.split('/')[-1]
-                    break
+
+                
 
         if not current_version:
             current_version = current_commit_id[:7]  # Use short commit id
