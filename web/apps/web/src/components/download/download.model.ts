@@ -13,8 +13,8 @@ import {
   url_download_center_list,
 } from '@/components/download/download-definitions';
 import { url_models_marketplace_install } from '@/components/manager/manager-definitions';
-import { ToastModel } from '@/utils/toast.model';
 import { ModalModel } from '@/utils/modal.model';
+import { ToastModel } from '@/utils/toast.model';
 
 @injectable()
 export class DownloadModel {

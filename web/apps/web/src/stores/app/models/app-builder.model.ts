@@ -15,6 +15,7 @@ import { inject, injectable } from 'inversify';
 import { isEmpty } from 'lodash-es';
 import { action, makeObservable, observable, runInAction } from 'mobx';
 
+import { ComfyUIModel } from '@/components/app/plugins/comfyui/comfyui.model';
 import { AppBuilderChatModel } from '@/components/chat/app-builder-chat.model';
 import {
   fetchAppVersionList,
@@ -48,7 +49,6 @@ import {
   handleReorderTask,
 } from './node-data-utils';
 import { defaultFlow } from '../../../components/app/constants';
-import { ComfyUIModel } from '@/components/app/plugins/comfyui/comfyui.model';
 
 @injectable()
 export class AppBuilderModel {

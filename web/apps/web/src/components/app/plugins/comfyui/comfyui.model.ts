@@ -1,30 +1,30 @@
+import { customSnakeCase } from '@shellagent/shared/utils';
 import axios from 'axios';
+import { type FieldInputProps } from 'formik';
 import { inject, injectable } from 'inversify';
 import { isEmpty } from 'lodash-es';
+import mitt from 'mitt';
 import { action, computed, makeObservable, observable } from 'mobx';
+import { type RefObject } from 'react';
 
-import { SettingsModel } from '@/components/settings/settings.model';
-import { FormikModel } from '@/utils/formik.model';
-import { ModalModel } from '@/utils/modal.model';
-import { ToggleModel } from '@/utils/toggle.model';
-import { ToastModel } from '@/utils/toast.model';
-import { checkDependency, isValidUrl, pathJoin } from './comfyui-utils';
 import {
   COMFYUI_API,
   DEFAULT_COMFYUI_API,
   MessageType,
 } from '@/components/app/plugins/comfyui/constant';
-import { AppBuilderModel } from '@/stores/app/models/app-builder.model';
-import { customSnakeCase } from '@shellagent/shared/utils';
-import { duplicateComfyUI } from '@/stores/app/models/app-builder-utils';
-import { type FieldInputProps } from 'formik';
 import { getFile, saveComfy } from '@/components/app/plugins/comfyui/services';
-import { type RefObject } from 'react';
 import {
   SaveRequest,
   type SaveResponse,
 } from '@/components/app/plugins/comfyui/services/type';
-import mitt from 'mitt';
+import { SettingsModel } from '@/components/settings/settings.model';
+import { duplicateComfyUI } from '@/stores/app/models/app-builder-utils';
+import { AppBuilderModel } from '@/stores/app/models/app-builder.model';
+import { FormikModel } from '@/utils/formik.model';
+import { ModalModel } from '@/utils/modal.model';
+import { ToastModel } from '@/utils/toast.model';
+import { ToggleModel } from '@/utils/toggle.model';
+import { checkDependency, isValidUrl, pathJoin } from './comfyui-utils';
 
 const settingsDisabled = process.env.NEXT_PUBLIC_DISABLE_SETTING === 'yes';
 
@@ -214,9 +214,8 @@ export class ComfyUIModel {
       );
       if (!res.data.success) {
         return `The ShellAgent-extended ComfyUI JSON (.shellagent.json) doesn't exist`;
-      } else {
-        return undefined;
       }
+      return undefined;
     } catch (e) {
       return (e as Error).message;
     }
@@ -286,9 +285,8 @@ export class ComfyUIModel {
     if (!isEmpty(err)) {
       setFieldError('location', err);
       return;
-    } else {
-      setFieldError('location', undefined);
     }
+    setFieldError('location', undefined);
 
     this.iframeDialog.open();
 

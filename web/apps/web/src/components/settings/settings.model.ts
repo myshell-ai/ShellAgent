@@ -2,9 +2,9 @@ import axios from 'axios';
 import { inject, injectable, postConstruct } from 'inversify';
 import { action, makeObservable, observable } from 'mobx';
 
-import { ToastModel } from '@/utils/toast.model';
 import { FormikModel } from '@/utils/formik.model';
 import { ModalModel } from '@/utils/modal.model';
+import { ToastModel } from '@/utils/toast.model';
 
 import {
   DefaultEnvs,

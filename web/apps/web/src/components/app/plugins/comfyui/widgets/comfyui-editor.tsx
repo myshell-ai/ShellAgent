@@ -9,6 +9,7 @@ import {
   SaveOutlined,
 } from '@ant-design/icons';
 import { css } from '@emotion/react';
+import { useFormEngineContext } from '@shellagent/form-engine';
 import { AModal, Button, Spinner, useFormContext } from '@shellagent/ui';
 import { Form, Input, Modal, Tooltip } from 'antd';
 import { Field, FieldProps, Formik } from 'formik';
@@ -18,11 +19,11 @@ import React, { useEffect, useRef } from 'react';
 import { Box, Flex } from 'react-system';
 import { toast } from 'react-toastify';
 
-import { ComfyUIModel, LocationFormType, locationTip } from '../comfyui.model';
-import { CheckDialog } from '../check-dialog';
-import { useFormEngineContext } from '@shellagent/form-engine';
 import { useSchemaContext } from '@/stores/app/schema-provider';
 import { type FormikModel } from '@/utils/formik.model';
+
+import { CheckDialog } from '../check-dialog';
+import { ComfyUIModel, LocationFormType, locationTip } from '../comfyui.model';
 
 export const ComfyUIEditor = observer(
   ({ name, onChange }: { name: string; onChange: (value: string) => void }) => {

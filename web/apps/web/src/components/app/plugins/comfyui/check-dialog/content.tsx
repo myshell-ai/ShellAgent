@@ -3,8 +3,8 @@ import { Text } from '@shellagent/ui';
 import { Button, Form, FormInstance, Input, Tabs } from 'antd';
 import React, { useEffect, useMemo, useState } from 'react';
 
-import type { SaveResponse } from '../services/type';
 import { checkDependency, formatDependencyData2Form } from '../comfyui-utils';
+import type { SaveResponse } from '../services/type';
 
 interface CheckerContentProps {
   formRef: React.RefObject<FormInstance>;

@@ -7,6 +7,7 @@ import {
   stateSchema,
 } from '@shellagent/shared/protocol/app-scope';
 import { reservedStateNameSchema } from '@shellagent/shared/protocol/node';
+import { Button as IButtonType } from '@shellagent/shared/protocol/render-button';
 import { FieldValues } from '@shellagent/ui';
 import { cloneDeep, mapValues, isEmpty } from 'lodash-es';
 
@@ -57,18 +58,21 @@ export function convertNodeDataToState(nodeData: any): State {
         ),
         render: {
           buttons: Object.fromEntries(
-            (nodeData.render?.buttons || []).map((button: any) => {
-              const [name] = button.on_click.event.split('.');
-              return [
-                name,
-                {
-                  event: button.on_click.event,
-                  payload: mapValues(button?.on_click?.payload, v => ({
-                    type: v.type,
-                    display_name: v.name,
-                  })),
-                },
-              ];
+            (nodeData.render?.buttons || []).map((button: IButtonType) => {
+              const { content } = button;
+              if (!isEmpty(button?.on_click?.payload)) {
+                return [
+                  content,
+                  {
+                    event: button.on_click.event,
+                    payload: mapValues(button?.on_click?.payload, v => ({
+                      type: v.type,
+                      display_name: v.name,
+                    })),
+                  },
+                ];
+              }
+              return [content, {}];
             }),
           ),
         },
