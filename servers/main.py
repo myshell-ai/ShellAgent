@@ -29,6 +29,8 @@ if __name__ == '__main__':
     from servers.base import app, web_build_path
     import uvicorn
     
+    servers.base.launch_args = args.__dict__
+    
     app.mount("/", StaticFiles(directory=str(web_build_path), html=True), name="static")
 
     # Define the lifespan context to open the browser on startup
