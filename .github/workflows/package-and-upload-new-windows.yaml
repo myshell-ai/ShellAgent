@@ -1,27 +1,15 @@
-<<<<<<< HEAD
-=======
-
->>>>>>> 478025502e0888f1e6cb91ffd20ace2c2bbd87a5
 name: "Create GitHub Release for Windows"
 
 on:
   workflow_dispatch:
     inputs:
       git_tag:
-<<<<<<< HEAD
         description: "Git Branch Tag"
-=======
-        description: 'Git Branch Tag'
->>>>>>> 478025502e0888f1e6cb91ffd20ace2c2bbd87a5
         required: true
         type: string
         default: "main"
       version:
-<<<<<<< HEAD
         description: "Release Version Tag"
-=======
-        description: 'Release Version Tag'
->>>>>>> 478025502e0888f1e6cb91ffd20ace2c2bbd87a5
         required: true
         type: string
         default: "beta"
@@ -58,21 +46,12 @@ jobs:
         with:
           name: web-build
           path: web/apps/web/dist
-<<<<<<< HEAD
-
-=======
-    
->>>>>>> 478025502e0888f1e6cb91ffd20ace2c2bbd87a5
   package_shellagent_windows:
     permissions:
       contents: "write"
       packages: "write"
       pull-requests: "read"
-<<<<<<< HEAD
     needs: build
-=======
-    needs: build 
->>>>>>> 478025502e0888f1e6cb91ffd20ace2c2bbd87a5
     runs-on: windows-latest
     steps:
       - uses: actions/checkout@v4
@@ -101,11 +80,6 @@ jobs:
 
           curl https://www.python.org/ftp/python/3.10.10/python-3.10.10-embed-amd64.zip -o python_embeded.zip
           unzip python_embeded.zip -d python_embeded
-<<<<<<< HEAD
-
-=======
-          
->>>>>>> 478025502e0888f1e6cb91ffd20ace2c2bbd87a5
           cd python_embeded
 
           echo 'import site' >> ./python310._pth
@@ -129,11 +103,8 @@ jobs:
 
           ../python_embeded/python.exe -m pip install poetry
           ../python_embeded/python.exe -m pip install -e .
-<<<<<<< HEAD
           export PLAYWRIGHT_BROWSERS_PATH=../python_embeded/playwright_browsers
           ../python_embeded/python.exe -m playwright install chromium
-=======
->>>>>>> 478025502e0888f1e6cb91ffd20ace2c2bbd87a5
 
           cd ..
           cd ..
@@ -169,8 +140,4 @@ jobs:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           file: web-build.zip
           tag: ${{ inputs.version }}
-<<<<<<< HEAD
           overwrite: true
-=======
-          overwrite: true
->>>>>>> 478025502e0888f1e6cb91ffd20ace2c2bbd87a5
