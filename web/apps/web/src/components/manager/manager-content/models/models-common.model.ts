@@ -7,7 +7,7 @@ import { action, makeObservable, observable, runInAction } from 'mobx';
 import { url_models_marketplace_install } from '@/components/manager/manager-definitions';
 import { ModalModel } from '@/utils/modal.model';
 
-import { EmitterModel } from '../../../../utils/emitter.model';
+import { ToastModel } from '../../../../utils/toast.model';
 
 @injectable()
 export class ModelsCommonModel {
@@ -23,7 +23,7 @@ export class ModelsCommonModel {
   debouneFunc: DebouncedFunc<any>;
 
   constructor(
-    @inject(EmitterModel) private emitter: EmitterModel,
+    @inject(ToastModel) private emitter: ToastModel,
     @inject(ModalModel) public installFromModal: ModalModel,
   ) {
     makeObservable(this);

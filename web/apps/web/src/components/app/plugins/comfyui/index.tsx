@@ -1,133 +1,117 @@
-import {
-  getDefaultValueBySchema,
-  ISchema,
-  TValues,
-} from '@shellagent/form-engine';
+import { ISchema } from '@shellagent/form-engine';
 import { FormRef } from '@shellagent/ui';
 import { useRequest } from 'ahooks';
-import { isEmpty, merge } from 'lodash-es';
 import { observer } from 'mobx-react-lite';
-import React, {
-  useRef,
-  useEffect,
-  useState,
-  useMemo,
-  useCallback,
-} from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 
 import { CommonWidgetConfigProps } from '@/components/app/config-form/widget-config';
 import NodeForm from '@/components/app/node-form';
 
-import { useEventEmitter, EventType } from './emitter';
-import { getComfyuiSchema, defaultSchema } from './schema';
+import { defaultSchema, getComfyUISchema } from './schema';
 import { getFile } from './services';
-import { generateHash } from './utils';
+import { generateHash } from './comfyui-utils';
 import { ComfyUIEditor } from './widgets/comfyui-editor';
+import { useInjection } from 'inversify-react';
+import {
+  ComfyUIModel,
+  EventType,
+} from '@/components/app/plugins/comfyui/comfyui.model';
+import { useSchemaContext } from '@/stores/app/schema-provider';
 
-const ComfyUIPlugin: React.FC<CommonWidgetConfigProps> = ({
-  values,
-  onChange,
-  parent,
-}) => {
-  const formRef = useRef<FormRef>(null);
-  const [schema, setSchema] = useState<ISchema>(defaultSchema);
+export const ComfyUIPlugin = observer<CommonWidgetConfigProps>(
+  ({ values, onChange, parent }) => {
+    const model = useInjection<ComfyUIModel>('ComfyUIModel');
 
-  useEffect(() => {
-    const values = formRef.current?.getValues();
-    if (!values?.comfy_workflow_id) {
-      formRef.current?.setValue('comfy_workflow_id', generateHash());
-    }
-  }, []);
-
-  const defaultValues = useMemo(
-    () => getDefaultValueBySchema(schema, false),
-    [schema],
-  );
-
-  const mergeValues = (formValues: TValues, newValues?: TValues) => {
-    const result = {
-      ...merge({}, formValues, newValues),
-      inputs: isEmpty(formValues?.inputs)
-        ? newValues?.inputs
-        : Object.keys(formValues?.inputs || {})?.reduce((prev, key) => {
-            prev[key] = newValues?.inputs?.[key] || formValues?.inputs?.[key];
-            return prev;
-          }, {} as any),
-      outputs: !isEmpty(formValues?.outputs?.display)
-        ? formValues?.outputs
-        : newValues?.outputs,
-    };
-    return result;
-  };
-
-  const handleOnChange = useCallback(
-    (newValues: TValues) => {
-      onChange(mergeValues(defaultValues, newValues));
-    },
-    [defaultValues, onChange],
-  );
-
-  useEffect(() => {
-    onChange(mergeValues(defaultValues, values));
-  }, [schema]);
-
-  const { run: getComfySchema, loading: isLoading } = useRequest(getFile, {
-    manual: true,
-    onSuccess: result => {
-      if (result.success) {
-        const {
-          data: { schemas },
-        } = result;
-        setSchema(
-          getComfyuiSchema({
-            inputs: schemas.inputs || {},
-            outputs: schemas.outputs || {},
-          }),
-        );
-      }
-    },
-  });
-
-  useEffect(() => {
-    if (values?.comfy_workflow_id) {
-      getComfySchema({
-        comfy_workflow_id: values?.comfy_workflow_id,
-        filename: 'workflow.shellagent.json',
+    useEffect(() => {
+      model.emitter.on(EventType.UPDATE_FORM, evt => {
+        if (evt.id === values?.comfy_workflow_id) {
+          setSchema(
+            getComfyUISchema({
+              inputs: evt?.data?.inputs || {},
+              outputs: evt?.data?.outputs || {},
+            }),
+          );
+        }
       });
+      return () => {
+        model.emitter.off(EventType.UPDATE_FORM);
+      };
+    }, []);
+
+    const formRef = useRef<FormRef>(null);
+    const [schema, setSchema] = useState<ISchema>(defaultSchema);
+
+    const { run: getComfySchema, loading: isLoading } = useRequest(getFile, {
+      manual: true,
+      onSuccess: result => {
+        if (result.success) {
+          const {
+            data: { schemas },
+          } = result;
+          setSchema(
+            getComfyUISchema({
+              inputs: schemas.inputs || {},
+              outputs: schemas.outputs || {},
+            }),
+          );
+        }
+      },
+    });
+
+    useEffect(() => {
+      const values = formRef.current?.getValues();
+      if (!values?.comfy_workflow_id) {
+        formRef.current?.setValue('comfy_workflow_id', generateHash());
+      }
+    }, []);
+
+    useEffect(() => {
+      formRef.current?.setValue('api', model.comfyUIUrl);
+    }, [model.comfyUIUrl]);
+
+    useEffect(() => {
+      if (values?.comfy_workflow_id || values?.location) {
+        getComfySchema({
+          comfy_workflow_id: values?.comfy_workflow_id,
+          location: values?.location,
+          filename: 'workflow.shellagent.json',
+        });
+      }
+    }, [values?.location, values?.comfy_workflow_id]);
+
+    if (!values) {
+      return null;
     }
-  }, [values?.comfy_workflow_id]);
 
-  useEventEmitter(EventType.UPDATE_FORM, eventData => {
-    if (eventData.id === values?.comfy_workflow_id) {
-      setSchema(
-        getComfyuiSchema({
-          inputs: eventData?.data?.inputs || {},
-          outputs: eventData?.data?.outputs || {},
-        }),
-      );
-    }
-  });
+    const { id: stateId } = useSchemaContext(state => ({
+      id: state.id,
+    }));
 
-  if (!values) {
-    return null;
-  }
-
-  return (
-    <div className="comfyui-widget flex flex-col">
-      <NodeForm
-        parent={parent}
-        ref={formRef}
-        key={JSON.stringify(schema)}
-        schema={schema}
-        values={values}
-        onChange={handleOnChange}
-        loading={isLoading}
-        components={{
-          ComfyUIEditor,
-        }}
-      />
-    </div>
-  );
-};
-
-export default observer(ComfyUIPlugin);
+    return (
+      <div className="comfyui-widget flex flex-col">
+        <NodeForm
+          parent={parent}
+          ref={formRef}
+          key={JSON.stringify(schema)}
+          schema={schema}
+          values={values}
+          onChange={newValues => {
+            const appModel = model.appBuilderModelFactory();
+            appModel.nodeData[stateId].blocks = appModel.nodeData[
+              stateId
+            ].blocks.map((b: any) => {
+              if (parent.endsWith(b.name)) {
+                return newValues;
+              }
+              return b;
+            });
+          }}
+          loading={isLoading}
+          components={{
+            ComfyUIEditor,
+          }}
+        />
+      </div>
+    );
+  },
+);

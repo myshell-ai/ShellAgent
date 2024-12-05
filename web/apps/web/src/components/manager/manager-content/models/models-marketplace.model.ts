@@ -8,7 +8,7 @@ import {
   ModelsMarketPlaceRes,
   url_models_marketplace_list,
 } from '@/components/manager/manager-definitions';
-import { EmitterModel } from '@/utils/emitter.model';
+import { ToastModel } from '@/utils/toast.model';
 import { RequestModel } from '@/utils/request.model';
 
 import { ModelsCommonModel } from './models-common.model';
@@ -20,7 +20,7 @@ export class ModelsMarketplaceModel {
   @observable selectedIds: string[] = [];
 
   constructor(
-    @inject(EmitterModel) private emitter: EmitterModel,
+    @inject(ToastModel) private emitter: ToastModel,
     @inject(RequestModel) public loadData: RequestModel<unknown>,
     @inject(ModelsCommonModel) public common: ModelsCommonModel,
   ) {

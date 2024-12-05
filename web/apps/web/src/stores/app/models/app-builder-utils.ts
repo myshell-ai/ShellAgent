@@ -1,4 +1,5 @@
 import {
+  customSnakeCase,
   RefOptionsOutput,
   refOptOutputGlobalSchema,
   scopesSchema,
@@ -6,7 +7,8 @@ import {
   stateSchema,
 } from '@shellagent/shared/protocol/app-scope';
 import { reservedStateNameSchema } from '@shellagent/shared/protocol/node';
-import { mapValues, isEmpty } from 'lodash-es';
+import { FieldValues } from '@shellagent/ui';
+import { cloneDeep, mapValues, isEmpty } from 'lodash-es';
 
 export interface CascaderOption {
   label: string;
@@ -317,4 +319,43 @@ export function fieldsModeMap2Refs(map: Record<string, any>) {
   });
 
   return result;
+}
+
+export function duplicateComfyUI(
+  defaultLocation: string,
+  appName: string,
+  stateName: string,
+  nodeData: FieldValues,
+): {
+  nodeData: FieldValues;
+  locations: Array<{
+    from: string;
+    to: string;
+  }>;
+} {
+  const locations: Array<{
+    from: string;
+    to: string;
+  }> = [];
+  const nodeData2 = cloneDeep(nodeData);
+  if (Array.isArray(nodeData2.blocks)) {
+    nodeData2.blocks = nodeData2.blocks.map(b => {
+      if (b.widget_class_name === 'ComfyUIWidget') {
+        const defaultName = customSnakeCase(
+          `${appName}_${stateName}_${b.name}`,
+        );
+        const locationNew = `${defaultLocation}/${defaultName}.shellagent.json`;
+        locations.push({
+          from: b.location,
+          to: locationNew,
+        });
+        b.location = locationNew;
+      }
+      return b;
+    });
+  }
+  return {
+    nodeData: nodeData2,
+    locations,
+  };
 }

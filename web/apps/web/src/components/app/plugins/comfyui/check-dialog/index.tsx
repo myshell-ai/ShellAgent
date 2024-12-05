@@ -9,7 +9,7 @@ import { toast } from 'react-toastify';
 import { CheckerContent } from './content';
 import { updateDependency } from '../services';
 import type { SaveResponse } from '../services/type';
-import { formatFormData2Dependency } from '../utils';
+import { formatFormData2Dependency } from '../comfyui-utils';
 
 interface CheckDialogProps {
   open: boolean;
