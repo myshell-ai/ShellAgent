@@ -17,7 +17,6 @@ export interface SaveRequest {
   name: string;
   comfy_workflow_id: string;
   comfyui_api: string;
-  location?: string;
 }
 
 export interface SaveResponse {
@@ -83,7 +82,6 @@ export interface GetFileRequest {
   // workflow.shellagent.json
   filename: string;
   comfy_workflow_id: string;
-  location?: string;
 }
 
 export interface GetFileResponse {
@@ -140,7 +138,6 @@ export interface GetFileResponse {
 
 export interface UpdateDependencyRequest {
   comfy_workflow_id: string;
-  location?: string;
   missing_custom_nodes: Array<{
     name: string;
     repo: string;

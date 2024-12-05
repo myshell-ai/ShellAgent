@@ -1,17 +1,17 @@
 import axios from 'axios';
+import { FormikProps } from 'formik';
 import { inject, injectable, postConstruct } from 'inversify';
 import { action, makeObservable, observable } from 'mobx';
 
-import { FormikModel } from '@/utils/formik.model';
+import { EmitterModel } from '@/utils/emitter.model';
 import { ModalModel } from '@/utils/modal.model';
-import { ToastModel } from '@/utils/toast.model';
 
 import {
-  DefaultEnvs,
-  DefaultEnvsMap,
   loadSettingEnvFormUrl,
   saveSettingEnvFormUrl,
   SettingEnvFormValue,
+  DefaultEnvs,
+  DefaultEnvsMap,
 } from './settings-definitions';
 
 export type SidebarValue = 'Environment' | 'SoftwareUpdate';
@@ -44,15 +44,47 @@ const formatEnvs2Api = (envs: SettingEnvFormValue['envs']) => {
 
 @injectable()
 export class SettingsModel {
+  constructor(
+    @inject(EmitterModel) private emitter: EmitterModel,
+    @inject(ModalModel) public modal: ModalModel,
+    @inject(ModalModel) public changelogModal: ModalModel,
+  ) {
+    makeObservable(this);
+
+    this.isFormikReadyPromise = new Promise(resolve => {
+      this.isFormikReadyPromiseResolve = resolve;
+    });
+  }
+
+  @postConstruct()
+  init() {
+    this.loadSettingsEnv(); // @joe compatible
+  }
+
+  isFormikReadyPromise: Promise<unknown>;
+
+  private isFormikReadyPromiseResolve: ((value: unknown) => void) | undefined;
+
+  private formikProps: FormikProps<any> | undefined;
+
   @observable sidebar?: SidebarValue = undefined;
+
   @observable isAutoCheck = true;
+
   @observable isAutoCheckLoading = false;
+
   @observable isChecking = false;
+
   @observable isUpdating = false;
+
   @observable checkedStatus: 'newUpdate' | 'latest' | null = null;
+
   @observable isToRestart = false;
+
   @observable isRestarting = false;
+
   @observable isLoadLoading = false;
+
   @observable checkRet: Partial<{
     has_new_stable: true;
     target_release_date: string;
@@ -60,22 +92,8 @@ export class SettingsModel {
     latest_tag_name: string;
     changelog: string;
   }> = {};
+
   @observable lastChecktime = '';
-  @observable envs: Map<string, string> = new Map();
-
-  constructor(
-    @inject(ToastModel) private toast: ToastModel,
-    @inject(ModalModel) public modal: ModalModel,
-    @inject(ModalModel) public changelogModal: ModalModel,
-    @inject(FormikModel) public formik: FormikModel<any>,
-  ) {
-    makeObservable(this);
-  }
-
-  @postConstruct()
-  init() {
-    this.loadSettingsEnv(); // @joe compatible
-  }
 
   @action.bound
   autoCheck() {
@@ -84,19 +102,26 @@ export class SettingsModel {
     }
   }
 
+  @observable envs: Map<string, string> = new Map();
+
   @action.bound
   setSidebar(v: SidebarValue) {
     // onBlur + leave and save
     if (this.sidebar === 'Environment') {
-      this.formik.formikProps?.submitForm();
+      this.formikProps?.submitForm();
     }
     this.sidebar = v;
   }
 
+  setFormikProps(formikProps: FormikProps<any>) {
+    this.formikProps = formikProps;
+    this.isFormikReadyPromiseResolve!('');
+  }
+
   async loadSettingsEnvAndFillForm() {
     const values = await this.loadSettingsEnv();
-    await this.formik.isReadyPromise;
-    this.formik.formikProps?.setValues(values);
+    await this.isFormikReadyPromise;
+    this.formikProps?.setValues(values);
   }
 
   @action.bound
@@ -109,7 +134,7 @@ export class SettingsModel {
       });
       this.lastChecktime = res.data.last_check_time;
     } catch (e: any) {
-      this.toast.error(e.message);
+      this.emitter.emitter.emit('message.error', e.message);
     }
   }
 
@@ -127,7 +152,7 @@ export class SettingsModel {
       this.isAutoCheck = res.data.auto_update;
       return this.isAutoCheck;
     } catch (e: any) {
-      this.toast.emitter.emit('message.error', e.message);
+      this.emitter.emitter.emit('message.error', e.message);
       return false;
     }
   }
@@ -149,7 +174,7 @@ export class SettingsModel {
       );
       this.isAutoCheck = isAutoCheck;
     } catch (e: any) {
-      this.toast.emitter.emit('message.error', e.message);
+      this.emitter.emitter.emit('message.error', e.message);
     } finally {
       this.isAutoCheckLoading = false;
     }
@@ -173,7 +198,7 @@ export class SettingsModel {
         this.getLastChecktime();
       }
     } catch (e: any) {
-      this.toast.emitter.emit('message.error', e.message);
+      this.emitter.emitter.emit('message.error', e.message);
     } finally {
       this.isChecking = false;
     }
@@ -189,7 +214,7 @@ export class SettingsModel {
       });
       this.checkRet.current_version = res.data.current_version;
     } catch (e: any) {
-      this.toast.emitter.emit('message.error', e.message);
+      this.emitter.emitter.emit('message.error', e.message);
     }
   }
 
@@ -205,7 +230,7 @@ export class SettingsModel {
     const poll = async () => {
       try {
         await this.getLastChecktime();
-        this.toast.emitter.emit(
+        this.emitter.emitter.emit(
           'message.success',
           'Server restarted successfully, the web UI will reload automatically in 15s..',
         );
@@ -231,7 +256,7 @@ export class SettingsModel {
       });
       this.isToRestart = true;
     } catch (e: any) {
-      this.toast.emitter.emit('message.error', e.message);
+      this.emitter.emitter.emit('message.error', e.message);
     } finally {
       this.isUpdating = false;
     }
@@ -260,7 +285,7 @@ export class SettingsModel {
       };
     } catch (e: any) {
       this.isLoadLoading = false;
-      this.toast.emitter.emit('message.error', e.message);
+      this.emitter.emitter.emit('message.error', e.message);
       return null;
     }
   }
@@ -284,7 +309,7 @@ export class SettingsModel {
         },
       );
     } catch (e: any) {
-      this.toast.emitter.emit('message.error', e.message);
+      this.emitter.emitter.emit('message.error', e.message);
     }
   }
 

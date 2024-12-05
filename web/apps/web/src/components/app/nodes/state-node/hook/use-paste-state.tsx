@@ -1,4 +1,6 @@
 import { useReactFlowStore, getCanvasCenter } from '@shellagent/flow-engine';
+import { RefSceneEnum } from '@shellagent/shared/protocol/app-scope';
+import { customSnakeCase } from '@shellagent/shared/utils';
 import type { FieldValues } from '@shellagent/ui';
 import { useKeyPress } from 'ahooks';
 import { useInjection } from 'inversify-react';
@@ -26,8 +28,25 @@ export const usePasteState = ({
   );
 
   const pasteState = useCallback(
-    async (data: FieldValues) => {
-      const { newId, displayName } = await appBuilder.duplicateState(data);
+    (data: FieldValues) => {
+      const index = Object.values(appBuilder.nodeData).map(
+        value => value.type === 'state',
+      )?.length;
+      const displayName = `${data?.display_name} Copy${
+        index > 0 ? `#${index}` : ''
+      }`;
+      const newId = customSnakeCase(displayName) as Lowercase<string>;
+
+      appBuilder.setNodeData({ id: newId, data });
+
+      appBuilder.handleRefScene({
+        scene: RefSceneEnum.Enum.duplicate_state,
+        params: {
+          stateName: data?.id as Lowercase<string>,
+          duplicateStateName: newId,
+        },
+      });
+
       const position = getCanvasCenter(reactFlowWrapper, viewport);
       onAddNode({
         type: data?.type || 'state',

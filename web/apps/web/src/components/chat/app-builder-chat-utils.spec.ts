@@ -105,7 +105,7 @@ describe('app-builder-chat-utils', () => {
       session_id: 'f2350708-a31b-11ef-9b11-9ebb585eaf7d',
       id: '0',
       status: 'DONE',
-      type: 'REPLY',
+      type: 'TEXT',
       createdDateUnix: '2024-11-15 14:36:30',
       updatedDateUnix: '2024-11-15 14:36:30',
       text: 'Hi there!',
@@ -571,7 +571,7 @@ describe('app-builder-chat-utils', () => {
         "session_id": "5c4196a0-a3aa-11ef-ba7c-9ebb585eaf7d",
         "status": "DONE",
         "text": "Hi!",
-        "type": "REPLY",
+        "type": "TEXT",
         "updatedDateUnix": "2024-11-16 07:38:45",
       }
     `);
@@ -915,7 +915,7 @@ describe('app-builder-chat-utils', () => {
         "session_id": "a1b8fdcc-a3af-11ef-ba7c-9ebb585eaf7d",
         "status": "DONE",
         "text": "",
-        "type": "REPLY",
+        "type": "TEXT",
         "updatedDateUnix": "2024-11-16 08:13:40",
       }
     `);

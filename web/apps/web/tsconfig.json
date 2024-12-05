@@ -6,7 +6,6 @@
     "emitDecoratorMetadata": true,
     "moduleResolution": "Bundler",
     "resolvePackageJsonExports": true,
-    "allowImportingTsExtensions": false,
     "paths": {
       "@/*": ["./src/*"]
     },
