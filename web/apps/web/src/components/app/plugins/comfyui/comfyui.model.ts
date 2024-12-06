@@ -25,6 +25,11 @@ import { ModalModel } from '@/utils/modal.model';
 import { ToastModel } from '@/utils/toast.model';
 import { ToggleModel } from '@/utils/toggle.model';
 import { checkDependency, isValidUrl, pathJoin } from './comfyui-utils';
+import { type ISchema } from '@shellagent/form-engine';
+import {
+  defaultSchema,
+  getComfyUISchema,
+} from '@/components/app/plugins/comfyui/schema';
 
 const settingsDisabled = process.env.NEXT_PUBLIC_DISABLE_SETTING === 'yes';
 
@@ -35,9 +40,13 @@ export type LocationFormType = {
   location?: string;
 };
 
-export enum EventType {
-  UPDATE_FORM = 'UPDATE_FORM',
-}
+export type CurrentIframeData = {
+  parent?: string;
+  stateId: string;
+  name: string;
+  location?: string;
+  setValue: (name: string, value: any) => void;
+};
 
 @injectable()
 export class ComfyUIModel {
@@ -47,36 +56,13 @@ export class ComfyUIModel {
   @observable buttonName: 'Create in ComfyUI' | 'Edit in ComfyUI' =
     'Create in ComfyUI';
   @observable dependencies: SaveResponse['data']['dependencies'] | null = null;
+  @observable currentSchema: ISchema = defaultSchema;
+  @observable currentIframeData: CurrentIframeData | null = null;
 
   emitter = mitt<{
     customWarn: {
       message?: string;
       message_detail?: string;
-    };
-    [EventType.UPDATE_FORM]: {
-      data: {
-        inputs: Record<
-          string,
-          {
-            title: string;
-            type: string;
-            default?: any;
-            description: string;
-          }
-        >;
-        outputs: Record<
-          string,
-          {
-            title: string;
-            type: string;
-            items?: {
-              type: string;
-              url_type: string;
-            };
-          }
-        >;
-      };
-      id: string;
     };
   }>();
 
@@ -91,8 +77,8 @@ export class ComfyUIModel {
     @inject(ModalModel) public locationFormDialog: ModalModel,
     @inject(ToggleModel) public fullscreen: ToggleModel,
     @inject(ToggleModel) public checkDialog: ToggleModel,
-    @inject(ToggleModel) public loading: ToggleModel,
-    @inject(ToggleModel) public loaded: ToggleModel,
+    @inject(ToggleModel) public iframeLoading: ToggleModel,
+    @inject(ToggleModel) public getSchemaLoading: ToggleModel,
     @inject(ToggleModel) public saveLoading: ToggleModel,
     @inject(ModalModel) public messageDetailModal: ModalModel,
     @inject(SettingsModel) public settings: SettingsModel,
@@ -109,7 +95,11 @@ export class ComfyUIModel {
 
   @computed
   get disabled(): boolean {
-    return this.showSettingButton || this.loading.isOn || this.loaded.isOff;
+    return (
+      this.showSettingButton ||
+      this.iframeLoading.isOn ||
+      this.getSchemaLoading.isOn
+    );
   }
 
   @computed
@@ -118,6 +108,11 @@ export class ComfyUIModel {
       return DEFAULT_COMFYUI_API;
     }
     return this.settings.envs.get(COMFYUI_API) || '';
+  }
+
+  @action.bound
+  setCurrentSchema(schema: ISchema): void {
+    this.currentSchema = schema;
   }
 
   @action.bound
@@ -258,10 +253,12 @@ export class ComfyUIModel {
     return data;
   }
 
-  async openLocationFormDialog(stateName: string, taskName: string) {
+  async openLocationFormDialog() {
     const appName = this.appBuilderModelFactory().metadata.name;
     this.locationFormDialog.open();
-    const defaultName = customSnakeCase(`${appName}_${stateName}_${taskName}`);
+    const defaultName = customSnakeCase(
+      `${appName}_${this.currentIframeData?.stateId}_${this.currentIframeData?.name}`,
+    );
     try {
       await this.getCwd();
       await this.locationFormikModal.isReadyPromise;
@@ -270,14 +267,16 @@ export class ComfyUIModel {
         `${this.defaultLocation}/${defaultName}.shellagent.json`,
       );
     } catch (e) {
-      //
+      // noop
     }
   }
 
-  async openIframeDialog(
-    iframeRef: RefObject<HTMLIFrameElement>,
-    comfy_workflow_id: string,
-  ) {
+  closeIframeDialog() {
+    this.iframeDialog.close();
+    this.currentIframeData = null;
+  }
+
+  async openIframeDialog(iframeData: CurrentIframeData) {
     await this.locationFormikSheet.isReadyPromise;
     const { values, errors, setFieldError } =
       this.locationFormikSheet.formikProps!;
@@ -288,58 +287,8 @@ export class ComfyUIModel {
     }
     setFieldError('location', undefined);
 
+    this.currentIframeData = iframeData;
     this.iframeDialog.open();
-
-    if (errors.location == null) {
-      if (values.location) {
-        await this.getFile(iframeRef, values.location, undefined);
-      } else if (comfy_workflow_id) {
-        await this.getFile(iframeRef, undefined, comfy_workflow_id);
-      } else {
-        iframeRef.current?.contentWindow?.postMessage(
-          { type: MessageType.LOAD_DEFAULT },
-          this.comfyUIUrl,
-        );
-      }
-    }
-  }
-
-  async getFile(
-    iframeRef: RefObject<HTMLIFrameElement>,
-    location?: string,
-    comfy_workflow_id?: string,
-  ) {
-    try {
-      const res = await axios.post(
-        `/api/comfyui/get_file`,
-        {
-          comfy_workflow_id,
-          location,
-          filename: 'workflow.shellagent.json',
-        },
-        {
-          headers: {
-            'Content-Type': 'application/json',
-          },
-        },
-      );
-      const result = res.data;
-      if (result.success) {
-        const { data } = result;
-        iframeRef.current?.contentWindow?.postMessage(
-          { type: MessageType.LOAD, data: data.workflow },
-          this.comfyUIUrl,
-        );
-      } else {
-        iframeRef.current?.contentWindow?.postMessage(
-          { type: MessageType.LOAD_DEFAULT },
-          this.comfyUIUrl,
-        );
-      }
-    } catch (e) {
-      this.toast.emitter.emit('message.error', (e as Error).message);
-      throw e;
-    }
   }
 
   async duplicateComfyUIExtendedJson(location: string, location_new: string) {
@@ -370,14 +319,43 @@ export class ComfyUIModel {
     this.locationFormikSheet.formikProps!.setFieldValue('location', location);
   }
 
-  async getComfySchema(
-    iframeRef: RefObject<HTMLIFrameElement>,
-    comfy_workflow_id: string,
-  ) {
-    this.loaded.on();
+  async loadCurrentSchema(location?: string) {
+    this.getSchemaLoading.on();
     try {
       const result = await getFile({
-        comfy_workflow_id,
+        location,
+        filename: 'workflow.json',
+      });
+      if (result.success) {
+        const data = result.data.schemas;
+        this.setCurrentSchema(
+          getComfyUISchema({
+            inputs: data?.inputs || {},
+            outputs: data?.outputs || {},
+          }),
+        );
+      } else {
+        // noop
+      }
+    } catch (e) {
+      this.toast.error((e as Error).message);
+    } finally {
+      this.getSchemaLoading.off();
+    }
+  }
+
+  async getComfySchema(iframeRef: RefObject<HTMLIFrameElement>) {
+    if (this.locationFormikSheet.formikProps?.values.location == null) {
+      iframeRef.current?.contentWindow?.postMessage(
+        { type: MessageType.LOAD_DEFAULT },
+        this.comfyUIUrl,
+      );
+      return;
+    }
+
+    this.getSchemaLoading.on();
+    try {
+      const result = await getFile({
         location: this.locationFormikSheet.formikProps?.values.location,
         filename: 'workflow.json',
       });
@@ -399,6 +377,8 @@ export class ComfyUIModel {
         { type: MessageType.LOAD_DEFAULT },
         this.comfyUIUrl,
       );
+    } finally {
+      this.getSchemaLoading.off();
     }
   }
 
@@ -418,11 +398,14 @@ export class ComfyUIModel {
           this.checkDialog.on();
           this.dependencies = data.dependencies;
         } else {
-          this.iframeDialog.close();
-          this.emitter.emit(EventType.UPDATE_FORM, {
-            data: result.data.schemas,
-            id: params.comfy_workflow_id,
-          });
+          this.closeIframeDialog();
+          const data = result.data.schemas;
+          this.setCurrentSchema(
+            getComfyUISchema({
+              inputs: data?.inputs || {},
+              outputs: data?.outputs || {},
+            }),
+          );
         }
         if (result.warning_message) {
           this.toast.warn(result.warning_message);
@@ -441,11 +424,7 @@ export class ComfyUIModel {
   }
 
   @action.bound
-  handleMessage(
-    iframeRef: RefObject<HTMLIFrameElement>,
-    comfy_workflow_id: string,
-    event: MessageEvent,
-  ) {
+  handleMessage(iframeRef: RefObject<HTMLIFrameElement>, event: MessageEvent) {
     if (!this.comfyUIUrl) {
       return;
     }
@@ -456,7 +435,7 @@ export class ComfyUIModel {
 
       switch (event.data.type) {
         case MessageType.LOADED:
-          this.getComfySchema(iframeRef, comfy_workflow_id);
+          this.getComfySchema(iframeRef);
           break;
         case MessageType.SAVE:
           if (this.locationFormikSheet.formikProps?.values.location == null) {
@@ -470,7 +449,6 @@ export class ComfyUIModel {
             comfyui_api: valueUrl.origin,
             workflow: event.data.workflow,
             name: event.data.name,
-            comfy_workflow_id,
           });
           break;
         default:
@@ -482,15 +460,10 @@ export class ComfyUIModel {
   }
 
   @action.bound
-  async handleSave(
-    iframeRef: RefObject<HTMLIFrameElement>,
-    parent: string | undefined,
-    stateId: string,
-    taskName: string,
-  ) {
+  async handleSave(iframeRef: RefObject<HTMLIFrameElement>) {
     if (isEmpty(this.locationFormikSheet.formikProps?.values.location)) {
       if (parent) {
-        this.openLocationFormDialog(stateId, taskName);
+        this.openLocationFormDialog();
         return;
       }
     }
@@ -506,7 +479,7 @@ export class ComfyUIModel {
     const api = settings?.envs?.find(env => env.key === COMFYUI_API)?.value;
     if (api && isValidUrl(api)) {
       callback(api);
-      this.loading.on();
+      this.iframeLoading.on();
     } else {
       this.toast.error('Invalid ComfyUI API settings');
     }

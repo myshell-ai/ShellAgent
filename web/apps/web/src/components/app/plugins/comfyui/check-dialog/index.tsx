@@ -3,7 +3,7 @@
 import { AModal, Button, Title } from '@shellagent/ui';
 import { useRequest } from 'ahooks';
 import { FormInstance } from 'antd';
-import React, { useRef, useCallback } from 'react';
+import React, { useCallback, useRef } from 'react';
 import { toast } from 'react-toastify';
 
 import { CheckerContent } from './content';
@@ -15,7 +15,7 @@ interface CheckDialogProps {
   open: boolean;
   setOpen: (open: boolean) => void;
   setModalOpen: (open: boolean) => void;
-  comfy_workflow_id: string;
+  location?: string;
   dependencies: SaveResponse['data']['dependencies'] | null;
 }
 
@@ -23,7 +23,7 @@ export const CheckDialog: React.FC<CheckDialogProps> = ({
   open,
   setOpen,
   setModalOpen,
-  comfy_workflow_id,
+  location,
   dependencies,
 }) => {
   const formRef = useRef<FormInstance>(null);
@@ -48,7 +48,7 @@ export const CheckDialog: React.FC<CheckDialogProps> = ({
       const formattedValues = formatFormData2Dependency(values);
       updateDependencyRequest({
         ...formattedValues,
-        comfy_workflow_id,
+        location,
       });
     } catch (error: any) {
       toast.error('Required fields are not filled', {
@@ -59,7 +59,7 @@ export const CheckDialog: React.FC<CheckDialogProps> = ({
         closeButton: false,
       });
     }
-  }, [comfy_workflow_id, setOpen, setModalOpen, updateDependencyRequest]);
+  }, [setOpen, setModalOpen, updateDependencyRequest]);
 
   const handleCancel = useCallback(() => setOpen(false), [setOpen]);
 

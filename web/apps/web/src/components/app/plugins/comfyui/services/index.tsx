@@ -1,14 +1,14 @@
 import { APIFetch } from '@/services/base';
 
 import {
-  UploadRequest,
-  UploadResponse,
-  SaveRequest,
-  SaveResponse,
   GetFileRequest,
   GetFileResponse,
+  SaveRequest,
+  SaveResponse,
   UpdateDependencyRequest,
   UpdateDependencyResponse,
+  UploadRequest,
+  UploadResponse,
 } from './type';
 
 export const uploadComfy = (params: UploadRequest) => {
