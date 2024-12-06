@@ -170,6 +170,7 @@ export class ComfyUIModel {
     );
   }
 
+  @action.bound
   checkLocation(location?: string): string | undefined {
     if (location == null) {
       return undefined;
@@ -194,6 +195,7 @@ export class ComfyUIModel {
     return error;
   }
 
+  @action.bound
   async checkJsonExists(location: string) {
     try {
       const res = await axios.post(
@@ -216,6 +218,7 @@ export class ComfyUIModel {
     }
   }
 
+  @action.bound
   async getCwd() {
     try {
       const res = await axios.get(`/api/get_cwd`, {
@@ -234,6 +237,7 @@ export class ComfyUIModel {
     }
   }
 
+  @action.bound
   async handleDuplicateState(newId: string, data: any) {
     await this.getCwd();
     if (this.defaultLocation) {
@@ -253,6 +257,7 @@ export class ComfyUIModel {
     return data;
   }
 
+  @action.bound
   async openLocationFormDialog() {
     const appName = this.appBuilderModelFactory().metadata.name;
     this.locationFormDialog.open();
@@ -271,11 +276,13 @@ export class ComfyUIModel {
     }
   }
 
+  @action.bound
   closeIframeDialog() {
     this.iframeDialog.close();
     this.currentIframeData = null;
   }
 
+  @action.bound
   async openIframeDialog(iframeData: CurrentIframeData) {
     await this.locationFormikSheet.isReadyPromise;
     const { values, errors, setFieldError } =
@@ -291,6 +298,7 @@ export class ComfyUIModel {
     this.iframeDialog.open();
   }
 
+  @action.bound
   async duplicateComfyUIExtendedJson(location: string, location_new: string) {
     try {
       await axios.post(
@@ -313,12 +321,14 @@ export class ComfyUIModel {
     }
   }
 
+  @action.bound
   async submitLocationFormModal(location: string) {
     await this.locationFormikSheet.isReadyPromise;
     this.locationFormikSheet.formikProps!.values.location = location; // workaround: cannot update immediately
     this.locationFormikSheet.formikProps!.setFieldValue('location', location);
   }
 
+  @action.bound
   async loadCurrentSchema(location?: string) {
     this.getSchemaLoading.on();
     try {
@@ -344,6 +354,7 @@ export class ComfyUIModel {
     }
   }
 
+  @action.bound
   async getComfySchema(iframeRef: RefObject<HTMLIFrameElement>) {
     if (this.locationFormikSheet.formikProps?.values.location == null) {
       iframeRef.current?.contentWindow?.postMessage(
@@ -382,6 +393,7 @@ export class ComfyUIModel {
     }
   }
 
+  @action.bound
   async saveComfyRequest(params: Omit<SaveRequest, 'location'>) {
     try {
       this.saveLoading.on();
