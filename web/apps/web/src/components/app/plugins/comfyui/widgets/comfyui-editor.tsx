@@ -285,22 +285,22 @@ export const ComfyUIEditor = observer(
   ({ name, onChange }: { name: string; onChange: (value: string) => void }) => {
     const model = useInjection<ComfyUIModel>('ComfyUIModel');
     const formRef = useFormContext();
-    const { getValues, setValue } = formRef;
+    const { setValue, watch } = formRef;
     const { id: stateId } = useSchemaContext(state => ({
       id: state.id,
     }));
     const { parent } = useFormEngineContext();
 
     useEffect(() => {
-      model.setButtonName(getValues('location'));
-    }, [getValues('location')]);
+      model.setButtonName(watch('location'));
+    }, [watch('location')]);
 
     return (
       <div>
         <LocationForm
           model={model.locationFormikSheet}
           type="sheet"
-          value={getValues('location')}
+          value={watch('location')}
           onChange={v => {
             setValue('location', v);
           }}
@@ -312,8 +312,8 @@ export const ComfyUIEditor = observer(
             model.openIframeDialog({
               parent,
               stateId,
-              name: getValues('name'),
-              location: getValues('location'),
+              name: watch('name'),
+              location: watch('location'),
               setValue: formRef.setValue,
             })
           }>

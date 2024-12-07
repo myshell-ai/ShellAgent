@@ -18,9 +18,7 @@ export const ComfyUIPlugin = observer<CommonWidgetConfigProps>(
     const formRef = useRef<FormRef>(null);
 
     useEffect(() => {
-      if (values?.location) {
-        model.loadCurrentSchema(values?.location);
-      }
+      model.loadCurrentSchema(values?.location);
     }, []);
 
     useEffect(() => {

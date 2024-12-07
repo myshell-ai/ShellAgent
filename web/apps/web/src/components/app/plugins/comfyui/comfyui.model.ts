@@ -172,10 +172,10 @@ export class ComfyUIModel {
 
   @action.bound
   checkLocation(location?: string): string | undefined {
-    if (location == null) {
+    if (isEmpty(location)) {
       return undefined;
     }
-    if (location.trim() !== location) {
+    if (location?.trim() !== location) {
       return `Please remove spaces from the beginning and end of the path.`;
     }
     if (location?.endsWith('.shellagent.json') === false) {
@@ -330,6 +330,11 @@ export class ComfyUIModel {
 
   @action.bound
   async loadCurrentSchema(location?: string) {
+    if (location == null) {
+      this.currentSchema = defaultSchema;
+      return;
+    }
+
     this.getSchemaLoading.on();
     try {
       const result = await getFile({
