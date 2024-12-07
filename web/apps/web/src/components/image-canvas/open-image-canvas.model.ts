@@ -2,7 +2,7 @@ import { type ImageCanvasModel } from 'image-canvas/model';
 import { inject, injectable } from 'inversify';
 import { action, makeObservable, observable } from 'mobx';
 
-import { EmitterModel } from '@/utils/emitter.model';
+import { ToastModel } from '@/utils/toast.model';
 
 @injectable()
 export class OpenImageCanvasModel {
@@ -11,7 +11,7 @@ export class OpenImageCanvasModel {
   getValues: any;
 
   constructor(
-    @inject(EmitterModel) private emitter: EmitterModel,
+    @inject(ToastModel) private emitter: ToastModel,
     @inject('ImageCanvasModel') public imageCanvas: ImageCanvasModel,
   ) {
     makeObservable(this);

@@ -5,7 +5,7 @@ import * as React from 'react';
 
 import { cn } from '../../lib/utils';
 
-import { NumberInput } from './number-input/number-input.tsx';
+import { NumberInput } from './number-input/number-input';
 
 type Size = 'sm' | 'lg';
 const Slider = React.forwardRef<
