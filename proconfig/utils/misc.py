@@ -139,6 +139,8 @@ ext_to_type = {
     '.mp3': 'audio/mpeg',
     '.wav': 'audio/wav',
     '.m4a': 'audio/mp4',
+    # json
+    '.json': 'text/plain',
 }
 
 def process_local_file_path_async(config, max_workers=10):
@@ -246,4 +248,45 @@ def upload_file_to_myshell(local_file: str) -> str:
     
     
 def generate_comfyui_workflow_id():
-    str(uuid.uuid4()).replace('-', '')
+    return str(uuid.uuid4()).replace('-', '')
+    
+import pygit2
+import subprocess
+def get_current_version():
+    pygit2.option(pygit2.GIT_OPT_SET_OWNER_VALIDATION, 0)
+    repo = pygit2.Repository(os.getcwd())
+    
+    origin_main_commit_oid = repo.references['refs/remotes/origin/main'].target
+    current_commit = repo.head.target
+    try:
+        # Run git fetch with --all and --tags options
+        subprocess.run(["git", "fetch", "--all", "--tags"], check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        print("Successfully fetched all branches and tags.")
+    except subprocess.CalledProcessError as e:
+        print(f"Error occurred: {e.stderr.decode().strip()}")
+    # remote.fetch()
+    # Iterate over all references and filter for tags
+    tags_info = []
+    for ref_name in repo.references:
+        if ref_name.startswith('refs/tags/'):
+            tag = repo.references[ref_name]
+            peeled_commit = tag.peel(pygit2.Commit)  # Peel to commit (works for annotated and lightweight tags)
+            if peeled_commit.id == current_commit:
+                return ref_name.split('/')[-1]
+            # Check if the tag points to a commit in the ancestry of origin/main
+            if repo.descendant_of(origin_main_commit_oid, peeled_commit.id):
+                tags_info.append({
+                    'name': ref_name.split('/')[-1],
+                    'oid': peeled_commit.id,
+                    'message': peeled_commit.message,
+                    'author': peeled_commit.author.name,
+                    'date': peeled_commit.commit_time  # Unix timestamp
+                })
+
+    # Sort tags by commit time (descending)
+    tags_info.sort(key=lambda x: x['date'], reverse=False)
+    return tags_info[-1]['name']
+
+
+if __name__ == "__main__":
+    print(get_current_version())

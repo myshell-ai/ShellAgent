@@ -55,6 +55,8 @@ os.makedirs(APP_SAVE_ROOT, exist_ok=True)
 os.makedirs(APP_RUNS_SAVE_ROOT, exist_ok=True)
 os.makedirs(WORKFLOW_RUNS_SAVE_ROOT, exist_ok=True)
 
+launch_args = None
+
 # Initialization
 def initialize_envs():
     if not os.path.isfile("settings.json"):

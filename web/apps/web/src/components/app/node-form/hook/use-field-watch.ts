@@ -319,50 +319,50 @@ export function useFieldWatch(formRef: React.RefObject<FormRef>) {
         );
         const newButtonPayloadValue = get(newValue, `${name}.on_click.payload`);
 
-        const oldButtonsValue = get(prevValue, [
-          reservedKeySchema.Enum.render,
-          reservedKeySchema.Enum.buttons,
-        ]);
-        const newButtonsValue = get(newValue, [
-          reservedKeySchema.Enum.render,
-          reservedKeySchema.Enum.buttons,
-        ]);
+        // const oldButtonsValue = get(prevValue, [
+        //   reservedKeySchema.Enum.render,
+        //   reservedKeySchema.Enum.buttons,
+        // ]);
+        // const newButtonsValue = get(newValue, [
+        //   reservedKeySchema.Enum.render,
+        //   reservedKeySchema.Enum.buttons,
+        // ]);
 
         // 修改button名称
-        getDiffPath(oldButtonsValue, newButtonsValue).forEach(diff => {
-          const { type, path, newValue: diffNewValue, oldValue } = diff;
+        // getDiffPath(oldButtonsValue, newButtonsValue).forEach(diff => {
+        //   const { type, path, newValue: diffNewValue, oldValue } = diff;
 
-          if (type === DiffTypeEnum.Modified) {
-            if (path?.split('.').pop() === 'content') {
-              const { key: newKey, name: newName } = getNewKey({
-                name: diffNewValue as string,
-                nameKey: 'content',
-                values: newButtonsValue,
-                prefix: 'Buttons',
-              });
+        //   if (type === DiffTypeEnum.Modified) {
+        //     if (path?.split('.').pop() === 'content') {
+        //       const { key: newKey, name: newName } = getNewKey({
+        //         name: diffNewValue as string,
+        //         nameKey: 'content',
+        //         values: newButtonsValue,
+        //         prefix: 'Buttons',
+        //       });
 
-              const event = `${newKey}.on_click`;
-              const oldEvent = formRef.current?.getValues(
-                `${name}.on_click.event`,
-              );
-              if (!diffNewValue) {
-                formRef.current?.setValue(`${name}.content`, newName);
-              }
-              formRef.current?.setValue(`${name}.on_click.event`, event);
+        //       // const event = `${newKey}.on_click`;
+        //       // const oldEvent = formRef.current?.getValues(
+        //       //   `${name}.on_click.event`,
+        //       // );
+        //       if (!diffNewValue) {
+        //         formRef.current?.setValue(`${name}.content`, newName);
+        //       }
+        //       // formRef.current?.setValue(`${name}.on_click.event`, event);
 
-              appBuilder.setEdgeDataByEventKey(oldEvent, event);
+        //       // appBuilder.setEdgeDataByEventKey(oldEvent, event);
 
-              appBuilder.handleRefScene({
-                scene: RefSceneEnum.Enum.rename_ref_opt,
-                params: {
-                  stateName: stateId as Lowercase<string>,
-                  oldPath: `${stateId}.${oldValue}`,
-                  newPath: `${stateId}.${newKey}`,
-                },
-              });
-            }
-          }
-        });
+        //       appBuilder.handleRefScene({
+        //         scene: RefSceneEnum.Enum.rename_ref_opt,
+        //         params: {
+        //           stateName: stateId as Lowercase<string>,
+        //           oldPath: `${stateId}.${oldValue}`,
+        //           newPath: `${stateId}.${newKey}`,
+        //         },
+        //       });
+        //     }
+        //   }
+        // });
 
         getDiffPath(oldButtonPayloadValue, newButtonPayloadValue).forEach(
           diff => {

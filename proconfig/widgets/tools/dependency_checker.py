@@ -63,27 +63,6 @@ ComfyUIModelLoaders = {
     'ComfyUI/GLIGENLoader': (["gligen_name"], "gligen"),
 }
     
-# here the config must be task of widget
-def check_missing_models(config, non_existed_models, missing_models, local_vars):
-    widget_inputs = tree_map(lambda x: calc_expression_no_strict(x, local_vars), config.inputs)
-    if config.widget_class_name in ComfyUIModelLoaders: # handle the ComfyUI loaders
-        input_names, save_path = ComfyUIModelLoaders[config.widget_class_name]
-        ckpt_paths = []
-        for input_name in input_names:
-            if type(widget_inputs[input_name]) == str:
-                ckpt_path = os.path.join("models", save_path, widget_inputs[input_name])
-                ckpt_paths.append(ckpt_path)
-    else:
-        ckpt_paths = []
-    
-    for ckpt_path in ckpt_paths:
-        if not os.path.isfile(ckpt_path) and ckpt_path not in non_existed_models:
-            non_existed_models.append(ckpt_path)
-        else:
-            model_id, item = handle_model_info(ckpt_path)
-            if model_id not in missing_models:
-                missing_models[model_id] = item
-    return non_existed_models, missing_models
 
 TypeMap = {
     "automata": Automata,
@@ -140,7 +119,7 @@ def check_dependency_recursive(config, non_existed_models: list, missing_models:
                 if config.comfy_workflow_id not in comfyui_workflow_ids:
                     comfyui_workflow_ids.append(config.comfy_workflow_id)
                 return # models in ComfyWorkflowTask already checked
-            non_existed_models, missing_models = check_missing_models(config, non_existed_models, missing_models, local_vars)
+            # non_existed_models, missing_models = check_missing_models(config, non_existed_models, missing_models, local_vars)
             missing_widgets = check_missing_widgets(config, missing_widgets)
             return
         elif config.mode == "workflow":
