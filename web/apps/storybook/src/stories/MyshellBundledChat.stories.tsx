@@ -318,7 +318,7 @@ export const Primary: Story = {
         sendAudioMessage: (audioBlob: Blob, mimeType?: string | undefined) => {
           return Promise.resolve();
         },
-        terminate: () => { },
+        terminate: () => {},
         hasMore: false,
         gettingHistory: false,
         initializingHistory: false,
@@ -332,7 +332,7 @@ export const Primary: Story = {
         deleteSpecifiedMessageId,
         partialUpdateMessage: partialUpdateMsg,
         translationStatus: 'TRANSLATING',
-        translate: async () => { },
+        translate: async () => {},
         dragMaskVisible: false,
         editorMode,
         setEditorMode,

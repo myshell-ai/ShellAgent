@@ -124,9 +124,9 @@ export function useFieldWatch(formRef: React.RefObject<FormRef>) {
                 value: diffNewValue
                   ? get(newInputs, name.split('.')[1])
                   : {
-                    ...(get(newInputs, name.split('.')?.[1]) || {}),
-                    name: newName,
-                  },
+                      ...(get(newInputs, name.split('.')?.[1]) || {}),
+                      name: newName,
+                    },
               });
             }
             break;
@@ -191,9 +191,9 @@ export function useFieldWatch(formRef: React.RefObject<FormRef>) {
                 newKey,
                 value: refReg.test(diffNewValue) // outputs context
                   ? {
-                    ...(get(newOutputs, name.split('.')?.[1]) || {}),
-                    name: diffNewValue,
-                  }
+                      ...(get(newOutputs, name.split('.')?.[1]) || {}),
+                      name: diffNewValue,
+                    }
                   : get(newOutputs, name.split('.')[1]),
               });
             }
