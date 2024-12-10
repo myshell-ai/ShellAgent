@@ -4,7 +4,7 @@ import { injectable } from 'inversify';
 @injectable()
 export class FormEngineModel {
   isReadyPromise: Promise<unknown>;
-  public formRef!: FormRef; // if undef throw error, fail fast
+  public formRef?: FormRef; // if undef throw error, fail fast
   private isReadyPromiseResolve: ((value: unknown) => void) | undefined;
 
   constructor() {
@@ -16,5 +16,12 @@ export class FormEngineModel {
   setFormRef(formRef: FormRef) {
     this.formRef = formRef;
     this.isReadyPromiseResolve!('');
+  }
+
+  reset(): void {
+    this.isReadyPromise = new Promise(resolve => {
+      this.isReadyPromiseResolve = resolve;
+    });
+    this.formRef = undefined;
   }
 }

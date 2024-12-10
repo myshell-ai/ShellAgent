@@ -5,105 +5,67 @@ import {
   ExportOutlined,
   FullscreenExitOutlined,
   FullscreenOutlined,
-  ReloadOutlined,
   SaveOutlined,
 } from '@ant-design/icons';
-import { css } from '@emotion/react';
-import { useFormEngineContext } from '@shellagent/form-engine';
 import { AModal, Button, Spinner, useFormContext } from '@shellagent/ui';
 import { Form, Input, Modal, Tooltip } from 'antd';
-import { Field, FieldProps, Formik } from 'formik';
+import { Formik } from 'formik';
 import { useInjection } from 'inversify-react';
 import { observer } from 'mobx-react-lite';
 import React, { useEffect, useRef } from 'react';
 import { Box, Flex } from 'react-system';
-import { toast } from 'react-toastify';
-
-import { useSchemaContext } from '@/stores/app/schema-provider';
 import { type FormikModel } from '@/utils/formik.model';
-
 import { CheckDialog } from '../check-dialog';
-import { ComfyUIModel, LocationFormType, locationTip } from '../comfyui.model';
+import { ComfyUIModel, LocationFormType } from '../comfyui.model';
+import {
+  DEFAULT_MODAL_STYLES,
+  FULL_SCREEN_MODAL_STYLES,
+} from '@/components/app/plugins/comfyui/constant';
+import { FormItemField } from '../comfyui-helpers';
+
+export const ComfyUIEditor = observer(
+  ({ name, onChange }: { name: string; onChange: (value: string) => void }) => {
+    const model = useInjection<ComfyUIModel>('ComfyUIModel');
+    const formRef = useFormContext();
+    const { setValue, getValues } = formRef;
+    return (
+      <div>
+        <LocationForm
+          model={model.locationFormikSheet}
+          type="sheet"
+          initialValue={model.currentFormData?.location}
+          onSubmit={v => {
+            setValue('location', v);
+          }}
+        />
+        <Button
+          size="sm"
+          className="w-full"
+          onClick={() => model.openIframeDialog()}>
+          {model.buttonName}
+        </Button>
+      </div>
+    );
+  },
+);
 
 export const ComfyUIEditorModal = observer(() => {
   const model = useInjection<ComfyUIModel>('ComfyUIModel');
-  const iframeRef = useRef<HTMLIFrameElement>(null);
 
+  const iframeRef = useRef<HTMLIFrameElement>(null);
   useEffect(() => {
     const handleMessage = (evt: MessageEvent) =>
       model.handleMessage(iframeRef, evt);
     window.addEventListener('message', handleMessage);
+
     return () => {
       window.removeEventListener('message', handleMessage);
     };
   }, []);
-  useEffect(() => {
-    model.emitter.on('customWarn', evt => {
-      toast.warning(
-        <div>
-          {evt.message}
-          {evt.message_detail ? (
-            <Button
-              className="ml-2"
-              color="error"
-              size="sm"
-              onClick={() => model.showMessageDetail(evt.message_detail)}>
-              View Detail
-            </Button>
-          ) : null}
-        </div>,
-        {
-          position: 'top-center',
-          autoClose: 3000,
-          hideProgressBar: true,
-          pauseOnHover: true,
-          closeButton: false,
-        },
-      );
-    });
-    return () => {
-      model.emitter.off('customWarn');
-    };
-  }, []);
 
-  const modalStyles = model.fullscreen.isOn
-    ? {
-        mask: {
-          height: '100vh',
-          width: '100vw',
-          margin: 0,
-          top: 0,
-          paddingBottom: 0,
-        },
-        wrapper: {
-          height: '100vh',
-          width: '100vw',
-          margin: 0,
-          top: 0,
-          paddingBottom: 0,
-        },
-        content: {
-          padding: '6px 8px',
-          height: '100vh',
-          width: '100vw',
-          margin: 0,
-          top: 0,
-          paddingBottom: 0,
-        },
-        body: {
-          height: 'calc(100vh - 48px)',
-          padding: 0,
-          overflow: 'hidden',
-        },
-        footer: {
-          marginTop: 0,
-        },
-      }
-    : {
-        content: {
-          padding: '6px 8px',
-        },
-      };
+  if (model.iframeDialog.isClosed) {
+    return null;
+  }
 
   return (
     <>
@@ -136,7 +98,7 @@ export const ComfyUIEditorModal = observer(() => {
                   <Box mx={1}>
                     <Button
                       onClick={() => model.handleSave(iframeRef)}
-                      disabled={model.disabled}
+                      disabled={model.saveBtnDisabled}
                       loading={model.saveLoading.isOn}
                       variant="plain">
                       <SaveOutlined />
@@ -161,7 +123,11 @@ export const ComfyUIEditorModal = observer(() => {
             </Flex>
           </Flex>
         }
-        styles={modalStyles}
+        styles={
+          model.fullscreen.isOn
+            ? FULL_SCREEN_MODAL_STYLES
+            : DEFAULT_MODAL_STYLES
+        }
         forceRender
         open={model.iframeDialog.isOpen}
         onOk={() => model.handleSave(iframeRef)}
@@ -182,7 +148,7 @@ export const ComfyUIEditorModal = observer(() => {
               <Button
                 size="sm"
                 onClick={() => model.handleSave(iframeRef)}
-                disabled={model.disabled}
+                disabled={model.saveBtnDisabled}
                 loading={model.saveLoading.isOn}>
                 Save
               </Button>
@@ -209,7 +175,7 @@ export const ComfyUIEditorModal = observer(() => {
                 Settings
               </Button>
             </div>
-            <Button
+            {/*<Button
               variant="primary"
               size="sm"
               onClick={() => {
@@ -219,7 +185,7 @@ export const ComfyUIEditorModal = observer(() => {
               }}>
               <ReloadOutlined className="mr-2" />
               Reload
-            </Button>
+            </Button>*/}
           </div>
         )}
         <iframe
@@ -263,9 +229,12 @@ export const ComfyUIEditorModal = observer(() => {
           <LocationForm
             model={model.locationFormikModal}
             type="modal"
-            value={model.currentIframeData?.location}
-            onChange={v => {
-              model.currentIframeData?.setValue('location', v);
+            initialValue={model.currentFormData.location}
+            onSubmit={async v => {
+              // TODO: add a temp form value to communicate with modal and sheet form
+              model.currentFormData.location = v;
+              await model.formEngineModel.isReadyPromise;
+              model.formEngineModel.formRef!.setValue('location', v);
             }}
           />
         </AModal>
@@ -275,76 +244,32 @@ export const ComfyUIEditorModal = observer(() => {
         setModalOpen={model.iframeDialog.open}
         setOpen={model.checkDialog.on}
         dependencies={model.dependencies}
-        location={model.currentIframeData?.location}
+        location={model.currentFormData.location}
       />
     </>
   );
 });
 
-export const ComfyUIEditor = observer(
-  ({ name, onChange }: { name: string; onChange: (value: string) => void }) => {
-    const model = useInjection<ComfyUIModel>('ComfyUIModel');
-    const formRef = useFormContext();
-    const { setValue, watch } = formRef;
-    const { id: stateId } = useSchemaContext(state => ({
-      id: state.id,
-    }));
-    const { parent } = useFormEngineContext();
-
-    useEffect(() => {
-      model.setButtonName(watch('location'));
-    }, [watch('location')]);
-
-    return (
-      <div>
-        <LocationForm
-          model={model.locationFormikSheet}
-          type="sheet"
-          value={watch('location')}
-          onChange={v => {
-            setValue('location', v);
-          }}
-        />
-        <Button
-          size="sm"
-          className="w-full"
-          onClick={() =>
-            model.openIframeDialog({
-              parent,
-              stateId,
-              name: watch('name'),
-              location: watch('location'),
-              setValue: formRef.setValue,
-            })
-          }>
-          {model.buttonName}
-        </Button>
-      </div>
-    );
-  },
-);
-
-export const LocationForm = observer<{
-  model: FormikModel<LocationFormType>;
+const LocationForm = observer<{
+  model: FormikModel<Partial<LocationFormType>>;
   type: 'sheet' | 'modal';
-  value?: string;
-  onChange: (value: string) => void;
+  initialValue?: string;
+  onSubmit: (value?: string) => void;
 }>(props => {
   const comfyUIModel = useInjection<ComfyUIModel>('ComfyUIModel');
   return (
-    <Formik<LocationFormType>
+    <Formik<Partial<LocationFormType>>
+      enableReinitialize
       initialValues={{
-        location: props.value,
+        location: props.initialValue || '',
       }}
+      validateOnChange={false}
       onSubmit={values => {
-        if (values.location) {
-          props.onChange(values.location);
-          comfyUIModel.submitLocationFormModal(values.location);
-        }
+        props.onSubmit(values.location);
       }}>
-      {formikProps => {
+      {fProp => {
         useEffect(() => {
-          props.model.setFormikProps(formikProps);
+          props.model.setFormikProps(fProp);
           return () => {
             props.model.reset();
           };
@@ -354,42 +279,25 @@ export const LocationForm = observer<{
             layout="horizontal"
             labelCol={{ span: 6 }}
             wrapperCol={{ span: 18 }}>
-            <Field name="location">
-              {({ field }: FieldProps) => (
-                <Form.Item
-                  colon={false}
-                  tooltip={locationTip}
-                  label="Location"
-                  help={formikProps.errors.location}
-                  validateStatus={
-                    formikProps.errors.location == null ? undefined : 'error'
-                  }
-                  css={css`
-                    margin-bottom: 12px;
-                  `}>
-                  <Flex alignItems="center">
-                    <Input
-                      value={field.value}
-                      onChange={async e => {
-                        formikProps.values.location = e.target.value; // workaround: cannot update immediately
-                        formikProps.setFieldValue('location', e.target.value);
-                      }}
-                      onBlur={() =>
-                        comfyUIModel.onLocationBlur(
-                          props.model,
-                          props.type,
-                          field,
-                          () => {
-                            props.onChange(field.value);
-                          },
-                        )
-                      }
-                      placeholder="File path of extended ComfyUI json"
-                    />
-                  </Flex>
-                </Form.Item>
+            <FormItemField
+              label="Location"
+              name="location"
+              validate={(value: string) =>
+                comfyUIModel.validateLocation(props.type, value)
+              }>
+              {({ field }) => (
+                <Input
+                  placeholder="File path of extended ComfyUI json"
+                  {...field}
+                  onBlur={e => {
+                    fProp.handleBlur(e);
+                    if (props.type === 'sheet') {
+                      fProp.handleSubmit();
+                    }
+                  }}
+                />
               )}
-            </Field>
+            </FormItemField>
           </Form>
         );
       }}

@@ -10,11 +10,12 @@ import { type RefObject } from 'react';
 import {
   COMFYUI_API,
   DEFAULT_COMFYUI_API,
+  LOCATION_TIP,
   MessageType,
 } from '@/components/app/plugins/comfyui/constant';
 import { getFile, saveComfy } from '@/components/app/plugins/comfyui/services';
 import {
-  SaveRequest,
+  type SaveRequest,
   type SaveResponse,
 } from '@/components/app/plugins/comfyui/services/type';
 import { SettingsModel } from '@/components/settings/settings.model';
@@ -30,22 +31,15 @@ import {
   defaultSchema,
   getComfyUISchema,
 } from '@/components/app/plugins/comfyui/schema';
+import { FormEngineModel } from '@/utils/form-engine.model';
 
-const settingsDisabled = process.env.NEXT_PUBLIC_DISABLE_SETTING === 'yes';
-
-export const locationTip =
-  'The file must be a ShellAgent-extended ComfyUI JSON (.shellagent.json). To import a ComfyUI JSON, use ComfyUI-Manager.';
+const SETTING_DISABLED = process.env.NEXT_PUBLIC_DISABLE_SETTING === 'yes';
 
 export type LocationFormType = {
-  location?: string;
-};
-
-export type CurrentIframeData = {
-  parent?: string;
-  stateId: string;
+  location: string;
   name: string;
-  location?: string;
-  setValue: (name: string, value: any) => void;
+  stateId: string;
+  parent: string;
 };
 
 @injectable()
@@ -53,14 +47,15 @@ export class ComfyUIModel {
   @observable defaultLocation?: string = undefined;
   @observable messageDetail: string = '';
   @observable iframeError: string = '';
-  @observable buttonName: 'Create in ComfyUI' | 'Edit in ComfyUI' =
-    'Create in ComfyUI';
   @observable dependencies: SaveResponse['data']['dependencies'] | null = null;
   @observable currentSchema: ISchema = defaultSchema;
-  @observable currentIframeData: CurrentIframeData | null = null;
+
+  // Use observable + formik enableReinitialize to control form
+  // directly use formikProps values to get intermediate value (not sure the value is latest)
+  @observable currentFormData: Partial<LocationFormType> = {};
 
   emitter = mitt<{
-    customWarn: {
+    warmWithDetail: {
       message?: string;
       message_detail?: string;
     };
@@ -71,9 +66,10 @@ export class ComfyUIModel {
     @inject('Factory<AppBuilderModel>')
     public appBuilderModelFactory: () => AppBuilderModel,
     @inject(FormikModel)
-    public locationFormikSheet: FormikModel<LocationFormType>,
+    public locationFormikSheet: FormikModel<Partial<LocationFormType>>,
     @inject(FormikModel)
-    public locationFormikModal: FormikModel<LocationFormType>,
+    public locationFormikModal: FormikModel<Partial<LocationFormType>>,
+    @inject(FormEngineModel) public formEngineModel: FormEngineModel,
     @inject(ModalModel) public locationFormDialog: ModalModel,
     @inject(ToggleModel) public fullscreen: ToggleModel,
     @inject(ToggleModel) public checkDialog: ToggleModel,
@@ -89,12 +85,12 @@ export class ComfyUIModel {
 
   @computed
   get showSettingButton(): boolean {
-    if (settingsDisabled) return false;
+    if (SETTING_DISABLED) return false;
     return !isValidUrl(this.comfyUIUrl);
   }
 
   @computed
-  get disabled(): boolean {
+  get saveBtnDisabled(): boolean {
     return (
       this.showSettingButton ||
       this.iframeLoading.isOn ||
@@ -104,10 +100,19 @@ export class ComfyUIModel {
 
   @computed
   get comfyUIUrl() {
-    if (settingsDisabled) {
+    if (SETTING_DISABLED) {
       return DEFAULT_COMFYUI_API;
     }
     return this.settings.envs.get(COMFYUI_API) || '';
+  }
+
+  @computed
+  get buttonName() {
+    if (isEmpty(this.currentFormData.location)) {
+      return 'Create in ComfyUI';
+    } else {
+      return 'Edit in ComfyUI';
+    }
   }
 
   @action.bound
@@ -116,33 +121,19 @@ export class ComfyUIModel {
   }
 
   @action.bound
-  setButtonName(location?: string) {
-    if (isEmpty(location)) {
-      this.buttonName = 'Create in ComfyUI';
-    } else {
-      this.buttonName = 'Edit in ComfyUI';
-    }
-  }
-
-  @action.bound
   async onLocationBlur(
-    model: FormikModel<LocationFormType>,
+    model: FormikModel<Partial<LocationFormType>>,
     type: 'modal' | 'sheet',
     field: FieldInputProps<string>,
-    callback: () => void,
-  ) {
-    this.setButtonName(field.value);
-    await model.isReadyPromise;
-    const formikProps = model.formikProps!;
+  ) {}
+
+  async validateLocation(type: 'modal' | 'sheet', value?: string) {
     if (type === 'sheet') {
-      const e = await this.checkLocationExists(field.value);
-      formikProps.setFieldError('location', e);
-      if (!e) {
-        callback();
-      }
+      const e = await this.checkLocationExists(value);
+      return e;
     } else if (type === 'modal') {
-      const e = this.checkLocation(field.value);
-      formikProps.setFieldError('location', e);
+      const e = this.checkLocation(value);
+      return e;
     }
   }
 
@@ -179,7 +170,7 @@ export class ComfyUIModel {
       return `Please remove spaces from the beginning and end of the path.`;
     }
     if (location?.endsWith('.shellagent.json') === false) {
-      return locationTip;
+      return LOCATION_TIP;
     }
     return undefined;
   }
@@ -262,12 +253,13 @@ export class ComfyUIModel {
     const appName = this.appBuilderModelFactory().metadata.name;
     this.locationFormDialog.open();
     const defaultName = customSnakeCase(
-      `${appName}_${this.currentIframeData?.stateId}_${this.currentIframeData?.name}`,
+      `${appName}_${this.currentFormData.stateId}_${this.currentFormData.name}`,
     );
     try {
       await this.getCwd();
       await this.locationFormikModal.isReadyPromise;
-      await this.locationFormikModal.formikProps!.setFieldValue(
+      const formikProps = this.locationFormikModal.formikProps!;
+      await formikProps.setFieldValue(
         'location',
         `${this.defaultLocation}/${defaultName}.shellagent.json`,
       );
@@ -279,22 +271,18 @@ export class ComfyUIModel {
   @action.bound
   closeIframeDialog() {
     this.iframeDialog.close();
-    this.currentIframeData = null;
   }
 
   @action.bound
-  async openIframeDialog(iframeData: CurrentIframeData) {
+  async openIframeDialog() {
     await this.locationFormikSheet.isReadyPromise;
-    const { values, errors, setFieldError } =
-      this.locationFormikSheet.formikProps!;
+    const { values, setFieldError } = this.locationFormikSheet.formikProps!;
     const err = await this.checkLocationExists(values.location);
     if (!isEmpty(err)) {
       setFieldError('location', err);
       return;
     }
     setFieldError('location', undefined);
-
-    this.currentIframeData = iframeData;
     this.iframeDialog.open();
   }
 
@@ -319,13 +307,6 @@ export class ComfyUIModel {
       this.toast.error((e as Error).message);
       throw e;
     }
-  }
-
-  @action.bound
-  async submitLocationFormModal(location: string) {
-    await this.locationFormikSheet.isReadyPromise;
-    this.locationFormikSheet.formikProps!.values.location = location; // workaround: cannot update immediately
-    this.locationFormikSheet.formikProps!.setFieldValue('location', location);
   }
 
   @action.bound
@@ -361,7 +342,7 @@ export class ComfyUIModel {
 
   @action.bound
   async getComfySchema(iframeRef: RefObject<HTMLIFrameElement>) {
-    if (this.locationFormikSheet.formikProps?.values.location == null) {
+    if (this.currentFormData.location == null) {
       iframeRef.current?.contentWindow?.postMessage(
         { type: MessageType.LOAD_DEFAULT },
         this.comfyUIUrl,
@@ -372,7 +353,7 @@ export class ComfyUIModel {
     this.getSchemaLoading.on();
     try {
       const result = await getFile({
-        location: this.locationFormikSheet.formikProps?.values.location,
+        location: this.currentFormData.location,
         filename: 'workflow.json',
       });
       console.log('ComfyUI loaded');
@@ -399,13 +380,10 @@ export class ComfyUIModel {
   }
 
   @action.bound
-  async saveComfyRequest(params: Omit<SaveRequest, 'location'>) {
+  async saveComfyRequest(params: SaveRequest) {
     try {
       this.saveLoading.on();
-      const result = await saveComfy({
-        ...params,
-        location: this.locationFormikSheet.formikProps?.values.location,
-      });
+      const result = await saveComfy(params);
       if (result.success) {
         const { data } = result;
         const { hasMissingCustomNodes, hasMissingModels } = checkDependency(
@@ -423,12 +401,14 @@ export class ComfyUIModel {
               outputs: data?.outputs || {},
             }),
           );
+          this.currentFormData.location = params.location;
+          // todo: form value setValue
         }
         if (result.warning_message) {
           this.toast.warn(result.warning_message);
         }
       } else {
-        this.emitter.emit('customWarn', {
+        this.emitter.emit('warmWithDetail', {
           message: result?.message,
           message_detail: result?.message_detail,
         });
@@ -441,7 +421,10 @@ export class ComfyUIModel {
   }
 
   @action.bound
-  handleMessage(iframeRef: RefObject<HTMLIFrameElement>, event: MessageEvent) {
+  async handleMessage(
+    iframeRef: RefObject<HTMLIFrameElement>,
+    event: MessageEvent,
+  ) {
     if (!this.comfyUIUrl) {
       return;
     }
@@ -455,17 +438,19 @@ export class ComfyUIModel {
           this.getComfySchema(iframeRef);
           break;
         case MessageType.SAVE:
-          if (this.locationFormikSheet.formikProps?.values.location == null) {
+          if (isEmpty(this.currentFormData.location)) {
             this.toast.error(
               'The file location of ShellAgent-extended ComfyUI JSON file is invalid',
             );
             return;
           }
-          this.saveComfyRequest({
+          const location = this.currentFormData.location!;
+          await this.saveComfyRequest({
             prompt: event.data.prompt,
             comfyui_api: valueUrl.origin,
             workflow: event.data.workflow,
             name: event.data.name,
+            location,
           });
           break;
         default:
@@ -478,11 +463,9 @@ export class ComfyUIModel {
 
   @action.bound
   async handleSave(iframeRef: RefObject<HTMLIFrameElement>) {
-    if (isEmpty(this.locationFormikSheet.formikProps?.values.location)) {
-      if (parent) {
-        this.openLocationFormDialog();
-        return;
-      }
+    if (isEmpty(this.currentFormData.location)) {
+      this.openLocationFormDialog();
+      return;
     }
     iframeRef.current?.contentWindow?.postMessage(
       { type: MessageType.SAVE },
