@@ -120,13 +120,6 @@ export class ComfyUIModel {
     this.currentSchema = schema;
   }
 
-  @action.bound
-  async onLocationBlur(
-    model: FormikModel<Partial<LocationFormType>>,
-    type: 'modal' | 'sheet',
-    field: FieldInputProps<string>,
-  ) {}
-
   async validateLocation(type: 'modal' | 'sheet', value?: string) {
     if (type === 'sheet') {
       const e = await this.checkLocationExists(value);
@@ -438,6 +431,7 @@ export class ComfyUIModel {
           this.getComfySchema(iframeRef);
           break;
         case MessageType.SAVE:
+          // TODO: amend to use separate modal form location
           if (isEmpty(this.currentFormData.location)) {
             this.toast.error(
               'The file location of ShellAgent-extended ComfyUI JSON file is invalid',
