@@ -9,7 +9,7 @@ import {
   runInAction,
 } from 'mobx';
 
-import { EmitterModel } from '../../../../utils/emitter.model';
+import { ToastModel } from '../../../../utils/toast.model';
 
 export type WidgetRecord = {
   local_commits_hash?: string[];
@@ -50,7 +50,7 @@ export class WidgetsCommonModel {
   };
   @observable remoteVersionQuery: string = '';
 
-  constructor(@inject(EmitterModel) private emitter: EmitterModel) {
+  constructor(@inject(ToastModel) private emitter: ToastModel) {
     makeObservable(this);
   }
 

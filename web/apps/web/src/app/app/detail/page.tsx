@@ -20,6 +20,7 @@ import { ImageCanvasDialog } from '@/components/image-canvas/open-image-canvas';
 import { AppBuilderModel } from '@/stores/app/models/app-builder.model';
 import { useAppState } from '@/stores/app/use-app-state';
 import { useWorkflowStore } from '@/stores/workflow/workflow-provider';
+import { ComfyUIEditorModal } from '@/components/app/plugins/comfyui/widgets/comfyui-editor';
 
 enableMapSet();
 
@@ -124,6 +125,7 @@ export default function AppBuilderDetail() {
           <FlowEngineWrapper appId={appId} versionName={versionName} />
           <ChatSheet />
           <ImageCanvasDialog />
+          <ComfyUIEditorModal />
         </main>
       </div>
     </DndProvider>
