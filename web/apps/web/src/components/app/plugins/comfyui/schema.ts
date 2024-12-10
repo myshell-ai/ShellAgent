@@ -151,7 +151,7 @@ export const getSchemaByInputs = (inputs: TValues): ISchema => {
   };
 };
 
-export const defaultSchema: ISchema = {
+export const defaultSchema = {
   type: 'object',
   'x-type': 'Section',
   'x-title-copiable': false,
@@ -171,10 +171,17 @@ export const defaultSchema: ISchema = {
       'x-title-size': 'h4',
       'x-hidden': true,
     },
+    location: {
+      type: 'string',
+      'x-component': 'Input',
+      'x-type': 'Control',
+      'x-title-size': 'h4',
+      'x-hidden': true,
+    },
   },
-};
+} satisfies ISchema;
 
-export const getComfyuiSchema = ({
+export const getComfyUISchema = ({
   inputs = {},
   outputs = {},
 }: {
@@ -202,21 +209,7 @@ export const getComfyuiSchema = ({
     'x-type': 'Section',
     'x-title-copiable': false,
     properties: {
-      api: {
-        type: 'string',
-        'x-layout': 'Vertical',
-        'x-type': 'Block',
-        'x-component': 'ComfyUIEditor',
-        'x-onchange-prop-name': 'onChange',
-        'x-title-size': 'h4',
-      },
-      comfy_workflow_id: {
-        type: 'string',
-        'x-component': 'Input',
-        'x-type': 'Control',
-        'x-title-size': 'h4',
-        'x-hidden': true,
-      },
+      ...defaultSchema.properties,
       inputs: getSchemaByInputs(inputs),
       outputs: {
         type: 'object',

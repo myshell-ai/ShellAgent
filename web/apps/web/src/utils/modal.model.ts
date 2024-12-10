@@ -1,13 +1,17 @@
 import { injectable } from 'inversify';
-import { action, makeObservable, observable } from 'mobx';
+import { action, computed, makeObservable, observable } from 'mobx';
 
 @injectable()
 export class ModalModel {
+  @observable isOpen: boolean = false;
+
   constructor() {
     makeObservable(this);
   }
 
-  @observable isOpen: boolean = false;
+  @computed get isClosed() {
+    return !this.isOpen;
+  }
 
   @action.bound
   open() {
