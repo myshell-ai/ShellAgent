@@ -11,7 +11,8 @@
     "type-check": "tsc --noEmit",
     "test:ci": "jest",
     "test:u": "jest -u",
-    "test": "jest --watch"
+    "test": "jest --watch",
+    "storybook": "storybook dev -p 6006"
   },
   "dependencies": {
     "@ant-design/icons": "^5.4.0",
@@ -110,6 +111,7 @@
     "tailwindcss": "^3.4.10",
     "ts-jest": "^29.0.5",
     "typescript": "~5.3.3",
-    "@storybook/react": "^8.3.1"
+    "@storybook/react": "^8.3.1",
+    "storybook": "^8.3.1"
   }
 }

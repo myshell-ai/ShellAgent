@@ -1,4 +1,4 @@
-import { Editor } from '@/components/app/node-form/widgets/highlight-input';
+import { Editor } from '../../../../web/src/components/app/node-form/widgets/highlight-input';
 import type { Meta, StoryObj } from '@storybook/react';
 
 const meta: Meta<typeof Editor> = {
