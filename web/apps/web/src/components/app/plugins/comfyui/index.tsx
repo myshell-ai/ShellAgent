@@ -28,6 +28,7 @@ export const ComfyUIPlugin = observer<CommonWidgetConfigProps>(
       } else {
         throw new Error('formRef should not be null');
       }
+      model.handlers.onChange = onChange;
       model.loadCurrentSchema(values?.location);
       model.currentFormData = {
         ...values,
@@ -61,6 +62,7 @@ export const ComfyUIPlugin = observer<CommonWidgetConfigProps>(
         model.formEngineModel.reset();
         model.currentFormData = {};
         model.emitter.off('warmWithDetail');
+        model.handlers = {};
       };
     }, []);
 

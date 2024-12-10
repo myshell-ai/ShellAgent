@@ -24,10 +24,10 @@ import {
 import { FormItemField } from '../comfyui-helpers';
 
 export const ComfyUIEditor = observer(
-  ({ name, onChange }: { name: string; onChange: (value: string) => void }) => {
+  ({ name, onChange }: { name: string; onChange: (value: any) => void }) => {
     const model = useInjection<ComfyUIModel>('ComfyUIModel');
     const formRef = useFormContext();
-    const { setValue, getValues } = formRef;
+    const { setValue } = formRef;
     return (
       <div>
         <LocationForm
@@ -232,6 +232,7 @@ export const ComfyUIEditorModal = observer(() => {
             initialValue={model.currentFormData.location}
             onSubmit={async v => {
               // TODO: add a temp form value to communicate with modal and sheet form
+              // than submit after saveComfyUI success
               model.currentFormData.location = v;
               await model.formEngineModel.isReadyPromise;
               model.formEngineModel.formRef!.setValue('location', v);

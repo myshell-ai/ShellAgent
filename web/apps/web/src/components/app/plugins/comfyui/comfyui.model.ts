@@ -1,10 +1,9 @@
 import { customSnakeCase } from '@shellagent/shared/utils';
 import axios from 'axios';
-import { type FieldInputProps } from 'formik';
 import { inject, injectable } from 'inversify';
-import { isEmpty } from 'lodash-es';
+import { isEmpty, merge, omit } from 'lodash-es';
 import mitt from 'mitt';
-import { action, computed, makeObservable, observable } from 'mobx';
+import { action, computed, makeObservable, observable, toJS } from 'mobx';
 import { type RefObject } from 'react';
 
 import {
@@ -26,7 +25,11 @@ import { ModalModel } from '@/utils/modal.model';
 import { ToastModel } from '@/utils/toast.model';
 import { ToggleModel } from '@/utils/toggle.model';
 import { checkDependency, isValidUrl, pathJoin } from './comfyui-utils';
-import { type ISchema } from '@shellagent/form-engine';
+import {
+  getDefaultValueBySchema,
+  type ISchema,
+  TValues,
+} from '@shellagent/form-engine';
 import {
   defaultSchema,
   getComfyUISchema,
@@ -53,6 +56,10 @@ export class ComfyUIModel {
   // Use observable + formik enableReinitialize to control form
   // directly use formikProps values to get intermediate value (not sure the value is latest)
   @observable currentFormData: Partial<LocationFormType> = {};
+
+  handlers: Partial<{
+    onChange: (values: any) => void;
+  }> = {};
 
   emitter = mitt<{
     warmWithDetail: {
@@ -395,7 +402,8 @@ export class ComfyUIModel {
             }),
           );
           this.currentFormData.location = params.location;
-          // todo: form value setValue
+          // todo: (see comfyui-editor) add a temp form value to communicate with modal and sheet form
+          this.setValuesAfterSchemaChange();
         }
         if (result.warning_message) {
           this.toast.warn(result.warning_message);
@@ -478,4 +486,34 @@ export class ComfyUIModel {
       this.toast.error('Invalid ComfyUI API settings');
     }
   }
+
+  setValuesAfterSchemaChange() {
+    const defaultValues = getDefaultValueBySchema(
+      toJS(this.currentSchema),
+      false,
+    );
+    // TODO move stateId parent out of form data
+    const newValues = omit(toJS(this.currentFormData), ['stateId', 'parent']);
+    const values = mergeValues(defaultValues, {
+      ...newValues,
+      api: this.comfyUIUrl, // Always retrieve api from settings
+    });
+    this.handlers.onChange!(values);
+  }
 }
+
+const mergeValues = (formValues: TValues, newValues?: TValues) => {
+  const result = {
+    ...merge({}, formValues, newValues),
+    inputs: isEmpty(formValues?.inputs)
+      ? newValues?.inputs
+      : Object.keys(formValues?.inputs || {})?.reduce((prev, key) => {
+          prev[key] = newValues?.inputs?.[key] || formValues?.inputs?.[key];
+          return prev;
+        }, {} as any),
+    outputs: !isEmpty(formValues?.outputs?.display)
+      ? formValues?.outputs
+      : newValues?.outputs,
+  };
+  return result;
+};
