@@ -27,7 +27,7 @@ export async function validateImage(
     if (contentLength) {
       const fileSize = parseInt(contentLength, 10);
       if (fileSize > maxSize) {
-        // eslint-disable-next-line require-await
+        // eslint-disable-next-line @typescript-eslint/return-await
         return Promise.reject(new Error('Keep image file size under 1MB.'));
       }
     }
@@ -46,7 +46,7 @@ export async function validateImage(
       image.onerror = () => console.log('Failed to load image.');
     });
     await imageLoaded;
-    // eslint-disable-next-line require-await
+    // eslint-disable-next-line @typescript-eslint/return-await
     return Promise.resolve(true);
   } catch (error: any) {
     console.log('error: ', error);
