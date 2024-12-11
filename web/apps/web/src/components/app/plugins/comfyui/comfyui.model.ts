@@ -127,6 +127,7 @@ export class ComfyUIModel {
     this.currentSchema = schema;
   }
 
+  // eslint-disable-next-line consistent-return
   async validateLocation(type: 'modal' | 'sheet', value?: string) {
     if (type === 'sheet') {
       const e = await this.checkLocationExists(value);
@@ -134,6 +135,8 @@ export class ComfyUIModel {
     } else if (type === 'modal') {
       const e = this.checkLocation(value);
       return e;
+    } else {
+      // noop
     }
   }
 
@@ -433,7 +436,7 @@ export class ComfyUIModel {
     try {
       const valueUrl = new URL(this.comfyUIUrl);
       if (valueUrl.origin !== event.origin) return;
-
+      const location = this.currentFormData.location as string;
       switch (event.data.type) {
         case MessageType.LOADED:
           this.getComfySchema(iframeRef);
@@ -444,9 +447,7 @@ export class ComfyUIModel {
             this.toast.error(
               'The file location of ShellAgent-extended ComfyUI JSON file is invalid',
             );
-            return;
           }
-          const location = this.currentFormData.location!;
           await this.saveComfyRequest({
             prompt: event.data.prompt,
             comfyui_api: valueUrl.origin,

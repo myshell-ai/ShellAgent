@@ -1,5 +1,4 @@
-import { FieldValidator } from 'formik/dist/types';
-import { Field, FieldProps } from 'formik';
+import { Field, type FieldProps, type FieldValidator } from 'formik';
 import { Form } from 'antd';
 import React from 'react';
 
@@ -16,20 +15,21 @@ export interface FormItemFieldProps {
  * A simple compound as a wrapper of Formik field and Antd Form.Item
  */
 export const FormItemField = (props: FormItemFieldProps) => {
+  const { name, validate, label, tooltip, children } = props;
   return (
-    <Field name={props.name} validate={props.validate}>
+    <Field name={name} validate={validate}>
       {(fieldProps: FieldProps) => {
         const { meta } = fieldProps;
         return (
           <Form.Item
-            label={props.label}
+            label={label}
             colon={false}
-            tooltip={props.tooltip}
+            tooltip={tooltip}
             help={meta.error}
             validateStatus={
               meta.touched && meta.error != null ? 'error' : undefined
             }>
-            {props.children(fieldProps)}
+            {children(fieldProps)}
           </Form.Item>
         );
       }}

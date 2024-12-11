@@ -175,7 +175,7 @@ export const ComfyUIEditorModal = observer(() => {
                 Settings
               </Button>
             </div>
-            {/*<Button
+            {/* <Button
               variant="primary"
               size="sm"
               onClick={() => {
@@ -185,7 +185,7 @@ export const ComfyUIEditorModal = observer(() => {
               }}>
               <ReloadOutlined className="mr-2" />
               Reload
-            </Button>*/}
+            </Button> */}
           </div>
         )}
         <iframe
