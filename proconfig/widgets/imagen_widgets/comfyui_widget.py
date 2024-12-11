@@ -20,6 +20,7 @@ def queue_prompt(workflow, prompt, server_address, client_id):
     data = json.dumps(p).encode('utf-8')
     req =  urllib.request.Request("{}/prompt".format(server_address), data=data)
     error = None
+    error_data = None
     try:
         with urllib.request.urlopen(req) as response:
             data = json.loads(response.read())
@@ -62,60 +63,60 @@ def queue_prompt(workflow, prompt, server_address, client_id):
     finally:
         simple_error_msg = ''
         detailed_error_msg = ''
-
-        if error_data.get('error') is not None:
-            if error_data['error'].get('type', '') == 'invalid_prompt':
-                error = {
-                    'error_code': 'COMFY-1101',
-                    'error_head': 'ComfyUI Workflow Validation Error: invalid_prompt', 
-                    'msg': error_data['error']['message'], 
-                    'traceback': f"Invalid prompt for {error_data['error']['details']}"
-                }
-            elif error_data['error'].get('type', '') == 'prompt_no_outputs':
-                error = {
-                    'error_code': 'COMFY-1102',
-                    'error_head': 'ComfyUI Workflow Validation Error: prompt_no_outputs', 
-                    'msg': error_data['error']['message'], 
-                    'traceback': f"Your workflow has no output nodes, which is invalid."
-                }
-            elif error_data['error'].get('type', '') == 'prompt_outputs_failed_validation':
-                assert isinstance(error_data.get('node_errors', []), dict), f"ComfyUI output is {error_data}"
-                for node_id, error_info in error_data['node_errors'].items():
-                    detailed_error_msg += f"* {error_info['class_type']} {node_id}:\n"
-                    simple_error_msg += f"* {error_info['class_type']} {node_id}:\n"
-                    for reason in error_info['errors']:
-                        detailed_error_msg += f"  - {reason['message']}: {reason['details']}\n"
-                error = {
-                    'error_code': 'COMFY-1103',
-                    'error_head': 'ComfyUI Workflow Validation Error: prompt_outputs_failed_validation',
-                    'msg': f"{error_data['error']['message']}:\n {simple_error_msg}", 
-                    'traceback': f"The output of your workfow failed to pass validation: \n{detailed_error_msg}"
-                }
-            else:
-                error = {
-                    'error_code': 'COMFY-1106',
-                    'error_head': 'ComfyUI Workflow Validation Error: others',
-                    'msg': error_data['error']['message'], 
-                    'traceback': f"{error_data['error']['details']}"
-                }
-        else:
-            if isinstance(error_data.get('node_errors', []), dict):
-                for node_id, error_info in error_data['node_errors'].items():
-                    detailed_error_msg += f"* {error_info['class_type']} {node_id}:\n"
-                    simple_error_msg += f"* {error_info['class_type']} {node_id}:\n"
-                    for reason in error_info['errors']:
-                        detailed_error_msg += f"  - {reason['message']}: {reason['details']}\n"
-
-                if detailed_error_msg != '':
+        if error_data is not None:
+            if error_data.get('error') is not None:
+                if error_data['error'].get('type', '') == 'invalid_prompt':
                     error = {
-                        'error_code': 'COMFY-1104',
-                        'error_head': 'ComfyUI Workflow Validation Error: prompt_inputs_failed_validation', 
-                        'msg': f"Prompt inputs failed validation:\n {simple_error_msg}", 
-                        'traceback': detailed_error_msg
+                        'error_code': 'COMFY-1101',
+                        'error_head': 'ComfyUI Workflow Validation Error: invalid_prompt', 
+                        'msg': error_data['error']['message'], 
+                        'traceback': f"Invalid prompt for {error_data['error']['details']}"
                     }
+                elif error_data['error'].get('type', '') == 'prompt_no_outputs':
+                    error = {
+                        'error_code': 'COMFY-1102',
+                        'error_head': 'ComfyUI Workflow Validation Error: prompt_no_outputs', 
+                        'msg': error_data['error']['message'], 
+                        'traceback': f"Your workflow has no output nodes, which is invalid."
+                    }
+                elif error_data['error'].get('type', '') == 'prompt_outputs_failed_validation':
+                    assert isinstance(error_data.get('node_errors', []), dict), f"ComfyUI output is {error_data}"
+                    for node_id, error_info in error_data['node_errors'].items():
+                        detailed_error_msg += f"* {error_info['class_type']} {node_id}:\n"
+                        simple_error_msg += f"* {error_info['class_type']} {node_id}:\n"
+                        for reason in error_info['errors']:
+                            detailed_error_msg += f"  - {reason['message']}: {reason['details']}\n"
+                    error = {
+                        'error_code': 'COMFY-1103',
+                        'error_head': 'ComfyUI Workflow Validation Error: prompt_outputs_failed_validation',
+                        'msg': f"{error_data['error']['message']}:\n {simple_error_msg}", 
+                        'traceback': f"The output of your workfow failed to pass validation: \n{detailed_error_msg}"
+                    }
+                else:
+                    error = {
+                        'error_code': 'COMFY-1106',
+                        'error_head': 'ComfyUI Workflow Validation Error: others',
+                        'msg': error_data['error']['message'], 
+                        'traceback': f"{error_data['error']['details']}"
+                    }
+            else:
+                if isinstance(error_data.get('node_errors', []), dict):
+                    for node_id, error_info in error_data['node_errors'].items():
+                        detailed_error_msg += f"* {error_info['class_type']} {node_id}:\n"
+                        simple_error_msg += f"* {error_info['class_type']} {node_id}:\n"
+                        for reason in error_info['errors']:
+                            detailed_error_msg += f"  - {reason['message']}: {reason['details']}\n"
 
-        if error is not None:
-            raise ShellException(**error)
+                    if detailed_error_msg != '':
+                        error = {
+                            'error_code': 'COMFY-1104',
+                            'error_head': 'ComfyUI Workflow Validation Error: prompt_inputs_failed_validation', 
+                            'msg': f"Prompt inputs failed validation:\n {simple_error_msg}", 
+                            'traceback': detailed_error_msg
+                        }
+
+            if error is not None:
+                raise ShellException(**error)
     return data
 
 def get_history(server_address, prompt_id):
