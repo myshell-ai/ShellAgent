@@ -1227,7 +1227,6 @@ const stateConfigSchema: ISchema = {
             {
               warningOnly: true,
               validator(rule, value) {
-                console.log('value: ', value);
                 return new Promise((resolve, reject) => {
                   if (/<img\s[^>]*>/.test(value)) {
                     reject(
