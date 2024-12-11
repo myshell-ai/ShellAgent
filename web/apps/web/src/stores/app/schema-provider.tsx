@@ -5,6 +5,7 @@ import { useMemo, useEffect, useState } from 'react';
 import { useContextSelector, createContext } from 'use-context-selector';
 
 import { JsonSchema7 } from '@/services/workflow/type';
+import { getIntroSchema } from '@/stores/app/utils/get-intro-schema';
 import { getStateSchema } from '@/stores/app/utils/get-state-schema';
 import { getSchemaByWidget } from '@/stores/app/utils/get-widget-schema';
 import { useWorkflowStore } from '@/stores/workflow/workflow-provider';
@@ -105,6 +106,10 @@ export const SchemaProvider: React.FC<SchemaProviderProps> = ({
       return getStateSchema(display_name);
     }
 
+    if (type === NodeTypeEnum.intro) {
+      return getIntroSchema(display_name);
+    }
+
     if (!name || !display_name || isEmpty(widgetSchema?.[name])) {
       return {};
     }
@@ -114,7 +119,6 @@ export const SchemaProvider: React.FC<SchemaProviderProps> = ({
       output_schema: widgetSchema?.[name]?.output_schema,
     });
   }, [id, name, display_name, widgetSchema, type]);
-
   const outputSchema = useMemo(
     () => widgetSchema?.[name]?.output_schema,
     [widgetSchema, name],

@@ -1,3 +1,5 @@
+import { TValue } from '.';
+
 export declare type ValidatorFormats =
   | 'url'
   | 'email'
@@ -32,5 +34,10 @@ export interface IValidatorRules {
   maxProperties?: number;
   minProperties?: number;
   message?: string;
+  warningOnly?: boolean;
+  validator?: (
+    rule: IValidatorRules,
+    value: TValue,
+  ) => Promise<void | any> | void;
   [key: string]: any;
 }

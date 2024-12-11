@@ -1,6 +1,7 @@
 import { z } from 'zod';
+import { isEmpty } from 'lodash-es';
 
-import { ISchema } from '../types';
+import { ISchema, TValue } from '../types';
 import { IValidatorRules } from '../types/validator';
 
 function genStringFormat(
@@ -184,4 +185,19 @@ export function createValidator(schema: ISchema) {
   }
 
   return ret;
+}
+
+export async function getFirstError(
+  rules: IValidatorRules[],
+  value: TValue,
+): Promise<any | null> {
+  if (isEmpty(value)) {
+    return null;
+  }
+  try {
+    await Promise.race(rules.map(rule => rule?.validator?.(rule, value)));
+    return null;
+  } catch (error: any) {
+    return error.message || error;
+  }
 }

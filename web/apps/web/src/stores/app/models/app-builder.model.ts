@@ -1,4 +1,8 @@
-import type { IFlow, ReactFlowInstance } from '@shellagent/flow-engine';
+import {
+  NodeIdEnum,
+  type IFlow,
+  type ReactFlowInstance,
+} from '@shellagent/flow-engine';
 import type { TFieldMode } from '@shellagent/form-engine';
 import { CustomKey, CustomEventName, Automata } from '@shellagent/pro-config';
 import {
@@ -12,7 +16,7 @@ import {
 } from '@shellagent/shared/protocol/app-scope';
 import type { FieldValues } from '@shellagent/ui';
 import { injectable, inject } from 'inversify';
-import { isEmpty } from 'lodash-es';
+import { isEmpty, set } from 'lodash-es';
 import { action, makeObservable, observable, runInAction } from 'mobx';
 
 import { AppBuilderChatModel } from '@/components/chat/app-builder-chat.model';
@@ -227,10 +231,24 @@ export class AppBuilderModel {
         config = {} as Config,
         metadata,
       } = await fetchFlow(params);
-
       if (instance) {
+        const initialState = reactflow.edges?.find(
+          item => item.source === NodeIdEnum.start,
+        )?.target;
+
         instance.setNodes(
-          reactflow?.nodes.length ? reactflow.nodes : defaultFlow.nodes,
+          reactflow?.nodes.length
+            ? reactflow.nodes.map(item => {
+                if (
+                  item.id === initialState &&
+                  item.type !== NodeIdEnum.intro
+                ) {
+                  set(item, 'type', NodeIdEnum.intro);
+                  set(item, 'data.type', NodeIdEnum.intro);
+                }
+                return item;
+              })
+            : defaultFlow.nodes,
         );
         instance.setEdges(
           reactflow?.edges.length ? reactflow.edges : defaultFlow.edges,

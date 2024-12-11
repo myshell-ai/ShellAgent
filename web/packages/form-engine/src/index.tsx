@@ -20,6 +20,7 @@ import {
   ISchema,
   SchemaReactComponents,
   TValues,
+  TValue,
   TMode,
   TFieldMode,
 } from './types';
@@ -130,6 +131,8 @@ const FieldsSlot: React.FC<{ children: React.ReactNode }> = ({ children }) => {
 const MemoizedFormEngine = React.memo(FormEngine, () => true);
 
 export { FormEngine, FieldsSlot, MemoizedFormEngine, useFormEngineContext };
-export type { ISchema, TValues, TFieldMode };
+export type { ISchema, TValues, TFieldMode, TValue };
+export * from './types/validator';
 export * from './utils/generate-schema';
 export * from './utils/resolve-refs';
+export { getFirstError } from './utils/validator';

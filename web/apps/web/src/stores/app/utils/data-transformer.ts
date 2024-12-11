@@ -1,5 +1,7 @@
 import { IFlow, NodeIdEnum, NodeTypeEnum } from '@shellagent/flow-engine';
 import { Automata, State } from '@shellagent/pro-config';
+import { TValue } from '@shellagent/form-engine';
+import { get } from 'lodash-es';
 
 import {
   EdgeDataTypeEnum,
@@ -57,8 +59,19 @@ export const genNodeData = (automata: Automata): NodeDataType => {
   };
 
   if (automata.blocks) {
-    Object.entries(automata.blocks).forEach(([key, block]) => {
-      if (block.type === 'state') {
+    Object.entries(automata.blocks).forEach(([key, block], index) => {
+      if (key === automata.initial) {
+        const state = block as State;
+        nodeData[key as Lowercase<string>] = {
+          id: key,
+          type: NodeTypeEnum.intro,
+          name: state.name,
+          render: state.render,
+          inputs: {},
+          outputs: {},
+          blocks: [],
+        };
+      } else if (block.type === 'state') {
         const state = block as State;
         nodeData[key as Lowercase<string>] = {
           id: key,
@@ -95,7 +108,10 @@ export const genAutomata: (
   const blocks: Automata['blocks'] = {};
 
   flow.nodes
-    .filter(node => node.type === NodeTypeEnum.state)
+    .filter(
+      node =>
+        node.type === NodeTypeEnum.state || node.type === NodeTypeEnum.intro,
+    )
     .forEach(node => {
       const transitions: Record<string, any> = {};
       const targetEdges = (flow.edges as ICustomEdge[]).filter(
@@ -125,7 +141,10 @@ export const genAutomata: (
       });
 
       blocks[node.id as Lowercase<string>] = {
-        type: nodeData[node.id]?.type || 'state',
+        type:
+          nodeData[node.id]?.type === 'intro'
+            ? 'state'
+            : nodeData[node.id]?.type || 'state',
         name: nodeData[node.id]?.name,
         render: nodeData[node.id]?.render,
         blocks: nodeData[node.id]?.blocks?.map((item: any) => ({
@@ -150,4 +169,34 @@ export const genAutomata: (
     blocks,
     transitions: {},
   });
+};
+
+export const replaceContextByAutomata = (value: TValue, automata: Automata) => {
+  if (typeof value === 'string') {
+    const arrayMatch = value.match(/\{\{\s*\[([^\]]+)\]\s*\}\}/);
+    if (arrayMatch) {
+      const items = arrayMatch[1].split(/,\s*/).map(item =>
+        item.trim().replace(/__context__([a-z0-9_]+)__/g, (match, key) => {
+          const field: TValue = get(automata, ['context', key]);
+          if (field) {
+            return typeof field === 'object' ? field.value : field;
+          }
+          return match;
+        }),
+      );
+      return items;
+    }
+
+    return value.replace(
+      /\{\{\s*__context__([a-z0-9_]+)__\s*\}\}/g,
+      (match, key) => {
+        const field: TValue = get(automata, ['context', key]);
+        if (field) {
+          return typeof field === 'object' ? field.value : field;
+        }
+        return match;
+      },
+    );
+  }
+  return value;
 };

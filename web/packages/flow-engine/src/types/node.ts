@@ -10,6 +10,7 @@ export enum NodeTypeEnum {
   end = 'end',
   widget = 'widget',
   state = 'state',
+  intro = 'intro',
   workflow = 'workflow',
 }
 
@@ -20,6 +21,7 @@ export type DataType = keyof typeof DataTypeEnum;
 export enum NodeIdEnum {
   start = '@@@start',
   end = '@@@end',
+  intro = 'intro',
 }
 
 // 节点id通过uuid生成
@@ -29,7 +31,11 @@ export type StateNodeId = `key_${string}`;
 export type NodeName = `${string}#${number}`;
 
 // start和end节点唯一
-export type NodeId = WidgetNodeId | NodeIdEnum.start | NodeIdEnum.end;
+export type NodeId =
+  | WidgetNodeId
+  | NodeIdEnum.start
+  | NodeIdEnum.end
+  | NodeIdEnum.intro;
 
 export enum NodeStatusEnum {
   start = 'start',
@@ -76,6 +82,10 @@ export type StateNode = CommonNode & {
   type: 'state';
 };
 
+export type IntroNode = CommonNode & {
+  type: 'intro';
+};
+
 // 全量的自定义节点data数据
 
-export type NodeData = StartNode | EndNode | WidgetNode | StateNode;
+export type NodeData = StartNode | EndNode | WidgetNode | StateNode | IntroNode;
