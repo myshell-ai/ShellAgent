@@ -1231,7 +1231,9 @@ const stateConfigSchema: ISchema = {
                 return new Promise((resolve, reject) => {
                   if (/<img\s[^>]*>/.test(value)) {
                     reject(
-                      'The <img> tag will be deprecated in the future. Please use Message.Image to render images instead.',
+                      new Error(
+                        'The <img> tag will be deprecated in the future. Please use Message.Image to render images instead.',
+                      ),
                     );
                   } else {
                     resolve(true);
@@ -1326,13 +1328,17 @@ const introConfigSchema: ISchema = {
                 return new Promise((resolve, reject) => {
                   if (/<img\s[^>]*>/.test(value)) {
                     reject(
-                      'The <img> tag will be deprecated in the future. Please use Message.Image to render images instead.',
+                      new Error(
+                        'The <img> tag will be deprecated in the future. Please use Message.Image to render images instead.',
+                      ),
                     );
                   } else if (
                     (value?.replace(/<[^>]*>/g, '')?.trim()?.length || 0) > 320
                   ) {
                     reject(
-                      'The text may be too long. Please make sure the message fits within the iOS screen size.',
+                      new Error(
+                        'The text may be too long. Please make sure the message fits within the iOS screen size.',
+                      ),
                     );
                   } else {
                     resolve(true);
@@ -1391,7 +1397,9 @@ const introConfigSchema: ISchema = {
               validator(rule, value) {
                 return new Promise((resolve, reject) => {
                   if (value?.length > 4) {
-                    reject('Limit the number of buttons to 4 or fewer.');
+                    reject(
+                      new Error('Limit the number of buttons to 4 or fewer.'),
+                    );
                   } else {
                     resolve(true);
                   }
