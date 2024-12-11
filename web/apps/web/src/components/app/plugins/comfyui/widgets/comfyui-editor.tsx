@@ -35,7 +35,11 @@ export const ComfyUIEditor = observer(
           type="sheet"
           initialValue={model.currentFormData?.location}
           onSubmit={v => {
+            // Because use observable form data + enableReinitialize to control form re-render
+            // we should do two things: 1) update outer data for automata and others
+            // 2) update observable form data
             setValue('location', v);
+            model.currentFormData.location = v;
           }}
         />
         <Button
