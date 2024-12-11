@@ -230,6 +230,17 @@ def comfyui_run(api, workflow, prompt, schemas, user_inputs):
                                 f.write(image_data)
                             images_output.append(save_path)
                         outputs[schemas["outputs"][node_id]["title"]] = images_output
+                    elif node_output_schema["items"].get("url_type") == "audio":
+                        images_output = []
+                        for image in node_output['audio']:
+                            image_data = get_media(http_address, image['filename'], image['subfolder'], image['type'])
+                            save_path = os.path.join(image["type"], image['subfolder'], image['filename'])
+                            os.makedirs(os.path.dirname(save_path), exist_ok=True)
+                            save_path = windows_to_linux_path(save_path)
+                            with open(save_path, "wb") as f:
+                                f.write(image_data)
+                            images_output.append(save_path)
+                        outputs[schemas["outputs"][node_id]["title"]] = images_output
                     elif node_output_schema["items"].get("url_type") == "video":
                         videos_output = []
                         for video_path in node_output['video']:
@@ -250,7 +261,16 @@ def comfyui_run(api, workflow, prompt, schemas, user_inputs):
                         os.makedirs(os.path.dirname(save_path), exist_ok=True)
                         with open(save_path, "wb") as f:
                             f.write(image_data)
-                        outputs[schemas["outputs"][node_id]["title"]] = save_path  
+                        outputs[schemas["outputs"][node_id]["title"]] = save_path 
+                    elif node_output_schema.get("url_type") == "audio":
+                        media = node_output['audio'][0]
+                        audio_data = get_media(http_address, media['filename'], media['subfolder'], media['type'])
+                        save_path = os.path.join(media["type"], media['subfolder'], media['filename'])
+                        save_path = windows_to_linux_path(save_path)
+                        os.makedirs(os.path.dirname(save_path), exist_ok=True)
+                        with open(save_path, "wb") as f:
+                            f.write(audio_data)
+                        outputs[schemas["outputs"][node_id]["title"]] = save_path 
                     elif node_output_schema.get("url_type") == "video":
                         video_path = node_output['video'][0]
                         output_dir, subfolder, filename = split_media_path(video_path)
@@ -299,6 +319,7 @@ def comfyui_run_myshell(workflow_id, inputs, extra_headers):
     }
     
     inputs = {k: v for k, v in inputs.items() if k not in ['callback', 'widget_run_id'] }
+
     data = {
         "workflow_id": workflow_id,
         "input": json.dumps(inputs)
