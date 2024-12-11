@@ -8,7 +8,7 @@ export async function validateImage(
     if (!image.length) {
       return Promise.resolve(true);
     } else if (image.length < 2) {
-      url = image[0];
+      url = image?.[0];
     } else {
       return Promise.reject(
         new Error('Avoid using multiple images in the intro message.'),
@@ -27,6 +27,7 @@ export async function validateImage(
     if (contentLength) {
       const fileSize = parseInt(contentLength, 10);
       if (fileSize > maxSize) {
+        // eslint-disable-next-line require-await
         return Promise.reject(new Error('Keep image file size under 1MB.'));
       }
     }
@@ -45,6 +46,7 @@ export async function validateImage(
       image.onerror = () => console.log('Failed to load image.');
     });
     await imageLoaded;
+    // eslint-disable-next-line require-await
     return Promise.resolve(true);
   } catch (error: any) {
     console.log('error: ', error);
