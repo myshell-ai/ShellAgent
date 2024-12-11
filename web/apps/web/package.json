@@ -20,10 +20,12 @@
     "@dagrejs/dagre": "^1.1.4",
     "@emotion/react": "^11.13.0",
     "@emotion/styled": "^11.13.0",
+    "@floating-ui/react": "^0.27.0",
     "@heroicons/react": "^2.1.5",
     "@lexical/link": "^0.21.0",
     "@lexical/list": "^0.21.0",
     "@lexical/react": "^0.16.0",
+    "@lexical/text": "^0.21.0",
     "@lexical/utils": "^0.21.0",
     "@microsoft/fetch-event-source": "^2.0.1",
     "@monaco-editor/react": "^4.6.0",
@@ -92,6 +94,7 @@
   "devDependencies": {
     "@shellagent/eslint-config": "workspace:*",
     "@shellagent/typescript-config": "workspace:*",
+    "@storybook/react": "^8.3.1",
     "@types/crypto-js": "^4.2.2",
     "@types/jest": "^29.4.0",
     "@types/lodash-es": "^4.17.12",
@@ -108,10 +111,9 @@
     "jest": "^29.4.1",
     "postcss": "^8.4.41",
     "raw-loader": "^4.0.2",
+    "storybook": "^8.3.1",
     "tailwindcss": "^3.4.10",
     "ts-jest": "^29.0.5",
-    "typescript": "~5.3.3",
-    "@storybook/react": "^8.3.1",
-    "storybook": "^8.3.1"
+    "typescript": "~5.3.3"
   }
 }

@@ -22,8 +22,8 @@ type Story = StoryObj<typeof Editor>;
 
 export const Default: Story = {
   args: {
-    onChange: editorState => {
-      console.log('editorState', editorState);
+    onChange: text => {
+      console.log('text', text);
     },
   },
 };
