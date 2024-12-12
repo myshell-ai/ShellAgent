@@ -232,7 +232,10 @@ export class AppBuilderModel {
         metadata,
       } = await fetchFlow(params);
       if (instance) {
-        const initialState = reactflow.edges?.find(
+        const edges = reactflow?.edges.length
+          ? reactflow.edges
+          : defaultFlow.edges;
+        const initialState = edges?.find(
           item => item.source === NodeIdEnum.start,
         )?.target;
 
@@ -250,9 +253,7 @@ export class AppBuilderModel {
               })
             : defaultFlow.nodes,
         );
-        instance.setEdges(
-          reactflow?.edges.length ? reactflow.edges : defaultFlow.edges,
-        );
+        instance.setEdges(edges);
         instance.setViewport(reactflow?.viewport || defaultFlow.viewport);
       }
 
