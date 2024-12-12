@@ -200,3 +200,23 @@ export const replaceContextByAutomata = (value: TValue, automata: Automata) => {
   }
   return value;
 };
+
+export const formatReactFlow = (reactflow: IFlow) => {
+  return {
+    ...reactflow,
+    nodes: reactflow?.nodes?.map(item => {
+      // 版本兼容
+      if (item.type === NodeTypeEnum.intro) {
+        return {
+          ...item,
+          type: NodeTypeEnum.state,
+          data: {
+            ...item.data,
+            type: NodeTypeEnum.state,
+          },
+        };
+      }
+      return item;
+    }),
+  };
+};
