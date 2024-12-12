@@ -116,7 +116,7 @@ def check_dependency_recursive(config, non_existed_models: list, missing_models:
                 if getattr(config, "location", None): # location
                     config.comfy_workflow_id = comfy_workflow_path_id_map.get(config.location, generate_comfyui_workflow_id())
                     comfy_workflow_path_id_map[config.location] = config.comfy_workflow_id
-                    del config.location
+                    config.location = None
                 if config.comfy_workflow_id not in comfyui_workflow_ids:
                     comfyui_workflow_ids.append(config.comfy_workflow_id)
                 return # models in ComfyWorkflowTask already checked
