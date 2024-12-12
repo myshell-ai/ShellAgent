@@ -1,13 +1,14 @@
 import PlusIcon from '@heroicons/react/24/outline/esm/PlusIcon';
 import { useReactFlowStore } from '@shellagent/flow-engine';
 import { Button as IButtonType } from '@shellagent/shared/protocol/render-button';
-import { getButtonDisplayName, getEventKey } from '@shellagent/shared/utils';
+import { getButtonDisplayName } from '@shellagent/shared/utils';
 import { Button, XMark, IconButton, useFormContext } from '@shellagent/ui';
 import { useHover } from 'ahooks';
 import clsx from 'clsx';
-import { useRef } from 'react';
+import { useRef, useCallback } from 'react';
 
 import { useAppState } from '@/stores/app/use-app-state';
+import { generateUUID } from '@/utils/common-helper';
 
 interface VariableNodeProps {
   name: string;
@@ -24,7 +25,13 @@ const ButtonItem = ({
   onDelete: (id: string) => void;
 }) => {
   const buttonRef = useRef<HTMLButtonElement>(null);
-  const hover = useHover(buttonRef);
+  const isHovered = useHover(buttonRef);
+
+  const handleDelete = (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.stopPropagation();
+    onDelete(data.id);
+  };
+
   return (
     <Button
       ref={buttonRef}
@@ -35,19 +42,14 @@ const ButtonItem = ({
       type="button"
       className={clsx(
         'relative border-default text-subtle rounded-full flex space-x-1.5 justify-between items-center',
-        {
-          '!bg-surface-hovered': hover,
-        },
+        { '!bg-surface-hovered': isHovered },
       )}>
       <div>{data.content}</div>
       <IconButton
         size="sm"
         icon={XMark}
         type="button"
-        onClick={e => {
-          e.stopPropagation();
-          onDelete(data.id);
-        }}
+        onClick={handleDelete}
         className="h-4.5 w-4.5"
         color="brand"
         variant="ghost"
@@ -61,51 +63,65 @@ const ButtonEditor = ({ name, onChange }: VariableNodeProps) => {
   const { getValues } = useFormContext();
   const value = getValues(name) as IButtonType[];
 
-  const edges = useReactFlowStore(state => state.edges);
-  const onDelEdge = useReactFlowStore(state => state.onDelEdge);
+  const { edges, onDelEdge } = useReactFlowStore(state => ({
+    edges: state.edges,
+    onDelEdge: state.onDelEdge,
+  }));
 
-  const handleAddButton = (e: React.MouseEvent<HTMLButtonElement>) => {
-    e.stopPropagation();
-    const content = getButtonDisplayName(value);
-    const event = getEventKey(content);
-    onChange([
-      ...(value || []),
-      {
-        content,
-        on_click: { event, payload: {} },
-        id: event,
-        description: '',
-      },
-    ]);
-  };
+  const handleButtonClick = useCallback(
+    (buttonId: string) => (e: React.MouseEvent<HTMLButtonElement>) => {
+      e.stopPropagation();
+      setInsideSheetOpen({
+        stateId: currentStateId,
+        open: true,
+        mode: 'button',
+        buttonId,
+      });
+    },
+    [currentStateId, setInsideSheetOpen],
+  );
+
+  const handleDeleteButton = useCallback(
+    (button: IButtonType) => {
+      edges.forEach(edge => {
+        if (
+          edge.source === currentStateId &&
+          edge.data?.event_key === button.on_click?.event
+        ) {
+          onDelEdge({ id: edge.id });
+        }
+      });
+      onChange(value.filter(item => item.id !== button.id));
+    },
+    [currentStateId, edges, onDelEdge, onChange, value],
+  );
+
+  const handleAddButton = useCallback(
+    (e: React.MouseEvent<HTMLButtonElement>) => {
+      e.stopPropagation();
+      const content = getButtonDisplayName(value);
+      const id = generateUUID() as Lowercase<string>;
+      onChange([
+        ...(value || []),
+        {
+          content,
+          on_click: { event: id, payload: {} },
+          id,
+          description: '',
+        },
+      ]);
+    },
+    [value, onChange],
+  );
 
   return (
     <div className="flex flex-wrap gap-3 items-center">
       {value?.map?.(button => (
         <ButtonItem
-          data={button}
           key={button.id}
-          onClick={e => {
-            e.stopPropagation();
-            setInsideSheetOpen({
-              stateId: currentStateId,
-              open: true,
-              mode: 'button',
-              buttonId: button.id,
-            });
-          }}
-          onDelete={id => {
-            edges.forEach(edge => {
-              if (
-                edge.source === currentStateId &&
-                edge.data?.event_key === button.on_click?.event
-              ) {
-                onDelEdge({ id: edge.id });
-              }
-            });
-
-            onChange(value.filter(item => item.id !== id));
-          }}
+          data={button}
+          onClick={handleButtonClick(button.id)}
+          onDelete={() => handleDeleteButton(button)}
         />
       ))}
       <Button

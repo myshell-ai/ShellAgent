@@ -293,6 +293,7 @@ async def export_app(data: dict):
     
     except Exception as e:
         error_message = str(traceback.format_exc())
+        print(error_message)
         results = {
             "data": {},
             "success": False,
@@ -348,13 +349,21 @@ async def init_bot(data: dict):
         error_message = str(traceback.format_exc())
         return_data = {
             "session_id": None,
-            "message": error_message
+            "message": str(traceback.format_exc()),
+            "message_detail": str(e),
         }
 
     return JSONResponse(content=return_data)
     
 
 sess_states: Dict[str, SessionState] = {}
+
+class RuntimeData(BaseModel):
+    automata: Automata
+    sess_state: SessionState
+    event_data: RunAppRequest
+    
+trace_id_to_runtime_data_map: Dict[str, RuntimeData] = {}
 
 # SSE
 clients = []
@@ -394,6 +403,13 @@ async def app_run(event_data: RunAppRequest):
 
     environ = sess_state.environ
     environ["CURRENT_TASK_ID"] = sess_id
+    environ["trace_id"] = task_id # for error reporting
+    
+    trace_id_to_runtime_data_map[environ["trace_id"]] = RuntimeData(
+        automata=automata, 
+        sess_state=sess_state,
+        event_data=event_data
+    )
 
     # Define generator for streaming
     def generate(client_queue):
@@ -644,6 +660,7 @@ def execute_automata(task_id, client_queue, automata, payload, sess_id, sess_sta
         
     create_time = time.time()
     runner = Runner(callback=callback)
+    trace_id = sess_state.environ["CURRENT_TASK_ID"]
     try:
         sess_state, render = runner.run_automata(automata, sess_state, payload)
         # add message count
@@ -658,7 +675,9 @@ def execute_automata(task_id, client_queue, automata, payload, sess_id, sess_sta
             "error_message": e.error_head,
             "error_message_detail": e.traceback
         }
-        callback('state_exit', outputs={"runningError": e.format_dict(), **error_messages}, create_time=create_time, finish_time=time.time(), task_status="failed")
+        error_dict = e.format_dict()
+        error_dict["trace_id"] = trace_id
+        callback('state_exit', outputs={"runningError": error_dict, **error_messages}, create_time=create_time, finish_time=time.time(), task_status="failed")
     except Exception as e:
         error_message_detail = traceback.format_exc()
         error_message = str(e)
@@ -667,7 +686,9 @@ def execute_automata(task_id, client_queue, automata, payload, sess_id, sess_sta
             "error_message": error_message,
             "error_message_detail": error_message_detail
         }
-        callback('state_exit', outputs={"runningError": empty_exception.format_dict(), **error_messages}, create_time=create_time, finish_time=time.time(), task_status="failed")
+        error_dict = empty_exception.format_dict()
+        error_dict["trace_id"] = trace_id
+        callback('state_exit', outputs={"runningError": error_dict, **error_messages}, create_time=create_time, finish_time=time.time(), task_status="failed")
     finally:
         assert tasks_queue[0] == task_id
         tasks_queue.pop(0)

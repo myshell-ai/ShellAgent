@@ -52,7 +52,7 @@ import { defaultFlow } from '../../../components/app/constants';
 @injectable()
 export class AppBuilderModel {
   nodeData: NodeDataType = {};
-  metadata: Metadata = {
+  @observable metadata: Metadata = {
     name: '',
     description: '',
   };
@@ -461,6 +461,35 @@ export class AppBuilderModel {
   setVersionName(versionName: string) {
     runInAction(() => {
       this.versionName = versionName;
+    });
+  }
+
+  @action.bound
+  setEdgeDataByEventKey(prevEventKey: string, newEdgeKey: string) {
+    const setEdges = this.flowInstance?.setEdges;
+
+    setEdges?.(state => {
+      const targetEdge = state.find(
+        edge => edge.data?.event_key === prevEventKey,
+      );
+
+      if (targetEdge) {
+        // 创建新的边数组，将目标边的 event_key 更新为新值
+        return state.map(edge => {
+          if (edge.data?.event_key === prevEventKey) {
+            return {
+              ...edge,
+              data: {
+                ...edge.data,
+                event_key: newEdgeKey,
+              },
+            };
+          }
+          return edge;
+        });
+      }
+
+      return state;
     });
   }
 }

@@ -6,6 +6,7 @@ import {
   stateSchema,
 } from '@shellagent/shared/protocol/app-scope';
 import { reservedStateNameSchema } from '@shellagent/shared/protocol/node';
+import { Button as IButtonType } from '@shellagent/shared/protocol/render-button';
 import { mapValues, isEmpty } from 'lodash-es';
 
 export interface CascaderOption {
@@ -55,18 +56,21 @@ export function convertNodeDataToState(nodeData: any): State {
         ),
         render: {
           buttons: Object.fromEntries(
-            (nodeData.render?.buttons || []).map((button: any) => {
-              const [name, evt] = button.id.split('.');
-              return [
-                name,
-                {
-                  event: button.id,
-                  payload: mapValues(button[evt]?.payload, v => ({
-                    type: v.type,
-                    display_name: v.name,
-                  })),
-                },
-              ];
+            (nodeData.render?.buttons || []).map((button: IButtonType) => {
+              const { content } = button;
+              if (!isEmpty(button?.on_click?.payload)) {
+                return [
+                  content,
+                  {
+                    event: button.on_click.event,
+                    payload: mapValues(button?.on_click?.payload, v => ({
+                      type: v.type,
+                      display_name: v.name,
+                    })),
+                  },
+                ];
+              }
+              return [content, {}];
             }),
           ),
         },
@@ -270,7 +274,7 @@ export function convertRefOptsToCascaderOpts(
 export function fieldsModeMap2Refs(map: Record<string, any>) {
   const result: Record<string, any> = {};
 
-  Object.entries(map).forEach(([key, value]) => {
+  Object.entries(map || {}).forEach(([key, value]) => {
     // 处理包含UUID的特殊情况
     if (key.includes('.')) {
       const [baseKey, ...rest] = key.split('.');
