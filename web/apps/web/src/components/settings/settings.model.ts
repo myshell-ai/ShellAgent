@@ -7,11 +7,11 @@ import { EmitterModel } from '@/utils/emitter.model';
 import { ModalModel } from '@/utils/modal.model';
 
 import {
+  DefaultEnvs,
+  DefaultEnvsMap,
   loadSettingEnvFormUrl,
   saveSettingEnvFormUrl,
   SettingEnvFormValue,
-  DefaultEnvs,
-  DefaultEnvsMap,
 } from './settings-definitions';
 
 export type SidebarValue = 'Environment' | 'SoftwareUpdate';
@@ -44,6 +44,30 @@ const formatEnvs2Api = (envs: SettingEnvFormValue['envs']) => {
 
 @injectable()
 export class SettingsModel {
+  isFormikReadyPromise: Promise<unknown>;
+  @observable sidebar?: SidebarValue = undefined;
+  @observable isAutoCheck = true;
+  @observable isAutoCheckLoading = false;
+  @observable isBetaCheck = true;
+  @observable isBetaCheckLoading = false;
+  @observable isChecking = false;
+  @observable isUpdating = false;
+  @observable checkedStatus: 'newUpdate' | 'latest' | null = null;
+  @observable isToRestart = false;
+  @observable isRestarting = false;
+  @observable isLoadLoading = false;
+  @observable checkRet: Partial<{
+    has_new_stable: true;
+    target_release_date: string;
+    current_version: string;
+    latest_tag_name: string;
+    changelog: string;
+  }> = {};
+  @observable lastChecktime = '';
+  @observable envs: Map<string, string> = new Map();
+  private isFormikReadyPromiseResolve: ((value: unknown) => void) | undefined;
+  private formikProps: FormikProps<any> | undefined;
+
   constructor(
     @inject(EmitterModel) private emitter: EmitterModel,
     @inject(ModalModel) public modal: ModalModel,
@@ -61,48 +85,12 @@ export class SettingsModel {
     this.loadSettingsEnv(); // @joe compatible
   }
 
-  isFormikReadyPromise: Promise<unknown>;
-
-  private isFormikReadyPromiseResolve: ((value: unknown) => void) | undefined;
-
-  private formikProps: FormikProps<any> | undefined;
-
-  @observable sidebar?: SidebarValue = undefined;
-
-  @observable isAutoCheck = true;
-
-  @observable isAutoCheckLoading = false;
-
-  @observable isChecking = false;
-
-  @observable isUpdating = false;
-
-  @observable checkedStatus: 'newUpdate' | 'latest' | null = null;
-
-  @observable isToRestart = false;
-
-  @observable isRestarting = false;
-
-  @observable isLoadLoading = false;
-
-  @observable checkRet: Partial<{
-    has_new_stable: true;
-    target_release_date: string;
-    current_version: string;
-    latest_tag_name: string;
-    changelog: string;
-  }> = {};
-
-  @observable lastChecktime = '';
-
   @action.bound
   autoCheck() {
     if (this.isAutoCheck) {
       this.checkNow();
     }
   }
-
-  @observable envs: Map<string, string> = new Map();
 
   @action.bound
   setSidebar(v: SidebarValue) {
@@ -154,6 +142,48 @@ export class SettingsModel {
     } catch (e: any) {
       this.emitter.emitter.emit('message.error', e.message);
       return false;
+    }
+  }
+
+  @action.bound
+  async getIsBetaCheck() {
+    if (process.env.NEXT_PUBLIC_DISABLE_SOFTWARE_UPDATE === 'yes') {
+      return false;
+    }
+    try {
+      const res = await axios.get(`/api/update_channel`, {
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+      this.isBetaCheck = res.data.update_channel !== 'stable';
+      return this.isBetaCheck;
+    } catch (e: any) {
+      this.emitter.emitter.emit('message.error', e.message);
+      return false;
+    }
+  }
+
+  @action.bound
+  async setBetaCheck(isBetaCheck: boolean) {
+    try {
+      this.isBetaCheckLoading = true;
+      await axios.post(
+        `/api/update_channel`,
+        {
+          update_channel: isBetaCheck ? 'next' : 'stable',
+        },
+        {
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        },
+      );
+      this.isBetaCheck = isBetaCheck;
+    } catch (e: any) {
+      this.emitter.emitter.emit('message.error', e.message);
+    } finally {
+      this.isBetaCheckLoading = false;
     }
   }
 
@@ -249,7 +279,7 @@ export class SettingsModel {
   async updateNow() {
     try {
       this.isUpdating = true;
-      await axios.get(`/api/update/stable`, {
+      await axios.get(`/api/update`, {
         headers: {
           'Content-Type': 'application/json',
         },
