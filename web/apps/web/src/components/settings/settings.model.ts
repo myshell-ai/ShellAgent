@@ -180,6 +180,7 @@ export class SettingsModel {
         },
       );
       this.isBetaCheck = isBetaCheck;
+      this.checkedStatus = null;
     } catch (e: any) {
       this.emitter.emitter.emit('message.error', e.message);
     } finally {
