@@ -12,7 +12,10 @@ interface P {
 }
 
 export default function WarningValidate({ rules, value }: P) {
-  const [warning, setWarning] = useState<null | string>(null);
+  const [warning, setWarning] = useState<null | {
+    message: string;
+    critical?: boolean;
+  }>(null);
 
   const getDebounceError = debounce(() => {
     getFirstError(rules, value)
@@ -20,7 +23,9 @@ export default function WarningValidate({ rules, value }: P) {
         setWarning(resp);
       })
       .catch(err => {
-        setWarning(err?.message || err);
+        setWarning({
+          message: err?.message || err,
+        });
       });
   }, 500);
 
@@ -31,5 +36,9 @@ export default function WarningValidate({ rules, value }: P) {
     };
   }, [value]);
 
-  return <Text color="warning">{warning}</Text>;
+  return (
+    <Text color={warning?.critical ? 'critical' : 'warning'}>
+      {warning?.message}
+    </Text>
+  );
 }

@@ -34,6 +34,7 @@ export interface IValidatorRules {
   maxProperties?: number;
   minProperties?: number;
   message?: string;
+  critical?: boolean;
   warningOnly?: boolean;
   validator?: (
     rule: IValidatorRules,

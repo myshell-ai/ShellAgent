@@ -282,24 +282,25 @@ const Control: React.FC<IControlProps> = props => {
                     undefined.
                   </Text>
                 ) : null}
-                {Array.isArray(warningRules) && warningRules.length ? (
-                  xValidatorRender ? (
-                    React.createElement(components[xValidatorRender], {
-                      rules: warningRules,
-                      value: newField[valuePropsName],
-                    })
-                  ) : (
-                    <WarningValidate
-                      rules={warningRules}
-                      value={newField[valuePropsName]}
-                    />
-                  )
-                ) : null}
               </div>
             );
+          const Wraning =
+            Array.isArray(warningRules) && warningRules.length ? (
+              xValidatorRender ? (
+                React.createElement(components[xValidatorRender], {
+                  rules: warningRules,
+                  value: newField[valuePropsName],
+                })
+              ) : (
+                <WarningValidate
+                  rules={warningRules}
+                  value={newField[valuePropsName]}
+                />
+              )
+            ) : null;
 
           return (
-            <FormItem layout={layout}>
+            <FormItem layout={layout} className="flex-wrap">
               {xRaw || titleControl ? (
                 <div className={cn('flex items-center w-full gap-x-2')}>
                   <div
@@ -369,9 +370,14 @@ const Control: React.FC<IControlProps> = props => {
                   </div>
                 </div>
               ) : null}
-              {layout === 'Horizontal' || (xRaw && !titleControl)
-                ? null
-                : FormItemWithDesc}
+              {layout === 'Horizontal' || (xRaw && !titleControl) ? (
+                <div className="w-full !ml-0">{Wraning}</div>
+              ) : (
+                <>
+                  {FormItemWithDesc}
+                  {Wraning}
+                </>
+              )}
             </FormItem>
           );
         }}

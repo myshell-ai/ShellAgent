@@ -10,7 +10,6 @@ import { useInjection } from 'inversify-react';
 import React, { useEffect, useState } from 'react';
 
 import {
-  contextTempReg,
   genAutomata,
   replaceContextByAutomata,
 } from '@/stores/app/utils/data-transformer';
@@ -22,10 +21,13 @@ interface ValidateRenderProps {
 }
 
 function ValidateRender({ rules, value }: ValidateRenderProps) {
-  const [warning, setWarning] = useState<null | string>(null);
+  const [warning, setWarning] = useState<null | {
+    message: string;
+    critical?: boolean;
+  }>(null);
   const appBuilder = useInjection<AppBuilderModel>('AppBuilderModel');
 
-  const getDebounceError = debounce(() => {
+  const getDebounceError = debounce(async () => {
     const reactflow = appBuilder.flowInstance?.toObject() as IFlow;
     const automata = genAutomata(reactflow, appBuilder.nodeData);
     const content = replaceContextByAutomata(value, automata);
@@ -34,7 +36,9 @@ function ValidateRender({ rules, value }: ValidateRenderProps) {
         setWarning(resp);
       })
       .catch(err => {
-        setWarning(err?.message || err);
+        setWarning({
+          message: err?.message || err,
+        });
       });
   }, 500);
 
@@ -45,7 +49,11 @@ function ValidateRender({ rules, value }: ValidateRenderProps) {
     };
   }, [value]);
 
-  return <Text color="warning">{warning}</Text>;
+  return (
+    <Text color={warning?.critical ? 'critical' : 'warning'}>
+      {warning?.message}
+    </Text>
+  );
 }
 
 export { ValidateRender };

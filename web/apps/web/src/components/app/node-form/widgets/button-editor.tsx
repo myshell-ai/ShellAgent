@@ -56,7 +56,6 @@ const ButtonItem = ({
       }
 
       onButtonMove(dragIndex, hoverIndex);
-      console.log(dragIndex, hoverIndex, isDragging);
       item.index = hoverIndex;
     },
   });
@@ -156,7 +155,6 @@ const ButtonEditor = ({ name, onChange }: VariableNodeProps) => {
       const result = Array.from(value);
       const [removed] = result.splice(startIndex, 1);
       result.splice(endIndex, 0, removed);
-      console.log('value: ', value, startIndex, endIndex, result);
       onChange(result);
     },
     [value, onChange],

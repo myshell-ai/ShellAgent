@@ -17,7 +17,7 @@ export async function validateImage(
   } else {
     url = image;
   }
-  if (!url) {
+  if (!url || url === '/') {
     return Promise.resolve(true);
   }
   const apiUrl = url?.startsWith('/api/files') ? url : `/api/files/${url}`;

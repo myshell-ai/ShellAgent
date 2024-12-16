@@ -1226,12 +1226,13 @@ const stateConfigSchema: ISchema = {
           'x-validator': [
             {
               warningOnly: true,
+              critical: true,
               validator(rule, value) {
                 return new Promise((resolve, reject) => {
                   if (/<img\s[^>]*>/.test(value)) {
                     reject(
                       new Error(
-                        'The <img> tag will be deprecated in the future. Please use Message.Image to render images instead.',
+                        'The <img> tag is deprecated. Please use Message.Image to render images instead.',
                       ),
                     );
                   } else {
@@ -1322,16 +1323,27 @@ const introConfigSchema: ISchema = {
           'x-raw-default': FieldModeEnum.Enum.ui,
           'x-validator': [
             {
+              critical: true,
               warningOnly: true,
               validator(rule, value) {
                 return new Promise((resolve, reject) => {
                   if (/<img\s[^>]*>/.test(value)) {
                     reject(
                       new Error(
-                        'The <img> tag will be deprecated in the future. Please use Message.Image to render images instead.',
+                        'The <img> tag is deprecated. Please use Message.Image to render images instead.',
                       ),
                     );
-                  } else if (
+                  } else {
+                    resolve(true);
+                  }
+                });
+              },
+            },
+            {
+              warningOnly: true,
+              validator(rule, value) {
+                return new Promise((resolve, reject) => {
+                  if (
                     (value?.replace(/<[^>]*>/g, '')?.trim()?.length || 0) > 320
                   ) {
                     reject(

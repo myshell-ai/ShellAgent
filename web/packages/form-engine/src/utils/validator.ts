@@ -190,14 +190,40 @@ export function createValidator(schema: ISchema) {
 export async function getFirstError(
   rules: IValidatorRules[],
   value: TValue,
-): Promise<any | null> {
+): Promise<{
+  message: string;
+  critical?: boolean;
+} | null> {
   if (isEmpty(value)) {
     return null;
   }
+  const criticalRules: IValidatorRules[] = [];
+  const warningRules: IValidatorRules[] = [];
+  rules.forEach(item => {
+    if (item.critical) {
+      criticalRules.push(item);
+    } else {
+      warningRules.push(item);
+    }
+  });
   try {
-    await Promise.race(rules.map(rule => rule?.validator?.(rule, value)));
-    return null;
+    await Promise.race(
+      criticalRules.map(rule => rule?.validator?.(rule, value)),
+    );
   } catch (error: any) {
-    return error.message || error;
+    return {
+      message: error.message || error,
+      critical: true,
+    };
   }
+  try {
+    await Promise.race(
+      warningRules.map(rule => rule?.validator?.(rule, value)),
+    );
+  } catch (error: any) {
+    return {
+      message: error.message || error,
+    };
+  }
+  return null;
 }
