@@ -19,7 +19,10 @@ export const useSelectOptions = (name?: string) => {
   const { refType, taskIndex } = useMemo(() => {
     let refType: RefType | null = null;
     let taskIndex: number | undefined;
-    if (parent?.startsWith(`${reservedKeySchema.Enum.condition}.`)) {
+    if (
+      parent?.startsWith(`${reservedKeySchema.Enum.condition}.`) ||
+      name?.startsWith(reservedKeySchema.Enum.condition)
+    ) {
       refType = refTypeSchema.Enum.target_input;
     } else if (parent?.startsWith(`${reservedKeySchema.Enum.inputs}.`)) {
       refType = refTypeSchema.Enum.state_input;

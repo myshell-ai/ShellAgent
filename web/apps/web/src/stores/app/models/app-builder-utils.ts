@@ -20,7 +20,7 @@ export interface CascaderOption {
 export function convertNodeDataToState(nodeData: any): State {
   const ret = {
     name: nodeData.id,
-    display_name: nodeData.name,
+    display_name: nodeData.display_name || nodeData.name,
     children: {
       inputs: {
         variables: Object.fromEntries(
@@ -132,49 +132,6 @@ export function convertRefOptsToCascaderOpts(
 ): CascaderOption[] {
   const cascaderOptions: CascaderOption[] = [];
 
-  const globalOptions: CascaderOption[] = [];
-  Object.entries(refOpts.global).forEach(([key, val]) => {
-    const val2 = refOptOutputGlobalSchema.parse(val);
-    const children: CascaderOption[] = Object.entries(val2.variables || {}).map(
-      ([variableKey, variable]) => {
-        let value;
-        let parent;
-        if (key === 'context') {
-          value = `{{__context__${variableKey}__}}`;
-          parent = 'context';
-        } else {
-          if (/__context__([a-z0-9_]+)__/g.test(variableKey)) {
-            value = `{{${variableKey}}}`;
-          } else {
-            value = `{{${key}.${variableKey}}}`;
-          }
-          parent = 'state';
-        }
-        return {
-          label: variable?.display_name || variableKey,
-          value,
-          field_type: variable?.type,
-          parent,
-        };
-      },
-    );
-
-    if (children.length > 0) {
-      globalOptions.push({
-        label: val2?.display_name,
-        value: val2?.display_name,
-        children,
-      });
-    }
-  });
-
-  if (globalOptions.length > 0) {
-    cascaderOptions.push({
-      label: 'global',
-      children: globalOptions,
-    });
-  }
-
   const localOptions: CascaderOption[] = [];
 
   if (!isEmpty(refOpts.local.buttons)) {
@@ -263,6 +220,49 @@ export function convertRefOptsToCascaderOpts(
     cascaderOptions.push({
       label: 'current',
       children: localOptions,
+    });
+  }
+
+  const globalOptions: CascaderOption[] = [];
+  Object.entries(refOpts.global).forEach(([key, val]) => {
+    const val2 = refOptOutputGlobalSchema.parse(val);
+    const children: CascaderOption[] = Object.entries(val2.variables || {}).map(
+      ([variableKey, variable]) => {
+        let value;
+        let parent;
+        if (key === 'context') {
+          value = `{{__context__${variableKey}__}}`;
+          parent = 'context';
+        } else {
+          if (/__context__([a-z0-9_]+)__/g.test(variableKey)) {
+            value = `{{${variableKey}}}`;
+          } else {
+            value = `{{${key}.${variableKey}}}`;
+          }
+          parent = 'state';
+        }
+        return {
+          label: variable?.display_name || variableKey,
+          value,
+          field_type: variable?.type,
+          parent,
+        };
+      },
+    );
+
+    if (children.length > 0) {
+      globalOptions.push({
+        label: val2?.display_name,
+        value: val2?.display_name,
+        children,
+      });
+    }
+  });
+
+  if (globalOptions.length > 0) {
+    cascaderOptions.push({
+      label: 'global',
+      children: globalOptions,
     });
   }
 

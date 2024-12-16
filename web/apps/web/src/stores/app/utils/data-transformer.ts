@@ -47,7 +47,10 @@ function formatTemplateString(data: any): any {
 }
 
 // 根据automata生成nodeData
-export const genNodeData = (automata: Automata): NodeDataType => {
+export const genNodeData = (
+  automata: Automata,
+  nodes: IFlow['nodes'],
+): NodeDataType => {
   const nodeData: NodeDataType = {
     [NodeIdEnum.start]: {
       id: NodeIdEnum.start,
@@ -60,10 +63,13 @@ export const genNodeData = (automata: Automata): NodeDataType => {
     Object.entries(automata.blocks).forEach(([key, block]) => {
       if (block.type === 'state') {
         const state = block as State;
+        const display_name = nodes.find(node => node.id === key)?.data
+          .display_name;
         nodeData[key as Lowercase<string>] = {
           id: key,
           type: NodeTypeEnum.state,
           name: state.name,
+          display_name,
           render: state.render,
           inputs: transformValuesToChoices(state.inputs),
           outputs: state.outputs,

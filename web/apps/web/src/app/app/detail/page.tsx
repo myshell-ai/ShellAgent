@@ -51,7 +51,7 @@ const FlowEngineWrapper = observer(
     const appBuilder = useInjection<AppBuilderModel>('AppBuilderModel');
     const flowRef = useRef<FlowRef>(null);
     const appBuilderChatModel = useInjection(AppBuilderChatModel);
-    const getWidgetList = useWorkflowStore(state => state.getWidgetList);
+    // const getWidgetList = useWorkflowStore(state => state.getWidgetList);
     const flowInstance = flowRef?.current?.getFlowInstance();
 
     const { resetState } = useAppState();
@@ -62,24 +62,26 @@ const FlowEngineWrapper = observer(
 
     // 退出页面初始化状态
     useEffect(() => {
+      appBuilder.getFlowList({ type: 'workflow' });
       return () => {
         resetState();
       };
     }, []);
 
     useEffect(() => {
-      appBuilder.getAutomata({ app_id: appId, version_name: versionName });
-      getWidgetList({});
-      appBuilder.getFlowList({ type: 'workflow' });
-    }, [appId, versionName]);
-
-    useEffect(() => {
       if (flowInstance) {
         appBuilder.setFlowInstance(flowInstance);
-        appBuilder.getReactFlow(
-          { app_id: appId, version_name: versionName },
-          flowInstance,
-        );
+        appBuilder
+          .getReactFlow(
+            { app_id: appId, version_name: versionName },
+            flowInstance,
+          )
+          .then(() => {
+            appBuilder.getAutomata(
+              { app_id: appId, version_name: versionName },
+              flowInstance.toObject().nodes,
+            );
+          });
       }
     }, [flowInstance, appId, versionName]);
 
@@ -87,7 +89,9 @@ const FlowEngineWrapper = observer(
       <FlowEngine
         listLoading={false}
         loading={
-          appBuilder.getAutomataLoading || appBuilder.getReactFlowLoading
+          appBuilder.getAutomataLoading ||
+          appBuilder.getReactFlowLoading ||
+          appBuilder.fetchFlowListLoading
         }
         ref={flowRef}
         nodeTypes={nodeTypes}

@@ -26,6 +26,7 @@ import {
 import type {
   GetAppFlowRequest,
   GetAppVersionListResponse,
+  GetAutomataRequest,
 } from '@/services/app/type';
 import { fetchList as fetchFlowList } from '@/services/home';
 import type { GetListRequest, GetListResponse } from '@/services/home/type';
@@ -173,7 +174,7 @@ export class AppBuilderModel {
           refs: config.refs || fieldsModeMap2Refs(config.fieldsModeMap),
         };
         this.metadata = metadata;
-        this.nodeData = genNodeData(automata);
+        this.nodeData = genNodeData(automata, reactflow.nodes);
 
         emitter.emit(EventType.FORM_CHANGE, {
           id: this.selectedStateId as any,
@@ -201,12 +202,12 @@ export class AppBuilderModel {
   }
 
   @action.bound
-  async getAutomata(params: any) {
+  async getAutomata(params: GetAutomataRequest, nodes: IFlow['nodes']) {
     try {
       this.getAutomataLoading = true;
       const { data } = await fetchAutomata(params);
       runInAction(() => {
-        this.nodeData = genNodeData(data);
+        this.nodeData = genNodeData(data, nodes);
       });
     } finally {
       runInAction(() => {
