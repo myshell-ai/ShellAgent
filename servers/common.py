@@ -501,9 +501,9 @@ async def check_repo_status():
         tags = [ref for ref in repo.references if ref.startswith('refs/tags/')]
         stable_tags = [ref for ref in tags if not 'beta' in ref and ref.startswith('refs/tags/v')]
         preview_tags = [ref for ref in tags if 'beta' in ref]
-        # sort and get the latest 3 tags
-        stable_tags = sorted(stable_tags, key=lambda x: [int(i) for i in x.split('/')[-1][1:].split('.')], reverse=True)[:3]
-        preview_tags = sorted(preview_tags, key=lambda x: parse_version(x), reverse=True)
+        # sort and get the latest 2 tags
+        stable_tags = sorted(stable_tags, key=lambda x: [int(i) for i in x.split('/')[-1][1:].split('.')], reverse=True)[:2]
+        preview_tags = sorted(preview_tags, key=lambda x: parse_version(x), reverse=True)[:2]
         # remove the tags that is a prerelease
         if os.environ.get('UPDATE_PRE_RELEASE', '0') != '1':
             print("update pre release is disabled")
