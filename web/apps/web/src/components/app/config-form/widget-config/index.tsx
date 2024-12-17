@@ -61,6 +61,7 @@ const StandardWidgetConfig: React.FC<CommonWidgetConfigProps> = ({
       if (schema?.properties?.inputs?.properties?.config) {
         schema.properties.inputs.properties.config['x-component'] =
           'OpenImageCanvas';
+        schema.properties.inputs.properties.config['x-raw-default'] = 'ui';
         schema.properties.inputs.properties.config['x-component-props'] = {};
       }
     }

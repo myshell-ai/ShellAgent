@@ -1,9 +1,4 @@
-import {
-  NodeIdEnum,
-  type IFlow,
-  type ReactFlowInstance,
-} from '@shellagent/flow-engine';
-import type { TFieldMode } from '@shellagent/form-engine';
+import { type IFlow, type ReactFlowInstance } from '@shellagent/flow-engine';
 import { CustomKey, CustomEventName, Automata } from '@shellagent/pro-config';
 import {
   RefSceneEnum,
@@ -16,7 +11,7 @@ import {
 } from '@shellagent/shared/protocol/app-scope';
 import type { FieldValues } from '@shellagent/ui';
 import { injectable, inject } from 'inversify';
-import { isEmpty, set } from 'lodash-es';
+import { isEmpty } from 'lodash-es';
 import { action, makeObservable, observable, runInAction } from 'mobx';
 
 import { AppBuilderChatModel } from '@/components/chat/app-builder-chat.model';
@@ -91,7 +86,7 @@ export class AppBuilderModel {
 
   copyNodeData: FieldValues = {};
 
-  get scopes(): Scopes | null {
+  private get scopes(): Scopes | null {
     if (!this.flowInstance || !this.nodeData) return null;
     const edges = this.flowInstance.getEdges();
     return convetNodeDataToScopes(this.nodeData, edges);
@@ -179,7 +174,8 @@ export class AppBuilderModel {
       runInAction(() => {
         this.config = {
           fieldsModeMap: config.fieldsModeMap,
-          refs: config.refs || fieldsModeMap2Refs(config.fieldsModeMap),
+          refs:
+            config.refs || fieldsModeMap2Refs(automata, config.fieldsModeMap),
         };
         this.metadata = metadata;
         this.nodeData = genNodeData(automata, reactflow.nodes);
@@ -213,7 +209,7 @@ export class AppBuilderModel {
       flowInstance,
     )
       .then(() => {
-        const nodes = flowInstance.toObject().nodes;
+        const { nodes } = flowInstance.toObject();
         this.getAutomata(
           {
             app_id: appId,
@@ -249,6 +245,8 @@ export class AppBuilderModel {
       this.getAutomataLoading = true;
       const { data } = await fetchAutomata(params);
       this.nodeData = genNodeData(data, nodes);
+      this.config.refs =
+        this.config.refs || fieldsModeMap2Refs(data, this.config.fieldsModeMap);
     } finally {
       runInAction(() => {
         this.getAutomataLoading = false;
@@ -286,7 +284,7 @@ export class AppBuilderModel {
       runInAction(() => {
         this.config = {
           fieldsModeMap: config.fieldsModeMap,
-          refs: config.refs || fieldsModeMap2Refs(config.fieldsModeMap),
+          refs: config.refs,
         };
         this.metadata = metadata;
       });

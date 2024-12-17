@@ -1,3 +1,4 @@
+import { Automata } from '@shellagent/pro-config';
 import {
   RefOptionsOutput,
   refOptOutputGlobalSchema,
@@ -270,54 +271,66 @@ export function convertRefOptsToCascaderOpts(
 }
 
 // 以下为兼容逻辑
-
-export function fieldsModeMap2Refs(map: Record<string, any>) {
+export function fieldsModeMap2Refs(
+  automata: Automata | null,
+  map: Record<string, any>,
+) {
   const result: Record<string, any> = {};
 
   Object.entries(map || {}).forEach(([key, value]) => {
-    // 处理包含UUID的特殊情况
-    if (key.includes('.')) {
-      const [baseKey, ...rest] = key.split('.');
-      result[baseKey] = result[baseKey] || {};
+    // 提取基础键和其他部分
+    const [baseKey, ...rest] = key.split('.');
 
-      // 如果是blocks相关的字段
-      if (rest.join('.').startsWith('blocks.')) {
-        const blockPath = rest.join('.');
-        Object.entries(value).forEach(([blockKey, blockMode]) => {
-          result[baseKey][`${blockPath}.${blockKey}`] = {
-            currentMode: blockMode,
+    // 初始化基础键对象
+    result[baseKey] = result[baseKey] || {};
+
+    // 如果是 blocks 相关的字段
+    if (rest.length > 0 && rest[0] === 'blocks') {
+      const blockIndex = parseInt(rest[1], 10);
+      // 添加类型断言
+      const blockName = (automata?.blocks as any)?.[baseKey]?.blocks?.[
+        blockIndex
+      ]?.name;
+
+      if (blockName) {
+        // 替换路径中的数字索引为 block name
+        const newPath = ['blocks', blockName, ...rest.slice(2)].join('.');
+        Object.entries(value).forEach(([fieldKey, mode]) => {
+          result[baseKey][`${newPath}.${fieldKey}`] = {
+            currentMode: mode,
           };
         });
       }
-      // 如果包含UUID
-      else if (
-        rest.some(part =>
-          /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/.test(
-            part,
-          ),
-        )
-      ) {
-        const uuid = rest.find(part =>
-          /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/.test(
-            part,
-          ),
-        );
-        if (uuid) {
-          Object.entries(value).forEach(([field, mode]) => {
-            result[baseKey][`render.buttons.${uuid}.${field}`] = {
-              currentMode: mode,
-            };
-          });
-        }
-      }
-      return;
     }
-
+    // 如果包含UUID
+    else if (
+      rest.some(part =>
+        /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/.test(
+          part,
+        ),
+      )
+    ) {
+      const uuid = rest.find(part =>
+        /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/.test(
+          part,
+        ),
+      );
+      if (uuid) {
+        Object.entries(value).forEach(([field, mode]) => {
+          result[baseKey][`render.buttons.${uuid}.${field}`] = {
+            currentMode: mode,
+          };
+        });
+      }
+    }
     // 处理普通字段
-    result[key] = {};
-    Object.entries(value).forEach(([fieldKey, mode]) => {
-      result[key][fieldKey] = { currentMode: mode };
-    });
+    else {
+      Object.entries(value).forEach(([fieldKey, mode]) => {
+        result[baseKey][fieldKey] = {
+          currentMode: mode,
+        };
+      });
+    }
   });
 
   return result;

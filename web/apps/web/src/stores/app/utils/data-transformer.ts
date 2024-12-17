@@ -1,6 +1,6 @@
 import { IFlow, NodeIdEnum, NodeTypeEnum } from '@shellagent/flow-engine';
-import { Automata, State } from '@shellagent/pro-config';
 import { TValue } from '@shellagent/form-engine';
+import { Automata, State } from '@shellagent/pro-config';
 import { get, set } from 'lodash-es';
 
 import {
