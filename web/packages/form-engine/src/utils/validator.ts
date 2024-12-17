@@ -206,24 +206,30 @@ export async function getFirstError(
       warningRules.push(item);
     }
   });
-  try {
-    await Promise.race(
-      criticalRules.map(rule => rule?.validator?.(rule, value)),
-    );
-  } catch (error: any) {
-    return {
-      message: error.message || error,
-      critical: true,
-    };
+
+  if (criticalRules.length) {
+    try {
+      await Promise.race(
+        criticalRules.map(rule => rule?.validator?.(rule, value)),
+      );
+    } catch (error: any) {
+      return {
+        message: error.message || error,
+        critical: true,
+      };
+    }
   }
-  try {
-    await Promise.race(
-      warningRules.map(rule => rule?.validator?.(rule, value)),
-    );
-  } catch (error: any) {
-    return {
-      message: error.message || error,
-    };
+
+  if (warningRules.length) {
+    try {
+      await Promise.race(
+        warningRules.map(rule => rule?.validator?.(rule, value)),
+      );
+    } catch (error: any) {
+      return {
+        message: error.message || error,
+      };
+    }
   }
   return null;
 }
