@@ -6,6 +6,7 @@ import { Button, XMark, IconButton, useFormContext } from '@shellagent/ui';
 import { useHover } from 'ahooks';
 import clsx from 'clsx';
 import { useRef, useCallback } from 'react';
+import { useDrag, useDrop } from 'react-dnd';
 
 import { useAppState } from '@/stores/app/use-app-state';
 import { generateUUID } from '@/utils/common-helper';
@@ -17,15 +18,50 @@ interface VariableNodeProps {
 
 const ButtonItem = ({
   data,
+  index,
   onClick,
   onDelete,
+  onButtonMove,
 }: {
+  index: number;
   data: IButtonType;
   onClick: (e: React.MouseEvent<HTMLButtonElement>) => void;
   onDelete: (id: string) => void;
+  onButtonMove: (startIndex: number, endIndex: number) => void;
 }) => {
   const buttonRef = useRef<HTMLButtonElement>(null);
   const isHovered = useHover(buttonRef);
+
+  const [{ isDragging }, drag, preview] = useDrag({
+    type: 'BUTTON',
+    item: { index },
+    collect: monitor => ({
+      isDragging: monitor.isDragging(),
+    }),
+    canDrag: true,
+  });
+
+  const [, drop] = useDrop<DragItem, void>({
+    accept: 'BUTTON',
+    hover: (item: DragItem, monitor) => {
+      if (!buttonRef.current) {
+        // 添加draggable判断
+        return;
+      }
+      const dragIndex = item.index;
+      const hoverIndex = index;
+
+      if (dragIndex === hoverIndex) {
+        return;
+      }
+
+      onButtonMove(dragIndex, hoverIndex);
+      item.index = hoverIndex;
+    },
+  });
+
+  drag(drop(buttonRef));
+  preview(drop(buttonRef));
 
   const handleDelete = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.stopPropagation();
@@ -114,14 +150,26 @@ const ButtonEditor = ({ name, onChange }: VariableNodeProps) => {
     [value, onChange],
   );
 
+  const onButtonMove = useCallback(
+    (startIndex: number, endIndex: number) => {
+      const result = Array.from(value);
+      const [removed] = result.splice(startIndex, 1);
+      result.splice(endIndex, 0, removed);
+      onChange(result);
+    },
+    [value, onChange],
+  );
+
   return (
     <div className="flex flex-wrap gap-3 items-center">
-      {value?.map?.(button => (
+      {value?.map?.((button, index) => (
         <ButtonItem
           key={button.id}
           data={button}
+          index={index}
           onClick={handleButtonClick(button.id)}
           onDelete={() => handleDeleteButton(button)}
+          onButtonMove={onButtonMove}
         />
       ))}
       <Button
@@ -135,6 +183,10 @@ const ButtonEditor = ({ name, onChange }: VariableNodeProps) => {
       </Button>
     </div>
   );
+};
+
+type DragItem = {
+  index: number;
 };
 
 ButtonEditor.displayName = 'ButtonEditor';

@@ -1,6 +1,7 @@
 'use client';
 
 import '../../reflect-metadata-client-side';
+import { customSnakeCase } from '@shellagent/shared/utils';
 import { FlowEngine, FlowRef } from '@shellagent/flow-engine';
 import { enableMapSet } from 'immer';
 import { useInjection } from 'inversify-react';
@@ -72,6 +73,31 @@ const FlowEngineWrapper = observer(
       }
     }, [flowInstance, appId, versionName]);
 
+    const onDoubleClick: React.MouseEventHandler<HTMLDivElement> = e => {
+      if ((e.target as any).className === 'react-flow__pane') {
+        const name = 'State';
+        const index = Object.values(appBuilder.nodeData).filter(node =>
+          node.name?.startsWith(name),
+        )?.length;
+        const displayName = `${name}${index > 0 ? `#${index + 1}` : '#1'}`;
+        const newId = customSnakeCase(displayName) as Lowercase<string>;
+        flowInstance?.addNodes({
+          id: newId,
+          type: 'state',
+          position: flowInstance?.project({
+            x: e.clientX - 300,
+            y: e.clientY - 100,
+          }),
+          data: {
+            id: newId,
+            type: 'state',
+            name: displayName,
+            display_name: displayName,
+          },
+        });
+      }
+    };
+
     return (
       <FlowEngine
         listLoading={false}
@@ -84,12 +110,13 @@ const FlowEngineWrapper = observer(
         materialList={materialList}
         footerExtra={<ListFooterExtra />}
         header={
-          <>
+          <div onDoubleClick={e => e.stopPropagation()}>
             <FlowHeader appId={appId} versionName={versionName} />
             <StateConfigSheet />
             <TransitionSheet />
-          </>
+          </div>
         }
+        onDoubleClick={onDoubleClick}
       />
     );
   },

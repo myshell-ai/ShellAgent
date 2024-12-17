@@ -3,6 +3,7 @@ import { FieldValue, FieldValues } from '@shellagent/ui';
 import { ISchema } from './schema';
 import { IValidatorRules } from './validator';
 import { FieldMode } from '@shellagent/shared/protocol/extend-config';
+import React from 'react';
 export type XTypes =
   | 'Section'
   | 'Block'
@@ -47,6 +48,8 @@ export interface IUISchema {
   'x-read-only'?: boolean;
   // 校验
   'x-validator'?: IValidatorRules[];
+  // 自定义渲染校验
+  'x-validator-render'?: string;
   // 动态表单
   'x-reactions'?: XReactions | XReactions[];
   // 开启是否可折叠;

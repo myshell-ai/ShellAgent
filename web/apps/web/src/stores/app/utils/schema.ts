@@ -3,6 +3,8 @@ import { FieldModeEnum } from '@shellagent/shared/protocol/extend-config';
 
 import { ENABLE_MIME } from '@/utils/file-types';
 
+import { validateImage } from './validator';
+
 const startSchema: ISchema = {
   title: 'Start',
   type: 'object',
@@ -1221,6 +1223,25 @@ const stateConfigSchema: ISchema = {
           'x-switchable-default': true,
           'x-raw': true,
           'x-raw-default': FieldModeEnum.Enum.ui,
+          'x-validator': [
+            {
+              warningOnly: true,
+              critical: true,
+              validator(rule, value) {
+                return new Promise((resolve, reject) => {
+                  if (/<img\s[^>]*>/.test(value)) {
+                    reject(
+                      new Error(
+                        'The <img> tag is deprecated. Please use Message.Image to render images instead.',
+                      ),
+                    );
+                  } else {
+                    resolve(true);
+                  }
+                });
+              },
+            },
+          ],
         },
         audio: {
           type: 'string',
@@ -1255,6 +1276,148 @@ const stateConfigSchema: ISchema = {
           'x-component': 'ButtonEditor',
           'x-type': 'Control',
           'x-switchable-default': true,
+        },
+      },
+    },
+    id: {
+      type: 'string',
+      default: '',
+      'x-hidden': true,
+    },
+    name: {
+      type: 'string',
+      default: '',
+      'x-hidden': true,
+    },
+    type: {
+      type: 'string',
+      default: 'state',
+      'x-hidden': true,
+    },
+  },
+};
+
+const introConfigSchema: ISchema = {
+  type: 'object',
+  'x-type': 'Block',
+  'x-title-size': 'h4',
+  'x-class': 'space-y-3',
+  description:
+    'The intro message is crucial for user experience. Keep it within one iOS screen (text, image, and buttons) to ensure a smooth, engaging start.',
+  properties: {
+    render: {
+      type: 'object',
+      title: 'Message',
+      'x-type': 'Block',
+      'x-title-size': 'h4',
+      'x-collapsible': true,
+      properties: {
+        text: {
+          type: 'string',
+          title: 'Text',
+          'x-component': 'ExpressionInput',
+          'x-type': 'Control',
+          'x-switchable': true,
+          'x-switchable-default': true,
+          'x-raw': true,
+          'x-raw-default': FieldModeEnum.Enum.ui,
+          'x-validator': [
+            {
+              critical: true,
+              warningOnly: true,
+              validator(rule, value) {
+                return new Promise((resolve, reject) => {
+                  if (/<img\s[^>]*>/.test(value)) {
+                    reject(
+                      new Error(
+                        'The <img> tag is deprecated. Please use Message.Image to render images instead.',
+                      ),
+                    );
+                  } else {
+                    resolve(true);
+                  }
+                });
+              },
+            },
+            {
+              warningOnly: true,
+              validator(rule, value) {
+                return new Promise((resolve, reject) => {
+                  if (
+                    (value?.replace(/<[^>]*>/g, '')?.trim()?.length || 0) > 320
+                  ) {
+                    reject(
+                      new Error(
+                        'The text may be too long. Please make sure the message fits within the iOS screen size.',
+                      ),
+                    );
+                  } else {
+                    resolve(true);
+                  }
+                });
+              },
+            },
+          ],
+          'x-validator-render': 'ValidateRender',
+        },
+        audio: {
+          type: 'string',
+          title: 'Audio',
+          'x-component': 'FileUpload',
+          'x-type': 'Control',
+          'x-switchable': true,
+          'x-switchable-default': false,
+          'x-component-props': {
+            accept: ENABLE_MIME.audio,
+          },
+          'x-raw': true,
+          'x-raw-default': FieldModeEnum.Enum.ui,
+        },
+        image: {
+          type: 'string',
+          title: 'Image',
+          'x-component': 'FileUpload',
+          'x-type': 'Control',
+          'x-switchable': true,
+          'x-switchable-default': false,
+          'x-component-props': {
+            accept: ENABLE_MIME.image,
+          },
+          'x-raw': true,
+          'x-raw-default': FieldModeEnum.Enum.ui,
+          'x-validator': [
+            {
+              warningOnly: true,
+              validator(rule, value) {
+                return validateImage(value);
+              },
+            },
+          ],
+          'x-validator-render': 'ValidateRender',
+        },
+        buttons: {
+          type: 'array',
+          title: 'Buttons',
+          'x-switchable': true,
+          'x-component': 'ButtonEditor',
+          'x-type': 'Control',
+          'x-switchable-default': true,
+          'x-validator': [
+            {
+              warningOnly: true,
+              validator(rule, value) {
+                return new Promise((resolve, reject) => {
+                  if (value?.length > 4) {
+                    reject(
+                      new Error('Limit the number of buttons to 4 or fewer.'),
+                    );
+                  } else {
+                    resolve(true);
+                  }
+                });
+              },
+            },
+          ],
         },
       },
     },
@@ -1629,6 +1792,7 @@ const transitionConfigSchema: ISchema = {
 export {
   startSchema,
   stateConfigSchema,
+  introConfigSchema,
   buttonConfigSchema,
   transitionConfigSchema,
 };

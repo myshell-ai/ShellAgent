@@ -103,7 +103,7 @@ const Block: React.FC<IBlockProps> = props => {
       <div className="flex flex-col" data-ui="block">
         {title ? renderTitle() : null}
         {description ? (
-          <Paragraph size="lg" lineClamp={2} color="subtler" className="mt-1">
+          <Paragraph size="lg" lineClamp={6} color="subtler" className="mt-1">
             {description}
           </Paragraph>
         ) : null}
@@ -133,7 +133,7 @@ const Block: React.FC<IBlockProps> = props => {
         data-ui="block">
         {title ? renderTitle() : null}
         {description ? (
-          <Paragraph size="lg" color="subtler" lineClamp={2} className="mt-1">
+          <Paragraph size="lg" color="subtler" lineClamp={6} className="mt-1">
             {description}
           </Paragraph>
         ) : null}

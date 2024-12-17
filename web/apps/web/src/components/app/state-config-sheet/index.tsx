@@ -27,7 +27,10 @@ import emitter, {
 } from '@/stores/app/models/emitter';
 import { SchemaProvider } from '@/stores/app/schema-provider';
 import { useAppState } from '@/stores/app/use-app-state';
-import { stateConfigSchema } from '@/stores/app/utils/schema';
+import {
+  introConfigSchema,
+  stateConfigSchema,
+} from '@/stores/app/utils/schema';
 
 const StateConfigSheet: React.FC<{}> = () => {
   const appBuilderChatModel = useInjection(AppBuilderChatModel);
@@ -234,14 +237,22 @@ const StateConfigSheet: React.FC<{}> = () => {
       autoFocus={false}
       push={false}>
       <SchemaProvider
-        type={NodeTypeEnum.state}
+        type={
+          selectedNode?.data?.type === NodeTypeEnum.intro
+            ? NodeTypeEnum.intro
+            : NodeTypeEnum.state
+        }
         display_name={selectedNode?.data.display_name}
         name={selectedNode?.data.name}
         id={currentStateId}>
         <NodeForm
           key={formKey}
           loading={appBuilder.initAppBuilderLoading}
-          schema={stateConfigSchema}
+          schema={
+            selectedNode?.data?.type === NodeTypeEnum.intro
+              ? introConfigSchema
+              : stateConfigSchema
+          }
           values={appBuilder.nodeData[currentStateId]}
           onChange={onChange}
           ref={nodeFormRef}

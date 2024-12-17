@@ -5,6 +5,8 @@ import {
 import { isNil, omitBy } from 'lodash-es';
 import type { Fetcher } from 'swr';
 
+import { formatReactFlow2Api } from '@/stores/app/utils/data-transformer';
+
 import {
   GetAutomataRequest,
   GetAutomatagResponse,
@@ -27,7 +29,10 @@ import { APIFetch } from '../base';
 // 保存
 export const saveApp = (params: SaveAppRequest) => {
   return APIFetch.post<SaveAppResponse>('/api/app/save', {
-    body: params,
+    body: {
+      ...params,
+      reactflow: formatReactFlow2Api(params.reactflow),
+    },
   });
 };
 
@@ -108,6 +113,9 @@ export const fetchAppVersionList = (params: GetAppVersionListRequest) => {
 // 发版
 export const releaseApp = (params: ReleaseAppRequest) => {
   return APIFetch.post<ReleaseAppResponse>('/api/app/release', {
-    body: params,
+    body: {
+      ...params,
+      reactflow: formatReactFlow2Api(params.reactflow),
+    },
   });
 };
