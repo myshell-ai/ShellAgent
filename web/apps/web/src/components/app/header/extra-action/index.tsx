@@ -22,7 +22,7 @@ export const ExtraActions = () => {
 
   const onConfirm = (data: ShellAgent) => {
     return new Promise(resolve => {
-      appBuilder.initAppBuilder(data);
+      appBuilder.initAppBuilderFromJson(data);
       resolve(true);
     });
   };

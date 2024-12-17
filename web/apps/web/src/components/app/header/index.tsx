@@ -157,9 +157,7 @@ export const Header: React.FC = observer(() => {
         <Publish
           app_id={id}
           version_name={version_name}
-          loading={
-            appBuilder.getAutomataLoading || appBuilder.getReactFlowLoading
-          }
+          loading={appBuilder.initAppBuilderLoading}
         />
         <ExtraActions />
       </div>

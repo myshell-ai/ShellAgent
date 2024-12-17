@@ -35,7 +35,7 @@ describe('app builder utils', () => {
             {
               content: 'Button#1',
               on_click: {
-                event: 'button_1.on_click',
+                event: 'button1.on_click',
                 payload: {
                   untitled_payload_1: {
                     type: 'text',
@@ -49,7 +49,7 @@ describe('app builder utils', () => {
                   },
                 },
               },
-              id: 'button_1.on_click',
+              id: 'button1.on_click',
               description: '',
             },
           ],
@@ -106,7 +106,7 @@ describe('app builder utils', () => {
             {
               content: 'Button#1',
               on_click: {
-                event: 'button_1.on_click',
+                event: 'button1.on_click',
                 payload: {
                   untitled_payload_3: {
                     type: 'text',
@@ -120,7 +120,7 @@ describe('app builder utils', () => {
                   },
                 },
               },
-              id: 'button_1.on_click',
+              id: 'button1.on_click',
               description: '',
             },
           ],
@@ -159,13 +159,13 @@ describe('app builder utils', () => {
           type: 'arrowclosed',
           width: 10,
         },
-        id: 'reactflow__edge-state_1custom_button-source-handle-button_1.on_click#0-state_2state_2',
+        id: 'reactflow__edge-state_1custom_button-source-handle-button1.on_click#0-state_2state_2',
         source: 'state_1',
         target: 'state_2',
         data: {
           id: 'f02199d9-c3ff-4681-aaee-1b64bdc49bed',
           custom: true,
-          event_key: 'button_1.on_click',
+          event_key: 'button1.on_click',
           type: 'STATE',
           source: 'state_1',
           target: 'state_2',
@@ -246,8 +246,8 @@ describe('app builder utils', () => {
                 "outputs": {
                   "render": {
                     "buttons": {
-                      "button_1": {
-                        "event": "button_1.on_click",
+                      "Button#1": {
+                        "event": "button1.on_click",
                         "payload": {
                           "untitled_payload_1": {
                             "display_name": "Untitled Payload",
@@ -292,8 +292,8 @@ describe('app builder utils', () => {
                 "outputs": {
                   "render": {
                     "buttons": {
-                      "button_1": {
-                        "event": "button_1.on_click",
+                      "Button#1": {
+                        "event": "button1.on_click",
                         "payload": {
                           "untitled_payload_3": {
                             "display_name": "Untitled Payload",
@@ -329,7 +329,7 @@ describe('app builder utils', () => {
           {
             content: 'Button#1',
             on_click: {
-              event: 'button_1.on_click',
+              event: 'button1.on_click',
               payload: {
                 untitled_payload_3: {
                   type: 'text',
@@ -343,7 +343,7 @@ describe('app builder utils', () => {
                 },
               },
             },
-            id: 'button_1.on_click',
+            id: 'button1.on_click',
             description: '',
           },
         ],
@@ -359,8 +359,8 @@ describe('app builder utils', () => {
           "outputs": {
             "render": {
               "buttons": {
-                "button_1": {
-                  "event": "button_1.on_click",
+                "Button#1": {
+                  "event": "button1.on_click",
                   "payload": {
                     "untitled_payload_3": {
                       "display_name": "Untitled Payload",
@@ -466,35 +466,6 @@ describe('app builder utils', () => {
             {
               "children": [
                 {
-                  "field_type": "text",
-                  "label": "Global A",
-                  "parent": "context",
-                  "value": "{{__context__global_a__}}",
-                },
-              ],
-              "label": "Context",
-              "value": "Context",
-            },
-            {
-              "children": [
-                {
-                  "field_type": "text",
-                  "label": "Output A",
-                  "parent": "state",
-                  "value": "{{state_1.output_a}}",
-                },
-              ],
-              "label": "State#1",
-              "value": "State#1",
-            },
-          ],
-          "label": "global",
-        },
-        {
-          "children": [
-            {
-              "children": [
-                {
                   "children": [
                     {
                       "field_type": "text",
@@ -569,6 +540,35 @@ describe('app builder utils', () => {
             },
           ],
           "label": "current",
+        },
+        {
+          "children": [
+            {
+              "children": [
+                {
+                  "field_type": "text",
+                  "label": "Global A",
+                  "parent": "context",
+                  "value": "{{__context__global_a__}}",
+                },
+              ],
+              "label": "Context",
+              "value": "Context",
+            },
+            {
+              "children": [
+                {
+                  "field_type": "text",
+                  "label": "Output A",
+                  "parent": "state",
+                  "value": "{{state_1.output_a}}",
+                },
+              ],
+              "label": "State#1",
+              "value": "State#1",
+            },
+          ],
+          "label": "global",
         },
       ]
     `);
@@ -645,6 +645,42 @@ describe('app builder utils', () => {
               {
                 "children": [
                   {
+                    "field_type": "text",
+                    "label": "input_text",
+                    "parent": "inputs",
+                    "value": "{{input_text}}",
+                  },
+                ],
+                "label": "Input",
+                "value": "Input",
+              },
+              {
+                "children": [
+                  {
+                    "children": [
+                      {
+                        "field_type": "string",
+                        "label": "output_image",
+                        "parent": "blocks",
+                        "value": "{{comfy_ui1.output_image}}",
+                      },
+                    ],
+                    "label": "ComfyUI#1",
+                    "parent": "blocks",
+                    "value": "ComfyUI#1",
+                  },
+                ],
+                "label": "Task",
+                "value": "Task",
+              },
+            ],
+            "label": "current",
+          },
+          {
+            "children": [
+              {
+                "children": [
+                  {
                     "field_type": "image",
                     "label": "output_image",
                     "parent": "context",
@@ -680,42 +716,6 @@ describe('app builder utils', () => {
               },
             ],
             "label": "global",
-          },
-          {
-            "children": [
-              {
-                "children": [
-                  {
-                    "field_type": "text",
-                    "label": "input_text",
-                    "parent": "inputs",
-                    "value": "{{input_text}}",
-                  },
-                ],
-                "label": "Input",
-                "value": "Input",
-              },
-              {
-                "children": [
-                  {
-                    "children": [
-                      {
-                        "field_type": "string",
-                        "label": "output_image",
-                        "parent": "blocks",
-                        "value": "{{comfy_ui1.output_image}}",
-                      },
-                    ],
-                    "label": "ComfyUI#1",
-                    "parent": "blocks",
-                    "value": "ComfyUI#1",
-                  },
-                ],
-                "label": "Task",
-                "value": "Task",
-              },
-            ],
-            "label": "current",
           },
         ]
       `);
@@ -834,7 +834,7 @@ describe('app builder utils', () => {
               {
                 content: 'Button#1',
                 on_click: {
-                  event: 'button_1.on_click',
+                  event: 'button1.on_click',
                   payload: {
                     key_1730724703385: {
                       type: 'text',
@@ -843,7 +843,7 @@ describe('app builder utils', () => {
                     },
                   },
                 },
-                id: 'button_1.on_click',
+                id: 'button1.on_click',
                 description: '',
               },
             ],
@@ -872,7 +872,7 @@ describe('app builder utils', () => {
               {
                 content: 'Button#1',
                 on_click: {
-                  event: 'button_1.on_click',
+                  event: 'button1.on_click',
                   payload: {
                     untitled_payload_1: {
                       type: 'text',
@@ -881,7 +881,7 @@ describe('app builder utils', () => {
                     },
                   },
                 },
-                id: 'button_1.on_click',
+                id: 'button1.on_click',
                 description: '',
               },
             ],
@@ -981,8 +981,8 @@ describe('app builder utils', () => {
                   "outputs": {
                     "render": {
                       "buttons": {
-                        "button_1": {
-                          "event": "button_1.on_click",
+                        "Button#1": {
+                          "event": "button1.on_click",
                           "payload": {
                             "key_1730724703385": {
                               "display_name": "Untitled",
@@ -1017,8 +1017,8 @@ describe('app builder utils', () => {
                   "outputs": {
                     "render": {
                       "buttons": {
-                        "button_1": {
-                          "event": "button_1.on_click",
+                        "Button#1": {
+                          "event": "button1.on_click",
                           "payload": {
                             "untitled_payload_1": {
                               "display_name": "hhhh",

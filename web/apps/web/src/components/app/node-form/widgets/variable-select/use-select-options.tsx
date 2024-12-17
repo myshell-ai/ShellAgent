@@ -46,12 +46,18 @@ export const useSelectOptions = (name?: string) => {
     return { refType, taskIndex };
   }, [parent, name]);
 
-  const refOptions = appBuilder.getRefOptions(
-    stateId as Lowercase<string>,
-    refType as RefType,
-    taskIndex,
-    currentEdegData?.event_key as CustomEventName | undefined,
-  );
+  const result = useMemo(() => {
+    if (stateId) {
+      const refOptions = appBuilder.getRefOptions(
+        stateId as Lowercase<string>,
+        refType as RefType,
+        taskIndex,
+        currentEdegData?.event_key as CustomEventName | undefined,
+      );
+      return refOptions;
+    }
+    return [];
+  }, [stateId, refType, taskIndex, currentEdegData]);
 
-  return refOptions;
+  return result;
 };

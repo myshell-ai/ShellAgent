@@ -79,6 +79,7 @@ export class AppBuilderModel {
   @observable releaseLoading = false;
   @observable saveLoading = false;
   @observable restoreLoading = false;
+  @observable initAppBuilderLoading = false;
 
   copyNodeData: FieldValues = {};
 
@@ -137,12 +138,7 @@ export class AppBuilderModel {
   }
 
   @action.bound
-  setFlowInstance(instance: ReactFlowInstance) {
-    this.flowInstance = instance;
-  }
-
-  @action.bound
-  initAppBuilder({
+  initAppBuilderFromJson({
     reactflow,
     config,
     metadata,
@@ -187,6 +183,41 @@ export class AppBuilderModel {
   }
 
   @action.bound
+  initAppBuilder(
+    flowInstance: ReactFlowInstance,
+    appId: string,
+    versionName: string,
+  ) {
+    this.flowInstance = flowInstance;
+    runInAction(() => {
+      this.initAppBuilderLoading = true;
+    });
+
+    this.getReactFlow(
+      {
+        app_id: appId,
+        version_name: versionName,
+      },
+      flowInstance,
+    )
+      .then(() => {
+        const nodes = flowInstance.toObject().nodes;
+        this.getAutomata(
+          {
+            app_id: appId,
+            version_name: versionName,
+          },
+          nodes,
+        );
+      })
+      .finally(() => {
+        runInAction(() => {
+          this.initAppBuilderLoading = false;
+        });
+      });
+  }
+
+  @action.bound
   async getFlowList(params: GetListRequest) {
     try {
       this.fetchFlowListLoading = true;
@@ -201,22 +232,23 @@ export class AppBuilderModel {
     }
   }
 
-  @action.bound
   async getAutomata(params: GetAutomataRequest, nodes: IFlow['nodes']) {
     try {
       this.getAutomataLoading = true;
       const { data } = await fetchAutomata(params);
-      runInAction(() => {
-        this.nodeData = genNodeData(data, nodes);
-      });
+      this.nodeData = genNodeData(data, nodes);
     } finally {
       runInAction(() => {
         this.getAutomataLoading = false;
+
+        // 需要触发一次表单渲染
+        emitter.emit(EventType.RESET_FORM, {
+          data: `${new Date().valueOf()}`,
+        });
       });
     }
   }
 
-  @action.bound
   async getReactFlow(params: GetAppFlowRequest, instance: ReactFlowInstance) {
     try {
       runInAction(() => {

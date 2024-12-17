@@ -19,7 +19,6 @@ import { ListFooterExtra } from '@/components/common/list-footer-extra';
 import { ImageCanvasDialog } from '@/components/image-canvas/open-image-canvas';
 import { AppBuilderModel } from '@/stores/app/models/app-builder.model';
 import { useAppState } from '@/stores/app/use-app-state';
-import { useWorkflowStore } from '@/stores/workflow/workflow-provider';
 
 enableMapSet();
 
@@ -51,7 +50,6 @@ const FlowEngineWrapper = observer(
     const appBuilder = useInjection<AppBuilderModel>('AppBuilderModel');
     const flowRef = useRef<FlowRef>(null);
     const appBuilderChatModel = useInjection(AppBuilderChatModel);
-    // const getWidgetList = useWorkflowStore(state => state.getWidgetList);
     const flowInstance = flowRef?.current?.getFlowInstance();
 
     const { resetState } = useAppState();
@@ -70,18 +68,7 @@ const FlowEngineWrapper = observer(
 
     useEffect(() => {
       if (flowInstance) {
-        appBuilder.setFlowInstance(flowInstance);
-        appBuilder
-          .getReactFlow(
-            { app_id: appId, version_name: versionName },
-            flowInstance,
-          )
-          .then(() => {
-            appBuilder.getAutomata(
-              { app_id: appId, version_name: versionName },
-              flowInstance.toObject().nodes,
-            );
-          });
+        appBuilder.initAppBuilder(flowInstance, appId, versionName);
       }
     }, [flowInstance, appId, versionName]);
 
@@ -89,9 +76,7 @@ const FlowEngineWrapper = observer(
       <FlowEngine
         listLoading={false}
         loading={
-          appBuilder.getAutomataLoading ||
-          appBuilder.getReactFlowLoading ||
-          appBuilder.fetchFlowListLoading
+          appBuilder.initAppBuilderLoading || appBuilder.fetchFlowListLoading
         }
         ref={flowRef}
         nodeTypes={nodeTypes}

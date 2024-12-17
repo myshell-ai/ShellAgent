@@ -240,9 +240,7 @@ const StateConfigSheet: React.FC<{}> = () => {
         id={currentStateId}>
         <NodeForm
           key={formKey}
-          loading={
-            appBuilder.getAutomataLoading || appBuilder.getReactFlowLoading
-          }
+          loading={appBuilder.initAppBuilderLoading}
           schema={stateConfigSchema}
           values={appBuilder.nodeData[currentStateId]}
           onChange={onChange}
