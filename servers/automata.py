@@ -713,6 +713,8 @@ class MyShellRunAppResponse(BaseModel):
     store_session: str | None # json string
     render_result: ServerMessage | None
     running_error: Dict | None
+    error_message: str = ""
+    error_message_detail: str = ""
     
 
 def prepare_payload(automata: Automata, event_data: MyShellUserInput, sess_state: SessionState):
@@ -774,8 +776,12 @@ def run_automata_stateless_impl(request: MyShellRunAppRequest, queue):
     result = MyShellRunAppResponse(
         store_session=sess_state_str,
         render_result=server_message,
-        running_error=running_error
+        running_error=running_error,
     )
+    
+    if running_error is not None:
+        result.error_message = running_error["error_head"]
+        result.error_message_detail = running_error["msg"] + "\n" + running_error["traceback"]
 
     queue.put(result)
     return result
