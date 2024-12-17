@@ -34,7 +34,11 @@ import type {
 import { fetchList as fetchFlowList } from '@/services/home';
 import type { GetListRequest, GetListResponse } from '@/services/home/type';
 import emitter, { EventType } from '@/stores/app/models/emitter';
-import { genNodeData, genAutomata } from '@/stores/app/utils/data-transformer';
+import {
+  genNodeData,
+  genAutomata,
+  formatReactFlow2Flow,
+} from '@/stores/app/utils/data-transformer';
 import type { NodeDataType, Config, Metadata } from '@/types/app/types';
 import { EmitterModel } from '@/utils/emitter.model';
 
@@ -160,12 +164,16 @@ export class AppBuilderModel {
 
     setTimeout(() => {
       if (this.flowInstance) {
-        const nodes = reactflow?.nodes || defaultFlow.nodes;
-        const edges = Array.isArray(reactflow?.edges)
-          ? reactflow.edges
+        const flow = formatReactFlow2Flow({
+          edges: reactflow?.edges.length ? reactflow.edges : defaultFlow.edges,
+          nodes: reactflow?.nodes.length ? reactflow.nodes : defaultFlow.nodes,
+          viewport: reactflow?.viewport || defaultFlow.viewport,
+        });
+        const nodes = flow?.nodes || defaultFlow.nodes;
+        const edges = Array.isArray(flow?.edges)
+          ? flow.edges
           : defaultFlow.edges;
-        const viewport = reactflow?.viewport || defaultFlow.viewport;
-
+        const viewport = flow?.viewport || defaultFlow.viewport;
         this.flowInstance.setNodes(nodes);
         this.flowInstance.setEdges(edges);
         this.flowInstance.setViewport(viewport);
@@ -178,6 +186,7 @@ export class AppBuilderModel {
         };
         this.metadata = metadata;
         this.nodeData = genNodeData(automata);
+        console.log('flow: ', this.nodeData);
 
         emitter.emit(EventType.FORM_CHANGE, {
           id: this.selectedStateId as any,
@@ -232,29 +241,14 @@ export class AppBuilderModel {
         metadata,
       } = await fetchFlow(params);
       if (instance) {
-        const edges = reactflow?.edges.length
-          ? reactflow.edges
-          : defaultFlow.edges;
-        const initialState = edges?.find(
-          item => item.source === NodeIdEnum.start,
-        )?.target;
-
-        instance.setNodes(
-          reactflow?.nodes.length
-            ? reactflow.nodes.map(item => {
-                if (
-                  item.id === initialState &&
-                  item.type !== NodeIdEnum.intro
-                ) {
-                  set(item, 'type', NodeIdEnum.intro);
-                  set(item, 'data.type', NodeIdEnum.intro);
-                }
-                return item;
-              })
-            : defaultFlow.nodes,
-        );
-        instance.setEdges(edges);
-        instance.setViewport(reactflow?.viewport || defaultFlow.viewport);
+        const flow = formatReactFlow2Flow({
+          edges: reactflow?.edges.length ? reactflow.edges : defaultFlow.edges,
+          nodes: reactflow?.nodes.length ? reactflow.nodes : defaultFlow.nodes,
+          viewport: reactflow?.viewport || defaultFlow.viewport,
+        });
+        instance.setNodes(flow?.nodes);
+        instance.setEdges(flow.edges);
+        instance.setViewport(flow?.viewport);
       }
 
       runInAction(() => {

@@ -1,7 +1,7 @@
 import { IFlow, NodeIdEnum, NodeTypeEnum } from '@shellagent/flow-engine';
 import { Automata, State } from '@shellagent/pro-config';
 import { TValue } from '@shellagent/form-engine';
-import { get } from 'lodash-es';
+import { get, set } from 'lodash-es';
 
 import {
   EdgeDataTypeEnum,
@@ -201,7 +201,7 @@ export const replaceContextByAutomata = (value: TValue, automata: Automata) => {
   return value;
 };
 
-export const formatReactFlow = (reactflow: IFlow) => {
+export const formatReactFlow2Api = (reactflow: IFlow) => {
   return {
     ...reactflow,
     nodes: reactflow?.nodes?.map(item => {
@@ -215,6 +215,22 @@ export const formatReactFlow = (reactflow: IFlow) => {
             type: NodeTypeEnum.state,
           },
         };
+      }
+      return item;
+    }),
+  };
+};
+
+export const formatReactFlow2Flow = (reactflow: IFlow) => {
+  const initialState = reactflow?.edges?.find(
+    item => item.source === NodeIdEnum.start,
+  )?.target;
+  return {
+    ...reactflow,
+    nodes: reactflow?.nodes?.map(item => {
+      if (item.id === initialState && item.type !== NodeTypeEnum.intro) {
+        set(item, 'type', NodeIdEnum.intro);
+        set(item, 'data.type', NodeIdEnum.intro);
       }
       return item;
     }),

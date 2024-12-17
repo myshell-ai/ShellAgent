@@ -5,7 +5,7 @@ import {
 import { isNil, omitBy } from 'lodash-es';
 import type { Fetcher } from 'swr';
 
-import { formatReactFlow } from '@/stores/app/utils/data-transformer';
+import { formatReactFlow2Api } from '@/stores/app/utils/data-transformer';
 
 import {
   GetAutomataRequest,
@@ -31,7 +31,7 @@ export const saveApp = (params: SaveAppRequest) => {
   return APIFetch.post<SaveAppResponse>('/api/app/save', {
     body: {
       ...params,
-      reactflow: formatReactFlow(params.reactflow),
+      reactflow: formatReactFlow2Api(params.reactflow),
     },
   });
 };
@@ -115,7 +115,7 @@ export const releaseApp = (params: ReleaseAppRequest) => {
   return APIFetch.post<ReleaseAppResponse>('/api/app/release', {
     body: {
       ...params,
-      reactflow: formatReactFlow(params.reactflow),
+      reactflow: formatReactFlow2Api(params.reactflow),
     },
   });
 };

@@ -20,7 +20,10 @@ export async function validateImage(
   if (!url || url === '/') {
     return Promise.resolve(true);
   }
-  const apiUrl = url?.startsWith('/api/files') ? url : `/api/files/${url}`;
+  const apiUrl =
+    url?.startsWith('/api/files') || url?.startsWith('http')
+      ? url
+      : `/api/files/${url}`;
   try {
     const response = await fetch(apiUrl, { method: 'GET' });
     const contentLength = response.headers.get('content-length');
@@ -31,6 +34,7 @@ export async function validateImage(
         return Promise.reject(new Error('Keep image file size under 1MB.'));
       }
     }
+    console.log('response: ', response);
     const image = new Image();
     image.src = apiUrl;
     const imageLoaded = new Promise<void>((resolve, reject) => {
