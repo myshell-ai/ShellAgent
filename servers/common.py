@@ -395,9 +395,16 @@ async def delete_workflow(data: Dict):
 
     return JSONResponse(content=result)
 
+headers = {
+    'Authorization': f'token {os.environ.get("GITHUB_TOKEN")}'
+}
+
 def is_prerelease(tag_name):
     github_api_url = f"https://api.github.com/repos/myshell-ai/ShellAgent/releases/tags/{tag_name}"
-    response = requests.get(github_api_url)
+    if os.environ.get('GITHUB_TOKEN', '') == '':
+        response = requests.get(github_api_url)
+    else:
+        response = requests.get(github_api_url, headers=headers)
     if response.status_code == 200:
         release_data = response.json()
         prerelease = release_data.get('prerelease', True)
@@ -408,24 +415,23 @@ def is_prerelease(tag_name):
 def parse_version(version_str):
     # Remove 'v' prefix and split by '-'
     version = version_str.split('/')[-1]  # Get last part after '/'
-    version = version.lstrip('dev-')
+    version = version.lstrip('beta-')
     version = version.lstrip('v')
     parts = version.split('-')
     
     # Parse the main version numbers
     main_version = [int(x) for x in parts[0].split('.')]
     
-    # Handle dev version number
-    dev_num = 0
-    if len(parts) > 1:
-        if len(parts) > 2 and parts[2].isdigit():
-            dev_num = int(parts[2])
+    # Handle beta version number
+    beta_num = 0
+    if len(parts) > 1 and 'beta.' in parts[1]:
+        beta_num = int(parts[1].split('.')[1])  # Extract beta version number
     
     # Ensure we have three numbers plus dev number
     while len(main_version) < 3:
         main_version.append(0)
         
-    main_version.append(dev_num)
+    main_version.append(beta_num)
     return tuple(main_version)
 
 @app.get('/api/check_repo_status')
@@ -488,7 +494,7 @@ async def check_repo_status():
         current_commit_id = str(latest_commit.id)
 
         for reference in repo.references:
-            if reference.startswith('refs/tags/v') or reference.startswith('refs/tags/dev'):
+            if reference.startswith('refs/tags/v') or reference.startswith('refs/tags/beta'):
                 tag = repo.lookup_reference(reference)
                 if tag.peel().id == latest_commit.id:
                     current_tag = reference
@@ -501,14 +507,16 @@ async def check_repo_status():
         print(f'current_version: {current_version}')
 
         tags = [ref for ref in repo.references if ref.startswith('refs/tags/')]
-        stable_tags = [ref for ref in tags if not 'dev' in ref and ref.startswith('refs/tags/v')]
-        preview_tags = [ref for ref in tags if 'dev' in ref]
-        # sort and get the latest 3 tags
-        stable_tags = sorted(stable_tags, key=lambda x: [int(i) for i in x.split('/')[-1][1:].split('.')], reverse=True)[:3]
-        preview_tags = sorted(preview_tags, key=lambda x: parse_version(x), reverse=True)
+        stable_tags = [ref for ref in tags if not 'beta' in ref and ref.startswith('refs/tags/v')]
+        preview_tags = [ref for ref in tags if 'beta' in ref]
+        # sort and get the latest 2 tags
+        stable_tags = sorted(stable_tags, key=lambda x: [int(i) for i in x.split('/')[-1][1:].split('.')], reverse=True)[:2]
+        preview_tags = sorted(preview_tags, key=lambda x: parse_version(x), reverse=True)[:2]
         # remove the tags that is a prerelease
-        stable_tags = [tag for tag in stable_tags if not is_prerelease(tag.split('/')[-1])]
-        preview_tags = [tag for tag in preview_tags if not is_prerelease(tag.split('/')[-1])]
+        if os.environ.get('UPDATE_PRE_RELEASE', '0') != '1':
+            print("update pre release is disabled")
+            stable_tags = [tag for tag in stable_tags if not is_prerelease(tag.split('/')[-1])]
+            preview_tags = [tag for tag in preview_tags if not is_prerelease(tag.split('/')[-1])]
         latest_stable_tag = stable_tags[0] if stable_tags else None
         latest_preview_tag = preview_tags[0] if preview_tags else None
         print(latest_stable_tag, latest_preview_tag)
@@ -539,7 +547,10 @@ async def check_repo_status():
         if has_new_stable:
             # Get changelog and release date
             github_api_url = f"https://api.github.com/repos/myshell-ai/ShellAgent/releases/tags/{latest_tag_name}"
-            response = requests.get(github_api_url)
+            if os.environ.get('GITHUB_TOKEN', '') == '':
+                response = requests.get(github_api_url)
+            else:
+                response = requests.get(github_api_url, headers=headers)
             if response.status_code == 200:
                 release_data = response.json()
                 changelog = release_data.get('body', 'No changelog found')

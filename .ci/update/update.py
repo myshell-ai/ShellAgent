@@ -72,16 +72,23 @@ pygit2.option(pygit2.GIT_OPT_SET_OWNER_VALIDATION, 0)
 repo_path = str(sys.argv[1])
 if "SHELLAGENT_BRANCH" in os.environ:
     branch_name = os.environ['SHELLAGENT_BRANCH']
+elif 'beta' in latest_tag_name:
+    branch_name = 'beta'
 else:
     branch_name = 'main'
 
 repo = pygit2.Repository(repo_path)
 ident = pygit2.Signature('shellagent', 'shellagent@myshell.ai')
 
+headers = {
+    'Authorization': f'token {os.environ.get("GITHUB_TOKEN")}',
+    'Accept': 'application/vnd.github+json'
+}
+
 def download_latest_web_build():
     print("Downloading the latest web-build...")
 
-    if branch_name != 'main':
+    if branch_name != 'main' and branch_name != 'beta':
         if 'WEB_BUILD_URL' not in os.environ:
             print("WEB_BUILD_URL is not set")
             return
@@ -96,13 +103,10 @@ def download_latest_web_build():
             # Construct GitHub API URL
             api_url = f"https://api.github.com/repos/{owner}/{repo}/actions/artifacts/{artifact_id}/zip"
             
-            # Set GitHub API authentication headers
-            headers = {
-                'Authorization': f'token {os.environ.get("GITHUB_TOKEN")}',
-                'Accept': 'application/vnd.github+json'
-            }
-            
-            response = requests.get(api_url, headers=headers)
+            if os.environ.get('GITHUB_TOKEN', '') == '':
+                response = requests.get(api_url)
+            else:
+                response = requests.get(api_url, headers=headers)
             response.raise_for_status()
             
             with open('web-build.zip', 'wb') as f:
@@ -122,7 +126,10 @@ def download_latest_web_build():
             api_url = f"https://api.github.com/repos/myshell-ai/ShellAgent/releases/latest"
         else:
             api_url = f"https://api.github.com/repos/myshell-ai/ShellAgent/releases/tags/{latest_tag_name}"
-        response = requests.get(api_url)
+        if os.environ.get('GITHUB_TOKEN', '') == '':
+            response = requests.get(api_url)
+        else:
+            response = requests.get(api_url, headers=headers)
         if response.status_code != 200:
             print("Failed to get the latest release information")
             return
@@ -137,7 +144,10 @@ def download_latest_web_build():
         # Download web-build
         download_url = web_build_asset['browser_download_url']
 
-        response = requests.get(download_url)
+        if os.environ.get('GITHUB_TOKEN', '') == '':
+            response = requests.get(download_url)
+        else:
+            response = requests.get(download_url, headers=headers)
 
         if response.status_code != 200:
             print("Failed to download web-build")
@@ -219,13 +229,13 @@ else:
     repo.checkout(ref)
 
 print("Pulling latest changes")
-if branch_name != 'main':
+if branch_name != 'main' and branch_name != 'beta':
     subprocess.run(['git', '-C', repo_path, 'checkout', branch_name])
     subprocess.run(['git', '-C', repo_path, 'pull', 'origin', branch_name])
 else:
     pull(repo, branch=branch_name)
 
-if "--stable" in sys.argv and branch_name == 'main':
+if "--stable" in sys.argv and (branch_name == 'main' or branch_name == 'beta'):
     latest_tag = f"refs/tags/{latest_tag_name}"
     print(f"latest_tag: {latest_tag}")
     if latest_tag is not None:
