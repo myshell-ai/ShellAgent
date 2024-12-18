@@ -4,6 +4,7 @@ import {
   convertNodeDataToState,
   convertRefOptsToCascaderOpts,
   convetNodeDataToScopes,
+  duplicateComfyUI,
   fieldsModeMap2Refs,
 } from './app-builder-utils';
 
@@ -574,6 +575,143 @@ describe('app builder utils', () => {
     `);
   });
 
+  it('duplicate comfyui location', () => {
+    const nodeData = {
+      id: 'state5',
+      type: 'state',
+      name: 'State',
+      render: {
+        text: '{{ untitled_inputs_1 }}',
+        image: '{{ comfy_ui1.output_image }}',
+      },
+      inputs: {
+        untitled_inputs_1: {
+          name: 'Untitled',
+          type: 'text',
+          user_input: true,
+          source: 'IM',
+        },
+      },
+      outputs: {},
+      blocks: [
+        {
+          api: 'http://127.0.0.1:8188/',
+          comfy_workflow_id: '7feb1c1361c14cf796d2d42fd87946a3',
+          location:
+            '/Users/shane/Downloads/ShellAgent_MacOS_release/ShellAgent/data/comfy_workflow/case_simple_comfy_ui_state5_comfy_ui1.shellagent.json',
+          inputs: {},
+          outputs: {
+            display: {
+              output_image: 'string',
+            },
+          },
+          type: 'task',
+          display_name: 'ComfyUI#1',
+          name: 'comfy_ui1',
+          mode: 'widget',
+          custom: true,
+          widget_class_name: 'ComfyUIWidget',
+        },
+      ],
+      display_name: 'State#5',
+    };
+
+    const newId = 'state_6';
+    const appName = 'app_1';
+    const defaultLocation =
+      '/Users/shane/Downloads/ShellAgent_MacOS_release/ShellAgent/data/comfy_workflow';
+    const ret = duplicateComfyUI(defaultLocation, appName, newId, nodeData);
+    expect(ret).toMatchInlineSnapshot(`
+      {
+        "locations": [
+          {
+            "from": "/Users/shane/Downloads/ShellAgent_MacOS_release/ShellAgent/data/comfy_workflow/case_simple_comfy_ui_state5_comfy_ui1.shellagent.json",
+            "to": "/Users/shane/Downloads/ShellAgent_MacOS_release/ShellAgent/data/comfy_workflow/app_1_state_6_comfy_ui1.shellagent.json",
+          },
+        ],
+        "nodeData": {
+          "blocks": [
+            {
+              "api": "http://127.0.0.1:8188/",
+              "comfy_workflow_id": "7feb1c1361c14cf796d2d42fd87946a3",
+              "custom": true,
+              "display_name": "ComfyUI#1",
+              "inputs": {},
+              "location": "/Users/shane/Downloads/ShellAgent_MacOS_release/ShellAgent/data/comfy_workflow/app_1_state_6_comfy_ui1.shellagent.json",
+              "mode": "widget",
+              "name": "comfy_ui1",
+              "outputs": {
+                "display": {
+                  "output_image": "string",
+                },
+              },
+              "type": "task",
+              "widget_class_name": "ComfyUIWidget",
+            },
+          ],
+          "display_name": "State#5",
+          "id": "state5",
+          "inputs": {
+            "untitled_inputs_1": {
+              "name": "Untitled",
+              "source": "IM",
+              "type": "text",
+              "user_input": true,
+            },
+          },
+          "name": "State",
+          "outputs": {},
+          "render": {
+            "image": "{{ comfy_ui1.output_image }}",
+            "text": "{{ untitled_inputs_1 }}",
+          },
+          "type": "state",
+        },
+      }
+    `);
+
+    expect(nodeData).toMatchInlineSnapshot(`
+      {
+        "blocks": [
+          {
+            "api": "http://127.0.0.1:8188/",
+            "comfy_workflow_id": "7feb1c1361c14cf796d2d42fd87946a3",
+            "custom": true,
+            "display_name": "ComfyUI#1",
+            "inputs": {},
+            "location": "/Users/shane/Downloads/ShellAgent_MacOS_release/ShellAgent/data/comfy_workflow/case_simple_comfy_ui_state5_comfy_ui1.shellagent.json",
+            "mode": "widget",
+            "name": "comfy_ui1",
+            "outputs": {
+              "display": {
+                "output_image": "string",
+              },
+            },
+            "type": "task",
+            "widget_class_name": "ComfyUIWidget",
+          },
+        ],
+        "display_name": "State#5",
+        "id": "state5",
+        "inputs": {
+          "untitled_inputs_1": {
+            "name": "Untitled",
+            "source": "IM",
+            "type": "text",
+            "user_input": true,
+          },
+        },
+        "name": "State",
+        "outputs": {},
+        "render": {
+          "image": "{{ comfy_ui1.output_image }}",
+          "text": "{{ untitled_inputs_1 }}",
+        },
+        "type": "state",
+      }
+    `);
+  });
+
   it('should handle context variables in state outputs', () => {
     const input = refOptionsOutputSchema.parse({
       global: {
@@ -1133,114 +1271,114 @@ describe('app builder utils', () => {
     //   `);
     // });
   });
-});
 
-describe('fieldsModeMap2Refs', () => {
-  it('should convert simple field mode map', () => {
-    const input = {
-      '@@@start': {
-        'context.key_1732680761763.value': 'ref',
-      },
-      key_1732680760262: {
-        'output.key_1732680806536.value': 'raw',
-        'output.key_1732680825193.value': 'raw',
-        'render.audio': 'ref',
-        'render.image': 'raw',
-        'input.key_1732680981496.default_value': 'ref',
-      },
-      'key_1732680760262.7a3ae4a4-0e6f-42db-bba7-94d0ce244feb': {
-        description: 'ref',
-        payload: 'ref',
-      },
-      'key_1732680760262.blocks.0': {
-        'inputs.system_prompt': 'ref',
-      },
-    };
+  describe('fieldsModeMap2Refs', () => {
+    it('should convert simple field mode map', () => {
+      const input = {
+        '@@@start': {
+          'context.key_1732680761763.value': 'ref',
+        },
+        key_1732680760262: {
+          'output.key_1732680806536.value': 'raw',
+          'output.key_1732680825193.value': 'raw',
+          'render.audio': 'ref',
+          'render.image': 'raw',
+          'input.key_1732680981496.default_value': 'ref',
+        },
+        'key_1732680760262.7a3ae4a4-0e6f-42db-bba7-94d0ce244feb': {
+          description: 'ref',
+          payload: 'ref',
+        },
+        'key_1732680760262.blocks.0': {
+          'inputs.system_prompt': 'ref',
+        },
+      };
 
-    const result = fieldsModeMap2Refs(input);
+      const result = fieldsModeMap2Refs(input);
 
-    expect(result).toEqual({
-      '@@@start': {
-        'context.key_1732680761763.value': {
-          currentMode: 'ref',
+      expect(result).toEqual({
+        '@@@start': {
+          'context.key_1732680761763.value': {
+            currentMode: 'ref',
+          },
         },
-      },
-      key_1732680760262: {
-        'output.key_1732680806536.value': {
-          currentMode: 'raw',
+        key_1732680760262: {
+          'output.key_1732680806536.value': {
+            currentMode: 'raw',
+          },
+          'output.key_1732680825193.value': {
+            currentMode: 'raw',
+          },
+          'render.audio': {
+            currentMode: 'ref',
+          },
+          'render.image': {
+            currentMode: 'raw',
+          },
+          'input.key_1732680981496.default_value': {
+            currentMode: 'ref',
+          },
+          'blocks.0.inputs.system_prompt': {
+            currentMode: 'ref',
+          },
+          'render.buttons.7a3ae4a4-0e6f-42db-bba7-94d0ce244feb.description': {
+            currentMode: 'ref',
+          },
+          'render.buttons.7a3ae4a4-0e6f-42db-bba7-94d0ce244feb.payload': {
+            currentMode: 'ref',
+          },
         },
-        'output.key_1732680825193.value': {
-          currentMode: 'raw',
-        },
-        'render.audio': {
-          currentMode: 'ref',
-        },
-        'render.image': {
-          currentMode: 'raw',
-        },
-        'input.key_1732680981496.default_value': {
-          currentMode: 'ref',
-        },
-        'blocks.0.inputs.system_prompt': {
-          currentMode: 'ref',
-        },
-        'render.buttons.7a3ae4a4-0e6f-42db-bba7-94d0ce244feb.description': {
-          currentMode: 'ref',
-        },
-        'render.buttons.7a3ae4a4-0e6f-42db-bba7-94d0ce244feb.payload': {
-          currentMode: 'ref',
-        },
-      },
+      });
     });
+
+    // it('should handle UUID fields correctly', () => {
+    //   const input = {
+    //     'key_1732680760262': {
+    //       'key_1732680760262.7a3ae4a4-0e6f-42db-bba7-94d0ce244feb.description': 'ref',
+    //       'normal.field': 'raw'
+    //     }
+    //   };
+
+    //   const result = fieldsModeMap2Refs(input);
+
+    //   expect(result).toEqual({
+    //     'key_1732680760262': {
+    //       'render.buttons.7a3ae4a4-0e6f-42db-bba7-94d0ce244feb.payload': {
+    //         currentMode: 'ref'
+    //       },
+    //       'normal.field': {
+    //         currentMode: 'raw'
+    //       }
+    //     }
+    //   });
+    // });
+
+    // it('should handle mixed fields with blocks', () => {
+    //   const input = {
+    //     'key_1732680760262': {
+    //       'key_1732680760262.blocks.0': {
+    //         'inputs.system_prompt': 'ref'
+    //       },
+    //       'normal.field': 'raw',
+    //       'key_1732680760262.7a3ae4a4-0e6f-42db-bba7-94d0ce244feb.description': 'ref'
+    //     }
+    //   };
+
+    //   const result = fieldsModeMap2Refs(input);
+
+    //   expect(result).toEqual({
+    //     'key_1732680760262': {
+    //       'blocks.0.inputs.system_prompt': {
+    //         currentMode: 'ref'
+    //       },
+    //       'normal.field': {
+    //         currentMode: 'raw'
+    //       },
+    //       'render.buttons.7a3ae4a4-0e6f-42db-bba7-94d0ce244feb.payload': {
+    //         currentMode: 'ref'
+    //       }
+    //     }
+    //   });
+    // });
   });
-
-  // it('should handle UUID fields correctly', () => {
-  //   const input = {
-  //     'key_1732680760262': {
-  //       'key_1732680760262.7a3ae4a4-0e6f-42db-bba7-94d0ce244feb.description': 'ref',
-  //       'normal.field': 'raw'
-  //     }
-  //   };
-
-  //   const result = fieldsModeMap2Refs(input);
-
-  //   expect(result).toEqual({
-  //     'key_1732680760262': {
-  //       'render.buttons.7a3ae4a4-0e6f-42db-bba7-94d0ce244feb.payload': {
-  //         currentMode: 'ref'
-  //       },
-  //       'normal.field': {
-  //         currentMode: 'raw'
-  //       }
-  //     }
-  //   });
-  // });
-
-  // it('should handle mixed fields with blocks', () => {
-  //   const input = {
-  //     'key_1732680760262': {
-  //       'key_1732680760262.blocks.0': {
-  //         'inputs.system_prompt': 'ref'
-  //       },
-  //       'normal.field': 'raw',
-  //       'key_1732680760262.7a3ae4a4-0e6f-42db-bba7-94d0ce244feb.description': 'ref'
-  //     }
-  //   };
-
-  //   const result = fieldsModeMap2Refs(input);
-
-  //   expect(result).toEqual({
-  //     'key_1732680760262': {
-  //       'blocks.0.inputs.system_prompt': {
-  //         currentMode: 'ref'
-  //       },
-  //       'normal.field': {
-  //         currentMode: 'raw'
-  //       },
-  //       'render.buttons.7a3ae4a4-0e6f-42db-bba7-94d0ce244feb.payload': {
-  //         currentMode: 'ref'
-  //       }
-  //     }
-  //   });
-  // });
 });

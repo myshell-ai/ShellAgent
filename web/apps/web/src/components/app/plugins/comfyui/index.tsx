@@ -1,133 +1,88 @@
-import {
-  getDefaultValueBySchema,
-  ISchema,
-  TValues,
-} from '@shellagent/form-engine';
-import { FormRef } from '@shellagent/ui';
-import { useRequest } from 'ahooks';
-import { isEmpty, merge } from 'lodash-es';
+import { Button, FormRef } from '@shellagent/ui';
+import { useInjection } from 'inversify-react';
 import { observer } from 'mobx-react-lite';
-import React, {
-  useRef,
-  useEffect,
-  useState,
-  useMemo,
-  useCallback,
-} from 'react';
+import React, { useEffect, useRef } from 'react';
 
 import { CommonWidgetConfigProps } from '@/components/app/config-form/widget-config';
 import NodeForm from '@/components/app/node-form';
-
-import { useEventEmitter, EventType } from './emitter';
-import { getComfyuiSchema, defaultSchema } from './schema';
-import { getFile } from './services';
-import { generateHash } from './utils';
+import { ComfyUIModel } from '@/components/app/plugins/comfyui/comfyui.model';
 import { ComfyUIEditor } from './widgets/comfyui-editor';
+import { toast } from 'react-toastify';
+import { useSchemaContext } from '@/stores/app/schema-provider';
 
-const ComfyUIPlugin: React.FC<CommonWidgetConfigProps> = ({
-  values,
-  onChange,
-  parent,
-}) => {
-  const formRef = useRef<FormRef>(null);
-  const [schema, setSchema] = useState<ISchema>(defaultSchema);
-
-  useEffect(() => {
-    const values = formRef.current?.getValues();
-    if (!values?.comfy_workflow_id) {
-      formRef.current?.setValue('comfy_workflow_id', generateHash());
+export const ComfyUIPlugin = observer<CommonWidgetConfigProps>(
+  ({ values, onChange, parent }) => {
+    if (!values) {
+      return null;
     }
-  }, []);
+    const { id: stateId } = useSchemaContext(state => ({
+      id: state.id,
+    }));
+    const model = useInjection<ComfyUIModel>('ComfyUIModel');
+    const formRef = useRef<FormRef>(null);
 
-  const defaultValues = useMemo(
-    () => getDefaultValueBySchema(schema, false),
-    [schema],
-  );
-
-  const mergeValues = (formValues: TValues, newValues?: TValues) => {
-    const result = {
-      ...merge({}, formValues, newValues),
-      inputs: isEmpty(formValues?.inputs)
-        ? newValues?.inputs
-        : Object.keys(formValues?.inputs || {})?.reduce((prev, key) => {
-            prev[key] = newValues?.inputs?.[key] || formValues?.inputs?.[key];
-            return prev;
-          }, {} as any),
-      outputs: !isEmpty(formValues?.outputs?.display)
-        ? formValues?.outputs
-        : newValues?.outputs,
-    };
-    return result;
-  };
-
-  const handleOnChange = useCallback(
-    (newValues: TValues) => {
-      onChange(mergeValues(defaultValues, newValues));
-    },
-    [defaultValues, onChange],
-  );
-
-  useEffect(() => {
-    onChange(mergeValues(defaultValues, values));
-  }, [schema]);
-
-  const { run: getComfySchema, loading: isLoading } = useRequest(getFile, {
-    manual: true,
-    onSuccess: result => {
-      if (result.success) {
-        const {
-          data: { schemas },
-        } = result;
-        setSchema(
-          getComfyuiSchema({
-            inputs: schemas.inputs || {},
-            outputs: schemas.outputs || {},
-          }),
-        );
+    // Until NodeForm re-render bug fixed, put initial logic (help with useEffect) here other than ComfyUIEditor
+    useEffect(() => {
+      if (formRef.current) {
+        model.formEngineModel.setFormRef(formRef.current);
+      } else {
+        throw new Error('formRef should not be null');
       }
-    },
-  });
-
-  useEffect(() => {
-    if (values?.comfy_workflow_id) {
-      getComfySchema({
-        comfy_workflow_id: values?.comfy_workflow_id,
-        filename: 'workflow.shellagent.json',
+      model.handlers.onChange = onChange;
+      model.loadCurrentSchema(values?.location, values?.comfy_workflow_id);
+      model.currentFormData = {
+        ...values,
+        stateId,
+        parent,
+      };
+      model.emitter.on('warmWithDetail', evt => {
+        toast.warning(
+          <div>
+            {evt.message}
+            {evt.message_detail ? (
+              <Button
+                className="ml-2"
+                color="error"
+                size="sm"
+                onClick={() => model.showMessageDetail(evt.message_detail)}>
+                View Detail
+              </Button>
+            ) : null}
+          </div>,
+          {
+            position: 'top-center',
+            autoClose: 3000,
+            hideProgressBar: true,
+            pauseOnHover: true,
+            closeButton: false,
+          },
+        );
       });
-    }
-  }, [values?.comfy_workflow_id]);
+      return () => {
+        model.formEngineModel.reset();
+        model.currentFormData = {};
+        model.emitter.off('warmWithDetail');
+        model.handlers = {};
+      };
+    }, []);
 
-  useEventEmitter(EventType.UPDATE_FORM, eventData => {
-    if (eventData.id === values?.comfy_workflow_id) {
-      setSchema(
-        getComfyuiSchema({
-          inputs: eventData?.data?.inputs || {},
-          outputs: eventData?.data?.outputs || {},
-        }),
-      );
-    }
-  });
-
-  if (!values) {
-    return null;
-  }
-
-  return (
-    <div className="comfyui-widget flex flex-col">
-      <NodeForm
-        parent={parent}
-        ref={formRef}
-        key={JSON.stringify(schema)}
-        schema={schema}
-        values={values}
-        onChange={handleOnChange}
-        loading={isLoading}
-        components={{
-          ComfyUIEditor,
-        }}
-      />
-    </div>
-  );
-};
-
-export default observer(ComfyUIPlugin);
+    return (
+      <div className="comfyui-widget flex flex-col">
+        <NodeForm
+          parent={parent}
+          ref={formRef}
+          key={JSON.stringify(model.currentSchema)}
+          schema={model.currentSchema}
+          values={values}
+          onChange={newValues => {
+            onChange(newValues);
+          }}
+          loading={model.getSchemaLoading.isOn}
+          components={{
+            ComfyUIEditor,
+          }}
+        />
+      </div>
+    );
+  },
+);

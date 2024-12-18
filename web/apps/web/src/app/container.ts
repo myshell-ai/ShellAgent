@@ -8,6 +8,7 @@ import { Container, interfaces } from 'inversify';
 import { toJS } from 'mobx';
 import { toast } from 'react-toastify';
 
+import { ComfyUIModel } from '@/components/app/plugins/comfyui/comfyui.model';
 import { AssistantModel } from '@/components/assistant/model';
 import { AppBuilderChatModel } from '@/components/chat/app-builder-chat.model';
 import { DownloadModel } from '@/components/download/download.model';
@@ -20,9 +21,12 @@ import { WidgetsInstalledModel } from '@/components/manager/manager-content/widg
 import { WidgetsMarketplaceModel } from '@/components/manager/manager-content/widgets/widgets-marketplace.model';
 import { SettingsModel } from '@/components/settings/settings.model';
 import { AppBuilderModel } from '@/stores/app/models/app-builder.model';
-import { EmitterModel } from '@/utils/emitter.model';
+import { FormEngineModel } from '@/utils/form-engine.model';
+import { FormikModel } from '@/utils/formik.model';
 import { ModalModel } from '@/utils/modal.model';
 import { RequestModel } from '@/utils/request.model';
+import { ToastModel } from '@/utils/toast.model';
+import { ToggleModel } from '@/utils/toggle.model';
 
 if (typeof window !== 'undefined') {
   // Client-side-only code
@@ -37,11 +41,14 @@ container.bind(RequestModel).toSelf().inTransientScope();
 
 // common
 container.bind(ModalModel).toSelf().inTransientScope();
+container.bind(ToggleModel).toSelf().inTransientScope();
+container.bind(FormikModel).toSelf().inTransientScope();
+container.bind(FormEngineModel).toSelf().inTransientScope();
 container
-  .bind(EmitterModel)
+  .bind(ToastModel)
   .toSelf()
   .inSingletonScope()
-  .onActivation((_ctx: interfaces.Context, model: EmitterModel) => {
+  .onActivation((_ctx: interfaces.Context, model: ToastModel) => {
     model.emitter.on('message.success', msg => {
       toast.success(msg, {
         position: 'top-center',
@@ -53,6 +60,15 @@ container
     });
     model.emitter.on('message.error', msg => {
       toast.error(msg, {
+        position: 'top-center',
+        autoClose: 3000,
+        hideProgressBar: true,
+        pauseOnHover: true,
+        closeButton: false,
+      });
+    });
+    model.emitter.on('message.warn', msg => {
+      toast.warning(msg, {
         position: 'top-center',
         autoClose: 3000,
         hideProgressBar: true,
@@ -84,6 +100,11 @@ container.bind(DownloadModel).toSelf().inSingletonScope();
 container.bind('ImageCanvasModel').to(ImageCanvasModel).inSingletonScope();
 container.bind(OpenImageCanvasModel).toSelf().inSingletonScope();
 
+container
+  .bind<ComfyUIModel>('ComfyUIModel')
+  .to(ComfyUIModel)
+  .inSingletonScope();
+
 // refactor app builder
 container
   .bind<AppBuilderModel>('AppBuilderModel')
@@ -106,5 +127,12 @@ container
     }
     return model;
   });
+
+container
+  .bind<interfaces.Factory<AppBuilderModel>>('Factory<AppBuilderModel>')
+  .toFactory<AppBuilderModel>(context => {
+    return () => context.container.get<AppBuilderModel>('AppBuilderModel');
+  });
+
 // assistant
 container.bind(AssistantModel).toSelf().inSingletonScope();

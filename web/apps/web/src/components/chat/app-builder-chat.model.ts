@@ -19,7 +19,7 @@ import {
 } from './app-builder-chat-utils';
 import type { ServerMessage } from '../../services/app/message-type';
 import { EventStatusEnum, RunAppRequest } from '../../services/app/type';
-import { EmitterModel } from '../../utils/emitter.model';
+import { ToastModel } from '../../utils/toast.model';
 
 @injectable()
 export class AppBuilderChatModel {
@@ -45,7 +45,7 @@ export class AppBuilderChatModel {
   session_id: string | undefined;
 
   constructor(
-    @inject(EmitterModel) private emitter: EmitterModel,
+    @inject(ToastModel) private emitter: ToastModel,
     @inject(ChatNewModel) public chatNew: ChatNewModel,
   ) {
     this.chatNew.handlers.sendTextMessagePost = async (
