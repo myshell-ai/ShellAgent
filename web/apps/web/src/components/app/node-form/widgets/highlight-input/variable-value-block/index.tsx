@@ -1,50 +1,46 @@
-import { useCallback, useEffect } from 'react';
-import type { TextNode } from 'lexical';
+import { memo, useEffect } from 'react';
+import { $insertNodes, COMMAND_PRIORITY_EDITOR, createCommand } from 'lexical';
+import { mergeRegister } from '@lexical/utils';
 import { useLexicalComposerContext } from '@lexical/react/LexicalComposerContext';
-import { useLexicalTextEntity } from '../hook';
 import { $createVariableValueBlockNode, VariableValueBlockNode } from './node';
-import { getHashtagRegexString } from './utils';
 
-const REGEX = new RegExp(getHashtagRegexString(), 'i');
+export const INSERT_VARIABLE_VALUE_BLOCK_COMMAND = createCommand(
+  'INSERT_VARIABLE_VALUE_BLOCK_COMMAND',
+);
+export const DELETE_VARIABLE_VALUE_BLOCK_COMMAND = createCommand(
+  'DELETE_VARIABLE_VALUE_BLOCK_COMMAND',
+);
 
-const VariableValueBlock = () => {
+const VariableValueBlock = ({}) => {
   const [editor] = useLexicalComposerContext();
 
   useEffect(() => {
     if (!editor.hasNodes([VariableValueBlockNode]))
       throw new Error(
-        'VariableValueBlockPlugin: VariableValueNode not registered on editor',
+        'VariableValueBlockPlugin: VariableValueBlockNode not registered on editor',
       );
+
+    return mergeRegister(
+      editor.registerCommand(
+        INSERT_VARIABLE_VALUE_BLOCK_COMMAND,
+        (text: string) => {
+          const variableValueBlockNode = $createVariableValueBlockNode(text);
+          $insertNodes([variableValueBlockNode]);
+          return true;
+        },
+        COMMAND_PRIORITY_EDITOR,
+      ),
+      editor.registerCommand(
+        DELETE_VARIABLE_VALUE_BLOCK_COMMAND,
+        () => {
+          return true;
+        },
+        COMMAND_PRIORITY_EDITOR,
+      ),
+    );
   }, [editor]);
-
-  const createVariableValueBlockNode = useCallback(
-    (textNode: TextNode): VariableValueBlockNode => {
-      return $createVariableValueBlockNode(textNode.getTextContent());
-    },
-    [],
-  );
-
-  const getVariableValueMatch = useCallback((text: string) => {
-    const matchArr = REGEX.exec(text);
-
-    if (matchArr === null) return null;
-
-    const hashtagLength = matchArr[0].length;
-    const startOffset = matchArr.index;
-    const endOffset = startOffset + hashtagLength;
-    return {
-      end: endOffset,
-      start: startOffset,
-    };
-  }, []);
-
-  useLexicalTextEntity<VariableValueBlockNode>(
-    getVariableValueMatch,
-    VariableValueBlockNode,
-    createVariableValueBlockNode,
-  );
 
   return null;
 };
 
-export default VariableValueBlock;
+export default memo(VariableValueBlock);

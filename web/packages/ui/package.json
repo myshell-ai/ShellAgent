@@ -35,8 +35,10 @@
   },
   "dependencies": {
     "@ant-design/icons": "^5.4.0",
+    "@chakra-ui/react": "2.8.0",
     "@emotion/react": "^11.13.0",
     "@emotion/styled": "^11.13.0",
+    "@floating-ui/react": "^0.27.0",
     "@heroicons/react": "^2.1.5",
     "@monaco-editor/react": "^4.6.0",
     "@radix-ui/react-accordion": "^1.2.0",
@@ -86,7 +88,6 @@
     "reflect-metadata": "^0.1.14",
     "tailwind-merge": "^2.5.2",
     "tailwindcss-animate": "^1.0.7",
-    "vaul": "^0.9.1",
-    "@chakra-ui/react": "2.8.0"
+    "vaul": "^0.9.1"
   }
 }

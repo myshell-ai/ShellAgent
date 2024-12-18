@@ -74,7 +74,7 @@ const VariableNameInput = (props: VariableSelectProps) => {
     refTypeSchema.Enum.state_output_key,
   );
 
-  const onValueChange = (value: string) => {
+  const onValueChange = ({ value }: { value: string }) => {
     const displayName = removeBrackets(
       value?.replace(contextTempReg, 'Context/$1'),
     );
@@ -87,7 +87,7 @@ const VariableNameInput = (props: VariableSelectProps) => {
       return;
     }
     setMode(value);
-    onValueChange('');
+    onValueChange({ value: '' });
     setValue('name_mode', value);
   };
 
@@ -105,7 +105,10 @@ const VariableNameInput = (props: VariableSelectProps) => {
             onValueChange={onValueChange}
           />
         ) : (
-          <Input onChange={e => onValueChange(e.target.value)} value={value} />
+          <Input
+            onChange={e => onValueChange({ value: e.target.value })}
+            value={value}
+          />
         )}
       </div>
       <DropdownMenu>

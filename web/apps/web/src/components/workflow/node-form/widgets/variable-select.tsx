@@ -51,7 +51,7 @@ const VariableSelect = (props: VariableSelectProps) => {
       showParentLabel
       options={options}
       value={value}
-      onValueChange={val => onChange?.({ target: { value: val } })}
+      onValueChange={({ value: val }) => onChange?.({ target: { value: val } })}
     />
   );
 };

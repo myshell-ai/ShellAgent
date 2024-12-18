@@ -1,12 +1,13 @@
-import type {
-  EditorConfig,
-  LexicalNode,
-  NodeKey,
-  SerializedTextNode,
-} from 'lexical';
-import { $applyNodeReplacement, TextNode } from 'lexical';
+import type { LexicalNode, NodeKey, SerializedLexicalNode } from 'lexical';
+import { $applyNodeReplacement, DecoratorNode } from 'lexical';
+import VariableValueBlockComponent from './component';
+type SerializedVariableValueBlockNode = SerializedLexicalNode & {
+  text: string;
+};
 
-export class VariableValueBlockNode extends TextNode {
+export class VariableValueBlockNode extends DecoratorNode<JSX.Element> {
+  __text: string;
+
   static getType(): string {
     return 'variable-value-block';
   }
@@ -16,51 +17,50 @@ export class VariableValueBlockNode extends TextNode {
   }
 
   constructor(text: string, key?: NodeKey) {
-    super(text, key);
+    super(key);
+    this.__text = text;
   }
 
-  createDOM(config: EditorConfig): HTMLElement {
-    const element = super.createDOM(config);
-    element.classList.add(
-      'inline-flex',
-      'items-center',
-      'px-0.5',
-      'h-[22px]',
-      'rounded-[5px]',
-      'align-middle',
+  createDOM(): HTMLElement {
+    const div = document.createElement('div');
+    div.classList.add('inline-flex', 'items-center', 'align-middle');
+    return div;
+  }
+
+  updateDOM(): false {
+    return false;
+  }
+
+  decorate(): JSX.Element {
+    return (
+      <VariableValueBlockComponent nodeKey={this.getKey()} text={this.__text} />
     );
-    element.style.position = 'relative';
-    element.style.padding = '4px';
-    element.style.borderRadius = '8px';
-    element.style.color = 'rgb(255, 99, 71)';
-    element.style.backgroundColor = '#f5f5f5';
-
-    return element;
   }
 
-  static importJSON(serializedNode: SerializedTextNode): TextNode {
-    const node = $createVariableValueBlockNode(serializedNode.text);
-    node.setFormat(serializedNode.format);
-    node.setDetail(serializedNode.detail);
-    node.setMode(serializedNode.mode);
-    node.setStyle(serializedNode.style);
-    return node;
+  isInline(): boolean {
+    return true;
   }
 
-  exportJSON(): SerializedTextNode {
+  static importJSON(
+    serializedNode: SerializedVariableValueBlockNode,
+  ): VariableValueBlockNode {
+    return $createVariableValueBlockNode(serializedNode.text);
+  }
+
+  exportJSON(): SerializedVariableValueBlockNode {
     return {
-      detail: this.getDetail(),
-      format: this.getFormat(),
-      mode: this.getMode(),
-      style: this.getStyle(),
-      text: this.getTextContent(),
+      text: this.getText(),
       type: 'variable-value-block',
       version: 1,
     };
   }
 
-  canInsertTextBefore(): boolean {
-    return false;
+  getText(): string {
+    return this.__text;
+  }
+
+  getTextContent(): string {
+    return this.getText();
   }
 }
 

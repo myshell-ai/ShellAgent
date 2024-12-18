@@ -31,7 +31,14 @@ const VariableSelect = (props: VariableSelectProps) => {
   const { parent } = useFormEngineContext();
 
   const handleChange = useCallback(
-    (val: string, parentKey?: string) => {
+    ({
+      value: val,
+      parent: parentKey,
+    }: {
+      label: string;
+      value: string;
+      parent?: string;
+    }) => {
       onChange?.({ target: { value: val } });
 
       // const replacedString = val.replace(contextReg, 'context.$1');

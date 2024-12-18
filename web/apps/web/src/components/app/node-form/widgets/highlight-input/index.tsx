@@ -11,8 +11,8 @@ import { HistoryPlugin } from '@lexical/react/LexicalHistoryPlugin';
 import { OnChangePlugin } from '@lexical/react/LexicalOnChangePlugin';
 import ComponentPickerBlock from './component-pick-block';
 import Placeholder from './placeholder';
-import VariableBlock from './variable-block';
 import VariableValueBlock from './variable-value-block';
+import VariableValueBlockReplacementBlock from './variable-value-block/variable-value-block-replacement-block';
 import { VariableValueBlockNode } from './variable-value-block/node';
 import { CustomTextNode } from './custom-text/node';
 
@@ -64,12 +64,13 @@ export const Editor = ({
             ErrorBoundary={LexicalErrorBoundary}
           />
           <ComponentPickerBlock triggerString="/" />
+          <ComponentPickerBlock triggerString="{" />
           <OnChangePlugin onChange={handleEditorChange} />
           <HistoryPlugin />
           {
             <>
-              <VariableBlock />
               <VariableValueBlock />
+              <VariableValueBlockReplacementBlock />
             </>
           }
         </div>

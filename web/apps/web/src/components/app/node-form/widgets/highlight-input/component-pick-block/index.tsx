@@ -11,8 +11,10 @@ import {
   shift,
   useFloating,
 } from '@floating-ui/react';
-import VariableMenu, { VariableOption } from './variable-menu';
-import { INSERT_VARIABLE_VALUE_BLOCK_COMMAND } from '../variable-block';
+import { INSERT_VARIABLE_VALUE_BLOCK_COMMAND } from '../variable-value-block';
+import type { CascaderOption } from '@shellagent/ui';
+import { CascaderContent } from '@shellagent/ui';
+import { formatVariableValue2Editor } from '../variable-value-block/utils';
 
 type ComponentPickerProps = {
   triggerString: string;
@@ -25,76 +27,409 @@ const ComponentPicker = ({ triggerString }: ComponentPickerProps) => {
     middleware: [offset(0), shift(), flip()],
   });
 
-  const mockOptions = [
+  const mockOptions: CascaderOption[] = [
     {
-      label: 'Insert Text',
-      key: 'text',
-      icon: '📝',
-      disabled: false,
-    },
-    {
-      label: 'Add Image',
-      key: 'image',
-      icon: '🖼️',
-      disabled: false,
-    },
-    {
-      label: 'Insert Table',
-      key: 'table',
-      icon: '📊',
-      disabled: false,
-    },
-    {
-      label: 'Add Link',
-      key: 'link',
-      icon: '🔗',
-      disabled: false,
-    },
-    {
-      label: 'Insert Code Block',
-      key: 'code',
-      icon: '💻',
-      disabled: false,
-    },
-    {
-      label: 'Add Quote',
-      key: 'quote',
-      icon: '💭',
-      disabled: false,
-    },
-    {
-      label: 'Premium Feature',
-      key: 'premium',
-      icon: '⭐',
-      disabled: true, // 禁用的选项示例
-    },
-  ].map(
-    option =>
-      new VariableOption(option.label, {
-        icon: <span className="mr-2">{option.icon}</span>,
-        onSelect: () => {
-          editor.dispatchCommand(
-            INSERT_VARIABLE_VALUE_BLOCK_COMMAND,
-            `{{${option.key}}}`,
-          );
+      label: 'global',
+      children: [
+        {
+          label: 'Context',
+          value: 'Context',
+          children: [
+            {
+              label: 'A',
+              value: '{{__context__a__}}',
+              field_type: 'image',
+              parent: 'context',
+            },
+            {
+              label: 'B',
+              value: '{{__context__b__}}',
+              field_type: 'image',
+              parent: 'context',
+            },
+            {
+              label: 'C',
+              value: '{{__context__c__}}',
+              field_type: 'image',
+              parent: 'context',
+            },
+            {
+              label: 'D',
+              value: '{{__context__d__}}',
+              field_type: 'image',
+              parent: 'context',
+            },
+            {
+              label: 'E',
+              value: '{{__context__e__}}',
+              field_type: 'image',
+              parent: 'context',
+            },
+            {
+              label: 'F',
+              value: '{{__context__f__}}',
+              field_type: 'image',
+              parent: 'context',
+            },
+            {
+              label: 'G',
+              value: '{{__context__g__}}',
+              field_type: 'image',
+              parent: 'context',
+            },
+            {
+              label: 'H',
+              value: '{{__context__h__}}',
+              field_type: 'image',
+              parent: 'context',
+            },
+            {
+              label: 'I',
+              value: '{{__context__i__}}',
+              field_type: 'image',
+              parent: 'context',
+            },
+            {
+              label: 'J',
+              value: '{{__context__j__}}',
+              field_type: 'image',
+              parent: 'context',
+            },
+            {
+              label: 'user_image',
+              value: '{{__context__user_image__}}',
+              field_type: 'image',
+              parent: 'context',
+            },
+            {
+              label: 'poster',
+              value: '{{__context__poster__}}',
+              field_type: 'image',
+              parent: 'context',
+            },
+            {
+              label: 'template',
+              value: '{{__context__template__}}',
+              field_type: 'image',
+              parent: 'context',
+            },
+            {
+              label: 'mask1',
+              value: '{{__context__mask1__}}',
+              field_type: 'text',
+              parent: 'context',
+            },
+            {
+              label: 'mask2',
+              value: '{{__context__mask2__}}',
+              field_type: 'text',
+              parent: 'context',
+            },
+            {
+              label: 'Glinda3',
+              value: '{{__context__glinda3__}}',
+              field_type: 'image',
+              parent: 'context',
+            },
+            {
+              label: 'Glinda4',
+              value: '{{__context__glinda4__}}',
+              field_type: 'image',
+              parent: 'context',
+            },
+            {
+              label: 'Fiyero',
+              value: '{{__context__fiyero__}}',
+              field_type: 'image',
+              parent: 'context',
+            },
+            {
+              label: 'hello',
+              value: '{{__context__hello__}}',
+              field_type: 'image',
+              parent: 'context',
+            },
+            {
+              label: 'posterpreview',
+              value: '{{__context__posterpreview__}}',
+              field_type: 'image',
+              parent: 'context',
+            },
+          ],
         },
-        disabled: option.disabled,
-        keywords: [option.label.toLowerCase(), option.key],
-      }),
-  );
+        {
+          label: 'State#2',
+          value: 'State#2',
+          children: [
+            {
+              label: 'Context/user_image',
+              value: '{{__context__user_image__}}',
+              field_type: 'text',
+              parent: 'state',
+            },
+          ],
+        },
+        {
+          label: 'A',
+          value: 'A',
+          children: [
+            {
+              label: 'Context/mask1',
+              value: '{{__context__mask1__}}',
+              field_type: 'text',
+              parent: 'state',
+            },
+            {
+              label: 'Context/mask2',
+              value: '{{__context__mask2__}}',
+              field_type: 'text',
+              parent: 'state',
+            },
+            {
+              label: 'Context/poster',
+              value: '{{__context__poster__}}',
+              field_type: 'text',
+              parent: 'state',
+            },
+          ],
+        },
+        {
+          label: 'B',
+          value: 'B',
+          children: [
+            {
+              label: 'Context/mask1',
+              value: '{{__context__mask1__}}',
+              field_type: 'text',
+              parent: 'state',
+            },
+            {
+              label: 'Context/mask2',
+              value: '{{__context__mask2__}}',
+              field_type: 'text',
+              parent: 'state',
+            },
+            {
+              label: 'Context/poster',
+              value: '{{__context__poster__}}',
+              field_type: 'text',
+              parent: 'state',
+            },
+          ],
+        },
+        {
+          label: 'C',
+          value: 'C',
+          children: [
+            {
+              label: 'Context/mask1',
+              value: '{{__context__mask1__}}',
+              field_type: 'text',
+              parent: 'state',
+            },
+            {
+              label: 'Context/mask2',
+              value: '{{__context__mask2__}}',
+              field_type: 'text',
+              parent: 'state',
+            },
+            {
+              label: 'Context/poster',
+              value: '{{__context__poster__}}',
+              field_type: 'text',
+              parent: 'state',
+            },
+          ],
+        },
+        {
+          label: 'D',
+          value: 'D',
+          children: [
+            {
+              label: 'Context/mask1',
+              value: '{{__context__mask1__}}',
+              field_type: 'text',
+              parent: 'state',
+            },
+            {
+              label: 'Context/mask2',
+              value: '{{__context__mask2__}}',
+              field_type: 'text',
+              parent: 'state',
+            },
+            {
+              label: 'Context/poster',
+              value: '{{__context__poster__}}',
+              field_type: 'text',
+              parent: 'state',
+            },
+          ],
+        },
+        {
+          label: 'E',
+          value: 'E',
+          children: [
+            {
+              label: 'Context/mask1',
+              value: '{{__context__mask1__}}',
+              field_type: 'text',
+              parent: 'state',
+            },
+            {
+              label: 'Context/mask2',
+              value: '{{__context__mask2__}}',
+              field_type: 'text',
+              parent: 'state',
+            },
+            {
+              label: 'Context/poster',
+              value: '{{__context__poster__}}',
+              field_type: 'text',
+              parent: 'state',
+            },
+          ],
+        },
+        {
+          label: 'F',
+          value: 'F',
+          children: [
+            {
+              label: 'Context/mask1',
+              value: '{{__context__mask1__}}',
+              field_type: 'text',
+              parent: 'state',
+            },
+            {
+              label: 'Context/mask2',
+              value: '{{__context__mask2__}}',
+              field_type: 'text',
+              parent: 'state',
+            },
+            {
+              label: 'Context/poster',
+              value: '{{__context__poster__}}',
+              field_type: 'text',
+              parent: 'state',
+            },
+          ],
+        },
+        {
+          label: 'G',
+          value: 'G',
+          children: [
+            {
+              label: 'Context/mask1',
+              value: '{{__context__mask1__}}',
+              field_type: 'text',
+              parent: 'state',
+            },
+            {
+              label: 'Context/mask2',
+              value: '{{__context__mask2__}}',
+              field_type: 'text',
+              parent: 'state',
+            },
+            {
+              label: 'Context/poster',
+              value: '{{__context__poster__}}',
+              field_type: 'text',
+              parent: 'state',
+            },
+          ],
+        },
+        {
+          label: 'H',
+          value: 'H',
+          children: [
+            {
+              label: 'Context/mask1',
+              value: '{{__context__mask1__}}',
+              field_type: 'text',
+              parent: 'state',
+            },
+            {
+              label: 'Context/mask2',
+              value: '{{__context__mask2__}}',
+              field_type: 'text',
+              parent: 'state',
+            },
+            {
+              label: 'Context/poster',
+              value: '{{__context__poster__}}',
+              field_type: 'text',
+              parent: 'state',
+            },
+          ],
+        },
+        {
+          label: 'I',
+          value: 'I',
+          children: [
+            {
+              label: 'Context/mask1',
+              value: '{{__context__mask1__}}',
+              field_type: 'text',
+              parent: 'state',
+            },
+            {
+              label: 'Context/mask2',
+              value: '{{__context__mask2__}}',
+              field_type: 'text',
+              parent: 'state',
+            },
+            {
+              label: 'Context/poster',
+              value: '{{__context__poster__}}',
+              field_type: 'text',
+              parent: 'state',
+            },
+          ],
+        },
+        {
+          label: 'J',
+          value: 'J',
+          children: [
+            {
+              label: 'Context/mask1',
+              value: '{{__context__mask1__}}',
+              field_type: 'text',
+              parent: 'state',
+            },
+            {
+              label: 'Context/mask2',
+              value: '{{__context__mask2__}}',
+              field_type: 'text',
+              parent: 'state',
+            },
+            {
+              label: 'Context/poster',
+              value: '{{__context__poster__}}',
+              field_type: 'text',
+              parent: 'state',
+            },
+          ],
+        },
+      ],
+    },
+  ];
   const [queryString, setQueryString] = useState<string | null>(null);
 
   const onSelectOption = useCallback(
     (
-      selectedOption: any,
+      selectedOption: { label: string; value: string; parent?: string },
       nodeToRemove: TextNode | null,
       closeMenu: () => void,
-      matchingString: string,
     ) => {
       editor.update(() => {
-        if (nodeToRemove && selectedOption?.key) nodeToRemove.remove();
+        if (nodeToRemove) nodeToRemove.remove();
 
-        if (selectedOption?.onSelect) selectedOption.onSelect(matchingString);
+        editor.dispatchCommand(
+          INSERT_VARIABLE_VALUE_BLOCK_COMMAND,
+          formatVariableValue2Editor(
+            selectedOption.label,
+            selectedOption.value,
+          ),
+        );
 
         closeMenu();
       });
@@ -102,7 +437,7 @@ const ComponentPicker = ({ triggerString }: ComponentPickerProps) => {
     [editor],
   );
 
-  const renderMenu = useCallback<MenuRenderFn<VariableOption>>(
+  const renderMenu = useCallback<MenuRenderFn<any>>(
     (
       anchorElementRef,
       { selectedIndex, selectOptionAndCleanUp, setHighlightedIndex },
@@ -124,22 +459,15 @@ const ComponentPicker = ({ triggerString }: ComponentPickerProps) => {
                   }}
                   ref={refs.setFloating}>
                   {!!mockOptions.length && (
-                    <>
-                      <VariableMenu
-                        startIndex={0}
-                        selectedIndex={selectedIndex}
-                        options={mockOptions}
-                        onClick={(index, option) => {
-                          if (option.disabled) return;
-                          setHighlightedIndex(index);
-                          selectOptionAndCleanUp(option);
-                        }}
-                        onMouseEnter={(index, option) => {
-                          if (option.disabled) return;
-                          setHighlightedIndex(index);
-                        }}
-                      />
-                    </>
+                    <CascaderContent
+                      options={mockOptions}
+                      value={queryString || ''}
+                      onValueChange={({ label, value, parent }) => {
+                        selectOptionAndCleanUp({ label, value, parent });
+                      }}
+                      className="w-[260px]"
+                      emptyText="No options available"
+                    />
                   )}
                 </div>
               </FloatingPortal>
