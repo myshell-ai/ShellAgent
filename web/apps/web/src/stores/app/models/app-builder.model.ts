@@ -187,7 +187,6 @@ export class AppBuilderModel {
         };
         this.metadata = metadata;
         this.nodeData = genNodeData(automata);
-        this.rerenderButtons = {};
 
         emitter.emit(EventType.FORM_CHANGE, {
           id: this.selectedStateId as any,
