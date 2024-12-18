@@ -34,7 +34,6 @@ export async function validateImage(
         return Promise.reject(new Error('Keep image file size under 1MB.'));
       }
     }
-    console.log('response: ', response);
     const image = new Image();
     image.src = apiUrl;
     const imageLoaded = new Promise<void>((resolve, reject) => {

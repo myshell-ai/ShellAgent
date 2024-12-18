@@ -8,7 +8,7 @@ import { useInjection } from 'inversify-react';
 import { observer } from 'mobx-react-lite';
 import dynamic from 'next/dynamic';
 import { useSearchParams } from 'next/navigation';
-import { useEffect, useRef } from 'react';
+import { useCallback, useEffect, useRef } from 'react';
 import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
 
@@ -87,10 +87,22 @@ const FlowEngineWrapper = observer(
     const onDoubleClick: React.MouseEventHandler<HTMLDivElement> = e => {
       if ((e.target as any).className === 'react-flow__pane') {
         const name = 'State';
-        const index = Object.values(appBuilder.nodeData).filter(node =>
+        // 找出所有同名节点
+        const sameNameNodes = Object.values(appBuilder.nodeData).filter(node =>
           node.name?.startsWith(name),
-        )?.length;
-        const displayName = `${name}${index > 0 ? `#${index + 1}` : '#1'}`;
+        );
+        // 获取最大编号
+        let maxIndex = 0;
+        sameNameNodes.forEach(node => {
+          const match = node.name?.match(/#(\d+)$/);
+          if (match) {
+            const num = parseInt(match[1]);
+            maxIndex = Math.max(maxIndex, num);
+          }
+        });
+        const displayName = `${name}${
+          maxIndex > 0 ? `#${maxIndex + 1}` : '#1'
+        }`;
         const newId = customSnakeCase(displayName) as Lowercase<string>;
         flowInstance?.addNodes({
           id: newId,
