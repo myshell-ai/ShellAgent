@@ -2,6 +2,7 @@ import {
   BaseEdge,
   EdgeProps,
   getBezierPath,
+  NodeIdEnum,
   useReactFlowStore,
 } from '@shellagent/flow-engine';
 import { RefSceneEnum } from '@shellagent/shared/protocol/app-scope';
@@ -41,7 +42,11 @@ export const DefaultEdge = ({
   const edges = useReactFlowStore(state => state.edges);
 
   useKeyPress(['delete', 'backspace'], () => {
-    if (selected) {
+    if (
+      selected &&
+      source !== NodeIdEnum.start &&
+      target !== NodeIdEnum.intro
+    ) {
       onDelEdge({ id });
       appBuilder.handleRefScene({
         scene: RefSceneEnum.Enum.remove_edge,

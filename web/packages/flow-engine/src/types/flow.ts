@@ -32,4 +32,5 @@ export interface IFlowDagProps {
   loading?: boolean;
   footerExtra?: React.ReactNode;
   header?: React.ReactNode;
+  onDoubleClick?: React.MouseEventHandler<HTMLDivElement>;
 }
