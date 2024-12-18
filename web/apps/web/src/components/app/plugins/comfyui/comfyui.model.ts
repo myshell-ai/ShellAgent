@@ -14,6 +14,7 @@ import {
 } from '@/components/app/plugins/comfyui/constant';
 import { getFile, saveComfy } from '@/components/app/plugins/comfyui/services';
 import {
+  GetFileResponse,
   type SaveRequest,
   type SaveResponse,
 } from '@/components/app/plugins/comfyui/services/type';
@@ -40,6 +41,7 @@ const SETTING_DISABLED = process.env.NEXT_PUBLIC_DISABLE_SETTING === 'yes';
 
 export type LocationFormType = {
   location: string;
+  comfy_workflow_id?: string;
   name: string;
   stateId: string;
   parent: string;
@@ -313,18 +315,18 @@ export class ComfyUIModel {
   }
 
   @action.bound
-  async loadCurrentSchema(location?: string) {
-    if (location == null) {
+  async loadCurrentSchema(location?: string, comfy_workflow_id?: string) {
+    if (location == null && comfy_workflow_id == null) {
       this.currentSchema = defaultSchema;
       return;
     }
 
     this.getSchemaLoading.on();
     try {
-      const result = await getFile({
+      const result = await this.getFileWithBackwardCompatibility(
         location,
-        filename: 'workflow.json',
-      });
+        comfy_workflow_id,
+      );
       if (result.success) {
         const data = result.data.schemas;
         this.setCurrentSchema(
@@ -343,9 +345,33 @@ export class ComfyUIModel {
     }
   }
 
+  async getFileWithBackwardCompatibility(
+    location?: string,
+    comfy_workflow_id?: string,
+  ): Promise<GetFileResponse> {
+    let result: GetFileResponse;
+    if (location != null) {
+      result = await getFile({
+        location,
+        filename: 'workflow.json',
+      });
+    } else if (comfy_workflow_id != null) {
+      result = await getFile({
+        comfy_workflow_id,
+        filename: 'workflow.shellagent.json',
+      });
+    } else {
+      throw new Error('Unhandled error');
+    }
+    return result;
+  }
+
   @action.bound
   async getComfySchema(iframeRef: RefObject<HTMLIFrameElement>) {
-    if (this.currentFormData.location == null) {
+    if (
+      this.currentFormData.location == null &&
+      this.currentFormData.comfy_workflow_id == null
+    ) {
       iframeRef.current?.contentWindow?.postMessage(
         { type: MessageType.LOAD_DEFAULT },
         this.comfyUIUrl,
@@ -355,10 +381,10 @@ export class ComfyUIModel {
 
     this.getSchemaLoading.on();
     try {
-      const result = await getFile({
-        location: this.currentFormData.location,
-        filename: 'workflow.json',
-      });
+      const result = await this.getFileWithBackwardCompatibility(
+        this.currentFormData.location,
+        this.currentFormData.comfy_workflow_id,
+      );
       console.log('ComfyUI loaded');
       if (result.success) {
         const { data } = result;

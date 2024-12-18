@@ -29,7 +29,7 @@ export const ComfyUIPlugin = observer<CommonWidgetConfigProps>(
         throw new Error('formRef should not be null');
       }
       model.handlers.onChange = onChange;
-      model.loadCurrentSchema(values?.location);
+      model.loadCurrentSchema(values?.location, values?.comfy_workflow_id);
       model.currentFormData = {
         ...values,
         stateId,
