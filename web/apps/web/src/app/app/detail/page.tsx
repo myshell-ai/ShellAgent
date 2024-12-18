@@ -96,7 +96,7 @@ const FlowEngineWrapper = observer(
         sameNameNodes.forEach(node => {
           const match = node.name?.match(/#(\d+)$/);
           if (match) {
-            const num = parseInt(match[1]);
+            const num = parseInt(match[1], 10);
             maxIndex = Math.max(maxIndex, num);
           }
         });
