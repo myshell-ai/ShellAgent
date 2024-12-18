@@ -60,6 +60,7 @@ import { defaultFlow } from '../../../components/app/constants';
 @injectable()
 export class AppBuilderModel {
   nodeData: NodeDataType = {};
+  @observable rerenderButtons: Record<string, boolean> = {};
   @observable metadata: Metadata = {
     name: '',
     description: '',
@@ -503,6 +504,17 @@ export class AppBuilderModel {
       }
 
       return state;
+    });
+  }
+
+  // TODO: FlowEngine refactor, 调整button顺序handle不更新问题
+  @action.bound
+  setRerenderButtons(id: string) {
+    this.rerenderButtons[id] = true;
+    runInAction(() => {
+      setTimeout(() => {
+        this.rerenderButtons[id] = false;
+      }, 500);
     });
   }
 }

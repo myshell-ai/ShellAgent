@@ -10,8 +10,8 @@ import {
 import { Button as IButtonType } from '@shellagent/shared/protocol/render-button';
 import { IconButton, Button, Text } from '@shellagent/ui';
 import clsx from 'clsx';
+import { observer } from 'mobx-react-lite';
 import { useInjection } from 'inversify-react';
-import { PropsWithChildren } from 'react';
 
 import {
   inputSourceHandle,
@@ -185,7 +185,7 @@ const ButtonPreview = ({
   );
 };
 
-const MessagePreview = () => {
+const MessagePreview = observer(() => {
   const appBuilder = useInjection<AppBuilderModel>('AppBuilderModel');
   const stateId = useSchemaContext(state => state.id);
   const buttons = (appBuilder.nodeData[stateId]?.render?.buttons ||
@@ -193,7 +193,7 @@ const MessagePreview = () => {
 
   return (
     <div className="flex flex-col gap-3">
-      {buttons.length ? (
+      {buttons.length && !appBuilder.rerenderButtons[stateId] ? (
         <>
           {buttons.map((button, index) => (
             <ButtonPreview button={button} index={index} key={button.id} />
@@ -203,7 +203,7 @@ const MessagePreview = () => {
       <InputPreview />
     </div>
   );
-};
+});
 
 MessagePreview.displayName = 'MessagePreview';
 

@@ -5,9 +5,12 @@ import { getButtonDisplayName } from '@shellagent/shared/utils';
 import { Button, XMark, IconButton, useFormContext } from '@shellagent/ui';
 import { useHover } from 'ahooks';
 import clsx from 'clsx';
+import { useInjection } from 'inversify-react';
+import { debounce } from 'lodash-es';
 import { useRef, useCallback } from 'react';
 import { useDrag, useDrop } from 'react-dnd';
 
+import { AppBuilderModel } from '@/stores/app/models/app-builder.model';
 import { useAppState } from '@/stores/app/use-app-state';
 import { generateUUID } from '@/utils/common-helper';
 
@@ -95,6 +98,7 @@ const ButtonItem = ({
 };
 
 const ButtonEditor = ({ name, onChange }: VariableNodeProps) => {
+  const appBuilder = useInjection<AppBuilderModel>('AppBuilderModel');
   const { setInsideSheetOpen, currentStateId } = useAppState(state => state);
   const { getValues } = useFormContext();
   const value = getValues(name) as IButtonType[];
@@ -150,14 +154,20 @@ const ButtonEditor = ({ name, onChange }: VariableNodeProps) => {
     [value, onChange],
   );
 
+  // TODO: FlowEngine refactor, 调整button顺序handle不更新问题
+  const forceUpdate = debounce(() => {
+    appBuilder.setRerenderButtons(currentStateId);
+  }, 300);
+
   const onButtonMove = useCallback(
     (startIndex: number, endIndex: number) => {
       const result = Array.from(value);
       const [removed] = result.splice(startIndex, 1);
       result.splice(endIndex, 0, removed);
       onChange(result);
+      forceUpdate();
     },
-    [value, onChange],
+    [value, onChange, edges],
   );
 
   return (
