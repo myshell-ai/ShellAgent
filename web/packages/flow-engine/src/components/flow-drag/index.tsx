@@ -153,7 +153,7 @@ const FlowDag = forwardRef<FlowRef, IFlowDagProps>(
           onConnect={handleEdgeConnect}
           onEdgeDoubleClick={e => e.stopPropagation()}
           onNodeDoubleClick={e => e.stopPropagation()}
-          onDoubleClick={onDoubleClick}
+          onDoubleClick={e => onDoubleClick?.(e, onAddNode)}
           deleteKeyCode={null}
           multiSelectionKeyCode={null}
           proOptions={{
