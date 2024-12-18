@@ -1,8 +1,7 @@
 'use client';
 
 import '../../reflect-metadata-client-side';
-import { FlowEngine, FlowRef } from '@shellagent/flow-engine';
-import { customSnakeCase } from '@shellagent/shared/utils';
+import { FlowEngine, FlowRef, FlowAction } from '@shellagent/flow-engine';
 import { enableMapSet } from 'immer';
 import { useInjection } from 'inversify-react';
 import { observer } from 'mobx-react-lite';
@@ -73,26 +72,21 @@ const FlowEngineWrapper = observer(
       }
     }, [flowInstance, appId, versionName]);
 
-    const onDoubleClick: React.MouseEventHandler<HTMLDivElement> = e => {
+    const onDoubleClick = (
+      e: React.MouseEvent<HTMLDivElement, MouseEvent>,
+      onAddNode: FlowAction['onAddNode'],
+    ) => {
       if ((e.target as any).className === 'react-flow__pane') {
-        const name = 'State';
-        const index = Object.values(appBuilder.nodeData).filter(node =>
-          node.name?.startsWith(name),
-        )?.length;
-        const displayName = `${name}${index > 0 ? `#${index + 1}` : '#1'}`;
-        const newId = customSnakeCase(displayName) as Lowercase<string>;
-        flowInstance?.addNodes({
-          id: newId,
+        const position = {
+          x: e.clientX - 300,
+          y: e.clientY - 100,
+        };
+        onAddNode({
           type: 'state',
-          position: flowInstance?.project({
-            x: e.clientX - 300,
-            y: e.clientY - 100,
-          }),
+          position: flowInstance?.project(position) || position,
           data: {
-            id: newId,
-            type: 'state',
-            name: displayName,
-            display_name: displayName,
+            name: 'State',
+            display_name: 'State',
           },
         });
       }

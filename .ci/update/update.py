@@ -2,11 +2,13 @@ import pygit2
 from datetime import datetime
 import sys
 import os
+import json
 import shutil
 import filecmp
 import subprocess
 import requests
 import zipfile
+from servers.base import PROJECT_ROOT
 from proconfig.core.exception import ShellException
 
 def pull(repo, remote_name='origin', branch='main'):
@@ -58,6 +60,13 @@ def pull(repo, remote_name='origin', branch='main'):
                 }
                 raise ShellException(**error)
 
+LATEST_TAG_FILE = os.path.join(PROJECT_ROOT, 'latest_tag.json')
+
+latest_tag_name = 'latest'
+if os.path.exists(LATEST_TAG_FILE):
+    with open(LATEST_TAG_FILE, 'r') as f:
+        settings = json.load(f)
+        latest_tag_name = settings['latest_tag_name']
 
 pygit2.option(pygit2.GIT_OPT_SET_OWNER_VALIDATION, 0)
 repo_path = str(sys.argv[1])
@@ -109,7 +118,10 @@ def download_latest_web_build():
             raise ShellException(**error)
     else:
         # Get the latest release information
-        api_url = "https://api.github.com/repos/myshell-ai/ShellAgent/releases/latest"
+        if latest_tag_name == 'latest':
+            api_url = f"https://api.github.com/repos/myshell-ai/ShellAgent/releases/latest"
+        else:
+            api_url = f"https://api.github.com/repos/myshell-ai/ShellAgent/releases/tags/{latest_tag_name}"
         response = requests.get(api_url)
         if response.status_code != 200:
             print("Failed to get the latest release information")
@@ -214,21 +226,7 @@ else:
     pull(repo, branch=branch_name)
 
 if "--stable" in sys.argv and branch_name == 'main':
-    def latest_tag(repo):
-        versions = []
-        for k in repo.references:
-            try:
-                prefix = "refs/tags/v"
-                if k.startswith(prefix):
-                    version = list(map(int, k[len(prefix):].split(".")))
-                    versions.append((version[0] * 10000000000 + version[1] * 100000 + version[2], k))
-            except:
-                pass
-        versions.sort()
-        if len(versions) > 0:
-            return versions[-1][1]
-        return None
-    latest_tag = latest_tag(repo)
+    latest_tag = f"refs/tags/{latest_tag_name}"
     print(f"latest_tag: {latest_tag}")
     if latest_tag is not None:
         repo.checkout(latest_tag)

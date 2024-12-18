@@ -23,9 +23,9 @@ import { editItem } from '@/services/home';
 import { AppBuilderModel } from '@/stores/app/models/app-builder.model';
 import { useAppState } from '@/stores/app/use-app-state';
 import { genAutomata } from '@/stores/app/utils/data-transformer';
-import { validateAutomata } from '@/stores/app/utils/date-validate';
+// import { validateAutomata } from '@/stores/app/utils/date-validate';
 
-import { ExtraActions } from './extra-action';
+// import { ExtraActions } from './extra-action';
 import Publish from './publish';
 import { ExportDialog } from '../export-dialog';
 
@@ -159,7 +159,7 @@ export const Header: React.FC = observer(() => {
           version_name={version_name}
           loading={appBuilder.initAppBuilderLoading}
         />
-        <ExtraActions />
+        {/* <ExtraActions /> */}
       </div>
     </div>
   );

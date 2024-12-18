@@ -1,4 +1,9 @@
-import { type IFlow, type ReactFlowInstance } from '@shellagent/flow-engine';
+import {
+  NodeIdEnum,
+  type IFlow,
+  type ReactFlowInstance,
+} from '@shellagent/flow-engine';
+import type { TFieldMode } from '@shellagent/form-engine';
 import { CustomKey, CustomEventName, Automata } from '@shellagent/pro-config';
 import {
   RefSceneEnum,
@@ -11,7 +16,7 @@ import {
 } from '@shellagent/shared/protocol/app-scope';
 import type { FieldValues } from '@shellagent/ui';
 import { injectable, inject } from 'inversify';
-import { isEmpty } from 'lodash-es';
+import { isEmpty, set } from 'lodash-es';
 import { action, makeObservable, observable, runInAction } from 'mobx';
 
 import { AppBuilderChatModel } from '@/components/chat/app-builder-chat.model';
@@ -56,6 +61,7 @@ import { defaultFlow } from '../../../components/app/constants';
 @injectable()
 export class AppBuilderModel {
   nodeData: NodeDataType = {};
+  @observable rerenderButtons: Record<string, boolean> = {};
   @observable metadata: Metadata = {
     name: '',
     description: '',
@@ -86,7 +92,7 @@ export class AppBuilderModel {
 
   copyNodeData: FieldValues = {};
 
-  private get scopes(): Scopes | null {
+  get scopes(): Scopes | null {
     if (!this.flowInstance || !this.nodeData) return null;
     const edges = this.flowInstance.getEdges();
     return convetNodeDataToScopes(this.nodeData, edges);
@@ -533,6 +539,17 @@ export class AppBuilderModel {
       }
 
       return state;
+    });
+  }
+
+  // TODO: FlowEngine refactor, 调整button顺序handle不更新问题
+  @action.bound
+  setRerenderButtons(id: string) {
+    this.rerenderButtons[id] = true;
+    runInAction(() => {
+      setTimeout(() => {
+        this.rerenderButtons[id] = false;
+      }, 500);
     });
   }
 }
