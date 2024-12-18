@@ -28,7 +28,6 @@ const IntroNode: React.FC<NodeProps<IntroNodeType>> = ({ selected, data }) => {
   const stateFormRef = useRef<FormRef>(null);
   const appBuilder = useInjection<AppBuilderModel>('AppBuilderModel');
   const { selectedNodes, onConnect } = useReactFlowStore(state => ({
-    onDelNode: state.onDelNode,
     selectedNodes: state.selectedNodes,
     onConnect: state.onConnect,
   }));

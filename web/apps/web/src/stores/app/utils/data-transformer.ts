@@ -229,8 +229,14 @@ export const formatReactFlow2Flow = (reactflow: IFlow) => {
     ...reactflow,
     nodes: reactflow?.nodes?.map(item => {
       if (item.id === initialState && item.type !== NodeTypeEnum.intro) {
-        set(item, 'type', NodeIdEnum.intro);
-        set(item, 'data.type', NodeIdEnum.intro);
+        return {
+          ...item,
+          type: NodeTypeEnum.intro,
+          data: {
+            ...item.data,
+            type: NodeTypeEnum.intro,
+          },
+        };
       }
       return item;
     }),
