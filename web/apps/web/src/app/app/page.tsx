@@ -1,7 +1,7 @@
 'use client';
 
 import '../reflect-metadata-client-side';
-import { Heading, Text, Spinner } from '@shellagent/ui';
+import { Heading, Spinner, Text } from '@shellagent/ui';
 import { useScroll } from 'ahooks';
 import { useInjection } from 'inversify-react';
 import { useEffect, useRef } from 'react';
@@ -21,6 +21,7 @@ export default function AppPage() {
   const settingsModel = useInjection(SettingsModel);
   useEffect(() => {
     (async function () {
+      await settingsModel.getIsBetaCheck();
       const isAutoCheck = await settingsModel.getAutoCheck();
       if (isAutoCheck) {
         settingsModel.autoCheck();

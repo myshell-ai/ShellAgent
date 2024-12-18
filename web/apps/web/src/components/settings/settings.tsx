@@ -8,9 +8,9 @@ import {
   AButton,
   contentPadding,
   Icon,
-  TrashIcon,
-  Text,
   Spinner,
+  Text,
+  TrashIcon,
 } from '@shellagent/ui';
 import { Button, Card, Divider, Form, Input, Modal, Switch, theme } from 'antd';
 import dayjs from 'dayjs';
@@ -23,9 +23,9 @@ import { Box, Flex } from 'react-system';
 import { toast } from 'react-toastify';
 
 import {
-  SettingEnvFormValue,
   DefaultEnvs,
   DefaultEnvsMap,
+  SettingEnvFormValue,
 } from './settings-definitions';
 import { SettingsSideBar } from './settings-sidebar';
 import { SettingsModel } from './settings.model';
@@ -197,6 +197,19 @@ export const Update = observer(() => {
                 value={model.isAutoCheck}
                 onChange={model.setAutoCheck}
                 loading={model.isAutoCheckLoading}
+              />
+            </Flex>
+          </Card>
+        </Box>
+
+        <Box mb={3}>
+          <Card bodyStyle={{ padding: 12 }}>
+            <Flex justifyContent="space-between">
+              <Text>Beta Updates</Text>
+              <Switch
+                value={model.isBetaCheck}
+                onChange={model.setBetaCheck}
+                loading={model.isBetaCheckLoading}
               />
             </Flex>
           </Card>

@@ -34,7 +34,9 @@ TEMPLATES_ROOTS = {
 }
 
 LAST_CHECK_FILE = os.path.join(PROJECT_ROOT, 'last_check_time.json')
-AUTO_UPDATE_FILE = os.path.join(PROJECT_ROOT, 'data', 'auto_update_settings.json')
+AUTO_UPDATE_FILE = os.path.join(PROJECT_ROOT, 'auto_update_settings.json')
+UPDATE_CHANNEL_FILE = os.path.join(PROJECT_ROOT, 'update_channel.json')
+LATEST_TAG_FILE = os.path.join(PROJECT_ROOT, 'latest_tag.json')
 
 @app.post('/api/upload')
 async def upload(file: UploadFile = File(...)):
@@ -385,6 +387,44 @@ async def delete_workflow(data: Dict):
 
     return JSONResponse(content=result)
 
+headers = {
+    'Authorization': f'token {os.environ.get("GITHUB_TOKEN")}'
+}
+
+def is_prerelease(tag_name):
+    github_api_url = f"https://api.github.com/repos/myshell-ai/ShellAgent/releases/tags/{tag_name}"
+    if os.environ.get('GITHUB_TOKEN', '') == '':
+        response = requests.get(github_api_url)
+    else:
+        response = requests.get(github_api_url, headers=headers)
+    if response.status_code == 200:
+        release_data = response.json()
+        prerelease = release_data.get('prerelease', True)
+        return prerelease
+    else:
+        return True
+
+def parse_version(version_str):
+    # Remove 'v' prefix and split by '-'
+    version = version_str.split('/')[-1]  # Get last part after '/'
+    version = version.lstrip('beta-')
+    version = version.lstrip('v')
+    parts = version.split('-')
+    
+    # Parse the main version numbers
+    main_version = [int(x) for x in parts[0].split('.')]
+    
+    # Handle beta version number
+    beta_num = 0
+    if len(parts) > 1 and 'beta.' in parts[1]:
+        beta_num = int(parts[1].split('.')[1])  # Extract beta version number
+    
+    # Ensure we have three numbers plus dev number
+    while len(main_version) < 3:
+        main_version.append(0)
+        
+    main_version.append(beta_num)
+    return tuple(main_version)
 
 @app.get('/api/check_repo_status')
 async def check_repo_status():
@@ -433,34 +473,65 @@ async def check_repo_status():
         current_tag = None
         current_version = None
         target_release_date = None
+        # get the update channel
+        if os.path.exists(UPDATE_CHANNEL_FILE):
+            with open(UPDATE_CHANNEL_FILE, 'r') as f:
+                update_channel = json.load(f)["update_channel"]
+        else:
+            update_channel = "stable"
 
         current_branch = repo.head.shorthand
 
         latest_commit = repo.revparse_single(current_branch)
         current_commit_id = str(latest_commit.id)
 
-
-                
+        for reference in repo.references:
+            if reference.startswith('refs/tags/v') or reference.startswith('refs/tags/beta'):
+                tag = repo.lookup_reference(reference)
+                if tag.peel().id == latest_commit.id:
+                    current_tag = reference
+                    current_version = reference.split('/')[-1]
+                    break
 
         if not current_version:
             current_version = current_commit_id[:7]  # Use short commit id
 
         print(f'current_version: {current_version}')
 
-        latest_tag = max(
-            (ref for ref in repo.references if ref.startswith('refs/tags/v')),
-            key=lambda x: [int(i) for i in x.split('/')[-1][1:].split('.')]
-        )
+        tags = [ref for ref in repo.references if ref.startswith('refs/tags/')]
+        stable_tags = [ref for ref in tags if not 'beta' in ref and ref.startswith('refs/tags/v')]
+        preview_tags = [ref for ref in tags if 'beta' in ref]
+        # sort and get the latest 2 tags
+        stable_tags = sorted(stable_tags, key=lambda x: [int(i) for i in x.split('/')[-1][1:].split('.')], reverse=True)[:2]
+        preview_tags = sorted(preview_tags, key=lambda x: parse_version(x), reverse=True)[:2]
+        # remove the tags that is a prerelease
+        if os.environ.get('UPDATE_PRE_RELEASE', '0') != '1':
+            print("update pre release is disabled")
+            stable_tags = [tag for tag in stable_tags if not is_prerelease(tag.split('/')[-1])]
+            preview_tags = [tag for tag in preview_tags if not is_prerelease(tag.split('/')[-1])]
+        latest_stable_tag = stable_tags[0] if stable_tags else None
+        latest_preview_tag = preview_tags[0] if preview_tags else None
+        print(latest_stable_tag, latest_preview_tag)
+
+        if update_channel == "stable":
+            latest_tag = latest_stable_tag
+        else:
+            if latest_preview_tag and latest_stable_tag:
+                preview_version = parse_version(latest_preview_tag)
+                stable_version = parse_version(latest_stable_tag)
+                print(preview_version, stable_version)
+                latest_tag = latest_preview_tag if preview_version > stable_version else latest_stable_tag
+            else:
+                latest_tag = latest_preview_tag or latest_stable_tag
+            
         latest_tag_ref = repo.lookup_reference(latest_tag)
         latest_tag_commit = latest_tag_ref.peel(pygit2.GIT_OBJECT_COMMIT)
         print(f"latest_tag: {latest_tag}")
 
-        # Check if the latest stable version is newer than the current commit
-        has_new_stable = repo.merge_base(latest_tag_commit.id, latest_commit.id) == latest_commit.id and latest_tag_commit.id != latest_commit.id
-        if "SHELLAGENT_BRANCH" in os.environ and os.environ['SHELLAGENT_BRANCH'] == 'main':
-            # Update if current_tag not equals latest_tag
-            if current_tag != latest_tag:
-                has_new_stable = True
+        # Update if current_tag not equals latest_tag
+        if current_tag != latest_tag:
+            has_new_stable = True
+        
         latest_tag_name = latest_tag.split('/')[-1]
 
         changelog = ""
@@ -468,7 +539,10 @@ async def check_repo_status():
         if has_new_stable:
             # Get changelog and release date
             github_api_url = f"https://api.github.com/repos/myshell-ai/ShellAgent/releases/tags/{latest_tag_name}"
-            response = requests.get(github_api_url)
+            if os.environ.get('GITHUB_TOKEN', '') == '':
+                response = requests.get(github_api_url)
+            else:
+                response = requests.get(github_api_url, headers=headers)
             if response.status_code == 200:
                 release_data = response.json()
                 changelog = release_data.get('body', 'No changelog found')
@@ -489,6 +563,10 @@ async def check_repo_status():
         if has_new_stable:
             response_data["latest_tag_name"] = latest_tag_name
             response_data["changelog"] = changelog
+            # Write latest tag name to update channel file if there's a new stable version
+            os.makedirs(os.path.dirname(LATEST_TAG_FILE), exist_ok=True)
+            with open(LATEST_TAG_FILE, 'w') as f:
+                json.dump({"latest_tag_name": latest_tag_name}, f)
 
     # Update the last check time before returning the response
     os.makedirs(os.path.dirname(LAST_CHECK_FILE), exist_ok=True)
@@ -525,7 +603,7 @@ def update_stable():
     except Exception as e:
         raise Exception(f"Update failed: {str(e)}")
 
-@app.get('/api/update/stable')
+@app.get('/api/update')
 async def update_stable_route():
     try:
         result = update_stable()
@@ -605,3 +683,22 @@ def set_auto_update_setting(settings: Dict):
         json.dump({"auto_update": settings["auto_update"]}, f)
 
     return JSONResponse(content={"success": True, "message": "Auto update setting updated successfully."})
+
+@app.get('/api/update_channel')
+def get_update_channel():
+    if os.path.exists(UPDATE_CHANNEL_FILE):
+        with open(UPDATE_CHANNEL_FILE, 'r') as f:
+            settings = json.load(f)
+        return JSONResponse(content=settings)
+    else:
+        return JSONResponse(content={"update_channel": "stable"})
+
+@app.post('/api/update_channel')
+def set_update_channel(settings: Dict):
+    os.makedirs(os.path.dirname(UPDATE_CHANNEL_FILE), exist_ok=True)
+    
+    # Update auto update settings
+    with open(UPDATE_CHANNEL_FILE, 'w') as f:
+        json.dump({"update_channel": settings["update_channel"]}, f)
+
+    return JSONResponse(content={"success": True, "message": "Update channel updated successfully."})
