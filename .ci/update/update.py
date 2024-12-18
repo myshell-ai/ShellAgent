@@ -88,7 +88,7 @@ headers = {
 def download_latest_web_build():
     print("Downloading the latest web-build...")
 
-    if branch_name != 'main':
+    if branch_name != 'main' and branch_name != 'beta':
         if 'WEB_BUILD_URL' not in os.environ:
             print("WEB_BUILD_URL is not set")
             return
@@ -229,13 +229,13 @@ else:
     repo.checkout(ref)
 
 print("Pulling latest changes")
-if branch_name != 'main':
+if branch_name != 'main' and branch_name != 'beta':
     subprocess.run(['git', '-C', repo_path, 'checkout', branch_name])
     subprocess.run(['git', '-C', repo_path, 'pull', 'origin', branch_name])
 else:
     pull(repo, branch=branch_name)
 
-if "--stable" in sys.argv and branch_name == 'main':
+if "--stable" in sys.argv and (branch_name == 'main' or branch_name == 'beta'):
     latest_tag = f"refs/tags/{latest_tag_name}"
     print(f"latest_tag: {latest_tag}")
     if latest_tag is not None:
