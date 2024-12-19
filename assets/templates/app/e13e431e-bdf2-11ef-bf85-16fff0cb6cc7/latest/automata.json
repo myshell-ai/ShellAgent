@@ -1,0 +1,188 @@
+{
+  "type": "automata",
+  "properties": {
+    "cache": false
+  },
+  "context": {},
+  "initial": "intro",
+  "blocks": {
+    "state2": {
+      "type": "state",
+      "name": "Claude",
+      "render": {
+        "text": "#### Input Text\n{{text}}\n\n#### Optimized Prompt by GPT\n{{claude1.reply}}",
+        "image": "{{comfy_ui1.output_image}}"
+      },
+      "blocks": [
+        {
+          "inputs": {
+            "system_prompt": " I will provide you with some keywords. Please generate a description based on these keywords. The description should be as detailed as possible but must not exceed 100 words.",
+            "user_prompt": "{{text}}",
+            "input_image": null,
+            "memory": [],
+            "function_parameters": [],
+            "memory_mode": "auto",
+            "temperature": 0.7,
+            "top_p": 1,
+            "max_tokens": null,
+            "presence_penalty": 0,
+            "frequency_penalty": 0,
+            "callback": null,
+            "widget_run_id": null,
+            "function_name": "any_function_name",
+            "function_description": "any_function_description"
+          },
+          "outputs": {
+            "display": {
+              "reply": "string|object"
+            }
+          },
+          "type": "task",
+          "display_name": "Claude#1",
+          "name": "claude1",
+          "mode": "widget",
+          "widget_name": "@myshell_llm/1744218088699596812",
+          "widget_class_name": "ClaudeWidget"
+        },
+        {
+          "api": "https://comfyui.myshell.life/",
+          "comfy_workflow_id": "48383230276a4a0788ddd0d70a031d65",
+          "inputs": {
+            "10": "{{claude1.reply}}"
+          },
+          "outputs": {
+            "display": {
+              "output_image": "string"
+            }
+          },
+          "type": "task",
+          "display_name": "ComfyUI#1",
+          "name": "comfy_ui1",
+          "mode": "widget",
+          "custom": true,
+          "widget_class_name": "ComfyUIWidget"
+        }
+      ],
+      "inputs": {
+        "text": {
+          "name": "Text",
+          "type": "text",
+          "user_input": true
+        }
+      },
+      "outputs": {},
+      "transitions": {}
+    },
+    "state1": {
+      "type": "state",
+      "name": "GPT",
+      "render": {
+        "text": "#### Input Text\n{{text}}\n\n#### Optimized Prompt by GPT\n{{gpt1.reply}}",
+        "image": "{{comfy_ui1.output_image}}"
+      },
+      "blocks": [
+        {
+          "inputs": {
+            "model": "gpt-4o",
+            "system_prompt": " I will provide you with some keywords. Please generate a description based on these keywords. The description should be as detailed as possible but must not exceed 100 words.",
+            "user_prompt": "{{text}}",
+            "input_image": null,
+            "memory": [],
+            "function_parameters": [],
+            "memory_mode": "auto",
+            "temperature": 0.7,
+            "top_p": 1,
+            "max_tokens": null,
+            "stream": false,
+            "presence_penalty": 0,
+            "frequency_penalty": 0,
+            "callback": null,
+            "widget_run_id": null,
+            "function_name": "any_function_name",
+            "function_description": "any_function_description"
+          },
+          "outputs": {
+            "display": {
+              "reply": "string|object"
+            }
+          },
+          "type": "task",
+          "display_name": "GPT#1",
+          "name": "gpt1",
+          "mode": "widget",
+          "widget_class_name": "GPTWidget"
+        },
+        {
+          "api": "https://comfyui.myshell.life/",
+          "comfy_workflow_id": "54140d72b4eb479e9124ffd87b3f6b14",
+          "inputs": {
+            "10": "{{gpt1.reply}}"
+          },
+          "outputs": {
+            "display": {
+              "output_image": "string"
+            }
+          },
+          "type": "task",
+          "display_name": "ComfyUI#1",
+          "name": "comfy_ui1",
+          "mode": "widget",
+          "custom": true,
+          "widget_class_name": "ComfyUIWidget"
+        }
+      ],
+      "inputs": {
+        "text": {
+          "name": "Text",
+          "type": "text",
+          "user_input": true
+        }
+      },
+      "outputs": {},
+      "transitions": {}
+    },
+    "intro": {
+      "type": "state",
+      "name": "Intro",
+      "render": {
+        "text": "Select GPT/Claude and input key words to generate prompt.",
+        "buttons": [
+          {
+            "content": "Call GPT",
+            "on_click": {
+              "event": "575152a6-689d-41b2-ba57-7a44a1850d33",
+              "payload": {}
+            },
+            "id": "575152a6-689d-41b2-ba57-7a44a1850d33",
+            "description": ""
+          },
+          {
+            "content": "Call Claude",
+            "on_click": {
+              "event": "2c43fabe-6ac5-4504-9db0-616811ba537b",
+              "payload": {}
+            },
+            "id": "2c43fabe-6ac5-4504-9db0-616811ba537b",
+            "description": ""
+          }
+        ]
+      },
+      "blocks": [],
+      "inputs": {},
+      "outputs": {},
+      "transitions": {
+        "575152a6-689d-41b2-ba57-7a44a1850d33": [
+          {
+            "target": "state1"
+          }
+        ],
+        "2c43fabe-6ac5-4504-9db0-616811ba537b": [
+          {
+            "target": "state2"
+          }
+        ]
+      }
+    }
+  },
+  "transitions": {}
+}

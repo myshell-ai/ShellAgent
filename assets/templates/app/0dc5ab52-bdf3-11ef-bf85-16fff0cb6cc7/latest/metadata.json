@@ -1,0 +1,9 @@
+{
+  "name": "Generate Intro Image",
+  "description": "This app is an example template to upload an image and use Image Canvas to generate intro image.",
+  "type": "app",
+  "template_id": "",
+  "categories": [
+    "Image Generation"
+  ]
+}

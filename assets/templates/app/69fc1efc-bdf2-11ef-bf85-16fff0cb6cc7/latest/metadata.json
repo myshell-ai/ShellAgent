@@ -1,0 +1,9 @@
+{
+  "name": "Chat",
+  "description": "This example shows how to accept users' input and reply in a chat.",
+  "type": "app",
+  "template_id": "",
+  "categories": [
+    "Tutorial"
+  ]
+}

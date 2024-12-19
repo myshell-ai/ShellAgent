@@ -1,0 +1,10 @@
+{
+  "name": "Chat2Img",
+  "description": "Use chat to generate image.",
+  "template_id": "",
+  "create_time": "Wed Dec 18 14:44:20 2024",
+  "update_time": "Tue Dec 17 18:05:55 2024",
+  "categories": [
+    "Image Generation"
+  ]
+}
