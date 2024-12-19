@@ -199,6 +199,14 @@ def get_unique_workflow_id(SAVE_ROOT):
             break
     return workflow_id
 
+def get_unique_comfyui_workflow_id():
+    SAVE_ROOT = os.path.join(PROJECT_ROOT, "comfy_workflow")
+    workflow_ids = os.listdir(SAVE_ROOT)
+    while True:
+        workflow_id = str(uuid.uuid4()).replace('-', '')
+        if workflow_id not in workflow_ids:
+            break
+    return workflow_id
 
 def duplicate_comfy_workflow(automata, source_path, target_path):
     def duplicate_comfy_workflow_fn(comfy_workflow_id):

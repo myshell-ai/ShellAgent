@@ -146,8 +146,27 @@ def comfyui_run(api, workflow, prompt, schemas, user_inputs):
     wsx = "wss" if httpx == "https" else "ws"
     ws_address = f"{wsx}://{server_address}"
     http_address = f"{httpx}://{server_address}"
-    
+        
     is_local = "localhost" in server_address or "127.0.0.1" in server_address
+    
+    if is_local: # double 
+        try:
+            data = {
+                "mac_addr": uuid.getnode(),
+                "path": os.getcwd(),
+            }
+            response = requests.post(http_address + "/shellagent/check_exist", json=data)
+            if response.status_code == 200:
+                exists = response.json()["exist"]
+                if not exists:
+                    is_local = False
+                    print("check is not local")
+            else:
+                print("The ShellAgent Plugin is not latest")
+        except Exception:
+            pass
+    
+    print("using local comfyui" if is_local else "using remote comfyui")
     
     client_id = str(uuid.uuid4())
     ws = websocket.WebSocket()
@@ -155,6 +174,14 @@ def comfyui_run(api, workflow, prompt, schemas, user_inputs):
     # first replace the prompt
     
     for node_id, node_schema in schemas["inputs"].items():
+        if node_id not in user_inputs:
+            error = {
+                'error_code': 'SHELL-1100',
+                'error_head': 'Value Error', 
+                'msg': f"{node_schema['title']} is not provided in the user_inputs, please check the input of the ComfyUI widget",
+            }
+            raise ShellException(**error)
+        
         input_value = user_inputs[node_id]
         if "url_type" in node_schema: # file input
             if type(input_value) != str:
