@@ -247,9 +247,7 @@ const StateConfigSheet: React.FC<{}> = () => {
         id={currentStateId}>
         <NodeForm
           key={formKey}
-          loading={
-            appBuilder.getAutomataLoading || appBuilder.getReactFlowLoading
-          }
+          loading={appBuilder.initAppBuilderLoading}
           schema={
             selectedNode?.data?.type === NodeTypeEnum.intro
               ? introConfigSchema

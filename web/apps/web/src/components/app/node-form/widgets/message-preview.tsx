@@ -10,8 +10,8 @@ import {
 import { Button as IButtonType } from '@shellagent/shared/protocol/render-button';
 import { IconButton, Button, Text } from '@shellagent/ui';
 import clsx from 'clsx';
-import { observer } from 'mobx-react-lite';
 import { useInjection } from 'inversify-react';
+import { observer } from 'mobx-react-lite';
 
 import {
   inputSourceHandle,

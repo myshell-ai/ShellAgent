@@ -1,5 +1,5 @@
 /* eslint-disable */
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import {
   CheckIcon,
   RectangleStackIcon,
@@ -60,7 +60,7 @@ const ModeOptions: Array<{
 const VariableNameInput = (props: VariableSelectProps) => {
   const { value, onChange } = props;
   const { setValue, getValues } = useFormContext();
-  const stateName = useSchemaContext(state => state.id);
+  const stateId = useSchemaContext(state => state.id);
   const [mode, setMode] = useState(
     getValues('name_mode') || FieldModeEnum.Enum.ui,
   );
@@ -69,10 +69,12 @@ const VariableNameInput = (props: VariableSelectProps) => {
 
   const appBuilder = useInjection<AppBuilderModel>('AppBuilderModel');
 
-  const contextOptions = appBuilder.getRefOptions(
-    stateName as Lowercase<string>,
-    refTypeSchema.Enum.state_output_key,
-  );
+  const contextOptions = useMemo(() => {
+    return appBuilder.getRefOptions(
+      stateId as Lowercase<string>,
+      refTypeSchema.Enum.state_output_key,
+    );
+  }, [stateId]);
 
   const onValueChange = (value: string) => {
     const displayName = removeBrackets(

@@ -1,19 +1,19 @@
+import { IFlow } from '@shellagent/flow-engine';
 import {
   getFirstError,
   TValue,
   IValidatorRules,
 } from '@shellagent/form-engine';
-import { IFlow } from '@shellagent/flow-engine';
 import { Text } from '@shellagent/ui';
-import { debounce } from 'lodash-es';
 import { useInjection } from 'inversify-react';
+import { debounce } from 'lodash-es';
 import React, { useEffect, useState } from 'react';
 
+import { AppBuilderModel } from '@/stores/app/models/app-builder.model';
 import {
   genAutomata,
   replaceContextByAutomata,
 } from '@/stores/app/utils/data-transformer';
-import { AppBuilderModel } from '@/stores/app/models/app-builder.model';
 
 interface ValidateRenderProps {
   rules: IValidatorRules[];

@@ -40,7 +40,7 @@ export function getNewKey({
   const existingKeys = getExistingKeys();
 
   // 如果是首次出现且不是Untitled，直接返回snakeName
-  if (existingKeys.length === 0 && name !== 'Untitled') {
+  if (existingKeys.length === 0 && name !== 'Untitled' && snakeName) {
     return { name, key: snakeName };
   }
 
@@ -51,7 +51,7 @@ export function getNewKey({
   }, 0);
 
   const key =
-    name === 'Untitled'
+    name === 'Untitled' || !snakeName
       ? `untitled_${prefixSnakeCase}_${maxCount + 1}`
       : `${snakeName}_${maxCount + 1}`;
 

@@ -1,6 +1,6 @@
 import { IFlow, NodeIdEnum, NodeTypeEnum } from '@shellagent/flow-engine';
-import { Automata, State } from '@shellagent/pro-config';
 import { TValue } from '@shellagent/form-engine';
+import { Automata, State } from '@shellagent/pro-config';
 import { get, set } from 'lodash-es';
 
 import {
@@ -49,7 +49,10 @@ function formatTemplateString(data: any): any {
 }
 
 // 根据automata生成nodeData
-export const genNodeData = (automata: Automata): NodeDataType => {
+export const genNodeData = (
+  automata: Automata,
+  nodes: IFlow['nodes'],
+): NodeDataType => {
   const nodeData: NodeDataType = {
     [NodeIdEnum.start]: {
       id: NodeIdEnum.start,
@@ -73,10 +76,13 @@ export const genNodeData = (automata: Automata): NodeDataType => {
         };
       } else if (block.type === 'state') {
         const state = block as State;
+        const display_name = nodes.find(node => node.id === key)?.data
+          .display_name;
         nodeData[key as Lowercase<string>] = {
           id: key,
           type: NodeTypeEnum.state,
           name: state.name,
+          display_name,
           render: state.render,
           inputs: transformValuesToChoices(state.inputs),
           outputs: state.outputs,

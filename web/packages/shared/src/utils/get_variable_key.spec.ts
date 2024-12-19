@@ -232,6 +232,35 @@ describe('form-utils', () => {
         key: '2',
       });
     });
+
+    it('should handle Chinese characters in name', () => {
+      const values = [
+        {
+          api: '',
+          comfy_workflow_id: 'd5ce4bf9fa4942a980e7391e407f7f14',
+          type: 'task',
+          display_name: 'ComfyUI#1',
+          name: 'comfy_ui1',
+          mode: 'widget',
+          inputs: {},
+          outputs: {},
+          custom: true,
+          widget_class_name: 'ComfyUIWidget',
+        },
+      ];
+
+      const result = getNewKey({
+        name: '你好😂',
+        nameKey: 'name',
+        values,
+        prefix: 'Blocks',
+      });
+
+      expect(result).toEqual({
+        name: '你好😂',
+        key: 'untitled_blocks_1',
+      });
+    });
   });
 
   describe('getExisiedKey', () => {

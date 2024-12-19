@@ -7,7 +7,8 @@ export async function validateImage(
   if (Array.isArray(image)) {
     if (!image.length) {
       return Promise.resolve(true);
-    } else if (image.length < 2) {
+    }
+    if (image.length < 2) {
       url = image?.[0];
     } else {
       return Promise.reject(
