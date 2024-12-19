@@ -205,6 +205,10 @@ const StateConfigSheet: React.FC<{}> = () => {
     }
   });
 
+  useEventEmitter(EventType.RESET_FORM, eventData => {
+    setFormKey(eventData.data);
+  });
+
   const handleClose = useCallback(() => {
     setStateConfigSheetOpen(currentStateId, false);
     setNodes(
