@@ -60,6 +60,9 @@ const NoteNode: React.FC<NodeProps<NoteNodeType>> = ({ selected, data }) => {
         style={{
           height: '240px',
         }}
+        onWheel={e => e.stopPropagation()}
+        onWheelCapture={e => e.stopPropagation()}
+        onMouseDownCapture={e => e.stopPropagation()}
         value={(currentNode?.data as NoteNodeType)?.value}
         onChange={e => onChange(e.target.value)}
       />
