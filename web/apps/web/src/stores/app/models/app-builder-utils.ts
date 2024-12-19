@@ -24,37 +24,40 @@ export function convertNodeDataToState(nodeData: any): State {
     display_name: nodeData.display_name || nodeData.name,
     children: {
       inputs: {
-        variables: Object.fromEntries(
-          Object.entries(nodeData.inputs || {}).map(
-            ([key, value]: [string, any]) => [
-              key,
-              { type: value.type, display_name: value.name },
-            ],
-          ),
-        ),
+        variables:
+          Object.fromEntries(
+            Object.entries(nodeData.inputs || {}).map(
+              ([key, value]: [string, any]) => [
+                key,
+                { type: value.type, display_name: value.name },
+              ],
+            ),
+          ) || {},
       },
       tasks: (nodeData.blocks || []).map((block: any) => ({
         name: block.name,
         display_name: block.display_name,
-        variables: mapValues(block.outputs.display || {}, (v, k) => {
-          return {
-            type: v,
-            display_name: k,
-          };
-        }),
+        variables:
+          mapValues(block.outputs.display || {}, (v, k) => {
+            return {
+              type: v,
+              display_name: k,
+            };
+          }) || {},
       })),
       outputs: {
-        variables: Object.fromEntries(
-          Object.entries(nodeData.outputs || {}).map(
-            ([key, value]: [string, any]) => [
-              key,
-              {
-                type: value.type,
-                display_name: value.display_name || value.name,
-              },
-            ],
-          ),
-        ),
+        variables:
+          Object.fromEntries(
+            Object.entries(nodeData.outputs || {}).map(
+              ([key, value]: [string, any]) => [
+                key,
+                {
+                  type: value.type,
+                  display_name: value.display_name || value.name,
+                },
+              ],
+            ),
+          ) || {},
         render: {
           buttons: Object.fromEntries(
             (nodeData.render?.buttons || []).map((button: IButtonType) => {
@@ -92,10 +95,11 @@ export function convetNodeDataToScopes(nodeDatas: any, edges: any[]) {
       const v = nodeDatas[k];
       if (k === reservedStateNameSchema.enum.start) {
         acc.context = {
-          variables: mapValues(v.context || {}, v => ({
-            type: v.type,
-            display_name: v.name,
-          })),
+          variables:
+            mapValues(v.context || {}, v => ({
+              type: v.type,
+              display_name: v.name,
+            })) || {},
         };
       } else {
         acc.states[k] = convertNodeDataToState(v);
