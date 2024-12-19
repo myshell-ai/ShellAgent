@@ -1,4 +1,8 @@
-import type { IFlow, ReactFlowInstance } from '@shellagent/flow-engine';
+import {
+  NodeIdEnum,
+  type IFlow,
+  type ReactFlowInstance,
+} from '@shellagent/flow-engine';
 import type { TFieldMode } from '@shellagent/form-engine';
 import { CustomKey, CustomEventName, Automata } from '@shellagent/pro-config';
 import {
@@ -12,7 +16,7 @@ import {
 } from '@shellagent/shared/protocol/app-scope';
 import type { FieldValues } from '@shellagent/ui';
 import { injectable, inject } from 'inversify';
-import { isEmpty } from 'lodash-es';
+import { isEmpty, set } from 'lodash-es';
 import { action, makeObservable, observable, runInAction } from 'mobx';
 
 import { AppBuilderChatModel } from '@/components/chat/app-builder-chat.model';
@@ -30,7 +34,11 @@ import type {
 import { fetchList as fetchFlowList } from '@/services/home';
 import type { GetListRequest, GetListResponse } from '@/services/home/type';
 import emitter, { EventType } from '@/stores/app/models/emitter';
-import { genNodeData, genAutomata } from '@/stores/app/utils/data-transformer';
+import {
+  genNodeData,
+  genAutomata,
+  formatReactFlow2Flow,
+} from '@/stores/app/utils/data-transformer';
 import type { NodeDataType, Config, Metadata } from '@/types/app/types';
 import { EmitterModel } from '@/utils/emitter.model';
 
@@ -52,6 +60,7 @@ import { defaultFlow } from '../../../components/app/constants';
 @injectable()
 export class AppBuilderModel {
   nodeData: NodeDataType = {};
+  @observable rerenderButtons: Record<string, boolean> = {};
   @observable metadata: Metadata = {
     name: '',
     description: '',
@@ -156,12 +165,16 @@ export class AppBuilderModel {
 
     setTimeout(() => {
       if (this.flowInstance) {
-        const nodes = reactflow?.nodes || defaultFlow.nodes;
-        const edges = Array.isArray(reactflow?.edges)
-          ? reactflow.edges
+        const flow = formatReactFlow2Flow({
+          edges: reactflow?.edges.length ? reactflow.edges : defaultFlow.edges,
+          nodes: reactflow?.nodes.length ? reactflow.nodes : defaultFlow.nodes,
+          viewport: reactflow?.viewport || defaultFlow.viewport,
+        });
+        const nodes = flow?.nodes || defaultFlow.nodes;
+        const edges = Array.isArray(flow?.edges)
+          ? flow.edges
           : defaultFlow.edges;
-        const viewport = reactflow?.viewport || defaultFlow.viewport;
-
+        const viewport = flow?.viewport || defaultFlow.viewport;
         this.flowInstance.setNodes(nodes);
         this.flowInstance.setEdges(edges);
         this.flowInstance.setViewport(viewport);
@@ -227,15 +240,15 @@ export class AppBuilderModel {
         config = {} as Config,
         metadata,
       } = await fetchFlow(params);
-
       if (instance) {
-        instance.setNodes(
-          reactflow?.nodes.length ? reactflow.nodes : defaultFlow.nodes,
-        );
-        instance.setEdges(
-          reactflow?.edges.length ? reactflow.edges : defaultFlow.edges,
-        );
-        instance.setViewport(reactflow?.viewport || defaultFlow.viewport);
+        const flow = formatReactFlow2Flow({
+          edges: reactflow?.edges.length ? reactflow.edges : defaultFlow.edges,
+          nodes: reactflow?.nodes.length ? reactflow.nodes : defaultFlow.nodes,
+          viewport: reactflow?.viewport || defaultFlow.viewport,
+        });
+        instance.setNodes(flow?.nodes);
+        instance.setEdges(flow.edges);
+        instance.setViewport(flow?.viewport);
       }
 
       runInAction(() => {
@@ -490,6 +503,17 @@ export class AppBuilderModel {
       }
 
       return state;
+    });
+  }
+
+  // TODO: FlowEngine refactor, 调整button顺序handle不更新问题
+  @action.bound
+  setRerenderButtons(id: string) {
+    this.rerenderButtons[id] = true;
+    runInAction(() => {
+      setTimeout(() => {
+        this.rerenderButtons[id] = false;
+      }, 500);
     });
   }
 }

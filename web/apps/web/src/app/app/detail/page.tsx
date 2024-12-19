@@ -1,7 +1,7 @@
 'use client';
 
 import '../../reflect-metadata-client-side';
-import { FlowEngine, FlowRef } from '@shellagent/flow-engine';
+import { FlowEngine, FlowRef, FlowAction } from '@shellagent/flow-engine';
 import { enableMapSet } from 'immer';
 import { useInjection } from 'inversify-react';
 import { observer } from 'mobx-react-lite';
@@ -83,6 +83,26 @@ const FlowEngineWrapper = observer(
       }
     }, [flowInstance, appId, versionName]);
 
+    const onDoubleClick = (
+      e: React.MouseEvent<HTMLDivElement, MouseEvent>,
+      onAddNode: FlowAction['onAddNode'],
+    ) => {
+      if ((e.target as any).className === 'react-flow__pane') {
+        const position = {
+          x: e.clientX - 300,
+          y: e.clientY - 100,
+        };
+        onAddNode({
+          type: 'state',
+          position: flowInstance?.project(position) || position,
+          data: {
+            name: 'State',
+            display_name: 'State',
+          },
+        });
+      }
+    };
+
     return (
       <FlowEngine
         listLoading={false}
@@ -95,12 +115,13 @@ const FlowEngineWrapper = observer(
         materialList={materialList}
         footerExtra={<ListFooterExtra />}
         header={
-          <>
+          <div onDoubleClick={e => e.stopPropagation()}>
             <FlowHeader appId={appId} versionName={versionName} />
             <StateConfigSheet />
             <TransitionSheet />
-          </>
+          </div>
         }
+        onDoubleClick={onDoubleClick}
       />
     );
   },
