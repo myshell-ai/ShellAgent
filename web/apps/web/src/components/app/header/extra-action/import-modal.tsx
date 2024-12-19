@@ -13,24 +13,25 @@ import { useState, useEffect } from 'react';
 import { toast } from 'react-toastify';
 
 import FileUploader from '@/components/common/uploader';
-import { GetShellAgentResponse } from '@/services/app/type';
+import { ExportBotResponse } from '@/services/app/type';
 import { APIFetch } from '@/services/base';
-import { ShellAgent } from '@/types/app/types';
 
 const ImportModal: React.FC<{
   open: boolean;
   comfirmLoading?: boolean;
   onOpenChange: (open: boolean) => void;
-  onConfirm: (data: ShellAgent) => Promise<any>;
+  onConfirm: (data: ExportBotResponse['data']) => Promise<any>;
 }> = ({ open, comfirmLoading, onOpenChange, onConfirm }) => {
   const [loading, setLoading] = useState<boolean>(false);
   const [fileUrl, setFileUrl] = useState<string | undefined>();
-  const [shellAgent, setShellAgent] = useState<ShellAgent | undefined>();
+  const [shellAgent, setShellAgent] = useState<
+    ExportBotResponse['data'] | undefined
+  >();
 
   useEffect(() => {
     if (fileUrl) {
       setLoading(true);
-      APIFetch.get<GetShellAgentResponse>(`/api/files/${fileUrl}`)
+      APIFetch.get<ExportBotResponse>(`/api/files/${fileUrl}`)
         .then(({ data, success }) => {
           if (!success) {
             throw new Error('');
@@ -48,12 +49,7 @@ const ImportModal: React.FC<{
             );
             return;
           }
-          setShellAgent({
-            reactflow: data?.reactflow?.reactflow,
-            config: data?.reactflow?.config,
-            metadata: data?.metadata,
-            automata: data?.automata,
-          });
+          setShellAgent(data);
         })
         .catch(() => {
           setShellAgent(undefined);
@@ -72,7 +68,7 @@ const ImportModal: React.FC<{
     }
   }, [fileUrl]);
 
-  const handleConfirm = (data?: ShellAgent) => {
+  const handleConfirm = (data?: ExportBotResponse['data']) => {
     if (!data) {
       return;
     }

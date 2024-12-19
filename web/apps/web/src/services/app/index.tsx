@@ -14,6 +14,7 @@ import {
   GetAppFlowResponse,
   SaveAppRequest,
   SaveAppResponse,
+  ImportResponse,
   RunAppRequest,
   InitBotRequest,
   InitBotResponse,
@@ -117,5 +118,12 @@ export const releaseApp = (params: ReleaseAppRequest) => {
       ...params,
       reactflow: formatReactFlow2Api(params.reactflow),
     },
+  });
+};
+
+// 导入
+export const importApp = (params: ExportBotResponse['data']) => {
+  return APIFetch.post<ImportResponse>('/api/app/import', {
+    body: params,
   });
 };
