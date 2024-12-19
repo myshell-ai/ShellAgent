@@ -1,0 +1,10 @@
+{
+  "name": "Text2Img",
+  "description": "Click the Start button to select a preset image description or enter the image description you want to generate via chat.",
+  "template_id": "",
+  "create_time": "Tue Dec 17 13:24:46 2024",
+  "update_time": "Tue Dec 17 13:24:46 2024",
+  "categories": [
+    "Image Generation"
+  ]
+}

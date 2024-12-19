@@ -1,0 +1,9 @@
+{
+  "name": "Render Markdown/Image",
+  "description": "This example shows how to render Markdown or Image in a message.",
+  "type": "app",
+  "template_id": "",
+  "categories": [
+    "Tutorial"
+  ]
+}

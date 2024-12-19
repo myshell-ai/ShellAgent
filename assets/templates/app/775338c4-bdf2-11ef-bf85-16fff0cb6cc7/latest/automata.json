@@ -1,0 +1,151 @@
+{
+  "type": "automata",
+  "properties": {
+    "cache": false
+  },
+  "context": {
+    "click_count": {
+      "type": "text",
+      "value": "0",
+      "name": "click count"
+    }
+  },
+  "initial": "intro",
+  "blocks": {
+    "state2": {
+      "type": "state",
+      "name": "Show Count",
+      "render": {
+        "text": "This state only shows the result: {{context.click_count}}",
+        "buttons": [
+          {
+            "content": "Click",
+            "on_click": {
+              "event": "be4d5714-da92-4f50-9362-a76f719b5767",
+              "payload": {}
+            },
+            "id": "be4d5714-da92-4f50-9362-a76f719b5767",
+            "description": ""
+          },
+          {
+            "content": "Show Counts",
+            "on_click": {
+              "event": "18344ead-46ec-4fc6-bb1d-47b57802c185",
+              "payload": {}
+            },
+            "id": "18344ead-46ec-4fc6-bb1d-47b57802c185",
+            "description": ""
+          }
+        ]
+      },
+      "blocks": [],
+      "inputs": {},
+      "outputs": {},
+      "transitions": {
+        "be4d5714-da92-4f50-9362-a76f719b5767": [
+          {
+            "target": "state1"
+          }
+        ],
+        "18344ead-46ec-4fc6-bb1d-47b57802c185": [
+          {
+            "target": "state2"
+          }
+        ]
+      }
+    },
+    "state1": {
+      "type": "state",
+      "name": "Click",
+      "render": {
+        "text": "Click: {{context.click_count}}",
+        "buttons": [
+          {
+            "content": "Click",
+            "on_click": {
+              "event": "262aed12-3126-495f-9d02-2a4f9f92ba0b",
+              "payload": {}
+            },
+            "id": "262aed12-3126-495f-9d02-2a4f9f92ba0b",
+            "description": ""
+          },
+          {
+            "content": "Show Counts",
+            "on_click": {
+              "event": "cd662064-f49e-4bc2-b623-7feff618a8a9",
+              "payload": {}
+            },
+            "id": "cd662064-f49e-4bc2-b623-7feff618a8a9",
+            "description": ""
+          }
+        ]
+      },
+      "blocks": [],
+      "inputs": {},
+      "outputs": {
+        "context.click_count": {
+          "type": "text",
+          "value": "{{int(context.click_count) + 1}}",
+          "name": "{{context.click_count}}",
+          "name_mode": "ref",
+          "display_name": "Context/click_count"
+        }
+      },
+      "transitions": {
+        "262aed12-3126-495f-9d02-2a4f9f92ba0b": [
+          {
+            "target": "state1"
+          }
+        ],
+        "cd662064-f49e-4bc2-b623-7feff618a8a9": [
+          {
+            "target": "state2"
+          }
+        ]
+      }
+    },
+    "intro": {
+      "type": "state",
+      "name": "Intro",
+      "render": {
+        "text": "This example shows how to read and write global variables. It will count how many times users click the \"Click\" button.\n\nBesides this state, it has 2 states.\n- \"Click\" state modifies the global variable \"click count\" and shows the modified value.\n-  \"Show Count\" state just reads the same variable but doesn't modify it.",
+        "buttons": [
+          {
+            "content": "Click",
+            "on_click": {
+              "event": "653ceb34-643a-4c35-952a-3d839e259d33",
+              "payload": {}
+            },
+            "id": "653ceb34-643a-4c35-952a-3d839e259d33",
+            "description": ""
+          },
+          {
+            "content": "Show Counts",
+            "on_click": {
+              "event": "0c97d490-2eb7-4ff4-973c-03551c639931",
+              "payload": {}
+            },
+            "id": "0c97d490-2eb7-4ff4-973c-03551c639931",
+            "description": ""
+          }
+        ]
+      },
+      "blocks": [],
+      "inputs": {},
+      "outputs": {},
+      "transitions": {
+        "653ceb34-643a-4c35-952a-3d839e259d33": [
+          {
+            "target": "state1"
+          }
+        ],
+        "0c97d490-2eb7-4ff4-973c-03551c639931": [
+          {
+            "target": "state2"
+          }
+        ]
+      }
+    }
+  },
+  "transitions": {}
+}
