@@ -1,5 +1,5 @@
 import * as react from 'react';
-import react__default, { ReactElement, ReactNode, MutableRefObject } from 'react';
+import react__default, { ReactNode, ReactElement, MutableRefObject } from 'react';
 import * as react_dropzone from 'react-dropzone';
 import { DropzoneRootProps, DropzoneInputProps } from 'react-dropzone';
 import * as react_jsx_runtime from 'react/jsx-runtime';
@@ -47,95 +47,6 @@ declare enum WidgetChatCallerTypeEnum {
     WIDGET_CHAT_CALLER_TYPE_PROMPT = "WIDGET_CHAT_CALLER_TYPE_PROMPT",
     WIDGET_CHAT_CALLER_TYPE_VOICE = "WIDGET_CHAT_CALLER_TYPE_VOICE",
     WIDGET_CHAT_CALLER_TYPE_COMPONENT = "WIDGET_CHAT_CALLER_TYPE_COMPONENT"
-}
-
-declare enum UserSourceEnum {
-    APKPURE_BANNER = "apkpure_banner",
-    MYSHELL = "myshell",
-    VISITOR = "visitor"
-}
-declare enum FollowStatus {
-    FOLLOW_STATUS_UNSPECIFIED = "FOLLOW_STATUS_UNSPECIFIED",
-    FOLLOWED = "FOLLOWED",
-    NOT_FOLLOWED = "NOT_FOLLOWED",
-    NOT_AVAILABLE = "NOT_AVAILABLE"
-}
-declare enum LoginType {
-    LOGIN_TYPE_UNSPECIFIED = "LOGIN_TYPE_UNSPECIFIED",
-    LOGIN_TYPE_EMAIL = "LOGIN_TYPE_EMAIL",
-    LOGIN_TYPE_GOOGLE = "LOGIN_TYPE_GOOGLE",
-    LOGIN_TYPE_APPLE = "LOGIN_TYPE_APPLE",
-    LOGIN_TYPE_FACEBOOK = "LOGIN_TYPE_FACEBOOK",
-    LOGIN_TYPE_PUBLIC_ADDRESS = "LOGIN_TYPE_PUBLIC_ADDRESS"
-}
-
-interface EnergyInfo {
-    energy: number;
-    dailyEnergy?: number;
-    userId?: string;
-}
-interface User {
-    avatar?: string;
-    email?: string;
-    id: string;
-    isGenesisPasscard: boolean;
-    isNftAvatar: boolean;
-    isPasscard: boolean;
-    level: number;
-    name: string;
-    nameTag: string;
-    publicAddress: string;
-    source?: UserSourceEnum;
-    hasParticleAccount?: boolean;
-    createdDate?: string;
-    createdTime?: string;
-    premiumInfo: PremiumInfo;
-    privateBotLimit: number;
-    publicBotLimit: number;
-    canPublishNewBot?: boolean;
-    hasFollowed: boolean;
-    followedCount: string;
-    fansCount: string;
-    followStatus: FollowStatus;
-    description: string;
-    backgroundUrl: string;
-    loginCredential: string;
-    loginType: LoginType;
-    connectInfo: {
-        discord: {
-            id: string;
-            userId: string;
-            connectUserId: string;
-            userName: string;
-            createdDateUnix: number;
-        };
-        twitter: {
-            id: string;
-            userId: string;
-            connectUserId: string;
-            userName: string;
-            createdDateUnix: number;
-        };
-        telegram: {
-            id: string;
-            userId: string;
-            tgId: string;
-            firstName: string;
-            lastName: string;
-            username: string;
-            photoUrl: string;
-            connectUserId: string;
-            currentBotId: string;
-            createdDateUnix: number;
-        };
-    };
-    publicKey: string;
-}
-interface PremiumInfo {
-    level: number;
-    totalExp: number;
-    nextLevelNeedExp: number;
-    currentLevelExp: number;
 }
 
 declare enum MessageStatusEnum {
@@ -291,7 +202,124 @@ interface TranslationStreamDetail extends StreamDetail {
     text: string;
 }
 
+interface TagInfo {
+    id: string;
+    seoId: string;
+    label: string;
+    iconUrl: string;
+    labelColors?: {
+        light: string;
+        dark: string;
+    };
+    backgroundColors?: {
+        light: string;
+        dark: string;
+    };
+    isComingSoon?: string;
+    publicBotNum?: string;
+    childTags?: TagInfo[];
+    parentId?: string;
+    extra?: {
+        isShowHover?: boolean;
+        hoverText?: string | ReactNode;
+        isMutexSearch?: boolean;
+    };
+}
+
+declare enum UserSourceEnum {
+    APKPURE_BANNER = "apkpure_banner",
+    MYSHELL = "myshell",
+    VISITOR = "visitor"
+}
+declare enum FollowStatus {
+    FOLLOW_STATUS_UNSPECIFIED = "FOLLOW_STATUS_UNSPECIFIED",
+    FOLLOWED = "FOLLOWED",
+    NOT_FOLLOWED = "NOT_FOLLOWED",
+    NOT_AVAILABLE = "NOT_AVAILABLE"
+}
+declare enum LoginType {
+    LOGIN_TYPE_UNSPECIFIED = "LOGIN_TYPE_UNSPECIFIED",
+    LOGIN_TYPE_EMAIL = "LOGIN_TYPE_EMAIL",
+    LOGIN_TYPE_GOOGLE = "LOGIN_TYPE_GOOGLE",
+    LOGIN_TYPE_APPLE = "LOGIN_TYPE_APPLE",
+    LOGIN_TYPE_FACEBOOK = "LOGIN_TYPE_FACEBOOK",
+    LOGIN_TYPE_PUBLIC_ADDRESS = "LOGIN_TYPE_PUBLIC_ADDRESS"
+}
+
+interface EnergyInfo {
+    energy: number;
+    dailyEnergy?: number;
+    userId?: string;
+}
+interface User {
+    avatar?: string;
+    email?: string;
+    id: string;
+    isGenesisPasscard: boolean;
+    isNftAvatar: boolean;
+    isPasscard: boolean;
+    level: number;
+    name: string;
+    nameTag: string;
+    publicAddress: string;
+    source?: UserSourceEnum;
+    hasParticleAccount?: boolean;
+    createdDate?: string;
+    createdTime?: string;
+    premiumInfo: PremiumInfo;
+    privateBotLimit: number;
+    publicBotLimit: number;
+    canPublishNewBot?: boolean;
+    hasFollowed: boolean;
+    followedCount: string;
+    fansCount: string;
+    followStatus: FollowStatus;
+    description: string;
+    backgroundUrl: string;
+    loginCredential: string;
+    loginType: LoginType;
+    connectInfo: {
+        discord: {
+            id: string;
+            userId: string;
+            connectUserId: string;
+            userName: string;
+            createdDateUnix: number;
+        };
+        twitter: {
+            id: string;
+            userId: string;
+            connectUserId: string;
+            userName: string;
+            createdDateUnix: number;
+        };
+        telegram: {
+            id: string;
+            userId: string;
+            tgId: string;
+            firstName: string;
+            lastName: string;
+            username: string;
+            photoUrl: string;
+            connectUserId: string;
+            currentBotId: string;
+            createdDateUnix: number;
+        };
+    };
+    publicKey: string;
+}
+interface PremiumInfo {
+    level: number;
+    totalExp: number;
+    nextLevelNeedExp: number;
+    currentLevelExp: number;
+}
+
 type ListActionMode = 'initialize' | 'append' | 'remove' | 'silent_update';
+
+interface IRunningErrorProps$1 {
+    message: DisplayMessage;
+}
 
 type ChatModuleType = 'bot' | 'room' | 'widget' | 'ugc' | 'toolbox' | 'curve' | 'gallery';
 type GetListFn<T> = (type?: ListActionMode) => Promise<T[]>;
@@ -307,6 +335,7 @@ type EntityInfo = {
     energyPerLevelByPass?: number[];
     maxTokens?: number;
     pinned?: boolean;
+    tagList?: TagInfo[];
     status?: BotStatusEnum;
     hasUnlocked?: boolean;
     needShowUnlock?: boolean;
@@ -357,6 +386,7 @@ type StaticContextProps = {
     regenAvailable?: boolean;
     showMockReply?: boolean;
     globalContextMenuDisabled?: boolean;
+    CustomErrorMessage?: React.FC<IRunningErrorProps$1>;
 } & EntityActions;
 declare const StaticContext: react.Context<StaticContextProps>;
 
@@ -1040,6 +1070,7 @@ declare function useMessageParams(params: P): {
     };
     showTerminate: boolean;
     terminating: boolean;
+    interactionTraceId: string | undefined;
 };
 
 declare function useChatLayout(): {
@@ -1121,10 +1152,11 @@ declare function useUploadFiles({ panelSettings, uploadedFiles, messageSettings,
 
 interface GlobalStoreProviderProps {
     isMobile: boolean;
+    traceId: string;
     nonce?: string;
     children: ReactNode;
 }
-declare const GlobalStoreProvider: ({ children, nonce, isMobile }: GlobalStoreProviderProps) => react_jsx_runtime.JSX.Element;
+declare const GlobalStoreProvider: ({ children, nonce, isMobile, traceId }: GlobalStoreProviderProps) => react_jsx_runtime.JSX.Element;
 
 interface UserStoreProviderProps {
     user?: User;
