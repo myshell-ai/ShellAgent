@@ -565,32 +565,6 @@ describe('buttons', () => {
       },
     });
   });
-
-  it('invalid', () => {
-    expect(() => {
-      buttonsSchema.parse({
-        id: {
-          event: 'button_a.on_click',
-          payload: {
-            b: {
-              type: 'text',
-              display_name: 'hi',
-            },
-          },
-        },
-      });
-    }).toThrowErrorMatchingInlineSnapshot(`
-        "[
-          {
-            "code": "custom",
-            "message": "id is a reserved key",
-            "path": [
-              "id"
-            ]
-          }
-        ]"
-      `);
-  });
 });
 
 describe('render', () => {

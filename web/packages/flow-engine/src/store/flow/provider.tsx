@@ -176,13 +176,15 @@ export const FlowStoreProvider = ({ children }: FlowStoreProviderProps) => {
       const { name, display_name: displayName } = data;
       // 找出所有同名节点
       const sameNameNodes = nodes.filter(node =>
-        node.data.display_name?.startsWith(displayName),
+        node.data.name?.startsWith(name),
       );
+
+      const reg = new RegExp(`${name.toLowerCase()}(\\d+)$`);
 
       // 获取最大编号
       let maxIndex = 0;
       sameNameNodes.forEach(node => {
-        const match = node.data.display_name?.match(/#(\d+)$/);
+        const match = node.data.id?.match(reg);
         if (match) {
           const num = parseInt(match[1]);
           maxIndex = Math.max(maxIndex, num);

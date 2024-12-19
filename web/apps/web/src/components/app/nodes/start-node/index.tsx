@@ -49,7 +49,7 @@ const StartNode: React.FC<NodeProps<StartNodeType>> = ({
       <NodeCard selected={selected} {...data}>
         <NodeForm
           key={formKey}
-          loading={appBuilder.getAutomataLoading}
+          loading={appBuilder.initAppBuilderLoading}
           values={appBuilder.nodeData[data.id] || {}}
           onChange={onChange}
         />

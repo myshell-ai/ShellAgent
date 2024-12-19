@@ -1,0 +1,251 @@
+{
+  "config": {
+    "refs": {
+      "state1": {
+        "render.image": {
+          "currentMode": "ref",
+          "ref": "state1.inputs.style"
+        }
+      },
+      "intro": {
+        "condition.0.style": {
+          "currentMode": "ref",
+          "ref": "__context__style_3__"
+        }
+      }
+    }
+  },
+  "reactflow": {
+    "nodes": [
+      {
+        "width": 500,
+        "height": 488,
+        "id": "@@@start",
+        "position": {
+          "x": 0,
+          "y": 0
+        },
+        "type": "start",
+        "selectable": true,
+        "focusable": true,
+        "draggable": true,
+        "data": {
+          "type": "start",
+          "id": "@@@start"
+        },
+        "selected": false,
+        "positionAbsolute": {
+          "x": 0,
+          "y": 0
+        },
+        "dragging": false
+      },
+      {
+        "id": "intro",
+        "position": {
+          "x": 598.799227886504,
+          "y": 0
+        },
+        "type": "state",
+        "selectable": true,
+        "focusable": true,
+        "draggable": true,
+        "data": {
+          "type": "state",
+          "id": "intro",
+          "name": "Intro",
+          "display_name": "Intro"
+        },
+        "width": 500,
+        "height": 284,
+        "selected": false,
+        "positionAbsolute": {
+          "x": 598.799227886504,
+          "y": 0
+        },
+        "dragging": false
+      },
+      {
+        "id": "state1",
+        "position": {
+          "x": 1213.2142086966894,
+          "y": 9.759845577300808
+        },
+        "type": "state",
+        "selectable": true,
+        "focusable": true,
+        "draggable": true,
+        "data": {
+          "type": "state",
+          "id": "state1",
+          "name": "State",
+          "display_name": "State#1"
+        },
+        "width": 500,
+        "height": 266,
+        "selected": false,
+        "positionAbsolute": {
+          "x": 1213.2142086966894,
+          "y": 9.759845577300808
+        },
+        "dragging": false
+      }
+    ],
+    "edges": [
+      {
+        "type": "default_edge",
+        "style": {
+          "strokeWidth": 2,
+          "stroke": "#d1d5db"
+        },
+        "markerEnd": {
+          "color": "#5A646Es",
+          "height": 25,
+          "strokeWidth": 2,
+          "type": "arrowclosed",
+          "width": 10
+        },
+        "source": "@@@start",
+        "sourceHandle": "@@@start",
+        "target": "intro",
+        "targetHandle": "intro",
+        "animated": false,
+        "id": "reactflow__edge-@@@start@@@start-introintro"
+      },
+      {
+        "type": "custom_edge",
+        "style": {
+          "stroke": "var(--flow-color-06)"
+        },
+        "markerEnd": {
+          "color": "#5A646Es",
+          "height": 25,
+          "strokeWidth": 2,
+          "type": "arrowclosed",
+          "width": 10
+        },
+        "source": "state1",
+        "sourceHandle": "custom_button-source-handle-86467ed9-5f25-4878-9ea4-1dfed473c41b",
+        "target": "intro",
+        "targetHandle": "intro",
+        "data": {
+          "id": "aa0b3149-8746-4b9b-ae17-3d007ea41752",
+          "custom": true,
+          "event_key": "86467ed9-5f25-4878-9ea4-1dfed473c41b",
+          "type": "STATE",
+          "source": "state1",
+          "target": "intro",
+          "conditions": []
+        },
+        "id": "reactflow__edge-state1custom_button-source-handle-86467ed9-5f25-4878-9ea4-1dfed473c41b-introintro"
+      },
+      {
+        "type": "custom_edge",
+        "style": {
+          "stroke": "var(--flow-color-10)"
+        },
+        "markerEnd": {
+          "color": "#5A646Es",
+          "height": 25,
+          "strokeWidth": 2,
+          "type": "arrowclosed",
+          "width": 10
+        },
+        "source": "intro",
+        "sourceHandle": "custom_button-source-handle-7b9ec0c5-5dbc-4767-a10d-b6f40eab2528",
+        "target": "state1",
+        "targetHandle": "state1",
+        "data": {
+          "id": "c0119288-3552-4d40-973b-6f4a745cc5b1",
+          "custom": true,
+          "event_key": "7b9ec0c5-5dbc-4767-a10d-b6f40eab2528",
+          "type": "STATE",
+          "source": "intro",
+          "target": "state1",
+          "conditions": [
+            {
+              "condition": "",
+              "target_inputs": {
+                "style": "{{__context__style_1__}}"
+              }
+            }
+          ]
+        },
+        "id": "reactflow__edge-introcustom_button-source-handle-7b9ec0c5-5dbc-4767-a10d-b6f40eab2528-state1state1"
+      },
+      {
+        "type": "custom_edge",
+        "style": {
+          "stroke": "var(--flow-color-05)"
+        },
+        "markerEnd": {
+          "color": "#5A646Es",
+          "height": 25,
+          "strokeWidth": 2,
+          "type": "arrowclosed",
+          "width": 10
+        },
+        "source": "intro",
+        "sourceHandle": "custom_button-source-handle-e7c47d04-fec8-420f-850e-4c777e5f23ad",
+        "target": "state1",
+        "targetHandle": "state1",
+        "data": {
+          "id": "7d37c4f1-1aa2-44aa-bd29-de87c8e566e4",
+          "custom": true,
+          "event_key": "e7c47d04-fec8-420f-850e-4c777e5f23ad",
+          "type": "STATE",
+          "source": "intro",
+          "target": "state1",
+          "conditions": [
+            {
+              "condition": "",
+              "target_inputs": {
+                "style": "{{__context__style_2__}}"
+              }
+            }
+          ]
+        },
+        "id": "reactflow__edge-introcustom_button-source-handle-e7c47d04-fec8-420f-850e-4c777e5f23ad-state1state1"
+      },
+      {
+        "type": "custom_edge",
+        "style": {
+          "stroke": "var(--flow-color-07)"
+        },
+        "markerEnd": {
+          "color": "#5A646Es",
+          "height": 25,
+          "strokeWidth": 2,
+          "type": "arrowclosed",
+          "width": 10
+        },
+        "source": "intro",
+        "sourceHandle": "custom_button-source-handle-322b91b1-3801-4a22-b6f0-f8bf53d52ba1",
+        "target": "state1",
+        "targetHandle": "state1",
+        "data": {
+          "id": "5019e281-a9ba-4186-ad6c-ee9103d28bd4",
+          "custom": true,
+          "event_key": "322b91b1-3801-4a22-b6f0-f8bf53d52ba1",
+          "type": "STATE",
+          "source": "intro",
+          "target": "state1",
+          "conditions": [
+            {
+              "condition": "",
+              "target_inputs": {
+                "style": "{{__context__style_3__}}"
+              }
+            }
+          ]
+        },
+        "id": "reactflow__edge-introcustom_button-source-handle-322b91b1-3801-4a22-b6f0-f8bf53d52ba1-state1state1"
+      }
+    ],
+    "viewport": {
+      "x": 65.0924872764329,
+      "y": 222.5037453602606,
+      "zoom": 0.4583228538214261
+    }
+  }
+}

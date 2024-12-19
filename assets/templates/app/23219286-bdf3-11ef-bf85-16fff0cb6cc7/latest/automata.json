@@ -1,0 +1,127 @@
+{
+  "type": "automata",
+  "properties": {
+    "cache": false
+  },
+  "context": {
+    "style_1": {
+      "type": "image",
+      "value": "https://www.myshellstatic.com/image/chat/embed_obj/202412191022/b06e08ef35e64119b4dbc67be31ae64e.png",
+      "name": "Style 1"
+    },
+    "style_2": {
+      "type": "image",
+      "value": "https://www.myshellstatic.com/image/chat/embed_obj/202412191022/3f70baec1e5b47ddbbe289bb104d56d5.png",
+      "name": "Style 2"
+    },
+    "style_3": {
+      "type": "image",
+      "value": "https://www.myshellstatic.com/image/chat/embed_obj/202412191022/01ff956574f349b98690ff69c598903c.png",
+      "name": "Style 3"
+    }
+  },
+  "initial": "intro",
+  "blocks": {
+    "intro": {
+      "type": "state",
+      "name": "Intro",
+      "render": {
+        "text": "This example shows how to reuse a state by passing different input.\n\nIt has 2 states.\n- The \"Passing Inputs\" state has 3 buttons. Each button is tied to a transition to the \"Accepting Inputs\" state. Please check the transitions' \"Target Inputs\" to see how to pass values.\n- The \"Accepting Inputs\" state has one input. This input's \"User Input\" field is set to false so that this input can be set by \"Target Inputs\".",
+        "buttons": [
+          {
+            "content": "Style 1",
+            "on_click": {
+              "event": "7b9ec0c5-5dbc-4767-a10d-b6f40eab2528",
+              "payload": {}
+            },
+            "id": "7b9ec0c5-5dbc-4767-a10d-b6f40eab2528",
+            "description": ""
+          },
+          {
+            "content": "Style 2",
+            "on_click": {
+              "event": "e7c47d04-fec8-420f-850e-4c777e5f23ad",
+              "payload": {}
+            },
+            "id": "e7c47d04-fec8-420f-850e-4c777e5f23ad",
+            "description": ""
+          },
+          {
+            "content": "Style 3",
+            "on_click": {
+              "event": "322b91b1-3801-4a22-b6f0-f8bf53d52ba1",
+              "payload": {}
+            },
+            "id": "322b91b1-3801-4a22-b6f0-f8bf53d52ba1",
+            "description": ""
+          }
+        ]
+      },
+      "blocks": [],
+      "inputs": {},
+      "outputs": {},
+      "transitions": {
+        "7b9ec0c5-5dbc-4767-a10d-b6f40eab2528": [
+          {
+            "target": "state1",
+            "target_inputs": {
+              "style": "{{context.style_1}}"
+            }
+          }
+        ],
+        "e7c47d04-fec8-420f-850e-4c777e5f23ad": [
+          {
+            "target": "state1",
+            "target_inputs": {
+              "style": "{{context.style_2}}"
+            }
+          }
+        ],
+        "322b91b1-3801-4a22-b6f0-f8bf53d52ba1": [
+          {
+            "target": "state1",
+            "target_inputs": {
+              "style": "{{context.style_3}}"
+            }
+          }
+        ]
+      }
+    },
+    "state1": {
+      "type": "state",
+      "name": "State#1",
+      "render": {
+        "text": "Accepted image: ",
+        "image": "{{style}}",
+        "buttons": [
+          {
+            "content": "Back To Home",
+            "on_click": {
+              "event": "86467ed9-5f25-4878-9ea4-1dfed473c41b",
+              "payload": {}
+            },
+            "id": "86467ed9-5f25-4878-9ea4-1dfed473c41b",
+            "description": ""
+          }
+        ]
+      },
+      "blocks": [],
+      "inputs": {
+        "style": {
+          "name": "style",
+          "type": "image",
+          "user_input": false
+        }
+      },
+      "outputs": {},
+      "transitions": {
+        "86467ed9-5f25-4878-9ea4-1dfed473c41b": [
+          {
+            "target": "intro"
+          }
+        ]
+      }
+    }
+  },
+  "transitions": {}
+}

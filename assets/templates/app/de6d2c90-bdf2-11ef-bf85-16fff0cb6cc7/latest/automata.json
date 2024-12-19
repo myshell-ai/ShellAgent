@@ -1,0 +1,74 @@
+{
+  "type": "automata",
+  "properties": {
+    "cache": false
+  },
+  "context": {},
+  "initial": "intro",
+  "blocks": {
+    "intro": {
+      "type": "state",
+      "name": "Intro",
+      "render": {
+        "buttons": [],
+        "text": "Use chat to generate image.",
+        "image": "https://www.myshellstatic.com/image/chat/embed_obj/202412191020/3f6d7ddca0b04c07b1f94ffea47ff7ee.png"
+      },
+      "blocks": [],
+      "inputs": {},
+      "outputs": {},
+      "transitions": {
+        "CHAT": [
+          {
+            "target": "state2"
+          }
+        ]
+      }
+    },
+    "state2": {
+      "type": "state",
+      "name": "Chat",
+      "render": {
+        "image": "{{comfy_ui1.output_image}}",
+        "buttons": []
+      },
+      "blocks": [
+        {
+          "api": "https://comfyui.myshell.life/",
+          "comfy_workflow_id": "274ebdd3605649c6a09025f161ee97d0",
+          "inputs": {
+            "10": "{{chat_input}}"
+          },
+          "outputs": {
+            "display": {
+              "output_image": "string"
+            }
+          },
+          "type": "task",
+          "display_name": "ComfyUI#1",
+          "name": "comfy_ui1",
+          "mode": "widget",
+          "custom": true,
+          "widget_class_name": "ComfyUIWidget"
+        }
+      ],
+      "inputs": {
+        "chat_input": {
+          "name": "Chat Input",
+          "type": "text",
+          "user_input": true,
+          "source": "IM"
+        }
+      },
+      "outputs": {},
+      "transitions": {
+        "CHAT": [
+          {
+            "target": "state2"
+          }
+        ]
+      }
+    }
+  },
+  "transitions": {}
+}

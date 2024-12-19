@@ -29,35 +29,38 @@ export const usePasteState = ({
 
   const pasteState = useCallback(
     (data: FieldValues) => {
-      const index = Object.values(appBuilder.nodeData).map(
-        value => value.type === 'state',
-      )?.length;
-      const displayName = `${data?.display_name} Copy${
-        index > 0 ? `#${index}` : ''
-      }`;
-      const newId = customSnakeCase(displayName) as Lowercase<string>;
+      console.log('data: ', data);
+      if (data?.type === 'state') {
+        const index = Object.values(appBuilder.nodeData).map(
+          value => value.type === 'state',
+        )?.length;
+        const displayName = `${data?.display_name} Copy${
+          index > 0 ? `#${index}` : ''
+        }`;
+        const newId = customSnakeCase(displayName) as Lowercase<string>;
 
-      appBuilder.setNodeData({ id: newId, data });
+        appBuilder.setNodeData({ id: newId, data });
 
-      appBuilder.handleRefScene({
-        scene: RefSceneEnum.Enum.duplicate_state,
-        params: {
-          stateName: data?.id as Lowercase<string>,
-          duplicateStateName: newId,
-        },
-      });
+        appBuilder.handleRefScene({
+          scene: RefSceneEnum.Enum.duplicate_state,
+          params: {
+            stateName: data?.id as Lowercase<string>,
+            duplicateStateName: newId,
+          },
+        });
 
-      const position = getCanvasCenter(reactFlowWrapper, viewport);
-      onAddNode({
-        type: data?.type || 'state',
-        position,
-        data: {
-          id: newId,
-          name: data?.name || '',
-          display_name: displayName,
-        },
-        isCopy: true,
-      });
+        const position = getCanvasCenter(reactFlowWrapper, viewport);
+        onAddNode({
+          type: data?.type || 'state',
+          position,
+          data: {
+            id: newId,
+            name: data?.name || '',
+            display_name: displayName,
+          },
+          isCopy: true,
+        });
+      }
     },
     [
       appBuilder.setNodeData,

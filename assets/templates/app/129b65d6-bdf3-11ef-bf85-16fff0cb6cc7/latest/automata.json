@@ -1,0 +1,234 @@
+{
+  "type": "automata",
+  "properties": {
+    "cache": false
+  },
+  "context": {
+    "intro_image_1": {
+      "type": "image",
+      "value": "https://www.myshellstatic.com/image/chat/embed_obj/202412191021/6458b321eb564561b60f9598fcbe1377.png",
+      "name": "Intro Image"
+    },
+    "user_image": {
+      "type": "image",
+      "value": "",
+      "name": "User Image"
+    }
+  },
+  "initial": "intro",
+  "blocks": {
+    "state1": {
+      "type": "state",
+      "name": "Generate",
+      "render": {
+        "image": "{{comfy_ui1.output_image}}",
+        "buttons": [
+          {
+            "content": "Pick A New Pic",
+            "on_click": {
+              "event": "a3a4edcf-6e47-4e5a-97e6-6305000d4fae",
+              "payload": {}
+            },
+            "id": "a3a4edcf-6e47-4e5a-97e6-6305000d4fae",
+            "description": ""
+          },
+          {
+            "content": "Regenerate",
+            "on_click": {
+              "event": "915de835-e747-4c07-8f55-e218580e40d1",
+              "payload": {}
+            },
+            "id": "915de835-e747-4c07-8f55-e218580e40d1",
+            "description": ""
+          },
+          {
+            "content": "Back to Home",
+            "on_click": {
+              "event": "8c713640-ed89-4575-bf99-32e6cc4107e8",
+              "payload": {}
+            },
+            "id": "8c713640-ed89-4575-bf99-32e6cc4107e8",
+            "description": ""
+          }
+        ],
+        "text": "## \ud83c\udf89 Your image has been created! Feel free to explore more:\n- \u2728 Upload another image to try another result\n- \ud83d\udd04 Regenerate for a fresh take\n- \ud83d\udce5 Download or share your masterpiece with friends!"
+      },
+      "blocks": [
+        {
+          "api": "https://comfyui.myshell.life/",
+          "comfy_workflow_id": "27f943126fca49d5aa9378f8e263cefc",
+          "inputs": {
+            "16": "{{user_image}}"
+          },
+          "outputs": {
+            "display": {
+              "output_image": "string"
+            }
+          },
+          "type": "task",
+          "display_name": "ComfyUI#1",
+          "name": "comfy_ui1",
+          "mode": "widget",
+          "custom": true,
+          "widget_class_name": "ComfyUIWidget"
+        }
+      ],
+      "inputs": {
+        "user_image": {
+          "name": "User Image",
+          "type": "image",
+          "user_input": true
+        }
+      },
+      "outputs": {
+        "context.user_image": {
+          "type": "text",
+          "value": "{{user_image}}",
+          "name": "{{context.user_image}}",
+          "name_mode": "ref",
+          "display_name": "Context/user_image"
+        }
+      },
+      "transitions": {
+        "a3a4edcf-6e47-4e5a-97e6-6305000d4fae": [
+          {
+            "target": "state1",
+            "target_inputs": {
+              "user_image": ""
+            }
+          }
+        ],
+        "915de835-e747-4c07-8f55-e218580e40d1": [
+          {
+            "target": "state2",
+            "target_inputs": {
+              "user_image": "{{context.user_image}}"
+            }
+          }
+        ],
+        "8c713640-ed89-4575-bf99-32e6cc4107e8": [
+          {
+            "target": "intro"
+          }
+        ]
+      }
+    },
+    "state2": {
+      "type": "state",
+      "name": "Regenerate",
+      "render": {
+        "image": "{{comfy_ui1.output_image}}",
+        "buttons": [
+          {
+            "content": "Pick A New Pic",
+            "on_click": {
+              "event": "4fbe6423-3802-45bd-a812-14b44a340ac1",
+              "payload": {}
+            },
+            "id": "4fbe6423-3802-45bd-a812-14b44a340ac1",
+            "description": ""
+          },
+          {
+            "content": "Regenerate",
+            "on_click": {
+              "event": "0c8d7677-3670-409d-87c2-22a2d25cae40",
+              "payload": {}
+            },
+            "id": "0c8d7677-3670-409d-87c2-22a2d25cae40",
+            "description": ""
+          },
+          {
+            "content": "Back to Home",
+            "on_click": {
+              "event": "a8e29c0e-066c-4732-b4cd-3b2063e0d33f",
+              "payload": {}
+            },
+            "id": "a8e29c0e-066c-4732-b4cd-3b2063e0d33f",
+            "description": ""
+          }
+        ],
+        "text": "## \ud83c\udf89 Your image has been created! Feel free to explore more:\n- \u2728 Upload another image to try another result\n- \ud83d\udd04 Regenerate for a fresh take\n- \ud83d\udce5 Download or share your masterpiece with friends!"
+      },
+      "blocks": [
+        {
+          "api": "https://comfyui.myshell.life/",
+          "comfy_workflow_id": "6c5d3c110161482eb792ff42621a6713",
+          "inputs": {
+            "16": "{{user_image}}"
+          },
+          "outputs": {
+            "display": {
+              "output_image": "string"
+            }
+          },
+          "type": "task",
+          "display_name": "ComfyUI#1",
+          "name": "comfy_ui1",
+          "mode": "widget",
+          "custom": true,
+          "widget_class_name": "ComfyUIWidget"
+        }
+      ],
+      "inputs": {
+        "user_image": {
+          "name": "User Image",
+          "type": "image",
+          "user_input": false,
+          "value": ""
+        }
+      },
+      "outputs": {},
+      "transitions": {
+        "4fbe6423-3802-45bd-a812-14b44a340ac1": [
+          {
+            "target": "state1",
+            "target_inputs": {}
+          }
+        ],
+        "0c8d7677-3670-409d-87c2-22a2d25cae40": [
+          {
+            "target": "state2",
+            "target_inputs": {
+              "user_image": "{{context.user_image}}"
+            }
+          }
+        ],
+        "a8e29c0e-066c-4732-b4cd-3b2063e0d33f": [
+          {
+            "target": "intro"
+          }
+        ]
+      }
+    },
+    "intro": {
+      "type": "state",
+      "name": "Intro",
+      "render": {
+        "text": "# \u2728 Welcome to Simple Image Generation Example Bot! \u2728\n\n\ud83c\udfa8 Learn how to configure a ShellAgent app generating an image with a user-provided image.\n\n> (Tip: We recommend using square image rather than portrait/landscape image as introduction because square image is easier for both desktop and mobile users to read.)",
+        "image": "{{context.intro_image_1}}",
+        "buttons": [
+          {
+            "content": "Generate",
+            "on_click": {
+              "event": "2b64f4f3-a998-49f0-a9ef-e6a2d5a1b047",
+              "payload": {}
+            },
+            "id": "2b64f4f3-a998-49f0-a9ef-e6a2d5a1b047",
+            "description": ""
+          }
+        ]
+      },
+      "blocks": [],
+      "inputs": {},
+      "outputs": {},
+      "transitions": {
+        "2b64f4f3-a998-49f0-a9ef-e6a2d5a1b047": [
+          {
+            "target": "state1"
+          }
+        ]
+      }
+    }
+  },
+  "transitions": {}
+}

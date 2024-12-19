@@ -1,0 +1,88 @@
+{
+  "type": "automata",
+  "properties": {
+    "cache": false
+  },
+  "context": {
+    "image1": {
+      "type": "image",
+      "value": "https://www.myshellstatic.com/image/chat/embed_obj/202412191018/944acb51d26e491eb0aa5641fd8848fd.jpeg",
+      "name": "image1"
+    },
+    "image2": {
+      "type": "image",
+      "value": "https://www.myshellstatic.com/image/chat/embed_obj/202412191018/093f8b9ca7f84895a9177a25aa3b45eb.jpeg",
+      "name": "image2"
+    }
+  },
+  "initial": "intro",
+  "blocks": {
+    "state2": {
+      "type": "state",
+      "name": "State#2",
+      "render": {
+        "text": "Multiple images are rendered following certain rules to align with instant message apps' experience. Please check [the rules](https://www.notion.so/myshellai/FAQ-10d3f81ff51e8054b60ad7a23aed1fa6?pvs=4#1383f81ff51e806bba6cfbd12f3f38b9).",
+        "image": "{{[context.image1, context.image2]}}"
+      },
+      "blocks": [],
+      "inputs": {},
+      "outputs": {},
+      "transitions": {}
+    },
+    "state1": {
+      "type": "state",
+      "name": "State#1",
+      "render": {
+        "text": "Single image is rendered following certain rules to align with instant message apps' experience. Please check [the rules](https://www.notion.so/myshellai/FAQ-10d3f81ff51e8054b60ad7a23aed1fa6?pvs=4#1373f81ff51e8068b20bd816a1ebc784).",
+        "image": "{{context.image1}}"
+      },
+      "blocks": [],
+      "inputs": {},
+      "outputs": {},
+      "transitions": {}
+    },
+    "intro": {
+      "type": "state",
+      "name": "Intro",
+      "render": {
+        "text": "### You can render:\n- Markdown content\n- Single/Multiple Images \n- Local file\n- Generated content\n\n \ud83d\ude0aTip1: This example doesn't show how to use generated content. It's similar to use any widget's generated result.\n\n\ud83d\udd25Tip2: We recommend not using remote file link. Only  MyShell links are accepted, e.g., \"https://www.myshellstatic.com/image/chat/embed_obj/202411060815/0fe677ec120842f5beb718f6927abada.gif\".",
+        "buttons": [
+          {
+            "content": "Single Image",
+            "on_click": {
+              "event": "707282b5-dd67-4652-9f08-f876f37cabaf",
+              "payload": {}
+            },
+            "id": "707282b5-dd67-4652-9f08-f876f37cabaf",
+            "description": ""
+          },
+          {
+            "content": "Multiple Image",
+            "on_click": {
+              "event": "54e4804b-4228-42ff-a14c-dc4b7fea7d7b",
+              "payload": {}
+            },
+            "id": "54e4804b-4228-42ff-a14c-dc4b7fea7d7b",
+            "description": ""
+          }
+        ]
+      },
+      "blocks": [],
+      "inputs": {},
+      "outputs": {},
+      "transitions": {
+        "707282b5-dd67-4652-9f08-f876f37cabaf": [
+          {
+            "target": "state1"
+          }
+        ],
+        "54e4804b-4228-42ff-a14c-dc4b7fea7d7b": [
+          {
+            "target": "state2"
+          }
+        ]
+      }
+    }
+  },
+  "transitions": {}
+}

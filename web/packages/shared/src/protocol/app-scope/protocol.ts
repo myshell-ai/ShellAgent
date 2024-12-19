@@ -188,7 +188,7 @@ export const buttonSchema = z
   })
   .strict();
 
-export const buttonsSchema = z.record(customKeySchema, buttonSchema);
+export const buttonsSchema = z.record(z.string(), buttonSchema);
 
 export type Buttons = z.infer<typeof buttonsSchema>;
 

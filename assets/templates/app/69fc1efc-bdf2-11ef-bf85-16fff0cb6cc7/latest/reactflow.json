@@ -1,0 +1,169 @@
+{
+  "config": {
+    "refs": {
+      "state1": {
+        "blocks.gpt1.inputs.user_prompt": {
+          "currentMode": "ref",
+          "ref": "state1.inputs.prompt"
+        },
+        "render.text": {
+          "currentMode": "ref",
+          "ref": "state1.blocks.gpt1.reply"
+        }
+      }
+    }
+  },
+  "reactflow": {
+    "nodes": [
+      {
+        "id": "state1",
+        "type": "state",
+        "position": {
+          "x": 1182,
+          "y": 268
+        },
+        "data": {
+          "id": "state1",
+          "type": "state",
+          "name": "State#1",
+          "display_name": "Reply"
+        },
+        "width": 500,
+        "height": 256,
+        "selected": false,
+        "positionAbsolute": {
+          "x": 1182,
+          "y": 268
+        },
+        "dragging": false
+      },
+      {
+        "width": 500,
+        "height": 128,
+        "id": "@@@start",
+        "position": {
+          "x": 18.00341796875,
+          "y": 290.0034713745117
+        },
+        "type": "start",
+        "selectable": true,
+        "focusable": true,
+        "draggable": true,
+        "data": {
+          "type": "start",
+          "id": "@@@start"
+        },
+        "selected": false,
+        "positionAbsolute": {
+          "x": 18.00341796875,
+          "y": 290.0034713745117
+        },
+        "dragging": false
+      },
+      {
+        "id": "intro",
+        "position": {
+          "x": 592.1845769352449,
+          "y": 290.0034713745117
+        },
+        "type": "state",
+        "selectable": true,
+        "focusable": true,
+        "draggable": true,
+        "data": {
+          "type": "state",
+          "id": "intro",
+          "name": "Intro",
+          "display_name": "Intro"
+        },
+        "width": 500,
+        "height": 140,
+        "selected": false,
+        "positionAbsolute": {
+          "x": 592.1845769352449,
+          "y": 290.0034713745117
+        },
+        "dragging": false
+      }
+    ],
+    "edges": [
+      {
+        "type": "default_edge",
+        "style": {
+          "strokeWidth": 2,
+          "stroke": "#d1d5db"
+        },
+        "markerEnd": {
+          "color": "#5A646Es",
+          "height": 25,
+          "strokeWidth": 2,
+          "type": "arrowclosed",
+          "width": 10
+        },
+        "source": "@@@start",
+        "sourceHandle": "@@@start",
+        "target": "intro",
+        "targetHandle": "intro",
+        "animated": false,
+        "id": "reactflow__edge-@@@start@@@start-introintro"
+      },
+      {
+        "type": "custom_edge",
+        "style": {
+          "stroke": "var(--flow-color-09)"
+        },
+        "markerEnd": {
+          "color": "#5A646Es",
+          "height": 25,
+          "strokeWidth": 2,
+          "type": "arrowclosed",
+          "width": 10
+        },
+        "source": "intro",
+        "sourceHandle": "custom_message-input-source-handle-intro",
+        "target": "state1",
+        "targetHandle": "state1",
+        "data": {
+          "id": "c846b1d7-8595-4f7b-ad73-2635335eaa30",
+          "custom": true,
+          "type": "CHAT",
+          "source": "intro",
+          "target": "state1",
+          "conditions": []
+        },
+        "id": "reactflow__edge-introcustom_message-input-source-handle-intro-state1state1"
+      },
+      {
+        "type": "custom_edge",
+        "style": {
+          "stroke": "var(--flow-color-02)"
+        },
+        "markerEnd": {
+          "color": "#5A646Es",
+          "height": 25,
+          "strokeWidth": 2,
+          "type": "arrowclosed",
+          "width": 10
+        },
+        "source": "state1",
+        "sourceHandle": "custom_message-input-source-handle-state1",
+        "target": "state1",
+        "targetHandle": "state1",
+        "data": {
+          "id": "3df6d6ac-ac63-49dd-b0cc-3e600afbd593",
+          "custom": true,
+          "type": "CHAT",
+          "source": "state1",
+          "target": "state1",
+          "conditions": []
+        },
+        "id": "reactflow__edge-state1custom_message-input-source-handle-state1-state1state1"
+      }
+    ],
+    "viewport": {
+      "x": 193,
+      "y": 94,
+      "zoom": 0.5
+    }
+  }
+}

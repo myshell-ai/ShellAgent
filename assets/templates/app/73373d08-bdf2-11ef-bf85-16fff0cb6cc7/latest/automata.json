@@ -1,0 +1,128 @@
+{
+  "type": "automata",
+  "properties": {
+    "cache": false
+  },
+  "context": {
+    "input": {
+      "type": "text",
+      "value": "",
+      "name": "Input"
+    }
+  },
+  "initial": "intro",
+  "blocks": {
+    "state1": {
+      "type": "state",
+      "name": "Input DefaultValue",
+      "render": {
+        "text": "Current Input\uff1a {{default_value_1}}",
+        "buttons": [
+          {
+            "content": "Show DefaultValue",
+            "on_click": {
+              "event": "024086dd-400e-416b-b3fd-d9920084c1c3",
+              "payload": {}
+            },
+            "id": "024086dd-400e-416b-b3fd-d9920084c1c3",
+            "description": ""
+          }
+        ]
+      },
+      "blocks": [],
+      "inputs": {
+        "default_value_1": {
+          "name": "Default Value",
+          "type": "text",
+          "user_input": true,
+          "source": "form",
+          "default_value": ""
+        }
+      },
+      "outputs": {
+        "context.input": {
+          "type": "text",
+          "value": "{{default_value_1}}",
+          "name": "{{context.input}}",
+          "name_mode": "ref",
+          "display_name": "Context/input"
+        }
+      },
+      "transitions": {
+        "024086dd-400e-416b-b3fd-d9920084c1c3": [
+          {
+            "target": "state2"
+          }
+        ]
+      }
+    },
+    "intro": {
+      "type": "state",
+      "name": "Intro",
+      "render": {
+        "buttons": [
+          {
+            "content": "Input DefaultValue",
+            "on_click": {
+              "event": "18ed727b-c861-4a24-889f-9545c58656e8",
+              "payload": {}
+            },
+            "id": "18ed727b-c861-4a24-889f-9545c58656e8",
+            "description": ""
+          }
+        ]
+      },
+      "blocks": [],
+      "inputs": {},
+      "outputs": {},
+      "transitions": {
+        "18ed727b-c861-4a24-889f-9545c58656e8": [
+          {
+            "target": "state1",
+            "target_inputs": {
+              "input": ""
+            }
+          }
+        ]
+      }
+    },
+    "state2": {
+      "type": "state",
+      "name": "Show DefaultValue",
+      "render": {
+        "text": "Default value: {{input}}",
+        "buttons": [
+          {
+            "content": "Input DefaultValue",
+            "on_click": {
+              "event": "abe7c346-2d7f-48b6-9865-1c8d22334dc5",
+              "payload": {}
+            },
+            "id": "abe7c346-2d7f-48b6-9865-1c8d22334dc5",
+            "description": ""
+          }
+        ]
+      },
+      "blocks": [],
+      "inputs": {
+        "input": {
+          "name": "Input",
+          "type": "text",
+          "user_input": true,
+          "source": "form",
+          "default_value": "{{context.input}}"
+        }
+      },
+      "outputs": {},
+      "transitions": {
+        "abe7c346-2d7f-48b6-9865-1c8d22334dc5": [
+          {
+            "target": "state1",
+            "target_inputs": {}
+          }
+        ]
+      }
+    }
+  },
+  "transitions": {}
+}

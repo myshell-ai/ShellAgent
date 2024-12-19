@@ -1,0 +1,9 @@
+{
+  "name": "Use Global Variable",
+  "description": "This example shows how to read and write global variables.",
+  "type": "app",
+  "template_id": "",
+  "categories": [
+    "Tutorial"
+  ]
+}

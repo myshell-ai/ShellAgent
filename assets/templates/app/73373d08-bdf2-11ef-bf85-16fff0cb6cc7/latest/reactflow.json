@@ -1,0 +1,256 @@
+{
+  "config": {
+    "refs": {
+      "state1": {
+        "inputs.default_value_1.default_value": {
+          "currentMode": "ref",
+          "ref": "__context__value__"
+        },
+        "inputs.default_value_1.value": {
+          "currentMode": "ref",
+          "ref": "__context__value__"
+        },
+        "render.text": {
+          "currentMode": "ui"
+        },
+        "outputs.__context__input__.value": {
+          "currentMode": "ref",
+          "ref": "state1.inputs.default_value_1"
+        }
+      },
+      "intro": {
+        "condition.0.input": {
+          "currentMode": "ui"
+        }
+      },
+      "state2": {
+        "inputs.input.default_value": {
+          "currentMode": "ref",
+          "ref": "__context__input__"
+        }
+      }
+    }
+  },
+  "reactflow": {
+    "nodes": [
+      {
+        "id": "state1",
+        "position": {
+          "x": 1100,
+          "y": 0
+        },
+        "type": "state",
+        "selectable": true,
+        "focusable": true,
+        "draggable": true,
+        "data": {
+          "type": "state",
+          "id": "state1",
+          "name": "State",
+          "display_name": "Input DefaultValue"
+        },
+        "width": 500,
+        "height": 266,
+        "selected": false,
+        "positionAbsolute": {
+          "x": 1100,
+          "y": 0
+        },
+        "dragging": false
+      },
+      {
+        "width": 500,
+        "height": 156,
+        "id": "@@@start",
+        "position": {
+          "x": 0,
+          "y": 0
+        },
+        "type": "start",
+        "selectable": true,
+        "focusable": true,
+        "draggable": true,
+        "data": {
+          "type": "start",
+          "id": "@@@start"
+        },
+        "selected": false,
+        "positionAbsolute": {
+          "x": 0,
+          "y": 0
+        },
+        "dragging": false
+      },
+      {
+        "id": "intro",
+        "position": {
+          "x": 550,
+          "y": 0
+        },
+        "type": "state",
+        "selectable": true,
+        "focusable": true,
+        "draggable": true,
+        "data": {
+          "type": "state",
+          "id": "intro",
+          "name": "Intro",
+          "display_name": "Intro"
+        },
+        "width": 500,
+        "height": 188,
+        "selected": false,
+        "positionAbsolute": {
+          "x": 550,
+          "y": 0
+        },
+        "dragging": false
+      },
+      {
+        "id": "state2",
+        "position": {
+          "x": 1650,
+          "y": 0
+        },
+        "type": "state",
+        "selectable": true,
+        "focusable": true,
+        "draggable": true,
+        "data": {
+          "type": "state",
+          "id": "state2",
+          "name": "State",
+          "display_name": "Show DefaultValue"
+        },
+        "width": 500,
+        "height": 266,
+        "selected": false,
+        "positionAbsolute": {
+          "x": 1650,
+          "y": 0
+        },
+        "dragging": false
+      }
+    ],
+    "edges": [
+      {
+        "type": "default_edge",
+        "style": {
+          "strokeWidth": 2,
+          "stroke": "#d1d5db"
+        },
+        "markerEnd": {
+          "color": "#5A646Es",
+          "height": 25,
+          "strokeWidth": 2,
+          "type": "arrowclosed",
+          "width": 10
+        },
+        "source": "@@@start",
+        "sourceHandle": "@@@start",
+        "target": "intro",
+        "targetHandle": "intro",
+        "animated": false,
+        "id": "reactflow__edge-@@@start@@@start-introintro"
+      },
+      {
+        "type": "custom_edge",
+        "style": {
+          "stroke": "var(--flow-color-05)"
+        },
+        "markerEnd": {
+          "color": "#5A646Es",
+          "height": 25,
+          "strokeWidth": 2,
+          "type": "arrowclosed",
+          "width": 10
+        },
+        "source": "intro",
+        "sourceHandle": "custom_button-source-handle-18ed727b-c861-4a24-889f-9545c58656e8",
+        "target": "state1",
+        "targetHandle": "state1",
+        "data": {
+          "id": "763ece56-d9c7-48a0-80a5-5effaaba4b06",
+          "custom": true,
+          "event_key": "18ed727b-c861-4a24-889f-9545c58656e8",
+          "type": "STATE",
+          "source": "intro",
+          "target": "state1",
+          "conditions": [
+            {
+              "condition": "",
+              "target_inputs": {
+                "input": ""
+              }
+            }
+          ]
+        },
+        "id": "reactflow__edge-introcustom_button-source-handle-18ed727b-c861-4a24-889f-9545c58656e8-state1state1"
+      },
+      {
+        "type": "custom_edge",
+        "style": {
+          "stroke": "var(--flow-color-10)"
+        },
+        "markerEnd": {
+          "color": "#5A646Es",
+          "height": 25,
+          "strokeWidth": 2,
+          "type": "arrowclosed",
+          "width": 10
+        },
+        "source": "state1",
+        "sourceHandle": "custom_button-source-handle-024086dd-400e-416b-b3fd-d9920084c1c3",
+        "target": "state2",
+        "targetHandle": "state2",
+        "data": {
+          "id": "4b54037f-6e60-4f94-bf8b-e6383cff3f54",
+          "custom": true,
+          "event_key": "024086dd-400e-416b-b3fd-d9920084c1c3",
+          "type": "STATE",
+          "source": "state1",
+          "target": "state2",
+          "conditions": []
+        },
+        "id": "reactflow__edge-state1custom_button-source-handle-024086dd-400e-416b-b3fd-d9920084c1c3-state2state2"
+      },
+      {
+        "type": "custom_edge",
+        "style": {
+          "stroke": "var(--flow-color-08)"
+        },
+        "markerEnd": {
+          "color": "#5A646Es",
+          "height": 25,
+          "strokeWidth": 2,
+          "type": "arrowclosed",
+          "width": 10
+        },
+        "target": "state1",
+        "source": "state2",
+        "sourceHandle": "custom_button-source-handle-abe7c346-2d7f-48b6-9865-1c8d22334dc5",
+        "targetHandle": "state1",
+        "data": {
+          "id": "fbe735c5-e3bf-479f-a76a-39a98868e893",
+          "custom": true,
+          "event_key": "abe7c346-2d7f-48b6-9865-1c8d22334dc5",
+          "type": "STATE",
+          "source": "state2",
+          "target": "state1",
+          "conditions": [
+            {
+              "condition": "",
+              "target_inputs": {}
+            }
+          ]
+        },
+        "id": "reactflow__edge-state2custom_button-source-handle-abe7c346-2d7f-48b6-9865-1c8d22334dc5-state1state1"
+      }
+    ],
+    "viewport": {
+      "x": 86.13092715870357,
+      "y": 278.53403737159124,
+      "zoom": 0.5023488581336613
+    }
+  }
+}

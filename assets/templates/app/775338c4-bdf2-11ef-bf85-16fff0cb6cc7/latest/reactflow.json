@@ -1,0 +1,296 @@
+{
+  "config": {
+    "refs": {
+      "state1": {
+        "outputs.__context__click_count__.value": {
+          "currentMode": "raw"
+        }
+      }
+    }
+  },
+  "reactflow": {
+    "nodes": [
+      {
+        "id": "state2",
+        "type": "state",
+        "position": {
+          "x": 1211.8332115499504,
+          "y": 490.7623832445693
+        },
+        "data": {
+          "id": "state2",
+          "type": "state",
+          "name": "State#2",
+          "display_name": "Show Count"
+        },
+        "width": 500,
+        "height": 314,
+        "selected": false,
+        "positionAbsolute": {
+          "x": 1211.8332115499504,
+          "y": 490.7623832445693
+        },
+        "dragging": false
+      },
+      {
+        "id": "state1",
+        "type": "state",
+        "position": {
+          "x": 1205.6888779599956,
+          "y": -34.55536429992685
+        },
+        "data": {
+          "id": "state1",
+          "type": "state",
+          "name": "State#1",
+          "display_name": "Click"
+        },
+        "width": 500,
+        "height": 314,
+        "selected": true,
+        "positionAbsolute": {
+          "x": 1205.6888779599956,
+          "y": -34.55536429992685
+        },
+        "dragging": false
+      },
+      {
+        "width": 500,
+        "height": 156,
+        "id": "@@@start",
+        "position": {
+          "x": 23.847856948747904,
+          "y": 327.01825158116515
+        },
+        "type": "start",
+        "selectable": true,
+        "focusable": true,
+        "draggable": true,
+        "data": {
+          "type": "start",
+          "id": "@@@start"
+        },
+        "selected": false,
+        "positionAbsolute": {
+          "x": 23.847856948747904,
+          "y": 327.01825158116515
+        },
+        "dragging": false
+      },
+      {
+        "id": "intro",
+        "position": {
+          "x": 592.1845769352449,
+          "y": 288.0553250478457
+        },
+        "type": "state",
+        "selectable": true,
+        "focusable": true,
+        "draggable": true,
+        "data": {
+          "type": "state",
+          "id": "intro",
+          "name": "Intro",
+          "display_name": "Intro"
+        },
+        "width": 500,
+        "height": 236,
+        "selected": false,
+        "positionAbsolute": {
+          "x": 592.1845769352449,
+          "y": 288.0553250478457
+        },
+        "dragging": false
+      }
+    ],
+    "edges": [
+      {
+        "type": "default_edge",
+        "style": {
+          "strokeWidth": 2,
+          "stroke": "#d1d5db"
+        },
+        "markerEnd": {
+          "color": "#5A646Es",
+          "height": 25,
+          "strokeWidth": 2,
+          "type": "arrowclosed",
+          "width": 10
+        },
+        "source": "@@@start",
+        "sourceHandle": "@@@start",
+        "target": "intro",
+        "targetHandle": "intro",
+        "animated": false,
+        "id": "reactflow__edge-@@@start@@@start-introintro"
+      },
+      {
+        "type": "custom_edge",
+        "style": {
+          "stroke": "var(--flow-color-02)"
+        },
+        "markerEnd": {
+          "color": "#5A646Es",
+          "height": 25,
+          "strokeWidth": 2,
+          "type": "arrowclosed",
+          "width": 10
+        },
+        "source": "intro",
+        "sourceHandle": "custom_button-source-handle-653ceb34-643a-4c35-952a-3d839e259d33",
+        "target": "state1",
+        "targetHandle": "state1",
+        "data": {
+          "id": "516c0c24-7f88-4c7b-a420-849defaf3fbb",
+          "custom": true,
+          "event_key": "653ceb34-643a-4c35-952a-3d839e259d33",
+          "type": "STATE",
+          "source": "intro",
+          "target": "state1",
+          "conditions": []
+        },
+        "id": "reactflow__edge-introcustom_button-source-handle-653ceb34-643a-4c35-952a-3d839e259d33-state1state1"
+      },
+      {
+        "type": "custom_edge",
+        "style": {
+          "stroke": "var(--flow-color-09)"
+        },
+        "markerEnd": {
+          "color": "#5A646Es",
+          "height": 25,
+          "strokeWidth": 2,
+          "type": "arrowclosed",
+          "width": 10
+        },
+        "source": "intro",
+        "sourceHandle": "custom_button-source-handle-0c97d490-2eb7-4ff4-973c-03551c639931",
+        "target": "state2",
+        "targetHandle": "state2",
+        "data": {
+          "id": "8783e81c-50e3-4be5-8226-33ea61326734",
+          "custom": true,
+          "event_key": "0c97d490-2eb7-4ff4-973c-03551c639931",
+          "type": "STATE",
+          "source": "intro",
+          "target": "state2",
+          "conditions": []
+        },
+        "id": "reactflow__edge-introcustom_button-source-handle-0c97d490-2eb7-4ff4-973c-03551c639931-state2state2"
+      },
+      {
+        "type": "custom_edge",
+        "style": {
+          "stroke": "var(--flow-color-03)"
+        },
+        "markerEnd": {
+          "color": "#5A646Es",
+          "height": 25,
+          "strokeWidth": 2,
+          "type": "arrowclosed",
+          "width": 10
+        },
+        "source": "state1",
+        "sourceHandle": "custom_button-source-handle-262aed12-3126-495f-9d02-2a4f9f92ba0b",
+        "target": "state1",
+        "targetHandle": "state1",
+        "data": {
+          "id": "c9ac4abe-4bcd-44c3-a9e4-13458ed6c5f5",
+          "custom": true,
+          "event_key": "262aed12-3126-495f-9d02-2a4f9f92ba0b",
+          "type": "STATE",
+          "source": "state1",
+          "target": "state1",
+          "conditions": []
+        },
+        "id": "reactflow__edge-state1custom_button-source-handle-262aed12-3126-495f-9d02-2a4f9f92ba0b-state1state1"
+      },
+      {
+        "type": "custom_edge",
+        "style": {
+          "stroke": "var(--flow-color-07)"
+        },
+        "markerEnd": {
+          "color": "#5A646Es",
+          "height": 25,
+          "strokeWidth": 2,
+          "type": "arrowclosed",
+          "width": 10
+        },
+        "source": "state2",
+        "sourceHandle": "custom_button-source-handle-be4d5714-da92-4f50-9362-a76f719b5767",
+        "target": "state1",
+        "targetHandle": "state1",
+        "data": {
+          "id": "b19bfb7a-8bf1-4bbe-8f7b-987957dedcaf",
+          "custom": true,
+          "event_key": "be4d5714-da92-4f50-9362-a76f719b5767",
+          "type": "STATE",
+          "source": "state2",
+          "target": "state1",
+          "conditions": []
+        },
+        "id": "reactflow__edge-state2custom_button-source-handle-be4d5714-da92-4f50-9362-a76f719b5767-state1state1"
+      },
+      {
+        "type": "custom_edge",
+        "style": {
+          "stroke": "var(--flow-color-04)"
+        },
+        "markerEnd": {
+          "color": "#5A646Es",
+          "height": 25,
+          "strokeWidth": 2,
+          "type": "arrowclosed",
+          "width": 10
+        },
+        "source": "state1",
+        "sourceHandle": "custom_button-source-handle-cd662064-f49e-4bc2-b623-7feff618a8a9",
+        "target": "state2",
+        "targetHandle": "state2",
+        "data": {
+          "id": "2815855c-b27b-4c7c-9e69-5460994c1a89",
+          "custom": true,
+          "event_key": "cd662064-f49e-4bc2-b623-7feff618a8a9",
+          "type": "STATE",
+          "source": "state1",
+          "target": "state2",
+          "conditions": []
+        },
+        "id": "reactflow__edge-state1custom_button-source-handle-cd662064-f49e-4bc2-b623-7feff618a8a9-state2state2"
+      },
+      {
+        "type": "custom_edge",
+        "style": {
+          "stroke": "var(--flow-color-10)"
+        },
+        "markerEnd": {
+          "color": "#5A646Es",
+          "height": 25,
+          "strokeWidth": 2,
+          "type": "arrowclosed",
+          "width": 10
+        },
+        "source": "state2",
+        "sourceHandle": "custom_button-source-handle-18344ead-46ec-4fc6-bb1d-47b57802c185",
+        "target": "state2",
+        "targetHandle": "state2",
+        "data": {
+          "id": "c24b7d37-fe3d-42f3-a9fa-bdc0dc2f0d21",
+          "custom": true,
+          "event_key": "18344ead-46ec-4fc6-bb1d-47b57802c185",
+          "type": "STATE",
+          "source": "state2",
+          "target": "state2",
+          "conditions": []
+        },
+        "id": "reactflow__edge-state2custom_button-source-handle-18344ead-46ec-4fc6-bb1d-47b57802c185-state2state2"
+      }
+    ],
+    "viewport": {
+      "x": 73.75672038445578,
+      "y": 120.69016776663057,
+      "zoom": 0.6773145798709491
+    }
+  }
+}

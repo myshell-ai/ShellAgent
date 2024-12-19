@@ -42,6 +42,7 @@ import {
   WorkflowSelect,
   TransitionConditionEditor,
   VariableNameInput,
+  ValidateRender,
 } from './widgets';
 import { OpenImageCanvas } from '../../image-canvas/open-image-canvas';
 
@@ -114,6 +115,7 @@ const NodeForm = forwardRef<FormRef, NodeFormProps>(
           TransitionConditionEditor,
           VariableNameInput,
           OpenImageCanvas,
+          ValidateRender,
           ...components,
         }}
       />
