@@ -65,6 +65,7 @@ const ConditionItem = ({
       <Input value={value.source} className="hidden" />
       <div className="flex-1" ref={inputConRef}>
         <ExpressionInput
+          name="condition"
           value={value.condition}
           onChange={value =>
             handleChange('condition', value.target.value as string)

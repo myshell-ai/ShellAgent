@@ -19,7 +19,10 @@ export const useSelectOptions = (name?: string) => {
   const { refType, taskIndex } = useMemo(() => {
     let refType: RefType | null = null;
     let taskIndex: number | undefined;
-    if (parent?.startsWith(`${reservedKeySchema.Enum.condition}.`)) {
+    if (
+      parent?.startsWith(`${reservedKeySchema.Enum.condition}.`) ||
+      name?.startsWith(reservedKeySchema.Enum.condition)
+    ) {
       refType = refTypeSchema.Enum.target_input;
     } else if (parent?.startsWith(`${reservedKeySchema.Enum.inputs}.`)) {
       refType = refTypeSchema.Enum.state_input;
@@ -43,12 +46,18 @@ export const useSelectOptions = (name?: string) => {
     return { refType, taskIndex };
   }, [parent, name]);
 
-  const refOptions = appBuilder.getRefOptions(
-    stateId as Lowercase<string>,
-    refType as RefType,
-    taskIndex,
-    currentEdegData?.event_key as CustomEventName | undefined,
-  );
+  const result = useMemo(() => {
+    if (stateId) {
+      const refOptions = appBuilder.getRefOptions(
+        stateId as Lowercase<string>,
+        refType as RefType,
+        taskIndex,
+        currentEdegData?.event_key as CustomEventName | undefined,
+      );
+      return refOptions;
+    }
+    return [];
+  }, [stateId, refType, taskIndex, currentEdegData]);
 
-  return refOptions;
+  return result;
 };

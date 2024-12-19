@@ -59,15 +59,11 @@ interface IModeSelectProps {
   onChange?: (value: FieldMode) => void;
 }
 
-const rawReg = /{{.*}}/;
-
-const refReg = /^({{).*(}})$/;
-
 export const ModeSelect = observer(({ name, onChange }: IModeSelectProps) => {
   const appBuilder = useInjection<AppBuilderModel>('AppBuilderModel');
   const stateId = useSchemaContext(state => state.id);
   const { parent, fields } = useFormEngineContext();
-  const { setValue, getValues } = useFormContext();
+  const { setValue } = useFormContext();
   const { schema } = fields[name] || {};
 
   const {
@@ -81,13 +77,7 @@ export const ModeSelect = observer(({ name, onChange }: IModeSelectProps) => {
     if (!xRaw) {
       return FieldModeEnum.Enum.ui;
     }
-    const currentValue = getValues(name);
-    if (refReg.test(currentValue)) {
-      return FieldModeEnum.Enum.ref;
-    }
-    if (rawReg.test(currentValue)) {
-      return FieldModeEnum.Enum.raw;
-    }
+
     return xRawDefault || FieldModeEnum.Enum.ui;
   }, [name, xRaw, xRawDefault]);
 
