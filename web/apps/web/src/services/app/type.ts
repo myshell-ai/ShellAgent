@@ -132,6 +132,12 @@ export interface ExportBotResponse {
     workflows: {
       [key: string]: any;
     };
+    comfyui_dependencies: {
+      [key: string]: any;
+    };
+    comfyui_workflows: {
+      [key: string]: any;
+    };
     dependency: {
       models: {
         [key: string]: {
@@ -146,6 +152,10 @@ export interface ExportBotResponse {
           commit: string;
         };
       };
+    };
+    reactflow: {
+      reactflow: IFlow;
+      config: Config;
     };
     automata: Automata;
     metadata: Metadata;
@@ -183,3 +193,11 @@ export type GetShellAgentResponse = {
   };
   success: boolean;
 };
+
+export interface ImportResponse {
+  data: {
+    id: string;
+  };
+  success: boolean;
+  message: string;
+}

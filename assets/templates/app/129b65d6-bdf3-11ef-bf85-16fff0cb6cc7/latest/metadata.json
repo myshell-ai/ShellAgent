@@ -1,0 +1,9 @@
+{
+  "name": "Simple Img2img",
+  "description": "This app is an example template to develop a simple image-to-image generation bot.",
+  "type": "app",
+  "template_id": "",
+  "categories": [
+    "Image Generation"
+  ]
+}

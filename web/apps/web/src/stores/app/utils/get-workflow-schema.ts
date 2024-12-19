@@ -51,6 +51,7 @@ export const getSchemaByInputs = (inputs: TValues): ISchema => {
           'x-layout': 'Vertical',
           'x-type': 'Control',
           'x-component': 'FileUpload',
+          'x-raw': true,
           'x-title-size': 'h4',
           'x-component-props': {
             accept: ENABLE_MIME.video,
@@ -66,6 +67,7 @@ export const getSchemaByInputs = (inputs: TValues): ISchema => {
           'x-layout': 'Vertical',
           'x-type': 'Control',
           'x-component': 'FileUpload',
+          'x-raw': true,
           'x-title-size': 'h4',
           'x-component-props': {
             accept: ENABLE_MIME.other,
@@ -81,6 +83,7 @@ export const getSchemaByInputs = (inputs: TValues): ISchema => {
           'x-layout': 'Vertical',
           'x-type': 'Control',
           'x-component': 'FileUpload',
+          'x-raw': true,
           'x-title-size': 'h4',
           'x-component-props': {
             accept: ENABLE_MIME.all,

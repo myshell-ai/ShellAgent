@@ -17,11 +17,8 @@ import {
   Text,
 } from '@shellagent/ui';
 import { isEmpty, omit } from 'lodash-es';
-import React, { useMemo, useRef, useState } from 'react';
-import {
-  FieldMode,
-  FieldModeEnum,
-} from '@shellagent/shared/protocol/extend-config';
+import React, { useRef, useState } from 'react';
+import { FieldModeEnum } from '@shellagent/shared/protocol/extend-config';
 
 import { ISchema } from '../../types';
 import { cn } from '../../utils/cn';
@@ -29,6 +26,7 @@ import { getDefaultValueBySchema } from '../../utils/generate-schema';
 import { createValidator } from '../../utils/validator';
 import { EditTitle } from '../edit-title';
 import { useFormEngineContext } from '../provider';
+import WarningValidate from './warning-validate';
 
 interface IControlProps {
   name: string;
@@ -56,6 +54,7 @@ const Control: React.FC<IControlProps> = props => {
     'x-component-props': xComponentProps,
     'x-layout': xLayout,
     'x-validator': xValidator,
+    'x-validator-render': xValidatorRender,
     'x-disabled': xDisabled,
     'x-read-only': xReadOnly,
     'x-hidden': xHidden,
@@ -112,6 +111,7 @@ const Control: React.FC<IControlProps> = props => {
   const { required } = xValidator?.find(item => !!item.required) || {};
   const { control } = useFormContext();
   const validator = createValidator(schema);
+  const warningRules = xValidator?.filter(item => item.warningOnly);
 
   if (!(xComponent && components[xComponent])) {
     return null;
@@ -284,9 +284,23 @@ const Control: React.FC<IControlProps> = props => {
                 ) : null}
               </div>
             );
+          const Wraning =
+            Array.isArray(warningRules) && warningRules.length ? (
+              xValidatorRender ? (
+                React.createElement(components[xValidatorRender], {
+                  rules: warningRules,
+                  value: newField[valuePropsName],
+                })
+              ) : (
+                <WarningValidate
+                  rules={warningRules}
+                  value={newField[valuePropsName]}
+                />
+              )
+            ) : null;
 
           return (
-            <FormItem layout={layout}>
+            <FormItem layout={layout} className="flex-wrap">
               {xRaw || titleControl ? (
                 <div className={cn('flex items-center w-full gap-x-2')}>
                   <div
@@ -356,9 +370,14 @@ const Control: React.FC<IControlProps> = props => {
                   </div>
                 </div>
               ) : null}
-              {layout === 'Horizontal' || (xRaw && !titleControl)
-                ? null
-                : FormItemWithDesc}
+              {layout === 'Horizontal' || (xRaw && !titleControl) ? (
+                <div className="w-full !ml-0">{Wraning}</div>
+              ) : (
+                <>
+                  {FormItemWithDesc}
+                  {Wraning}
+                </>
+              )}
             </FormItem>
           );
         }}

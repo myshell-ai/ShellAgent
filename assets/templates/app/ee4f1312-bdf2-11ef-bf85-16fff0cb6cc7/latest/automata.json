@@ -1,0 +1,150 @@
+{
+  "type": "automata",
+  "properties": {
+    "cache": false
+  },
+  "context": {},
+  "initial": "intro",
+  "blocks": {
+    "state2": {
+      "type": "state",
+      "name": "State#2",
+      "render": {
+        "text": "#### Claude Reply\uff1a\n{{claude1.reply}}"
+      },
+      "blocks": [
+        {
+          "inputs": {
+            "system_prompt": "Please provide a detailed description of this image. The description should be as detailed as possible, but should not exceed 100 words.",
+            "user_prompt": "",
+            "input_image": "{{image}}",
+            "memory": [],
+            "function_parameters": [],
+            "memory_mode": "auto",
+            "temperature": 0.7,
+            "top_p": 1,
+            "max_tokens": null,
+            "presence_penalty": 0,
+            "frequency_penalty": 0,
+            "callback": null,
+            "widget_run_id": null,
+            "function_name": "any_function_name",
+            "function_description": "any_function_description"
+          },
+          "outputs": {
+            "display": {
+              "reply": "string|object"
+            }
+          },
+          "type": "task",
+          "display_name": "Claude#1",
+          "name": "claude1",
+          "mode": "widget",
+          "widget_name": "@myshell_llm/1744218088699596812",
+          "widget_class_name": "ClaudeWidget"
+        }
+      ],
+      "inputs": {
+        "image": {
+          "name": "Image",
+          "type": "image",
+          "user_input": true
+        }
+      },
+      "outputs": {},
+      "transitions": {}
+    },
+    "state1": {
+      "type": "state",
+      "name": "State#1",
+      "render": {
+        "text": "#### GPT Reply\uff1a\n{{gpt1.reply}}"
+      },
+      "blocks": [
+        {
+          "inputs": {
+            "model": "gpt-4o",
+            "system_prompt": "Please provide a detailed description of this image. The description should be as detailed as possible, but should not exceed 100 words.",
+            "user_prompt": "",
+            "input_image": "{{image}}",
+            "memory": [],
+            "function_parameters": [],
+            "memory_mode": "auto",
+            "temperature": 0.7,
+            "top_p": 1,
+            "max_tokens": null,
+            "stream": false,
+            "presence_penalty": 0,
+            "frequency_penalty": 0,
+            "callback": null,
+            "widget_run_id": null,
+            "function_name": "any_function_name",
+            "function_description": "any_function_description"
+          },
+          "outputs": {
+            "display": {
+              "reply": "string|object"
+            }
+          },
+          "type": "task",
+          "display_name": "GPT#1",
+          "name": "gpt1",
+          "mode": "widget",
+          "widget_class_name": "GPTWidget"
+        }
+      ],
+      "inputs": {
+        "image": {
+          "name": "Image",
+          "type": "image",
+          "user_input": true
+        }
+      },
+      "outputs": {},
+      "transitions": {}
+    },
+    "intro": {
+      "type": "state",
+      "name": "Intro",
+      "render": {
+        "text": "Select GPT/Claude and upload image to generate prompt.",
+        "buttons": [
+          {
+            "content": "Call GPT",
+            "on_click": {
+              "event": "8f532548-cfd4-44da-a700-84393f7a8935",
+              "payload": {}
+            },
+            "id": "8f532548-cfd4-44da-a700-84393f7a8935",
+            "description": ""
+          },
+          {
+            "content": "Call Claude",
+            "on_click": {
+              "event": "78dbe3db-593c-4559-ad32-11c2ce802a78",
+              "payload": {}
+            },
+            "id": "78dbe3db-593c-4559-ad32-11c2ce802a78",
+            "description": ""
+          }
+        ]
+      },
+      "blocks": [],
+      "inputs": {},
+      "outputs": {},
+      "transitions": {
+        "8f532548-cfd4-44da-a700-84393f7a8935": [
+          {
+            "target": "state1"
+          }
+        ],
+        "78dbe3db-593c-4559-ad32-11c2ce802a78": [
+          {
+            "target": "state2"
+          }
+        ]
+      }
+    }
+  },
+  "transitions": {}
+}

@@ -1,0 +1,9 @@
+{
+  "name": "Reuse State",
+  "description": "This example shows how to reuse a state by passing different input.",
+  "type": "app",
+  "template_id": "",
+  "categories": [
+    "Tutorial"
+  ]
+}

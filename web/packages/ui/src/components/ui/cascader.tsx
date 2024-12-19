@@ -61,7 +61,7 @@ function CascaderContent({
     <DropdownMenuPortal
       container={document.getElementById('cascader-container')}>
       <DropdownMenuContent
-        className={cn(className, 'w-full')}
+        className={cn(className, 'w-full max-h-[300px] overflow-auto')}
         style={{ width: buttonRef.current?.offsetWidth }}>
         {options.length ? (
           options.map(option => (
@@ -227,7 +227,7 @@ function NestDropdownMenuRender(props: NestDropDownP) {
       </DropdownMenuSubTrigger>
       <DropdownMenuPortal>
         <DropdownMenuSubContent
-          className={cn(className, 'w-full')}
+          className={cn(className, 'w-full max-h-[300px] overflow-auto')}
           sideOffset={10}>
           {option.children!.map(opt => (
             <Fragment key={opt.value}>

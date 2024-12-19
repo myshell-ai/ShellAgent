@@ -1,7 +1,7 @@
 'use client';
 
 import '../../reflect-metadata-client-side';
-import { FlowEngine, FlowRef } from '@shellagent/flow-engine';
+import { FlowEngine, FlowRef, FlowAction } from '@shellagent/flow-engine';
 import { enableMapSet } from 'immer';
 import { useInjection } from 'inversify-react';
 import { observer } from 'mobx-react-lite';
@@ -19,7 +19,6 @@ import { ListFooterExtra } from '@/components/common/list-footer-extra';
 import { ImageCanvasDialog } from '@/components/image-canvas/open-image-canvas';
 import { AppBuilderModel } from '@/stores/app/models/app-builder.model';
 import { useAppState } from '@/stores/app/use-app-state';
-import { useWorkflowStore } from '@/stores/workflow/workflow-provider';
 
 enableMapSet();
 
@@ -51,7 +50,6 @@ const FlowEngineWrapper = observer(
     const appBuilder = useInjection<AppBuilderModel>('AppBuilderModel');
     const flowRef = useRef<FlowRef>(null);
     const appBuilderChatModel = useInjection(AppBuilderChatModel);
-    const getWidgetList = useWorkflowStore(state => state.getWidgetList);
     const flowInstance = flowRef?.current?.getFlowInstance();
 
     const { resetState } = useAppState();
@@ -62,32 +60,43 @@ const FlowEngineWrapper = observer(
 
     // 退出页面初始化状态
     useEffect(() => {
+      appBuilder.getFlowList({ type: 'workflow' });
       return () => {
         resetState();
       };
     }, []);
 
     useEffect(() => {
-      appBuilder.getAutomata({ app_id: appId, version_name: versionName });
-      getWidgetList({});
-      appBuilder.getFlowList({ type: 'workflow' });
-    }, [appId, versionName]);
-
-    useEffect(() => {
       if (flowInstance) {
-        appBuilder.setFlowInstance(flowInstance);
-        appBuilder.getReactFlow(
-          { app_id: appId, version_name: versionName },
-          flowInstance,
-        );
+        appBuilder.initAppBuilder(flowInstance, appId, versionName);
       }
     }, [flowInstance, appId, versionName]);
+
+    const onDoubleClick = (
+      e: React.MouseEvent<HTMLDivElement, MouseEvent>,
+      onAddNode: FlowAction['onAddNode'],
+    ) => {
+      if ((e.target as any).className === 'react-flow__pane') {
+        const position = {
+          x: e.clientX - 300,
+          y: e.clientY - 100,
+        };
+        onAddNode({
+          type: 'state',
+          position: flowInstance?.project(position) || position,
+          data: {
+            name: 'State',
+            display_name: 'State',
+          },
+        });
+      }
+    };
 
     return (
       <FlowEngine
         listLoading={false}
         loading={
-          appBuilder.getAutomataLoading || appBuilder.getReactFlowLoading
+          appBuilder.initAppBuilderLoading || appBuilder.fetchFlowListLoading
         }
         ref={flowRef}
         nodeTypes={nodeTypes}
@@ -95,12 +104,13 @@ const FlowEngineWrapper = observer(
         materialList={materialList}
         footerExtra={<ListFooterExtra />}
         header={
-          <>
+          <div onDoubleClick={e => e.stopPropagation()}>
             <FlowHeader appId={appId} versionName={versionName} />
             <StateConfigSheet />
             <TransitionSheet />
-          </>
+          </div>
         }
+        onDoubleClick={onDoubleClick}
       />
     );
   },

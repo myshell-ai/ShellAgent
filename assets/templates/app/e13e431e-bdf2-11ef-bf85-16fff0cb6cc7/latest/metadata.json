@@ -1,0 +1,10 @@
+{
+  "name": "Optimize Prompt & Generate image",
+  "description": "Select GPT/Claude and input key words to generate prompt, then use the optimized prompt to generate image.",
+  "template_id": "",
+  "create_time": "Fri Dec 13 12:05:01 2024",
+  "update_time": "Fri Dec 13 12:05:01 2024",
+  "categories": [
+    "Image Generation"
+  ]
+}

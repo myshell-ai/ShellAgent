@@ -7,6 +7,7 @@ export const nodeTypeSchema = z.enum([
   'widget',
   'state',
   'workflow',
+  'intro',
 ]);
 
 // 基础任务模式

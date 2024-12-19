@@ -7,3 +7,4 @@ export * from './button-editor';
 export * from './workflow-selector';
 export * from './transition-condition-editor';
 export * from './variable-name-input';
+export * from './validate-render';

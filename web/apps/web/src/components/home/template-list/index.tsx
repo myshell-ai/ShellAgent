@@ -26,7 +26,6 @@ interface P {
 }
 
 export default function TemplateList({ loading, data, onUseTemplate }: P) {
-  console.log('data: ', data);
   if (loading) {
     return (
       <div className="w-full h-full flex justify-center items-center">
