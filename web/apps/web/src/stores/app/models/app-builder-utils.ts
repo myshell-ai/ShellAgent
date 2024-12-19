@@ -36,7 +36,7 @@ export function convertNodeDataToState(nodeData: any): State {
       tasks: (nodeData.blocks || []).map((block: any) => ({
         name: block.name,
         display_name: block.display_name,
-        variables: mapValues(block.outputs.display, (v, k) => {
+        variables: mapValues(block.outputs.display || {}, (v, k) => {
           return {
             type: v,
             display_name: k,
@@ -64,7 +64,7 @@ export function convertNodeDataToState(nodeData: any): State {
                   content,
                   {
                     event: button.on_click.event,
-                    payload: mapValues(button?.on_click?.payload, v => ({
+                    payload: mapValues(button?.on_click?.payload || {}, v => ({
                       type: v.type,
                       display_name: v.name,
                     })),
@@ -92,7 +92,7 @@ export function convetNodeDataToScopes(nodeDatas: any, edges: any[]) {
       const v = nodeDatas[k];
       if (k === reservedStateNameSchema.enum.start) {
         acc.context = {
-          variables: mapValues(v.context, v => ({
+          variables: mapValues(v.context || {}, v => ({
             type: v.type,
             display_name: v.name,
           })),
