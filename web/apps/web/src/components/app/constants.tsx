@@ -8,12 +8,18 @@ import {
 import { Workflow } from '@shellagent/pro-config';
 
 import { DefaultEdge, CustomEdge, EdgeTypeEnum } from '@/components/app/edges';
-import { StartNode, StateNode, IntroNode } from '@/components/app/nodes';
+import {
+  StartNode,
+  StateNode,
+  IntroNode,
+  NoteNode,
+} from '@/components/app/nodes';
 
 export const nodeTypes = {
   [NodeTypeEnum.start]: StartNode,
   [NodeTypeEnum.state]: StateNode,
   [NodeTypeEnum.intro]: IntroNode,
+  [NodeTypeEnum.note]: NoteNode,
 };
 
 export const edgeTypes = {
@@ -114,6 +120,11 @@ export const materialList: MaterialListType = [
         name: 'State',
         display_name: 'State',
         type: NodeTypeEnum.state,
+      },
+      {
+        name: 'Note',
+        display_name: 'Note',
+        type: NodeTypeEnum.note,
       },
     ],
   },

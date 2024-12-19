@@ -8,6 +8,7 @@ export enum NodeTypeEnum {
   state = 'state',
   workflow = 'workflow',
   intro = 'intro',
+  note = 'note',
 }
 
 export type NodeType = keyof typeof NodeTypeEnum;

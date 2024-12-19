@@ -1,0 +1,175 @@
+{
+  "config": {
+    "refs": {
+      "state2": {
+        "blocks.comfy_ui1.inputs.10": {
+          "currentMode": "ref",
+          "ref": "state2.inputs.chat_input"
+        },
+        "render.image": {
+          "currentMode": "ref",
+          "ref": "state2.blocks.comfy_ui1.output_image"
+        },
+        "inputs.chat_input.choices.0.value": {
+          "currentMode": "ref"
+        }
+      }
+    }
+  },
+  "reactflow": {
+    "nodes": [
+      {
+        "width": 500,
+        "height": 128,
+        "id": "@@@start",
+        "position": {
+          "x": 227.11678949150053,
+          "y": 63.47620731473998
+        },
+        "type": "start",
+        "selectable": true,
+        "focusable": true,
+        "draggable": true,
+        "data": {
+          "type": "start",
+          "id": "@@@start"
+        },
+        "selected": false,
+        "positionAbsolute": {
+          "x": 227.11678949150053,
+          "y": 63.47620731473998
+        },
+        "dragging": false
+      },
+      {
+        "id": "intro",
+        "position": {
+          "x": 869.2056074766356,
+          "y": 57.82710280373831
+        },
+        "type": "state",
+        "selectable": true,
+        "focusable": true,
+        "draggable": true,
+        "data": {
+          "type": "state",
+          "id": "intro",
+          "name": "Intro",
+          "display_name": "Intro"
+        },
+        "width": 500,
+        "height": 140,
+        "selected": false,
+        "positionAbsolute": {
+          "x": 869.2056074766356,
+          "y": 57.82710280373831
+        },
+        "dragging": false
+      },
+      {
+        "id": "state2",
+        "position": {
+          "x": 1537.0934250055193,
+          "y": 35.926349194202544
+        },
+        "type": "state",
+        "selectable": true,
+        "focusable": true,
+        "draggable": true,
+        "data": {
+          "type": "state",
+          "id": "state2",
+          "name": "State",
+          "display_name": "Chat"
+        },
+        "width": 500,
+        "height": 256,
+        "selected": true,
+        "positionAbsolute": {
+          "x": 1537.0934250055193,
+          "y": 35.926349194202544
+        },
+        "dragging": false
+      }
+    ],
+    "edges": [
+      {
+        "type": "default_edge",
+        "style": {
+          "strokeWidth": 2,
+          "stroke": "#d1d5db"
+        },
+        "markerEnd": {
+          "color": "#5A646Es",
+          "height": 25,
+          "strokeWidth": 2,
+          "type": "arrowclosed",
+          "width": 10
+        },
+        "source": "@@@start",
+        "sourceHandle": "@@@start",
+        "target": "intro",
+        "targetHandle": "intro",
+        "animated": false,
+        "id": "reactflow__edge-@@@start@@@start-introintro"
+      },
+      {
+        "type": "custom_edge",
+        "style": {
+          "stroke": "var(--flow-color-09)"
+        },
+        "markerEnd": {
+          "color": "#5A646Es",
+          "height": 25,
+          "strokeWidth": 2,
+          "type": "arrowclosed",
+          "width": 10
+        },
+        "source": "intro",
+        "sourceHandle": "custom_message-input-source-handle-intro",
+        "target": "state2",
+        "targetHandle": "state2",
+        "data": {
+          "id": "c430b7c1-5270-4bb4-abae-a73439d4c215",
+          "custom": true,
+          "type": "CHAT",
+          "source": "intro",
+          "target": "state2",
+          "conditions": []
+        },
+        "id": "reactflow__edge-introcustom_message-input-source-handle-intro-state2state2"
+      },
+      {
+        "type": "custom_edge",
+        "style": {
+          "stroke": "var(--flow-color-03)"
+        },
+        "markerEnd": {
+          "color": "#5A646Es",
+          "height": 25,
+          "strokeWidth": 2,
+          "type": "arrowclosed",
+          "width": 10
+        },
+        "source": "state2",
+        "sourceHandle": "custom_message-input-source-handle-state2",
+        "target": "state2",
+        "targetHandle": "state2",
+        "data": {
+          "id": "a041ece3-9247-40a3-add3-7812fc5d2cae",
+          "custom": true,
+          "type": "CHAT",
+          "source": "state2",
+          "target": "state2",
+          "conditions": []
+        },
+        "id": "reactflow__edge-state2custom_message-input-source-handle-state2-state2state2"
+      }
+    ],
+    "viewport": {
+      "x": -189.6739519081466,
+      "y": 261.8763905033556,
+      "zoom": 0.5323289744016588
+    }
+  }
+}

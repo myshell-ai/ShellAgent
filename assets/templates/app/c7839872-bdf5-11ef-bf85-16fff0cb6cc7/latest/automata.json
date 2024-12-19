@@ -1,0 +1,384 @@
+{
+  "type": "automata",
+  "properties": {
+    "cache": false
+  },
+  "context": {
+    "style_1": {
+      "type": "image",
+      "value": "https://www.myshellstatic.com/image/chat/embed_obj/202412191041/a5b78315d0504e96a1171380992d6c0e.png",
+      "name": "Style 1"
+    },
+    "style_2": {
+      "type": "image",
+      "value": "https://www.myshellstatic.com/image/chat/embed_obj/202412191041/b572adc42c7648d69f128092be951b4c.png",
+      "name": "Style 2"
+    },
+    "style_3": {
+      "type": "image",
+      "value": "https://www.myshellstatic.com/image/chat/embed_obj/202412191041/a5b78315d0504e96a1171380992d6c0e.png",
+      "name": "Style 3"
+    },
+    "user_image": {
+      "type": "image",
+      "value": "",
+      "name": "User Image"
+    },
+    "style_4": {
+      "type": "image",
+      "value": "",
+      "name": "Style"
+    }
+  },
+  "initial": "intro",
+  "blocks": {
+    "state2": {
+      "type": "state",
+      "name": "Regenerate",
+      "render": {
+        "text": "### \ud83c\udf89 Your image has been created! \nFeel free to explore more:\n- \u2728 Switch to another style and see a new transformation\n- \ud83d\udd04 Regenerate this style for a fresh take\n- \ud83c\udd95 Start a brand new creation\n- \ud83d\udce5 Download or share your masterpiece with friends!",
+        "image": "{{comfy_ui1.style}}",
+        "buttons": [
+          {
+            "content": "Regenerate",
+            "on_click": {
+              "event": "f7106b3f-7f12-4caa-b052-bb101f695fc3",
+              "payload": {}
+            },
+            "id": "f7106b3f-7f12-4caa-b052-bb101f695fc3",
+            "description": ""
+          },
+          {
+            "content": "Style 1",
+            "on_click": {
+              "event": "5182e707-d42b-4294-b577-e8409b47daf7",
+              "payload": {}
+            },
+            "id": "5182e707-d42b-4294-b577-e8409b47daf7",
+            "description": ""
+          },
+          {
+            "content": "Style 2",
+            "on_click": {
+              "event": "d8ac4d0a-251b-411a-910d-26f8a4e3994a",
+              "payload": {}
+            },
+            "id": "d8ac4d0a-251b-411a-910d-26f8a4e3994a",
+            "description": ""
+          },
+          {
+            "content": "Style 3",
+            "on_click": {
+              "event": "b19cdc54-1f74-4ed8-a77d-a6968f1a72f3",
+              "payload": {}
+            },
+            "id": "b19cdc54-1f74-4ed8-a77d-a6968f1a72f3",
+            "description": ""
+          },
+          {
+            "content": "Try New Pic",
+            "on_click": {
+              "event": "b9777def-f7e2-4a55-b7f2-0a8dc2b3c045",
+              "payload": {}
+            },
+            "id": "b9777def-f7e2-4a55-b7f2-0a8dc2b3c045",
+            "description": ""
+          }
+        ]
+      },
+      "blocks": [
+        {
+          "api": "https://comfyui.myshell.life/",
+          "comfy_workflow_id": "7cb1972df86844ec8392e7b966ddad38",
+          "inputs": {
+            "3": "{{user_image}}",
+            "4": "{{style}}"
+          },
+          "outputs": {
+            "display": {
+              "user_image": "string",
+              "style": "string"
+            }
+          },
+          "type": "task",
+          "display_name": "ComfyUI#1",
+          "name": "comfy_ui1",
+          "mode": "widget",
+          "custom": true,
+          "widget_class_name": "ComfyUIWidget"
+        }
+      ],
+      "inputs": {
+        "user_image": {
+          "name": "User Image",
+          "type": "image",
+          "user_input": false
+        },
+        "style": {
+          "name": "Style",
+          "type": "image",
+          "user_input": false
+        }
+      },
+      "outputs": {},
+      "transitions": {
+        "f7106b3f-7f12-4caa-b052-bb101f695fc3": [
+          {
+            "target": "state2",
+            "target_inputs": {
+              "user_image": "{{context.user_image}}",
+              "style": "{{context.style_4}}"
+            }
+          }
+        ],
+        "5182e707-d42b-4294-b577-e8409b47daf7": [
+          {
+            "target": "state2",
+            "target_inputs": {
+              "user_image": "{{context.user_image}}",
+              "style": "{{context.style_1}}"
+            }
+          }
+        ],
+        "d8ac4d0a-251b-411a-910d-26f8a4e3994a": [
+          {
+            "target": "state2",
+            "target_inputs": {
+              "user_image": "{{context.user_image}}",
+              "style": "{{context.style_2}}"
+            }
+          }
+        ],
+        "b19cdc54-1f74-4ed8-a77d-a6968f1a72f3": [
+          {
+            "target": "state2",
+            "target_inputs": {
+              "user_image": "{{context.user_image}}",
+              "style": "{{context.style_3}}"
+            }
+          }
+        ],
+        "b9777def-f7e2-4a55-b7f2-0a8dc2b3c045": [
+          {
+            "target": "intro"
+          }
+        ]
+      }
+    },
+    "state1": {
+      "type": "state",
+      "name": "Generate",
+      "render": {
+        "text": "### \ud83c\udf89 Your image has been created! \nFeel free to explore more:\n- \u2728 Switch to another style and see a new transformation\n- \ud83d\udd04 Regenerate this style for a fresh take\n- \ud83c\udd95 Start a brand new creation\n- \ud83d\udce5 Download or share your masterpiece with friends!",
+        "image": "{{comfy_ui1.style}}",
+        "buttons": [
+          {
+            "content": "Regenerate",
+            "on_click": {
+              "event": "d3d76a0d-77f6-4e44-967b-0f332d6aeb4f",
+              "payload": {}
+            },
+            "id": "d3d76a0d-77f6-4e44-967b-0f332d6aeb4f",
+            "description": ""
+          },
+          {
+            "content": "Style 1",
+            "on_click": {
+              "event": "fa98af66-608b-43f4-a7aa-ba4f62217a35",
+              "payload": {}
+            },
+            "id": "fa98af66-608b-43f4-a7aa-ba4f62217a35",
+            "description": ""
+          },
+          {
+            "content": "Style 2",
+            "on_click": {
+              "event": "ed8b9f85-2277-4cd3-a704-b4e28f70788b",
+              "payload": {}
+            },
+            "id": "ed8b9f85-2277-4cd3-a704-b4e28f70788b",
+            "description": ""
+          },
+          {
+            "content": "Style 3",
+            "on_click": {
+              "event": "cae9a42d-d013-4a93-832e-f3fa9eaf4e72",
+              "payload": {}
+            },
+            "id": "cae9a42d-d013-4a93-832e-f3fa9eaf4e72",
+            "description": ""
+          },
+          {
+            "content": "Try New Pic",
+            "on_click": {
+              "event": "52a3a3b2-7438-4ab5-8059-aedc7874ea71",
+              "payload": {}
+            },
+            "id": "52a3a3b2-7438-4ab5-8059-aedc7874ea71",
+            "description": ""
+          }
+        ]
+      },
+      "blocks": [
+        {
+          "api": "https://comfyui.myshell.life/",
+          "comfy_workflow_id": "2a6c70b3d3f34af6a1cfc7307f6dec4d",
+          "inputs": {
+            "3": "{{user_image}}",
+            "4": "{{style}}"
+          },
+          "outputs": {
+            "display": {
+              "user_image": "string",
+              "style": "string"
+            }
+          },
+          "type": "task",
+          "display_name": "ComfyUI#1",
+          "name": "comfy_ui1",
+          "mode": "widget",
+          "custom": true,
+          "widget_class_name": "ComfyUIWidget"
+        }
+      ],
+      "inputs": {
+        "user_image": {
+          "name": "User Image",
+          "type": "image",
+          "user_input": true
+        },
+        "style": {
+          "name": "Style",
+          "type": "image",
+          "user_input": false
+        }
+      },
+      "outputs": {
+        "context.user_image": {
+          "type": "text",
+          "value": "{{user_image}}",
+          "name": "{{context.user_image}}",
+          "name_mode": "ref",
+          "display_name": "Context/user_image"
+        },
+        "context.style_4": {
+          "type": "text",
+          "value": "{{style}}",
+          "name": "{{context.style_4}}",
+          "name_mode": "ref",
+          "display_name": "Context/style_4"
+        }
+      },
+      "transitions": {
+        "d3d76a0d-77f6-4e44-967b-0f332d6aeb4f": [
+          {
+            "target": "state2",
+            "target_inputs": {
+              "user_image": "{{context.user_image}}",
+              "style": "{{context.style_4}}"
+            }
+          }
+        ],
+        "fa98af66-608b-43f4-a7aa-ba4f62217a35": [
+          {
+            "target": "state2",
+            "target_inputs": {
+              "user_image": "{{context.user_image}}",
+              "style": "{{context.style_1}}"
+            }
+          }
+        ],
+        "ed8b9f85-2277-4cd3-a704-b4e28f70788b": [
+          {
+            "target": "state2",
+            "target_inputs": {
+              "user_image": "{{context.user_image}}",
+              "style": "{{context.style_2}}"
+            }
+          }
+        ],
+        "cae9a42d-d013-4a93-832e-f3fa9eaf4e72": [
+          {
+            "target": "state2",
+            "target_inputs": {
+              "user_image": "{{context.user_image}}",
+              "style": "{{context.style_3}}"
+            }
+          }
+        ],
+        "52a3a3b2-7438-4ab5-8059-aedc7874ea71": [
+          {
+            "target": "intro"
+          }
+        ]
+      }
+    },
+    "intro": {
+      "type": "state",
+      "name": "Intro",
+      "render": {
+        "text": "### \u2728 Welcome to Multi-style Image Generation Example Bot! \u2728\n\ud83c\udfa8 Learn how to configure a ShellAgent app transforming images into various styles.\n\n> (Tip: We recommend using square/landscape image rather than portrait image as introduction because square image is easier for both desktop and mobile users to read.)",
+        "image": "https://www.myshellstatic.com/image/chat/embed_obj/202412191041/7bb67696b150441583f1d5638ff754c0.jpeg",
+        "buttons": [
+          {
+            "content": "Style 1",
+            "on_click": {
+              "event": "54b8eca6-6358-4db0-9971-bf46eba23f99",
+              "payload": {}
+            },
+            "id": "54b8eca6-6358-4db0-9971-bf46eba23f99",
+            "description": ""
+          },
+          {
+            "content": "Style 2",
+            "on_click": {
+              "event": "d29134f6-a667-49dc-ab79-aa39d6d770f3",
+              "payload": {}
+            },
+            "id": "d29134f6-a667-49dc-ab79-aa39d6d770f3",
+            "description": ""
+          },
+          {
+            "content": "Style 3",
+            "on_click": {
+              "event": "be6a1a74-bc0d-4a01-bba0-6f971a8d16d6",
+              "payload": {}
+            },
+            "id": "be6a1a74-bc0d-4a01-bba0-6f971a8d16d6",
+            "description": ""
+          }
+        ]
+      },
+      "blocks": [],
+      "inputs": {},
+      "outputs": {},
+      "transitions": {
+        "54b8eca6-6358-4db0-9971-bf46eba23f99": [
+          {
+            "target": "state1",
+            "target_inputs": {
+              "style": "{{context.style_1}}"
+            }
+          }
+        ],
+        "d29134f6-a667-49dc-ab79-aa39d6d770f3": [
+          {
+            "target": "state1",
+            "target_inputs": {
+              "style": "{{context.style_2}}"
+            }
+          }
+        ],
+        "be6a1a74-bc0d-4a01-bba0-6f971a8d16d6": [
+          {
+            "target": "state1",
+            "target_inputs": {
+              "style": "{{context.style_3}}"
+            }
+          }
+        ]
+      }
+    }
+  },
+  "transitions": {}
+}

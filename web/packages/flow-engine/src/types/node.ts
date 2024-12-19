@@ -10,6 +10,7 @@ export enum NodeTypeEnum {
   end = 'end',
   widget = 'widget',
   state = 'state',
+  note = 'note',
   intro = 'intro',
   workflow = 'workflow',
 }
@@ -86,6 +87,17 @@ export type IntroNode = CommonNode & {
   type: 'intro';
 };
 
+export type NoteNode = CommonNode & {
+  type: 'note';
+  value?: string;
+};
+
 // 全量的自定义节点data数据
 
-export type NodeData = StartNode | EndNode | WidgetNode | StateNode | IntroNode;
+export type NodeData =
+  | StartNode
+  | EndNode
+  | WidgetNode
+  | StateNode
+  | IntroNode
+  | NoteNode;
