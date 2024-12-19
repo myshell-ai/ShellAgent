@@ -181,8 +181,9 @@ def process_local_file_path_async(config, max_workers=10):
             try:
                 result = future.result()
                 mapping_dict[filename] = result
-            except Exception as e:
-                print(f"Error processing {filename}: {e}")
+            except ShellException as e:
+                raise e
+            
     end_time = time.time()
     logging.info(f"upload end, elapsed time: {end_time - start_time}")
     # save back

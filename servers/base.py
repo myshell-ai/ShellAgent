@@ -36,10 +36,22 @@ print("current project root:", PROJECT_ROOT)
 UPLOAD_FOLDER = os.path.join("input")  # To be compatible with ComfyUI
 OUTPUT_FOLDER = "output"
 os.makedirs(OUTPUT_FOLDER, exist_ok=True)
-WORKFLOW_SAVE_ROOT = os.path.join(PROJECT_ROOT, "workflow")
-APP_SAVE_ROOT = os.path.join(PROJECT_ROOT, "app")
-APP_RUNS_SAVE_ROOT = os.path.join(PROJECT_ROOT, "runs", "app")
-WORKFLOW_RUNS_SAVE_ROOT = os.path.join(PROJECT_ROOT, "runs", "workflow")
+
+def compute_root_path(PROJECT_ROOT, root_type):
+    assert root_type in ["workflow", "app", "app_run", "workflow_run", "comfy"]
+    if root_type in ["workflow", "app"]:
+        return os.path.join(PROJECT_ROOT, root_type)
+    if root_type == "app_run":
+        return os.path.join(PROJECT_ROOT, "runs", "app")
+    if root_type == "workflow_run":
+        return os.path.join(PROJECT_ROOT, "runs", "workflow")
+    raise NotImplementedError(f"root_type `{root_type}` is not implemented")
+    
+WORKFLOW_SAVE_ROOT = compute_root_path(PROJECT_ROOT, "workflow")
+APP_SAVE_ROOT = compute_root_path(PROJECT_ROOT, "app")
+APP_RUNS_SAVE_ROOT = compute_root_path(PROJECT_ROOT, "app_run")
+WORKFLOW_RUNS_SAVE_ROOT = compute_root_path(PROJECT_ROOT, "workflow_run")
+
 MODEL_DIR = "models"
 CUSTOM_WIDGETS_DIR = "custom_widgets"
 

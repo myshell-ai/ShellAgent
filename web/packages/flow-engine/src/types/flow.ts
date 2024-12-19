@@ -10,6 +10,7 @@ import {
 import { EdgeData } from './edge';
 import { MaterialListType } from './material-list';
 import { NodeType, NodeData } from './node';
+import { FlowAction } from '../store/flow/provider';
 
 export type INode = Node<NodeData, NodeType | string | undefined>[];
 
@@ -32,5 +33,8 @@ export interface IFlowDagProps {
   loading?: boolean;
   footerExtra?: React.ReactNode;
   header?: React.ReactNode;
-  onDoubleClick?: React.MouseEventHandler<HTMLDivElement>;
+  onDoubleClick?: (
+    e: React.MouseEvent<HTMLDivElement, MouseEvent>,
+    onAddNode: FlowAction['onAddNode'],
+  ) => void;
 }

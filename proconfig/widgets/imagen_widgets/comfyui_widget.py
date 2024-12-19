@@ -20,23 +20,50 @@ def queue_prompt(workflow, prompt, server_address, client_id):
     data = json.dumps(p).encode('utf-8')
     req =  urllib.request.Request("{}/prompt".format(server_address), data=data)
     error = None
+    error_data = None
     try:
         with urllib.request.urlopen(req) as response:
             data = json.loads(response.read())
-            return data
+            # return data
     except urllib.error.HTTPError as e:
         if e.code == 400:
             # Read the error response content
             error_content = e.read().decode('utf-8')
             # Parse the JSON error message
-            error_data = json.loads(error_content)
+            data = error_data = json.loads(error_content)
             # print(f"Error: {error_data['error']}")
             # if 'node_errors' in error_data:
-            #     print(f"Node Errors: {error_data['node_errors']}")
+            #     print(f"Node Errors: {error_data['node_errors']}")            
 
-            simple_error_msg = ''
-            detailed_error_msg = ''
-
+        else:
+            error_traceback = traceback.format_exc()
+            error = {
+                'error_code': 'COMFY-1106',
+                'error_head': 'Unknown HTTPError occurs when we attempt to connect with ComfyUI', 
+                'msg': f"HTTP Error: {e.code} - {e.reason}", 
+                'traceback': error_traceback
+            }
+            print(f"HTTP Error: {e.code} - {e.reason}")
+    except urllib.error.URLError as e:
+        error_traceback = traceback.format_exc()
+        error = {
+            'error_code': 'COMFY-1106',
+            'error_head': 'Unknown URLError occurs when we attempt to connect with ComfyUI', 
+            'msg': f"URL Error: {e.reason}", 
+            'traceback': error_traceback
+        }
+    except Exception as e:
+        error_traceback = traceback.format_exc()
+        error = {
+            'error_code': 'COMFY-1106',
+            'error_head': 'Unknown Error occurs when we attempt to connect with ComfyUI', 
+            'msg': f"General Error: {str(e)}", 
+            'traceback': error_traceback
+        }
+    finally:
+        simple_error_msg = ''
+        detailed_error_msg = ''
+        if error_data is not None:
             if error_data.get('error') is not None:
                 if error_data['error'].get('type', '') == 'invalid_prompt':
                     error = {
@@ -87,37 +114,10 @@ def queue_prompt(workflow, prompt, server_address, client_id):
                             'msg': f"Prompt inputs failed validation:\n {simple_error_msg}", 
                             'traceback': detailed_error_msg
                         }
-            
 
-        else:
-            error_traceback = traceback.format_exc()
-            error = {
-                'error_code': 'COMFY-1106',
-                'error_head': 'Unknown HTTPError occurs when we attempt to connect with ComfyUI', 
-                'msg': f"HTTP Error: {e.code} - {e.reason}", 
-                'traceback': error_traceback
-            }
-            print(f"HTTP Error: {e.code} - {e.reason}")
-    except urllib.error.URLError as e:
-        error_traceback = traceback.format_exc()
-        error = {
-            'error_code': 'COMFY-1106',
-            'error_head': 'Unknown URLError occurs when we attempt to connect with ComfyUI', 
-            'msg': f"URL Error: {e.reason}", 
-            'traceback': error_traceback
-        }
-    except Exception as e:
-        error_traceback = traceback.format_exc()
-        error = {
-            'error_code': 'COMFY-1106',
-            'error_head': 'Unknown Error occurs when we attempt to connect with ComfyUI', 
-            'msg': f"General Error: {str(e)}", 
-            'traceback': error_traceback
-        }
-    finally:
-        if error is not None:
-            raise ShellException(**error)
-    return json.loads(urllib.request.urlopen(req).read())
+            if error is not None:
+                raise ShellException(**error)
+    return data
 
 def get_history(server_address, prompt_id):
     with urllib.request.urlopen("{}/history/{}".format(server_address, prompt_id)) as response:
@@ -146,8 +146,27 @@ def comfyui_run(api, workflow, prompt, schemas, user_inputs):
     wsx = "wss" if httpx == "https" else "ws"
     ws_address = f"{wsx}://{server_address}"
     http_address = f"{httpx}://{server_address}"
-    
+        
     is_local = "localhost" in server_address or "127.0.0.1" in server_address
+    
+    if is_local: # double 
+        try:
+            data = {
+                "mac_addr": uuid.getnode(),
+                "path": os.getcwd(),
+            }
+            response = requests.post(http_address + "/shellagent/check_exist", json=data)
+            if response.status_code == 200:
+                exists = response.json()["exist"]
+                if not exists:
+                    is_local = False
+                    print("check is not local")
+            else:
+                print("The ShellAgent Plugin is not latest")
+        except Exception:
+            pass
+    
+    print("using local comfyui" if is_local else "using remote comfyui")
     
     client_id = str(uuid.uuid4())
     ws = websocket.WebSocket()
@@ -155,6 +174,14 @@ def comfyui_run(api, workflow, prompt, schemas, user_inputs):
     # first replace the prompt
     
     for node_id, node_schema in schemas["inputs"].items():
+        if node_id not in user_inputs:
+            error = {
+                'error_code': 'SHELL-1100',
+                'error_head': 'Value Error', 
+                'msg': f"{node_schema['title']} is not provided in the user_inputs, please check the input of the ComfyUI widget",
+            }
+            raise ShellException(**error)
+        
         input_value = user_inputs[node_id]
         if "url_type" in node_schema: # file input
             if type(input_value) != str:
@@ -230,6 +257,17 @@ def comfyui_run(api, workflow, prompt, schemas, user_inputs):
                                 f.write(image_data)
                             images_output.append(save_path)
                         outputs[schemas["outputs"][node_id]["title"]] = images_output
+                    elif node_output_schema["items"].get("url_type") == "audio":
+                        images_output = []
+                        for image in node_output['audio']:
+                            image_data = get_media(http_address, image['filename'], image['subfolder'], image['type'])
+                            save_path = os.path.join(image["type"], image['subfolder'], image['filename'])
+                            os.makedirs(os.path.dirname(save_path), exist_ok=True)
+                            save_path = windows_to_linux_path(save_path)
+                            with open(save_path, "wb") as f:
+                                f.write(image_data)
+                            images_output.append(save_path)
+                        outputs[schemas["outputs"][node_id]["title"]] = images_output
                     elif node_output_schema["items"].get("url_type") == "video":
                         videos_output = []
                         for video_path in node_output['video']:
@@ -250,7 +288,16 @@ def comfyui_run(api, workflow, prompt, schemas, user_inputs):
                         os.makedirs(os.path.dirname(save_path), exist_ok=True)
                         with open(save_path, "wb") as f:
                             f.write(image_data)
-                        outputs[schemas["outputs"][node_id]["title"]] = save_path  
+                        outputs[schemas["outputs"][node_id]["title"]] = save_path 
+                    elif node_output_schema.get("url_type") == "audio":
+                        media = node_output['audio'][0]
+                        audio_data = get_media(http_address, media['filename'], media['subfolder'], media['type'])
+                        save_path = os.path.join(media["type"], media['subfolder'], media['filename'])
+                        save_path = windows_to_linux_path(save_path)
+                        os.makedirs(os.path.dirname(save_path), exist_ok=True)
+                        with open(save_path, "wb") as f:
+                            f.write(audio_data)
+                        outputs[schemas["outputs"][node_id]["title"]] = save_path 
                     elif node_output_schema.get("url_type") == "video":
                         video_path = node_output['video'][0]
                         output_dir, subfolder, filename = split_media_path(video_path)
@@ -279,7 +326,7 @@ def comfyui_run(api, workflow, prompt, schemas, user_inputs):
                 error = {
                     'error_code': 'COMFY-1105',
                     'error_head': 'ComfyUI Workflow Output Processing Error', 
-                    'msg': f"ShellAgent outputs Node '{schema['title']}' cannot be founded in the ComfyUI results. Please check the ComfyUI workflow: {str(e)}", 
+                    'msg': f"ShellAgent outputs Node '{schema['title']}' cannot be founded in the ComfyUI results. Please check the ComfyUI workflow.", 
                     'traceback': f"The output schemas for your workflow are {[schema['title'] for schema in schemas['outputs'].values()]}. However, there is at least one missing output is missing in the final outputs of ComfyUI {outputs}."
                 }
                 raise ShellException(**error)
@@ -299,6 +346,7 @@ def comfyui_run_myshell(workflow_id, inputs, extra_headers):
     }
     
     inputs = {k: v for k, v in inputs.items() if k not in ['callback', 'widget_run_id'] }
+
     data = {
         "workflow_id": workflow_id,
         "input": json.dumps(inputs)
