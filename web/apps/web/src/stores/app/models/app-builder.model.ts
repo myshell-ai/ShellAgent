@@ -1,4 +1,8 @@
-import type { IFlow, ReactFlowInstance } from '@shellagent/flow-engine';
+import {
+  NodeIdEnum,
+  type IFlow,
+  type ReactFlowInstance,
+} from '@shellagent/flow-engine';
 import type { TFieldMode } from '@shellagent/form-engine';
 import { CustomKey, CustomEventName, Automata } from '@shellagent/pro-config';
 import {
@@ -12,7 +16,7 @@ import {
 } from '@shellagent/shared/protocol/app-scope';
 import type { FieldValues } from '@shellagent/ui';
 import { injectable, inject } from 'inversify';
-import { isEmpty } from 'lodash-es';
+import { isEmpty, set } from 'lodash-es';
 import { action, makeObservable, observable, runInAction } from 'mobx';
 
 import { AppBuilderChatModel } from '@/components/chat/app-builder-chat.model';
@@ -26,11 +30,16 @@ import {
 import type {
   GetAppFlowRequest,
   GetAppVersionListResponse,
+  GetAutomataRequest,
 } from '@/services/app/type';
 import { fetchList as fetchFlowList } from '@/services/home';
 import type { GetListRequest, GetListResponse } from '@/services/home/type';
 import emitter, { EventType } from '@/stores/app/models/emitter';
-import { genNodeData, genAutomata } from '@/stores/app/utils/data-transformer';
+import {
+  genNodeData,
+  genAutomata,
+  formatReactFlow2Flow,
+} from '@/stores/app/utils/data-transformer';
 import type { NodeDataType, Config, Metadata } from '@/types/app/types';
 import { EmitterModel } from '@/utils/emitter.model';
 
@@ -52,6 +61,7 @@ import { defaultFlow } from '../../../components/app/constants';
 @injectable()
 export class AppBuilderModel {
   nodeData: NodeDataType = {};
+  @observable rerenderButtons: Record<string, boolean> = {};
   @observable metadata: Metadata = {
     name: '',
     description: '',
@@ -78,6 +88,7 @@ export class AppBuilderModel {
   @observable releaseLoading = false;
   @observable saveLoading = false;
   @observable restoreLoading = false;
+  @observable initAppBuilderLoading = false;
 
   copyNodeData: FieldValues = {};
 
@@ -136,12 +147,7 @@ export class AppBuilderModel {
   }
 
   @action.bound
-  setFlowInstance(instance: ReactFlowInstance) {
-    this.flowInstance = instance;
-  }
-
-  @action.bound
-  initAppBuilder({
+  initAppBuilderFromJson({
     reactflow,
     config,
     metadata,
@@ -156,12 +162,16 @@ export class AppBuilderModel {
 
     setTimeout(() => {
       if (this.flowInstance) {
-        const nodes = reactflow?.nodes || defaultFlow.nodes;
-        const edges = Array.isArray(reactflow?.edges)
-          ? reactflow.edges
+        const flow = formatReactFlow2Flow({
+          edges: reactflow?.edges.length ? reactflow.edges : defaultFlow.edges,
+          nodes: reactflow?.nodes.length ? reactflow.nodes : defaultFlow.nodes,
+          viewport: reactflow?.viewport || defaultFlow.viewport,
+        });
+        const nodes = flow?.nodes || defaultFlow.nodes;
+        const edges = Array.isArray(flow?.edges)
+          ? flow.edges
           : defaultFlow.edges;
-        const viewport = reactflow?.viewport || defaultFlow.viewport;
-
+        const viewport = flow?.viewport || defaultFlow.viewport;
         this.flowInstance.setNodes(nodes);
         this.flowInstance.setEdges(edges);
         this.flowInstance.setViewport(viewport);
@@ -170,10 +180,11 @@ export class AppBuilderModel {
       runInAction(() => {
         this.config = {
           fieldsModeMap: config.fieldsModeMap,
-          refs: config.refs || fieldsModeMap2Refs(config.fieldsModeMap),
+          refs:
+            config.refs || fieldsModeMap2Refs(automata, config.fieldsModeMap),
         };
         this.metadata = metadata;
-        this.nodeData = genNodeData(automata);
+        this.nodeData = genNodeData(automata, reactflow.nodes);
 
         emitter.emit(EventType.FORM_CHANGE, {
           id: this.selectedStateId as any,
@@ -183,6 +194,41 @@ export class AppBuilderModel {
       });
       this.emitter.emitter.emit('message.success', 'import success!');
     });
+  }
+
+  @action.bound
+  initAppBuilder(
+    flowInstance: ReactFlowInstance,
+    appId: string,
+    versionName: string,
+  ) {
+    this.flowInstance = flowInstance;
+    runInAction(() => {
+      this.initAppBuilderLoading = true;
+    });
+
+    this.getReactFlow(
+      {
+        app_id: appId,
+        version_name: versionName,
+      },
+      flowInstance,
+    )
+      .then(() => {
+        const { nodes } = flowInstance.toObject();
+        this.getAutomata(
+          {
+            app_id: appId,
+            version_name: versionName,
+          },
+          nodes,
+        );
+      })
+      .finally(() => {
+        runInAction(() => {
+          this.initAppBuilderLoading = false;
+        });
+      });
   }
 
   @action.bound
@@ -200,22 +246,25 @@ export class AppBuilderModel {
     }
   }
 
-  @action.bound
-  async getAutomata(params: any) {
+  async getAutomata(params: GetAutomataRequest, nodes: IFlow['nodes']) {
     try {
       this.getAutomataLoading = true;
       const { data } = await fetchAutomata(params);
-      runInAction(() => {
-        this.nodeData = genNodeData(data);
-      });
+      this.nodeData = genNodeData(data, nodes);
+      this.config.refs =
+        this.config.refs || fieldsModeMap2Refs(data, this.config.fieldsModeMap);
     } finally {
       runInAction(() => {
         this.getAutomataLoading = false;
+
+        // 需要触发一次表单渲染
+        emitter.emit(EventType.RESET_FORM, {
+          data: `${new Date().valueOf()}`,
+        });
       });
     }
   }
 
-  @action.bound
   async getReactFlow(params: GetAppFlowRequest, instance: ReactFlowInstance) {
     try {
       runInAction(() => {
@@ -227,21 +276,21 @@ export class AppBuilderModel {
         config = {} as Config,
         metadata,
       } = await fetchFlow(params);
-
       if (instance) {
-        instance.setNodes(
-          reactflow?.nodes.length ? reactflow.nodes : defaultFlow.nodes,
-        );
-        instance.setEdges(
-          reactflow?.edges.length ? reactflow.edges : defaultFlow.edges,
-        );
-        instance.setViewport(reactflow?.viewport || defaultFlow.viewport);
+        const flow = formatReactFlow2Flow({
+          edges: reactflow?.edges.length ? reactflow.edges : defaultFlow.edges,
+          nodes: reactflow?.nodes.length ? reactflow.nodes : defaultFlow.nodes,
+          viewport: reactflow?.viewport || defaultFlow.viewport,
+        });
+        instance.setNodes(flow?.nodes);
+        instance.setEdges(flow.edges);
+        instance.setViewport(flow?.viewport);
       }
 
       runInAction(() => {
         this.config = {
           fieldsModeMap: config.fieldsModeMap,
-          refs: config.refs || fieldsModeMap2Refs(config.fieldsModeMap),
+          refs: config.refs,
         };
         this.metadata = metadata;
       });
@@ -490,6 +539,17 @@ export class AppBuilderModel {
       }
 
       return state;
+    });
+  }
+
+  // TODO: FlowEngine refactor, 调整button顺序handle不更新问题
+  @action.bound
+  setRerenderButtons(id: string) {
+    this.rerenderButtons[id] = true;
+    runInAction(() => {
+      setTimeout(() => {
+        this.rerenderButtons[id] = false;
+      }, 500);
     });
   }
 }

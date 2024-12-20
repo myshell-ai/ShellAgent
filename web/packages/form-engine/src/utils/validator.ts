@@ -1,6 +1,7 @@
 import { z } from 'zod';
+import { isEmpty } from 'lodash-es';
 
-import { ISchema } from '../types';
+import { ISchema, TValue } from '../types';
 import { IValidatorRules } from '../types/validator';
 
 function genStringFormat(
@@ -184,4 +185,51 @@ export function createValidator(schema: ISchema) {
   }
 
   return ret;
+}
+
+export async function getFirstError(
+  rules: IValidatorRules[],
+  value: TValue,
+): Promise<{
+  message: string;
+  critical?: boolean;
+} | null> {
+  if (isEmpty(value)) {
+    return null;
+  }
+  const criticalRules: IValidatorRules[] = [];
+  const warningRules: IValidatorRules[] = [];
+  rules.forEach(item => {
+    if (item.critical) {
+      criticalRules.push(item);
+    } else {
+      warningRules.push(item);
+    }
+  });
+
+  if (criticalRules.length) {
+    try {
+      await Promise.race(
+        criticalRules.map(rule => rule?.validator?.(rule, value)),
+      );
+    } catch (error: any) {
+      return {
+        message: error.message || error,
+        critical: true,
+      };
+    }
+  }
+
+  if (warningRules.length) {
+    try {
+      await Promise.race(
+        warningRules.map(rule => rule?.validator?.(rule, value)),
+      );
+    } catch (error: any) {
+      return {
+        message: error.message || error,
+      };
+    }
+  }
+  return null;
 }

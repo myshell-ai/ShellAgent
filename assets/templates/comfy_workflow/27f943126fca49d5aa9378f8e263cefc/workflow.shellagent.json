@@ -1,0 +1,634 @@
+{
+  "workflow": {
+    "last_node_id": 16,
+    "last_link_id": 19,
+    "nodes": [
+      {
+        "id": 7,
+        "type": "CLIPTextEncode",
+        "pos": [
+          413,
+          389
+        ],
+        "size": [
+          425.27801513671875,
+          180.6060791015625
+        ],
+        "flags": {},
+        "order": 3,
+        "mode": 0,
+        "inputs": [
+          {
+            "name": "clip",
+            "type": "CLIP",
+            "link": 15
+          }
+        ],
+        "outputs": [
+          {
+            "name": "CONDITIONING",
+            "type": "CONDITIONING",
+            "links": [
+              6
+            ],
+            "slot_index": 0
+          }
+        ],
+        "properties": {
+          "Node name for S&R": "CLIPTextEncode"
+        },
+        "widgets_values": [
+          "watermark, text\n",
+          [
+            false,
+            true
+          ]
+        ]
+      },
+      {
+        "id": 6,
+        "type": "CLIPTextEncode",
+        "pos": [
+          415,
+          186
+        ],
+        "size": [
+          422.84503173828125,
+          164.31304931640625
+        ],
+        "flags": {},
+        "order": 2,
+        "mode": 0,
+        "inputs": [
+          {
+            "name": "clip",
+            "type": "CLIP",
+            "link": 14
+          }
+        ],
+        "outputs": [
+          {
+            "name": "CONDITIONING",
+            "type": "CONDITIONING",
+            "links": [
+              4
+            ],
+            "slot_index": 0
+          }
+        ],
+        "properties": {
+          "Node name for S&R": "CLIPTextEncode"
+        },
+        "widgets_values": [
+          "photograph of victorian woman with wings, sky clouds, meadow grass\n",
+          [
+            false,
+            true
+          ]
+        ]
+      },
+      {
+        "id": 12,
+        "type": "VAEEncode",
+        "pos": [
+          614.97998046875,
+          707.6800537109375
+        ],
+        "size": [
+          210,
+          46
+        ],
+        "flags": {},
+        "order": 4,
+        "mode": 0,
+        "inputs": [
+          {
+            "name": "pixels",
+            "type": "IMAGE",
+            "link": 19
+          },
+          {
+            "name": "vae",
+            "type": "VAE",
+            "link": 16
+          }
+        ],
+        "outputs": [
+          {
+            "name": "LATENT",
+            "type": "LATENT",
+            "links": [
+              11
+            ],
+            "slot_index": 0
+          }
+        ],
+        "properties": {
+          "Node name for S&R": "VAEEncode"
+        },
+        "widgets_values": []
+      },
+      {
+        "id": 3,
+        "type": "KSampler",
+        "pos": [
+          863,
+          186
+        ],
+        "size": [
+          315,
+          262
+        ],
+        "flags": {},
+        "order": 5,
+        "mode": 0,
+        "inputs": [
+          {
+            "name": "model",
+            "type": "MODEL",
+            "link": 13
+          },
+          {
+            "name": "positive",
+            "type": "CONDITIONING",
+            "link": 4
+          },
+          {
+            "name": "negative",
+            "type": "CONDITIONING",
+            "link": 6
+          },
+          {
+            "name": "latent_image",
+            "type": "LATENT",
+            "link": 11
+          }
+        ],
+        "outputs": [
+          {
+            "name": "LATENT",
+            "type": "LATENT",
+            "links": [
+              7
+            ],
+            "slot_index": 0
+          }
+        ],
+        "properties": {
+          "Node name for S&R": "KSampler"
+        },
+        "widgets_values": [
+          280823642470253,
+          "randomize",
+          20,
+          8,
+          "dpmpp_2m",
+          "normal",
+          0.8700000000000001
+        ]
+      },
+      {
+        "id": 14,
+        "type": "CheckpointLoaderSimple",
+        "pos": [
+          19,
+          433
+        ],
+        "size": [
+          315,
+          98
+        ],
+        "flags": {},
+        "order": 0,
+        "mode": 0,
+        "inputs": [],
+        "outputs": [
+          {
+            "name": "MODEL",
+            "type": "MODEL",
+            "links": [
+              13
+            ],
+            "slot_index": 0,
+            "shape": 3
+          },
+          {
+            "name": "CLIP",
+            "type": "CLIP",
+            "links": [
+              14,
+              15
+            ],
+            "slot_index": 1,
+            "shape": 3
+          },
+          {
+            "name": "VAE",
+            "type": "VAE",
+            "links": [
+              16,
+              17
+            ],
+            "slot_index": 2,
+            "shape": 3
+          }
+        ],
+        "properties": {
+          "Node name for S&R": "CheckpointLoaderSimple"
+        },
+        "widgets_values": [
+          "v1-5-pruned-emaonly.ckpt"
+        ]
+      },
+      {
+        "id": 8,
+        "type": "VAEDecode",
+        "pos": [
+          1209,
+          188
+        ],
+        "size": [
+          210,
+          46
+        ],
+        "flags": {},
+        "order": 6,
+        "mode": 0,
+        "inputs": [
+          {
+            "name": "samples",
+            "type": "LATENT",
+            "link": 7
+          },
+          {
+            "name": "vae",
+            "type": "VAE",
+            "link": 17
+          }
+        ],
+        "outputs": [
+          {
+            "name": "IMAGE",
+            "type": "IMAGE",
+            "links": [
+              18
+            ],
+            "slot_index": 0
+          }
+        ],
+        "properties": {
+          "Node name for S&R": "VAEDecode"
+        },
+        "widgets_values": []
+      },
+      {
+        "id": 15,
+        "type": "ShellAgentPluginSaveImage",
+        "pos": [
+          1461.5028076171875,
+          294.5843505859375
+        ],
+        "size": [
+          378,
+          82
+        ],
+        "flags": {},
+        "order": 7,
+        "mode": 0,
+        "inputs": [
+          {
+            "name": "images",
+            "type": "IMAGE",
+            "link": 18
+          }
+        ],
+        "outputs": [],
+        "properties": {
+          "Node name for S&R": "ShellAgentPluginSaveImage"
+        },
+        "widgets_values": [
+          "output_image",
+          "ComfyUI"
+        ]
+      },
+      {
+        "id": 16,
+        "type": "ShellAgentPluginInputImage",
+        "pos": [
+          179,
+          708
+        ],
+        "size": [
+          305.72479248046875,
+          388
+        ],
+        "flags": {},
+        "order": 1,
+        "mode": 0,
+        "inputs": [],
+        "outputs": [
+          {
+            "name": "IMAGE",
+            "type": "IMAGE",
+            "links": [
+              19
+            ],
+            "slot_index": 0
+          },
+          {
+            "name": "MASK",
+            "type": "MASK",
+            "links": null
+          }
+        ],
+        "properties": {
+          "Node name for S&R": "ShellAgentPluginInputImage"
+        },
+        "widgets_values": [
+          "input_image",
+          "example.png",
+          "image",
+          ""
+        ]
+      }
+    ],
+    "links": [
+      [
+        4,
+        6,
+        0,
+        3,
+        1,
+        "CONDITIONING"
+      ],
+      [
+        6,
+        7,
+        0,
+        3,
+        2,
+        "CONDITIONING"
+      ],
+      [
+        7,
+        3,
+        0,
+        8,
+        0,
+        "LATENT"
+      ],
+      [
+        11,
+        12,
+        0,
+        3,
+        3,
+        "LATENT"
+      ],
+      [
+        13,
+        14,
+        0,
+        3,
+        0,
+        "MODEL"
+      ],
+      [
+        14,
+        14,
+        1,
+        6,
+        0,
+        "CLIP"
+      ],
+      [
+        15,
+        14,
+        1,
+        7,
+        0,
+        "CLIP"
+      ],
+      [
+        16,
+        14,
+        2,
+        12,
+        1,
+        "VAE"
+      ],
+      [
+        17,
+        14,
+        2,
+        8,
+        1,
+        "VAE"
+      ],
+      [
+        18,
+        8,
+        0,
+        15,
+        0,
+        "IMAGE"
+      ],
+      [
+        19,
+        16,
+        0,
+        12,
+        0,
+        "IMAGE"
+      ]
+    ],
+    "groups": [
+      {
+        "id": 1,
+        "title": "Loading images",
+        "bounding": [
+          150,
+          630,
+          726,
+          171
+        ],
+        "color": "#3f789e",
+        "font_size": 24,
+        "flags": {}
+      }
+    ],
+    "config": {},
+    "extra": {
+      "ds": {
+        "scale": 0.9646149645000013,
+        "offset": [
+          -349.2943871613813,
+          8.166317168912908
+        ]
+      },
+      "ue_links": []
+    },
+    "version": 0.4
+  },
+  "workflow_api": {
+    "3": {
+      "inputs": {
+        "seed": 280823642470253,
+        "steps": 20,
+        "cfg": 8,
+        "sampler_name": "dpmpp_2m",
+        "scheduler": "normal",
+        "denoise": 0.8700000000000001,
+        "model": [
+          "14",
+          0
+        ],
+        "positive": [
+          "6",
+          0
+        ],
+        "negative": [
+          "7",
+          0
+        ],
+        "latent_image": [
+          "12",
+          0
+        ]
+      },
+      "class_type": "KSampler"
+    },
+    "6": {
+      "inputs": {
+        "text": "photograph of victorian woman with wings, sky clouds, meadow grass\n",
+        "clip": [
+          "14",
+          1
+        ]
+      },
+      "class_type": "CLIPTextEncode"
+    },
+    "7": {
+      "inputs": {
+        "text": "watermark, text\n",
+        "clip": [
+          "14",
+          1
+        ]
+      },
+      "class_type": "CLIPTextEncode"
+    },
+    "8": {
+      "inputs": {
+        "samples": [
+          "3",
+          0
+        ],
+        "vae": [
+          "14",
+          2
+        ]
+      },
+      "class_type": "VAEDecode"
+    },
+    "12": {
+      "inputs": {
+        "pixels": [
+          "16",
+          0
+        ],
+        "vae": [
+          "14",
+          2
+        ]
+      },
+      "class_type": "VAEEncode"
+    },
+    "14": {
+      "inputs": {
+        "ckpt_name": "v1-5-pruned-emaonly.ckpt"
+      },
+      "class_type": "CheckpointLoaderSimple"
+    },
+    "15": {
+      "inputs": {
+        "output_name": "output_image",
+        "filename_prefix": "ComfyUI",
+        "images": [
+          "8",
+          0
+        ]
+      },
+      "class_type": "ShellAgentPluginSaveImage"
+    },
+    "16": {
+      "inputs": {
+        "input_name": "input_image",
+        "default_value": "example.png",
+        "upload": "image",
+        "description": ""
+      },
+      "class_type": "ShellAgentPluginInputImage"
+    }
+  },
+  "dependencies": {
+    "comfyui_version": {
+      "name": "ComfyUI",
+      "repo": "git@github.com:comfyanonymous/ComfyUI.git",
+      "commit": "b7143b74ce6df191004fab4a683cb2792c82248b"
+    },
+    "custom_nodes": [
+      {
+        "name": "ComfyUI-ShellAgent-Plugin",
+        "repo": "git@github.com:myshell-ai/ComfyUI-ShellAgent-Plugin.git",
+        "commit": "623ea454cc3c17eaeb1156b1acc87a09d75992a7"
+      }
+    ],
+    "models": {
+      "cc6cb27103417325ff94f52b7a5d2dde45a7515b25c255d8e396c90014281516": {
+        "filename": "v1-5-pruned-emaonly.ckpt",
+        "save_path": "checkpoints",
+        "urls": [
+          "https://huggingface.co/runwayml/stable-diffusion-v1-5/resolve/main/v1-5-pruned-emaonly.ckpt"
+        ]
+      }
+    },
+    "files": {
+      "a8e215ad32a0052fc4190e9c5863428d5ee35cd98b246243842ba8360511b7c4": {
+        "filename": "input/example.png",
+        "urls": [
+          "https://www.myshellstatic.com/image/chat/embed_obj/202412121355/d9e035e42abe4aa09e63545dba45e9cc.png"
+        ]
+      }
+    },
+    "pypi": {
+      "imageio-ffmpeg": "0.5.1",
+      "opencv-python": "4.10.0.84",
+      "accelerate": "1.1.0",
+      "brotli": "1.1.0",
+      "timm": "1.0.11",
+      "transformers": "4.47.0",
+      "pydantic": "2.9.1",
+      "diffusers": "0.31.0",
+      "aiofiles": "24.1.0"
+    }
+  },
+  "schemas": {
+    "inputs": {
+      "16": {
+        "title": "input_image",
+        "type": "string",
+        "default": "example.png",
+        "description": "",
+        "url_type": "image"
+      }
+    },
+    "outputs": {
+      "15": {
+        "title": "output_image",
+        "type": "string",
+        "url_type": "image"
+      }
+    }
+  }
+}

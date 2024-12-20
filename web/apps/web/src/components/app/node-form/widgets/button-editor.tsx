@@ -5,8 +5,12 @@ import { getButtonDisplayName } from '@shellagent/shared/utils';
 import { Button, XMark, IconButton, useFormContext } from '@shellagent/ui';
 import { useHover } from 'ahooks';
 import clsx from 'clsx';
+import { useInjection } from 'inversify-react';
+import { debounce } from 'lodash-es';
 import { useRef, useCallback } from 'react';
+import { useDrag, useDrop } from 'react-dnd';
 
+import { AppBuilderModel } from '@/stores/app/models/app-builder.model';
 import { useAppState } from '@/stores/app/use-app-state';
 import { generateUUID } from '@/utils/common-helper';
 
@@ -17,15 +21,50 @@ interface VariableNodeProps {
 
 const ButtonItem = ({
   data,
+  index,
   onClick,
   onDelete,
+  onButtonMove,
 }: {
+  index: number;
   data: IButtonType;
   onClick: (e: React.MouseEvent<HTMLButtonElement>) => void;
   onDelete: (id: string) => void;
+  onButtonMove: (startIndex: number, endIndex: number) => void;
 }) => {
   const buttonRef = useRef<HTMLButtonElement>(null);
   const isHovered = useHover(buttonRef);
+
+  const [{ isDragging }, drag, preview] = useDrag({
+    type: 'BUTTON',
+    item: { index },
+    collect: monitor => ({
+      isDragging: monitor.isDragging(),
+    }),
+    canDrag: true,
+  });
+
+  const [, drop] = useDrop<DragItem, void>({
+    accept: 'BUTTON',
+    hover: (item: DragItem, monitor) => {
+      if (!buttonRef.current) {
+        // 添加draggable判断
+        return;
+      }
+      const dragIndex = item.index;
+      const hoverIndex = index;
+
+      if (dragIndex === hoverIndex) {
+        return;
+      }
+
+      onButtonMove(dragIndex, hoverIndex);
+      item.index = hoverIndex;
+    },
+  });
+
+  drag(drop(buttonRef));
+  preview(drop(buttonRef));
 
   const handleDelete = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.stopPropagation();
@@ -59,6 +98,7 @@ const ButtonItem = ({
 };
 
 const ButtonEditor = ({ name, onChange }: VariableNodeProps) => {
+  const appBuilder = useInjection<AppBuilderModel>('AppBuilderModel');
   const { setInsideSheetOpen, currentStateId } = useAppState(state => state);
   const { getValues } = useFormContext();
   const value = getValues(name) as IButtonType[];
@@ -114,14 +154,32 @@ const ButtonEditor = ({ name, onChange }: VariableNodeProps) => {
     [value, onChange],
   );
 
+  // TODO: FlowEngine refactor, 调整button顺序handle不更新问题
+  const forceUpdate = debounce(() => {
+    appBuilder.setRerenderButtons(currentStateId);
+  }, 300);
+
+  const onButtonMove = useCallback(
+    (startIndex: number, endIndex: number) => {
+      const result = Array.from(value);
+      const [removed] = result.splice(startIndex, 1);
+      result.splice(endIndex, 0, removed);
+      onChange(result);
+      forceUpdate();
+    },
+    [value, onChange, edges],
+  );
+
   return (
     <div className="flex flex-wrap gap-3 items-center">
-      {value?.map?.(button => (
+      {value?.map?.((button, index) => (
         <ButtonItem
           key={button.id}
           data={button}
+          index={index}
           onClick={handleButtonClick(button.id)}
           onDelete={() => handleDeleteButton(button)}
+          onButtonMove={onButtonMove}
         />
       ))}
       <Button
@@ -135,6 +193,10 @@ const ButtonEditor = ({ name, onChange }: VariableNodeProps) => {
       </Button>
     </div>
   );
+};
+
+type DragItem = {
+  index: number;
 };
 
 ButtonEditor.displayName = 'ButtonEditor';

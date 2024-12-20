@@ -1,3 +1,4 @@
+import { Automata } from '@shellagent/pro-config';
 import {
   RefOptionsOutput,
   refOptOutputGlobalSchema,
@@ -20,40 +21,43 @@ export interface CascaderOption {
 export function convertNodeDataToState(nodeData: any): State {
   const ret = {
     name: nodeData.id,
-    display_name: nodeData.name,
+    display_name: nodeData.display_name || nodeData.name,
     children: {
       inputs: {
-        variables: Object.fromEntries(
-          Object.entries(nodeData.inputs || {}).map(
-            ([key, value]: [string, any]) => [
-              key,
-              { type: value.type, display_name: value.name },
-            ],
-          ),
-        ),
+        variables:
+          Object.fromEntries(
+            Object.entries(nodeData.inputs || {}).map(
+              ([key, value]: [string, any]) => [
+                key,
+                { type: value.type, display_name: value.name },
+              ],
+            ),
+          ) || {},
       },
       tasks: (nodeData.blocks || []).map((block: any) => ({
         name: block.name,
         display_name: block.display_name,
-        variables: mapValues(block.outputs.display, (v, k) => {
-          return {
-            type: v,
-            display_name: k,
-          };
-        }),
+        variables:
+          mapValues(block.outputs.display || {}, (v, k) => {
+            return {
+              type: v,
+              display_name: k,
+            };
+          }) || {},
       })),
       outputs: {
-        variables: Object.fromEntries(
-          Object.entries(nodeData.outputs || {}).map(
-            ([key, value]: [string, any]) => [
-              key,
-              {
-                type: value.type,
-                display_name: value.display_name || value.name,
-              },
-            ],
-          ),
-        ),
+        variables:
+          Object.fromEntries(
+            Object.entries(nodeData.outputs || {}).map(
+              ([key, value]: [string, any]) => [
+                key,
+                {
+                  type: value.type,
+                  display_name: value.display_name || value.name,
+                },
+              ],
+            ),
+          ) || {},
         render: {
           buttons: Object.fromEntries(
             (nodeData.render?.buttons || []).map((button: IButtonType) => {
@@ -63,7 +67,7 @@ export function convertNodeDataToState(nodeData: any): State {
                   content,
                   {
                     event: button.on_click.event,
-                    payload: mapValues(button?.on_click?.payload, v => ({
+                    payload: mapValues(button?.on_click?.payload || {}, v => ({
                       type: v.type,
                       display_name: v.name,
                     })),
@@ -91,10 +95,11 @@ export function convetNodeDataToScopes(nodeDatas: any, edges: any[]) {
       const v = nodeDatas[k];
       if (k === reservedStateNameSchema.enum.start) {
         acc.context = {
-          variables: mapValues(v.context, v => ({
-            type: v.type,
-            display_name: v.name,
-          })),
+          variables:
+            mapValues(v.context || {}, v => ({
+              type: v.type,
+              display_name: v.name,
+            })) || {},
         };
       } else {
         acc.states[k] = convertNodeDataToState(v);
@@ -131,49 +136,6 @@ export function convertRefOptsToCascaderOpts(
   refOpts: RefOptionsOutput,
 ): CascaderOption[] {
   const cascaderOptions: CascaderOption[] = [];
-
-  const globalOptions: CascaderOption[] = [];
-  Object.entries(refOpts.global).forEach(([key, val]) => {
-    const val2 = refOptOutputGlobalSchema.parse(val);
-    const children: CascaderOption[] = Object.entries(val2.variables || {}).map(
-      ([variableKey, variable]) => {
-        let value;
-        let parent;
-        if (key === 'context') {
-          value = `{{__context__${variableKey}__}}`;
-          parent = 'context';
-        } else {
-          if (/__context__([a-z0-9_]+)__/g.test(variableKey)) {
-            value = `{{${variableKey}}}`;
-          } else {
-            value = `{{${key}.${variableKey}}}`;
-          }
-          parent = 'state';
-        }
-        return {
-          label: variable?.display_name || variableKey,
-          value,
-          field_type: variable?.type,
-          parent,
-        };
-      },
-    );
-
-    if (children.length > 0) {
-      globalOptions.push({
-        label: val2?.display_name,
-        value: val2?.display_name,
-        children,
-      });
-    }
-  });
-
-  if (globalOptions.length > 0) {
-    cascaderOptions.push({
-      label: 'global',
-      children: globalOptions,
-    });
-  }
 
   const localOptions: CascaderOption[] = [];
 
@@ -266,58 +228,113 @@ export function convertRefOptsToCascaderOpts(
     });
   }
 
+  const globalOptions: CascaderOption[] = [];
+  Object.entries(refOpts.global).forEach(([key, val]) => {
+    const val2 = refOptOutputGlobalSchema.parse(val);
+    const children: CascaderOption[] = Object.entries(val2.variables || {}).map(
+      ([variableKey, variable]) => {
+        let value;
+        let parent;
+        if (key === 'context') {
+          value = `{{__context__${variableKey}__}}`;
+          parent = 'context';
+        } else {
+          if (/__context__([a-z0-9_]+)__/g.test(variableKey)) {
+            value = `{{${variableKey}}}`;
+          } else {
+            value = `{{${key}.${variableKey}}}`;
+          }
+          parent = 'state';
+        }
+        return {
+          label: variable?.display_name || variableKey,
+          value,
+          field_type: variable?.type,
+          parent,
+        };
+      },
+    );
+
+    if (children.length > 0) {
+      globalOptions.push({
+        label: val2?.display_name,
+        value: val2?.display_name,
+        children,
+      });
+    }
+  });
+
+  if (globalOptions.length > 0) {
+    cascaderOptions.push({
+      label: 'global',
+      children: globalOptions,
+    });
+  }
+
   return cascaderOptions;
 }
 
 // 以下为兼容逻辑
-
-export function fieldsModeMap2Refs(map: Record<string, any>) {
+export function fieldsModeMap2Refs(
+  automata: Automata | null,
+  map: Record<string, any>,
+) {
   const result: Record<string, any> = {};
 
   Object.entries(map || {}).forEach(([key, value]) => {
-    // 处理包含UUID的特殊情况
-    if (key.includes('.')) {
-      const [baseKey, ...rest] = key.split('.');
-      result[baseKey] = result[baseKey] || {};
+    // 提取基础键和其他部分
+    const [baseKey, ...rest] = key.split('.');
 
-      // 如果是blocks相关的字段
-      if (rest.join('.').startsWith('blocks.')) {
-        const blockPath = rest.join('.');
-        Object.entries(value).forEach(([blockKey, blockMode]) => {
-          result[baseKey][`${blockPath}.${blockKey}`] = {
-            currentMode: blockMode,
+    // 初始化基础键对象
+    result[baseKey] = result[baseKey] || {};
+
+    // 如果是 blocks 相关的字段
+    if (rest.length > 0 && rest[0] === 'blocks') {
+      const blockIndex = parseInt(rest[1], 10);
+      // 添加类型断言
+      const blockName = (automata?.blocks as any)?.[baseKey]?.blocks?.[
+        blockIndex
+      ]?.name;
+
+      if (blockName) {
+        // 替换路径中的数字索引为 block name
+        const newPath = ['blocks', blockName, ...rest.slice(2)].join('.');
+        Object.entries(value).forEach(([fieldKey, mode]) => {
+          result[baseKey][`${newPath}.${fieldKey}`] = {
+            currentMode: mode,
           };
         });
       }
-      // 如果包含UUID
-      else if (
-        rest.some(part =>
-          /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/.test(
-            part,
-          ),
-        )
-      ) {
-        const uuid = rest.find(part =>
-          /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/.test(
-            part,
-          ),
-        );
-        if (uuid) {
-          Object.entries(value).forEach(([field, mode]) => {
-            result[baseKey][`render.buttons.${uuid}.${field}`] = {
-              currentMode: mode,
-            };
-          });
-        }
-      }
-      return;
     }
-
+    // 如果包含UUID
+    else if (
+      rest.some(part =>
+        /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/.test(
+          part,
+        ),
+      )
+    ) {
+      const uuid = rest.find(part =>
+        /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/.test(
+          part,
+        ),
+      );
+      if (uuid) {
+        Object.entries(value).forEach(([field, mode]) => {
+          result[baseKey][`render.buttons.${uuid}.${field}`] = {
+            currentMode: mode,
+          };
+        });
+      }
+    }
     // 处理普通字段
-    result[key] = {};
-    Object.entries(value).forEach(([fieldKey, mode]) => {
-      result[key][fieldKey] = { currentMode: mode };
-    });
+    else {
+      Object.entries(value).forEach(([fieldKey, mode]) => {
+        result[baseKey][fieldKey] = {
+          currentMode: mode,
+        };
+      });
+    }
   });
 
   return result;

@@ -29,7 +29,7 @@ import { isCustomEdge } from '../../utils';
 import OptBar from '../opt-bar';
 
 const FlowDag = forwardRef<FlowRef, IFlowDagProps>(
-  ({ nodeTypes = {}, edgeTypes = {}, loading, header }, ref) => {
+  ({ nodeTypes = {}, edgeTypes = {}, loading, header, onDoubleClick }, ref) => {
     const flowInstance = useRef<ReactFlowInstance<NodeData, EdgeData> | null>(
       null,
     );
@@ -151,6 +151,9 @@ const FlowDag = forwardRef<FlowRef, IFlowDagProps>(
           onNodesChange={onNodesChange}
           onEdgesChange={onEdgesChange}
           onConnect={handleEdgeConnect}
+          onEdgeDoubleClick={e => e.stopPropagation()}
+          onNodeDoubleClick={e => e.stopPropagation()}
+          onDoubleClick={e => onDoubleClick?.(e, onAddNode)}
           deleteKeyCode={null}
           multiSelectionKeyCode={null}
           proOptions={{

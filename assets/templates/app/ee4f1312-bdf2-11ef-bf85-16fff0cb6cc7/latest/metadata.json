@@ -1,0 +1,9 @@
+{
+  "name": "Img2Prompt",
+  "description": "This app is an example template to upload an image and use GPT/Claude to generate prompt.",
+  "type": "app",
+  "template_id": "",
+  "categories": [
+    "Tutorial"
+  ]
+}

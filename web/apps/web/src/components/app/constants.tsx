@@ -3,15 +3,23 @@ import {
   NodeTypeEnum,
   NodeIdEnum,
   MaterialListType,
+  MarkerType,
 } from '@shellagent/flow-engine';
 import { Workflow } from '@shellagent/pro-config';
 
 import { DefaultEdge, CustomEdge, EdgeTypeEnum } from '@/components/app/edges';
-import { StartNode, StateNode } from '@/components/app/nodes';
+import {
+  StartNode,
+  StateNode,
+  IntroNode,
+  NoteNode,
+} from '@/components/app/nodes';
 
 export const nodeTypes = {
   [NodeTypeEnum.start]: StartNode,
   [NodeTypeEnum.state]: StateNode,
+  [NodeTypeEnum.intro]: IntroNode,
+  [NodeTypeEnum.note]: NoteNode,
 };
 
 export const edgeTypes = {
@@ -44,8 +52,54 @@ export const defaultFlow: IFlow = {
       },
       dragging: false,
     },
+    {
+      id: 'intro',
+      position: {
+        x: 592.1845769352449,
+        y: 290.0034713745117,
+      },
+      type: 'intro',
+      selectable: true,
+      focusable: true,
+      draggable: true,
+      data: {
+        type: 'intro',
+        id: NodeIdEnum.intro,
+        name: 'Intro',
+        display_name: 'Intro',
+      },
+      width: 500,
+      height: 218,
+      selected: true,
+      positionAbsolute: {
+        x: 592.1845769352449,
+        y: 290.0034713745117,
+      },
+      dragging: false,
+    },
   ],
-  edges: [],
+  edges: [
+    {
+      type: 'default_edge',
+      style: {
+        strokeWidth: 2,
+        stroke: '#d1d5db',
+      },
+      markerEnd: {
+        color: '#5A646Es',
+        height: 25,
+        strokeWidth: 2,
+        type: MarkerType.ArrowClosed,
+        width: 10,
+      },
+      source: NodeIdEnum.start,
+      sourceHandle: NodeIdEnum.start,
+      target: 'intro',
+      targetHandle: 'intro',
+      animated: false,
+      id: 'reactflow__edge-@@@start@@@start-introintro',
+    },
+  ],
   viewport: {
     x: 100,
     y: 100,
@@ -66,6 +120,11 @@ export const materialList: MaterialListType = [
         name: 'State',
         display_name: 'State',
         type: NodeTypeEnum.state,
+      },
+      {
+        name: 'Note',
+        display_name: 'Note',
+        type: NodeTypeEnum.note,
       },
     ],
   },

@@ -6,10 +6,10 @@ import { useRouter } from 'next/navigation';
 import { toast } from 'react-toastify';
 
 import ImportModal from '@/components/app/header/extra-action/import-modal';
-import { saveApp } from '@/services/app';
-import { createItem } from '@/services/home';
+import { importApp } from '@/services/app';
 import { Type } from '@/services/home/type';
 import { ShellAgent } from '@/types/app/types';
+import { ExportBotResponse } from '@/services/app/type';
 
 interface CreateDialogProps {
   size?: ButtonProps['size'];
@@ -30,28 +30,17 @@ export const ImportDialog: React.FC<CreateDialogProps> = ({
     openAction.set(value);
   };
 
-  const onConfirm = async (data: ShellAgent) => {
+  const onConfirm = async (data: ExportBotResponse['data']) => {
     loadingAction.setTrue();
-    const resp = await createItem({
-      ...data.metadata,
-      type,
-    });
+    const resp = await importApp(data);
     if (resp.success && resp.data.id) {
-      const saveResp = await saveApp({ ...data, app_id: resp.data.id });
-      loadingAction.setFalse();
-      if (saveResp.success) {
-        onOpenChange(false);
-        onSuccess();
-        router.push(`/${type}/detail?id=${resp.data.id}`);
-      } else {
-        toast.error(
-          saveResp.message || 'import error, please try again later.',
-        );
-      }
+      onOpenChange(false);
+      onSuccess();
+      router.push(`/${type}/detail?id=${resp.data.id}`);
     } else {
-      loadingAction.setFalse();
       toast.error(resp.message);
     }
+    loadingAction.setFalse();
   };
 
   return (

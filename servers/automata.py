@@ -32,6 +32,7 @@ from fastapi import FastAPI, HTTPException
 from fastapi.responses import JSONResponse, StreamingResponse
 
 from servers.base import app, APP_SAVE_ROOT, WORKFLOW_SAVE_ROOT, APP_RUNS_SAVE_ROOT, PROJECT_ROOT
+from servers.common import get_unique_workflow_id, get_unique_comfyui_workflow_id
 from proconfig.core.exception import ShellException
 
 from cryptography.hazmat.primitives import serialization
@@ -304,7 +305,42 @@ async def export_app(data: dict):
     return results
 
 
-# app run
+# export
+@app.post('/api/app/import')
+async def import_app(data: dict):
+    app_id = get_unique_workflow_id(APP_SAVE_ROOT)
+    save_root = os.path.join(APP_SAVE_ROOT, app_id, "latest")
+    os.makedirs(save_root, exist_ok=True)
+    
+    # first save the comfyui workflow
+    comfyui_workflow_id_map = {}
+    for old_comfyui_workflow_id, comfyui_workflow in data["comfyui_workflows"].items():
+        new_comfyui_workflow_id = get_unique_comfyui_workflow_id()
+        comfyui_workflow_path = os.path.join(PROJECT_ROOT, "comfy_workflow", new_comfyui_workflow_id, "workflow.shellagent.json")
+        os.makedirs(os.path.dirname(comfyui_workflow_path), exist_ok=True)
+        with open(comfyui_workflow_path, "w") as f:
+            json.dump(comfyui_workflow, f, indent=2, ensure_ascii=False)
+        comfyui_workflow_id_map[old_comfyui_workflow_id] = comfyui_workflow_path
+        
+    for state_name, state in data["automata"].get("blocks", {}).items():
+        for block in state.get("blocks", []):
+            if "comfy_workflow_id" in block:
+                block["location"] = comfyui_workflow_id_map[block["comfy_workflow_id"]]
+                del block["comfy_workflow_id"]
+
+    # now save
+    for key in ["automata", "reactflow", "metadata"]:
+        json.dump(data[key], open(os.path.join(save_root, f"{key}.json"), "w"), indent=2, ensure_ascii=False)
+        
+    result = {
+        "data": {
+            "id": app_id,
+        },
+        "success": True,
+        "message": ""
+    }
+    return JSONResponse(content=result)
+
 
 from proconfig.utils.misc import convert_unserializable_display
 from proconfig.utils.pytree import tree_map
@@ -713,6 +749,8 @@ class MyShellRunAppResponse(BaseModel):
     store_session: str | None # json string
     render_result: ServerMessage | None
     running_error: Dict | None
+    error_message: str = ""
+    error_message_detail: str = ""
     
 
 def prepare_payload(automata: Automata, event_data: MyShellUserInput, sess_state: SessionState):
@@ -774,8 +812,12 @@ def run_automata_stateless_impl(request: MyShellRunAppRequest, queue):
     result = MyShellRunAppResponse(
         store_session=sess_state_str,
         render_result=server_message,
-        running_error=running_error
+        running_error=running_error,
     )
+    
+    if running_error is not None:
+        result.error_message = running_error["error_head"]
+        result.error_message_detail = running_error["msg"] + "\n" + running_error["traceback"]
 
     queue.put(result)
     return result
